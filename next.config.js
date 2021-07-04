@@ -16,7 +16,7 @@ module.exports = {
         '@repository': path.resolve(__dirname, 'repository'),
         '@routes': path.resolve(__dirname, 'routes'),
         '@store': path.resolve(__dirname, 'store'),
-        '@style': path.resolve(__dirname, 'style'),
+        '@styles': path.resolve(__dirname, 'styles'),
         '@utils': path.resolve(__dirname, 'utils'),
         '@context': path.resolve(__dirname, 'context'),
         '@parse': path.resolve(__dirname, 'test'),
