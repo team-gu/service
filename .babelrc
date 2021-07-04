@@ -1,0 +1,29 @@
+{
+  "presets": ["next/babel"],
+  "plugins": [
+    ["styled-components", { "ssr": true }],
+    [
+      "module-resolver",
+      {
+        "root": ["./src"],
+        "alias": {
+          "@atoms": "./components/atoms",
+          "@molecules": "./components/molecules",
+          "@organisms": "./components/organisms",
+          "@template": "./pages/template",
+          "@pages": "./pages",
+          "@assets": "./assets",
+          "@hooks": "./hooks",
+          "@mocks": "./mocks",
+          "@repository": "./repository",
+          "@routes": "./routes/",
+          "@store": "./store",
+          "@styles": "/styles",
+          "@utils": "./utils",
+          "@context": "./context",
+          "@parse": "./test"
+        }
+      }
+    ]
+  ]
+}
