@@ -1,5 +1,6 @@
 import React, { ReactElement } from 'react';
 import styled from 'styled-components';
+import { Text } from '@atoms';
 
 interface EachButtonProps {
   title: string;
@@ -25,11 +26,7 @@ const WrapEachButton = styled.button<{ isNormal: boolean }>`
 
   border: none;
   border-radius: 8px;
-  ${({
-    theme: {
-      font: { n18b },
-    },
-  }) => n18b};
+
   box-shadow: 0px 0px 4px 2px rgba(55, 53, 47, 0.4);
 
   color: ${({
@@ -37,11 +34,6 @@ const WrapEachButton = styled.button<{ isNormal: boolean }>`
       colors: { white },
     },
   }) => white};
-  ${({
-    theme: {
-      font: { n18b },
-    },
-  }) => n18b};
 
   transition: 300ms;
   animation: 800ms ease fadeIn;
@@ -62,7 +54,7 @@ export default function Button({
 }: EachButtonProps): ReactElement {
   return (
     <WrapEachButton type="button" onClick={func} isNormal={isNormal}>
-      {title}
+      <Text text={title} fontSetting="n18b" />
     </WrapEachButton>
   );
 }
