@@ -1,4 +1,5 @@
 import Image from './Image';
+import Input from './Input';
 import Text from './Text';
 
-export { Image, Text };
+export { Image, Input, Text };
