@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '@hooks';
 import { MODALS } from '@utils/constants';
 import ModalWrapper from './ModalWrapper';
 import AlertModal from './AlertModal';
@@ -9,9 +9,7 @@ interface ModalProps {
 }
 
 export default function Modal({ modalName }: ModalProps) {
-  const isShow = useSelector(
-    (state: { modal: object }) => state.modal[modalName]
-  );
+  const isShow = useAppSelector((state) => state.modal[modalName]);
 
   return (
     <>
