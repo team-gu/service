@@ -4,15 +4,13 @@ import { Text } from '@atoms';
 
 interface EachButtonProps {
   title: string;
-  func: any;
-  isNormal?: boolean;
+  // TODO: 추후에 수정
+  func: () => void | Function | any;
+  width?: string;
 }
 
-const WrapEachButton = styled.button<{ isNormal: boolean }>`
-  ${({ theme: { flexRow } }) => flexRow()}
-
-  width: ${({ isNormal }) => (isNormal ? '200px' : '88%')};
-  max-width: 600px;
+const WrapEachButton = styled.button<{ width: string }>`
+  width: ${({ width }) => width};
   height: 48px;
 
   bottom: 16px;
@@ -50,10 +48,10 @@ const WrapEachButton = styled.button<{ isNormal: boolean }>`
 export default function Button({
   title,
   func,
-  isNormal = false,
+  width = '200px',
 }: EachButtonProps): ReactElement {
   return (
-    <WrapEachButton type="button" onClick={func} isNormal={isNormal}>
+    <WrapEachButton type="button" onClick={func} width={width}>
       <Text text={title} fontSetting="n18b" />
     </WrapEachButton>
   );
