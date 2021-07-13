@@ -90,11 +90,9 @@ const theme: DefaultTheme = {
   input: css`
     width: 180px;
     height: 10px;
-    margin-bottom: 20px;
     padding: 10px;
 
-    border: none;
-    border-bottom: 1px solid
+    border: 1px solid
       ${({
         theme: {
           colors: { gray },

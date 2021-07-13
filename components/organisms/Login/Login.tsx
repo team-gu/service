@@ -37,10 +37,10 @@ export default function Login(): ReactElement {
 
   return (
     <Wrapper>
-      <Input inputRef={idRef} placeHolder="아이디 입력" />
+      <Input ref={idRef} placeHolder="아이디 입력" />
       <Input
         type="password"
-        inputRef={passwordRef}
+        ref={passwordRef}
         placeHolder="비밀번호 입력"
       ></Input>
       <Button title="로그인" func={() => handleLogin()} />
