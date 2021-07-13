@@ -21,7 +21,7 @@
       "@template": ["pages/template/"],
       "@pages": ["pages"],
       "@assets/*": ["assets/*"],
-      "@hooks/*": ["hooks/*"],
+      "@hooks": ["hooks"],
       "@mocks/*": ["mocks/*"],
       "@repository/*": ["repository/*"],
       "@routes": ["routes/"],

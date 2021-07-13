@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 
 import styled from 'styled-components';
-import { useSelector } from 'react-redux';
-import { Modal } from '@organisms';
+import { useAppDispatch, useAppSelector } from '@hooks';
+import { Modal, Login } from '@organisms';
 import { MODALS } from '@utils/constants';
 
 import { get } from '@utils/snippet';
@@ -18,7 +18,7 @@ const Title = styled.h1`
 `;
 
 export default function Home() {
-  const { content } = useSelector(get('modal'));
+  const { content } = useAppSelector(get('modal'));
 
   useEffect(() => {
     console.log(content);
@@ -28,6 +28,7 @@ export default function Home() {
     <>
       <GlobalStyle />
       <Title>My page</Title>
+      <Login />
       <Modal modalName={MODALS.ALERT_MODAL} />
     </>
   );

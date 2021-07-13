@@ -8,7 +8,7 @@ interface ApiParameter {
 }
 
 export const SERVER_URL: string =
-  process.env.REACT_APP_API_SERVER_URL || 'https://<SERVER_URL>';
+  process.env.REACT_APP_API_SERVER_URL || 'http://localhost:8000';
 
 const api = ({ url, type = 'get', param }: ApiParameter) => {
   const accessToken = loadItem('accessToken');
