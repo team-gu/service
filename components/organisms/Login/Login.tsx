@@ -5,12 +5,16 @@ import styled from 'styled-components';
 import { Button } from '@molecules';
 import { Input } from '@atoms';
 import { useAppDispatch } from '@hooks';
-import { displayModal, setLogin } from '@store';
+import { setLogin } from '@store';
 
 const Wrapper = styled.div`
   width: 100%;
   height: 100%;
   ${({ theme: { flexCol } }) => flexCol()};
+
+  .input {
+    margin-bottom: 20px;
+  }
 `;
 
 export default function Login(): ReactElement {
@@ -44,6 +48,7 @@ export default function Login(): ReactElement {
         placeHolder="비밀번호 입력"
       ></Input>
       <Button title="로그인" func={() => handleLogin()} />
+      <Button title="회원가입" func={() => router.push('register')} />
     </Wrapper>
   );
 }
