@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { ReactElement, useEffect } from 'react';
 
 import styled from 'styled-components';
 import { useAppDispatch, useAppSelector } from '@hooks';
@@ -17,7 +17,7 @@ const Title = styled.h1`
   }) => black};
 `;
 
-export default function Home() {
+export default function Home(): ReactElement {
   const { content } = useAppSelector(get('modal'));
 
   useEffect(() => {
