@@ -15,6 +15,10 @@ const Wrapper = styled.div`
   .input {
     margin-bottom: 20px;
   }
+
+  button {
+    margin-bottom: 10px;
+  }
 `;
 
 export default function Login(): ReactElement {
