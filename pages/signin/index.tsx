@@ -15,7 +15,7 @@ const Title = styled.h1`
   }) => black};
 `;
 
-export default function Home(): ReactElement {
+export default function SignIn(): ReactElement {
   const { content } = useAppSelector(get('modal'));
 
   useEffect(() => {
@@ -24,7 +24,7 @@ export default function Home(): ReactElement {
 
   return (
     <>
-      <Title>My page</Title>
+      <Login />
     </>
   );
 }
