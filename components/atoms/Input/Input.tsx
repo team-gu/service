@@ -14,7 +14,7 @@ interface InputProps {
   error?: string;
 }
 
-const Wrapper = styled.div<{ width: string }>`
+const Wrapper = styled.div<{ width: string; isSuccess: string | undefined }>`
   width: ${({ width }) => width};
   > input {
     ${({ theme: { input } }) => input};
@@ -26,7 +26,7 @@ const Wrapper = styled.div<{ width: string }>`
         font: { n12b },
       },
     }) => n12b}
-    color: red;
+    color: ${({ isSuccess }) => (isSuccess === '1' ? 'green' : 'red')};
   }
 `;
 
@@ -45,8 +45,10 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     }: InputProps,
     ref,
   ): ReactElement => {
+    // TODO: 추후 any 제거
+
     return (
-      <Wrapper className="input" width={width}>
+      <Wrapper className="input" width={width} isSuccess={error?.split('/')[1]}>
         <input
           type={type}
           ref={ref}
@@ -57,7 +59,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           name={name}
           maxLength={maxLength}
         />
-        {error !== '' && <div>{error}</div>}
+        {error?.split('/')[0] !== '' && <div>{error?.split('/')[0]}</div>}
       </Wrapper>
     );
   },

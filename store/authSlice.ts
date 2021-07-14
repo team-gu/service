@@ -1,28 +1,37 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { postLoginApi } from '@repository/baseRepository';
+import { postLoginApi, getUserInfo } from '@repository/baseRepository';
 import { NextRouter } from 'next/router';
-import { saveItem } from '@utils/storage';
+import { saveItem, removeItem } from '@utils/storage';
+import { setLoading } from '@store';
+
 const authReducer = createSlice({
   name: 'auth',
   initialState: {
+    userId: '',
     name: '',
+    position: '',
+    department: '',
   },
   reducers: {
-    setName(state, { payload: { name } }) {
+    setUser(state, { payload: { userId, name, position, department } }) {
       return {
         ...state,
+        userId,
         name,
+        position,
+        department,
       };
     },
   },
 });
 
-export const { setName } = authReducer.actions;
+export const { setUser } = authReducer.actions;
 export default authReducer.reducer;
 
 // TODO: 추후 dispatch 타입 변경
 export const setLogin =
   (param: object, router: NextRouter) => async (dispatch: any) => {
+    dispatch(setLoading({ isLoading: true }));
     try {
       const {
         data: { name, accessToken },
@@ -30,10 +39,30 @@ export const setLogin =
 
       saveItem('accessToken', accessToken);
 
-      dispatch(setName({ name }));
-
       router.push('/main');
     } catch (error) {
       console.error(error);
+    } finally {
+      dispatch(setLoading({ isLoading: false }));
     }
   };
+
+export const setUserInfo = () => async (dispatch: any) => {
+  dispatch(setLoading({ isLoading: true }));
+  try {
+    const {
+      data: { user_id: userId, name, position, department },
+    } = await getUserInfo();
+
+    dispatch(setUser({ userId, name, position, department }));
+  } catch (error) {
+    console.error(error);
+  } finally {
+    dispatch(setLoading({ isLoading: false }));
+  }
+};
+
+export const setLogout = () => () => {
+  setUser({ userId: '', name: '', position: '', department: '' });
+  removeItem('accessToken');
+};

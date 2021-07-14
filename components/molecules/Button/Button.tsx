@@ -11,7 +11,7 @@ interface EachButtonProps {
 
 const WrapEachButton = styled.button<{ width: string }>`
   width: ${({ width }) => width};
-  height: 48px;
+  height: 40px;
 
   bottom: 16px;
   margin: 0 auto;
@@ -52,7 +52,7 @@ export default function Button({
 }: EachButtonProps): ReactElement {
   return (
     <WrapEachButton type="button" onClick={func} width={width}>
-      <Text text={title} fontSetting="n18b" />
+      <Text text={title} fontSetting="n14b" />
     </WrapEachButton>
   );
 }
