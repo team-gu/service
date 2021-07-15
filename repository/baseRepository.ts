@@ -7,6 +7,12 @@ export const postLoginApi = async (param: object) =>
     param,
   });
 
+export const getUserInfo = async () =>
+  await api({
+    url: `/api/v1/users/me`,
+    type: 'get',
+  });
+
 export const postSignUp = async (param: object) =>
   await api({
     url: `/users`,
