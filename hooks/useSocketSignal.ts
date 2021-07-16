@@ -43,7 +43,7 @@ export default function useSocketSignal({ roomId, setStep }) {
   }
 
   useEffect(() => {
-    socketRef.current = io.connect('https://witherview.herokuapp.com/');
+    socketRef.current = io.connect('https://ssafy-01.herokuapp.com/');
 
     navigator.mediaDevices
       .getUserMedia({ video: true, audio: true })
@@ -68,7 +68,7 @@ export default function useSocketSignal({ roomId, setStep }) {
 
         socketRef.current.on('user joined', (payload) => {
           const item = peersRef.current.find(
-            (p) => p.peerID === payload.callerID
+            (p) => p.peerID === payload.callerID,
           );
           if (!item) {
             const peer = addPeer(payload.signal, payload.callerID, stream);
