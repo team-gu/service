@@ -21,7 +21,7 @@ const Wrapper = styled.div`
   }
 `;
 
-export default function Login(): ReactElement {
+export default function LoginComponent(): ReactElement {
   const router = useRouter();
   const dispatch = useAppDispatch();
 

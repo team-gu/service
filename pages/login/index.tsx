@@ -2,7 +2,7 @@ import { ReactElement, useEffect } from 'react';
 
 import styled from 'styled-components';
 import { useAppSelector } from '@hooks';
-import { Login } from '@organisms';
+import { LoginComponent } from '@organisms';
 
 import { get } from '@utils/snippet';
 
@@ -15,7 +15,7 @@ const Title = styled.h1`
   }) => black};
 `;
 
-export default function SignIn(): ReactElement {
+export default function Login(): ReactElement {
   const { content } = useAppSelector(get('modal'));
 
   useEffect(() => {
@@ -24,7 +24,7 @@ export default function SignIn(): ReactElement {
 
   return (
     <>
-      <Login />
+      <LoginComponent />
     </>
   );
 }

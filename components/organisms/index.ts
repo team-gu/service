@@ -1,6 +1,6 @@
 import Modal from './Modal';
 import Navbar from './Navbar';
-import Login from './Login';
-import SignUp from './SignUp';
+import LoginComponent from './LoginComponent';
+import RegisterComponent from './RegisterComponent';
 
-export { Modal, Navbar, Login, SignUp };
+export { Modal, Navbar, LoginComponent, RegisterComponent };

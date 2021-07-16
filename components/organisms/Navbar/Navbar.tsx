@@ -81,7 +81,7 @@ export default function Navbar(): ReactElement {
             </div>
           ) : (
             <>
-              <Link href="signin">로그인</Link>
+              <Link href="login">로그인</Link>
               <Link href="register">회원가입 </Link>
             </>
           )}

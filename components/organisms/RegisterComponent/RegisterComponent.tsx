@@ -9,7 +9,7 @@ const Wrapper = styled.div`
   ${({ theme: { flexCol } }) => flexCol()}
 `;
 
-export default function SignUp(): ReactElement {
+export default function RegisterComponent(): ReactElement {
   const [form, setForm] = useState({
     userId: '',
     name: '',
