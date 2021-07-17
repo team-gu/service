@@ -1,7 +1,6 @@
 import React, { ReactElement } from 'react';
 import styled from 'styled-components';
-import { useAppDispatch } from '@hooks';
-import { removeModal } from '@store';
+import { useAppDispatch, removeModal } from '@store';
 
 interface ModalWrapperProps {
   modalName: string;

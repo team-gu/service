@@ -1,5 +1,5 @@
 import React from 'react';
-import { useAppSelector } from '@hooks';
+import { useModalState } from '@store';
 import { MODALS } from '@utils/constants';
 import ModalWrapper from './ModalWrapper';
 import AlertModal from './AlertModal';
@@ -9,11 +9,11 @@ interface ModalProps {
 }
 
 export default function Modal({ modalName }: ModalProps) {
-  const isShow = useAppSelector((state) => state.modal[modalName]);
+  const isShow = useModalState();
 
   return (
     <>
-      {isShow && (
+      {isShow[modalName] && (
         <ModalWrapper modalName={modalName}>
           {
             {
