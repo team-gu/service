@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useSelector, useDispatch } from 'react-redux';
+import { useModalState, useAppDispatch } from '@store';
 import { get } from '@utils/snippet';
 
 import { removeModal } from '@store';
@@ -29,8 +29,8 @@ const Wrapper = styled.div`
 `;
 
 export default function AlertModal({ modalName }: AlertModalProps) {
-  const dispatch = useDispatch();
-  const { content } = useSelector(get('modal'));
+  const dispatch = useAppDispatch();
+  const { content } = useModalState();
 
   return (
     <>

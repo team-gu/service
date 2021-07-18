@@ -3,10 +3,9 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
-import { useAppSelector, useAppDispatch } from '@hooks';
+import { useAuthState, useAppDispatch } from '@store';
 
 import { setLogout } from '@store';
-import { get } from '@utils/snippet';
 
 const Wrapper = styled.nav`
   width: 100%;
@@ -51,7 +50,7 @@ const Wrapper = styled.nav`
 export default function Navbar(): ReactElement {
   const dispatch = useAppDispatch();
   const router = useRouter();
-  const { name } = useAppSelector(get('auth'));
+  const { name } = useAuthState();
 
   return (
     <Wrapper>

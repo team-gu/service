@@ -1,4 +1,5 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
+import { useDispatch, useSelector } from 'react-redux';
 
 import modalReducer, {
   displayModal,
@@ -34,3 +35,12 @@ export {
 };
 export type AppDispatch = typeof store.dispatch;
 export type RootState = ReturnType<typeof store.getState>;
+
+export const useAppDispatch = () => useDispatch<AppDispatch>();
+
+export const useModalState = () =>
+  useSelector<RootState, RootState['modal']>((state) => state.modal);
+export const useAuthState = () =>
+  useSelector<RootState, RootState['auth']>((state) => state.auth);
+export const useUiState = () =>
+  useSelector<RootState, RootState['ui']>((state) => state.ui);
