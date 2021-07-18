@@ -1,7 +1,6 @@
 import React, { ReactElement } from 'react';
 import styled from 'styled-components';
-import { useAppSelector } from '@hooks';
-import { get } from '@utils/snippet';
+import { useUiState } from '@store';
 
 const Background = styled.div`
   position: fixed;
@@ -55,9 +54,7 @@ const Content = styled.div`
 `;
 
 export default function Spinner() {
-  const { isLoading } = useAppSelector(get('ui'));
-
-  console.log(isLoading);
+  const { isLoading } = useUiState();
 
   return (
     <>

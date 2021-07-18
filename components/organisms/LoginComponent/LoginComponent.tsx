@@ -4,8 +4,7 @@ import { useRouter } from 'next/router';
 import styled from 'styled-components';
 import { Button } from '@molecules';
 import { Input } from '@atoms';
-import { useAppDispatch } from '@hooks';
-import { setLogin } from '@store';
+import { useAppDispatch, setLogin } from '@store';
 
 const Wrapper = styled.div`
   width: 100%;
