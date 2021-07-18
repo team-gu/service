@@ -1,6 +1,5 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
-import { useDispatch, useSelector } from 'react-redux';
-
+import { useSelector, useDispatch } from 'react-redux';
 import modalReducer, {
   displayModal,
   removeModal,
@@ -13,11 +12,13 @@ import authReducer, {
   setLogout,
 } from './authSlice';
 import uiReducer, { setLoading } from './uiSlice';
+import stickyReducer, { setFixed, setOffset } from './stickySlice';
 
 const reducers = combineReducers({
   modal: modalReducer,
   auth: authReducer,
   ui: uiReducer,
+  sticky: stickyReducer,
 });
 
 const store = configureStore({ reducer: reducers });
@@ -32,6 +33,8 @@ export {
   setUserInfo,
   setLogout,
   setLoading,
+  setFixed,
+  setOffset,
 };
 export type AppDispatch = typeof store.dispatch;
 export type RootState = ReturnType<typeof store.getState>;
@@ -44,3 +47,5 @@ export const useAuthState = () =>
   useSelector<RootState, RootState['auth']>((state) => state.auth);
 export const useUiState = () =>
   useSelector<RootState, RootState['ui']>((state) => state.ui);
+export const useStickyState = () =>
+  useSelector<RootState, RootState['sticky']>((state) => state.sticky);
