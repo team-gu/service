@@ -12,6 +12,12 @@ const theme: DefaultTheme = {
     white: '#ffffff',
     gray: '#EEEEEE',
   },
+  layout: {
+    pageMaxWidth: '1440px',
+    pageContentWidth: '940px',
+    pcHeaderHeight: '104px',
+    mobileHeaderHeight: '72px',
+  },
   flexCol: (justifyContent = 'center', alignItems = 'center') => css`
     display: flex;
     flex-direction: column;

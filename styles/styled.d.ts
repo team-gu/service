@@ -8,6 +8,12 @@ declare module 'styled-components' {
       white: string;
       gray: string;
     };
+    layout: {
+      pageMaxWidth: string;
+      pageContentWidth: string;
+      pcHeaderHeight: string;
+      mobileHeaderHeight: string;
+    };
     flexCol: (
       justifyContent?: string,
       alignItems?: string,
