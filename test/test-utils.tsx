@@ -1,4 +1,4 @@
-import React, { FC, ReactElement } from 'react';
+import { FC, ReactElement } from 'react';
 import { render, RenderOptions } from '@testing-library/react';
 
 import { ThemeProvider } from 'styled-components';
@@ -12,7 +12,7 @@ const AllTheProviders: FC = ({ children }: any) => (
 
 const customRender = (
   ui: ReactElement,
-  options?: Omit<RenderOptions, 'queries'>
+  options?: Omit<RenderOptions, 'queries'>,
 ) => render(ui, { wrapper: AllTheProviders, ...options });
 
 export * from '@testing-library/react';

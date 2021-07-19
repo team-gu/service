@@ -1,4 +1,3 @@
-import React from 'react';
 import styled from 'styled-components';
 import { useModalState, useAppDispatch } from '@store';
 import { get } from '@utils/snippet';

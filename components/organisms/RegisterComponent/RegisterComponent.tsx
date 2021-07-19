@@ -1,4 +1,4 @@
-import { ReactElement, useState } from 'react';
+import { ReactElement, ChangeEvent, useState } from 'react';
 import styled from 'styled-components';
 import { Label, Button } from '@molecules';
 import { Input } from '@atoms';
@@ -30,7 +30,7 @@ export default function RegisterComponent(): ReactElement {
 
   const handleInput = ({
     target: { name, value },
-  }: React.ChangeEvent<HTMLInputElement>) => {
+  }: ChangeEvent<HTMLInputElement>) => {
     setForm({
       ...form,
       [name]: value,
@@ -50,7 +50,7 @@ export default function RegisterComponent(): ReactElement {
 
   const handleUserIdBlur = async ({
     target: { name, value },
-  }: React.ChangeEvent<HTMLInputElement>) => {
+  }: ChangeEvent<HTMLInputElement>) => {
     if (name === 'userId' && value === '') {
       return handleError(name, '필수 입력 항목입니다.');
     }
@@ -68,7 +68,7 @@ export default function RegisterComponent(): ReactElement {
 
   const handleGeneralBlur = ({
     target: { name, value },
-  }: React.ChangeEvent<HTMLInputElement>) => {
+  }: ChangeEvent<HTMLInputElement>) => {
     if (name === 'name' && value === '') {
       return handleError(name, '필수 입력 항목입니다.');
     }
@@ -78,7 +78,7 @@ export default function RegisterComponent(): ReactElement {
   // TODO: handleError 두번 요청시 비동기로 실행되는 문제?? 때문에 값이 덮어씌어짐
   const handlePasswordBlur = ({
     target: { name, value },
-  }: React.ChangeEvent<HTMLInputElement>) => {
+  }: ChangeEvent<HTMLInputElement>) => {
     if (name === 'password' && value === '') {
       handleError('passwordConfirm', '');
       return handleError(name, '필수 입력 항목입니다. ');
@@ -100,7 +100,7 @@ export default function RegisterComponent(): ReactElement {
 
   const handlePasswordConfirmBlur = ({
     target: { name, value },
-  }: React.ChangeEvent<HTMLInputElement>) => {
+  }: ChangeEvent<HTMLInputElement>) => {
     if (name === 'passwordConfirm' && value === '') {
       return handleError(name, '필수 입력 항목입니다. ');
     }

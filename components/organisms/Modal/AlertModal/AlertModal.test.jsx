@@ -1,4 +1,3 @@
-import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { render } from '@parse/test-utils';
 import { MODALS, EMAIL_EXIST } from '@utils/constants';

@@ -1,4 +1,3 @@
-import React from 'react';
 import { useModalState } from '@store';
 import { MODALS } from '@utils/constants';
 import ModalWrapper from './ModalWrapper';
