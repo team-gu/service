@@ -1,12 +1,12 @@
 /* eslint-disable react/display-name */
-import { ReactElement, forwardRef } from 'react';
+import { ReactElement, ChangeEvent, forwardRef } from 'react';
 import styled from 'styled-components';
 
 interface InputProps {
   type?: string;
   placeHolder?: string;
   // TODO: any 처리
-  func?: (() => React.ChangeEvent<HTMLInputElement>) | any;
+  func?: (() => ChangeEvent<HTMLInputElement>) | any;
   funcBlur?: (() => void) | any;
   width?: string;
   name?: string;

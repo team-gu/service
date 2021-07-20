@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import { ReactElement, ChangeEvent } from 'react';
 import styled from 'styled-components';
 import { useAppDispatch, removeModal } from '@store';
 
@@ -48,9 +48,9 @@ const Content = styled.div`
 export default function ModalWrapper({
   modalName,
   children,
-}: ModalWrapperProps) {
+}: ModalWrapperProps): ReactElement {
   const dispatch = useAppDispatch();
-  const handleCloseModal = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCloseModal = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target === e.currentTarget) {
       dispatch(removeModal({ modalName }));
     }

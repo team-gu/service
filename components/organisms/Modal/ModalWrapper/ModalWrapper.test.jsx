@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { render } from '@parse/test-utils';
 
 import ModalWrapper from './ModalWrapper';

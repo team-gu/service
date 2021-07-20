@@ -1,4 +1,4 @@
-import React from 'react';
+import { ReactElement } from 'react';
 import styled from 'styled-components';
 import { useModalState, useAppDispatch } from '@store';
 import { get } from '@utils/snippet';
@@ -28,7 +28,9 @@ const Wrapper = styled.div`
   }
 `;
 
-export default function AlertModal({ modalName }: AlertModalProps) {
+export default function AlertModal({
+  modalName,
+}: AlertModalProps): ReactElement {
   const dispatch = useAppDispatch();
   const { content } = useModalState();
 

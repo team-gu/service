@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import styled from 'styled-components';
 import { useUiState } from '@store';
 
@@ -53,7 +53,7 @@ const Content = styled.div`
   outline: none;
 `;
 
-export default function Spinner() {
+export default function Spinner(): ReactElement {
   const { isLoading } = useUiState();
 
   return (

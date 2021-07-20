@@ -1,5 +1,4 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React from 'react';
 import Label from './Label';
 import { Input } from '@atoms';
 export default {

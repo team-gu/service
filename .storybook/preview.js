@@ -8,7 +8,6 @@ export const parameters = {
   },
 };
 
-import React from 'react';
 import { addDecorator } from '@storybook/react';
 import GlobalStyles from '../styles/globalStyles';
 import { Provider } from 'react-redux';
