@@ -48,7 +48,7 @@ const Content = styled.div`
 export default function ModalWrapper({
   modalName,
   children,
-}: ModalWrapperProps) {
+}: ModalWrapperProps): ReactElement {
   const dispatch = useAppDispatch();
   const handleCloseModal = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target === e.currentTarget) {

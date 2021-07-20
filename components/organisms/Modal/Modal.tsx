@@ -1,3 +1,4 @@
+import { ReactElement } from 'react';
 import { useModalState } from '@store';
 import { MODALS } from '@utils/constants';
 import ModalWrapper from './ModalWrapper';
@@ -7,7 +8,7 @@ interface ModalProps {
   modalName: string;
 }
 
-export default function Modal({ modalName }: ModalProps) {
+export default function Modal({ modalName }: ModalProps): ReactElement {
   const isShow = useModalState();
 
   return (
