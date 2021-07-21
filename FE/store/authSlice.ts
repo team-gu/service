@@ -1,26 +1,37 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { postLoginApi, getUserInfo } from '@repository/baseRepository';
 import { NextRouter } from 'next/router';
 import { saveItem, removeItem } from '@utils/storage';
 import { setLoading } from '@store';
 
+interface AuthState {
+  userId: string;
+  name: string;
+  position: string;
+  department: string;
+}
+
+const initialState: AuthState = {
+  userId: '',
+  name: '',
+  position: '',
+  department: '',
+};
+
 const authReducer = createSlice({
   name: 'auth',
-  initialState: {
-    userId: '',
-    name: '',
-    position: '',
-    department: '',
-  },
+  initialState,
   reducers: {
-    setUser(state, { payload: { userId, name, position, department } }) {
-      return {
-        ...state,
-        userId,
-        name,
-        position,
-        department,
-      };
+    setUser(
+      state,
+      {
+        payload: { userId, name, position, department },
+      }: PayloadAction<AuthState>,
+    ) {
+      state.userId = userId;
+      state.name = name;
+      state.position = position;
+      state.department = department;
     },
   },
 });
