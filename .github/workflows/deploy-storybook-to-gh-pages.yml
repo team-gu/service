@@ -20,10 +20,10 @@ jobs:
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
 
       - name: Install dependencies
-        run: yarn install --prefer-offline --frozen-lockfile
+        run: cd FE && yarn install --prefer-offline --frozen-lockfile
 
       - name: Build Storybook
-        run: yarn build-storybook
+        run: cd FE && yarn build-storybook
 
       # extract branch name
       - name: Get branch name (merge)
@@ -44,7 +44,7 @@ jobs:
         if: env.BRANCH_NAME != 'master'
         with:
           github_token: ${{ secrets.GH_TOKEN }}
-          publish_dir: ./storybook-static
+          publish_dir: ./FE/storybook-static
           keep_files: true
           destination_dir: ${{ env.BRANCH_NAME }}
           commit_message: https://meet-in-ssafy.github.io/service/${{ env.BRANCH_NAME }}
@@ -54,6 +54,6 @@ jobs:
         if: env.BRANCH_NAME == 'master'
         with:
           github_token: ${{ secrets.GH_TOKEN }}
-          publish_dir: ./storybook-static
+          publish_dir: ./FE/storybook-static
           keep_files: true
           commit_message: https://meet-in-ssafy.github.io/service/
