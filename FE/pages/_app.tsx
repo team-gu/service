@@ -11,8 +11,8 @@ import store from '@store';
 import theme from '@styles/theme';
 
 const Wrapper = styled.section`
+  min-height: calc(100vh - 150px);
   margin-top: 100px;
-  margin-bottom: 50px;
 `;
 
 function MyApp({ Component, pageProps }: AppProps) {
