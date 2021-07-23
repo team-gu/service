@@ -27,13 +27,6 @@ const SessionContainer = styled.div`
   gap: 10px;
 `;
 
-const Item = styled.div`
-  background-color: gray;
-  border: solid 1px red;
-  width: 640px;
-  height: 480px;
-`;
-
 const OPENVIDU_SERVER_URL = 'https://3.38.39.72:443';
 // const OPENVIDU_SERVER_URL = 'https://localhost:4443';
 const OPENVIDU_SERVER_SECRET = 'MY_SECRET';
