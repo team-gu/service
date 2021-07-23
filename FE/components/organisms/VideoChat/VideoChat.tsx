@@ -31,7 +31,7 @@ const OPENVIDU_SERVER_URL = 'https://3.38.39.72:443';
 // const OPENVIDU_SERVER_URL = 'https://localhost:4443';
 const OPENVIDU_SERVER_SECRET = 'MY_SECRET';
 
-let OV: OpenVidu = null;
+let OV: OpenVidu;
 
 export default function VideoChat(): ReactElement {
   const [session, setSession] = useState<Session>();
@@ -104,7 +104,7 @@ export default function VideoChat(): ReactElement {
     })
 
     getToken()
-      .then((token) => {
+      .then((token: string) => {
         mySession
           .connect(token, { clientData: myUserName })
           .then(() => {
@@ -186,7 +186,7 @@ export default function VideoChat(): ReactElement {
   }
 
   const createToken = (sessionId: string) => {
-    return new Promise((resolve, reject) => {
+    return new Promise<string>((resolve, reject) => {
       let data = {};
       let headers = {
         'Authorization': 'Basic ' + btoa('OPENVIDUAPP:' + OPENVIDU_SERVER_SECRET),
