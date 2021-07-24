@@ -1,0 +1,19 @@
+name: Mirror and run GitLab CI
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Mirror + trigger CI
+      uses: SvanBoxel/gitlab-mirror-and-ci-action@master
+      with:
+        args: "https://lab.ssafy.com/s05-webmobile1-sub2/S05P12A202"
+      env:
+        GITLAB_HOSTNAME: "lab.ssafy.com"
+        GITLAB_USERNAME: "201704147"
+        GITLAB_PASSWORD: ${{ secrets.GITLAB_PASSWORD }}
+        GITLAB_PROJECT_ID: "55874"
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

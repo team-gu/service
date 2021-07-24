@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { respondTo } from '@styles/respondTo';
 
 export const Wrapper = styled.div`
+  min-height: 8400px;
   max-width: ${({
     theme: {
       layout: { pageMaxWidth },
@@ -20,6 +21,7 @@ export const Wrapper = styled.div`
   }
 
   ${respondTo.mobile`
+    min-height: 10100px;
     margin: ${({
       theme: {
         layout: { mobileHeaderHeight },

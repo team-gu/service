@@ -1,50 +1,60 @@
-import { ReactElement } from 'react';
+import { useState, ReactElement } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
 import { useAuthState, useAppDispatch } from '@store';
-
+import { useScrollPosition } from '@hooks/useWindow';
 import { setLogout } from '@store';
 
-const Wrapper = styled.nav`
-  width: 100%;
-  background-color: #fff;
+const Wrapper = styled.nav<{ isShowByScroll: Boolean }>`
   position: fixed;
-  top: 0;
+  top: ${({ isShowByScroll }) => (isShowByScroll ? 0 : '-100px')};
   left: 0;
-  right: 0;
+  width: 100%;
+  display: flex;
+  box-shadow: 0 0 10px 0 #000;
+  ${({ theme: { flexRow } }) => flexRow('space-between')};
+  transition: 0.5s;
+  padding: 10px 0 0 5%;
+  background-color: #fff;
   z-index: 100;
 
-  #fixed-bar-wrap {
-    width: 1024px;
-    margin: 0 auto;
-    padding: 16px 0;
+  .logo {
     position: relative;
-
-    ${({ theme: { flexRow } }) => flexRow('space-between')};
-    section {
-      a,
-      div {
-        cursor: pointer;
-
-        margin: 5px;
-        color: #4d5159;
-        text-decoration: none;
-      }
-    }
+    font-weight: 700;
+    color: #fff;
+    text-decoration: none;
+    font-size: 2em;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    transition: 0.5s;
   }
 
-  #fixed-bar #fixed-bar-wrap #fixed-bar-search {
-    position: absolute;
-    left: 152px;
-    top: 16px;
-    border-radius: 5px;
-    border: solid 1px #e9ecef;
-    text-decoration: none;
-    padding: 0 1.6rem;
-    height: 40px;
-    box-sizing: border-box;
+  ul {
+    position: relative;
+    display: flex;
+    padding-right: 10%;
+    ${({ theme: { flexRow } }) => flexRow()};
+
+    li {
+      position: relative;
+      list-style: none;
+
+      a {
+        position: relative;
+        margin: 0 15px;
+        color: black;
+        text-decoration: none;
+        letter-spacing: 2px;
+        font-weight: 500;
+        transition: 0.5s;
+
+        &:hover {
+          color: red;
+        }
+      }
+    }
   }
 `;
 export default function Navbar(): ReactElement {
@@ -52,40 +62,59 @@ export default function Navbar(): ReactElement {
   const router = useRouter();
   const { name } = useAuthState();
 
+  const [hideOnScroll, setHideOnScroll] = useState(true);
+
+  useScrollPosition(
+    ({ prevPos, currPos }) => {
+      const isShow = currPos.y > prevPos.y;
+      if (isShow !== hideOnScroll) setHideOnScroll(isShow);
+    },
+    [hideOnScroll],
+    null,
+    false,
+    100,
+  );
+
   return (
-    <Wrapper>
-      <div id="fixed-bar-wrap">
-        <h1 id="fixed-bar-logo-title">
-          <Link href="/">
-            <a>
-              <Image
-                className="fixed-logo"
-                alt="당근마켓"
-                src="/logo.svg"
-                width={100}
-                height={50}
-              />
-            </a>
-          </Link>
-        </h1>
-        <section>
-          {name ? (
-            <div
-              onClick={() => {
-                dispatch(setLogout());
-                router.push('/');
-              }}
-            >
-              로그아웃
-            </div>
-          ) : (
-            <>
-              <Link href="login">로그인</Link>
-              <Link href="register">회원가입 </Link>
-            </>
-          )}
-        </section>
+    <Wrapper isShowByScroll={hideOnScroll}>
+      <div className="logo">
+        <Link href="/">
+          <a>
+            <Image
+              className="fixed-logo"
+              alt="당근마켓"
+              src="/logo.svg"
+              width={100}
+              height={50}
+            />
+          </a>
+        </Link>
       </div>
+      <ul>
+        {name ? (
+          <li
+            onClick={() => {
+              dispatch(setLogout());
+              router.push('/');
+            }}
+          >
+            로그아웃
+          </li>
+        ) : (
+          <>
+            <li>
+              <Link href="login">
+                <a>로그인</a>
+              </Link>
+            </li>
+            <li>
+              <Link href="register">
+                <a>회원가입</a>
+              </Link>
+            </li>
+          </>
+        )}
+      </ul>
     </Wrapper>
   );
 }
