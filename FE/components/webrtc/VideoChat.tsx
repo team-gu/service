@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import axios from 'axios';
 
 import { Text } from '@atoms';
+import { VideoRoomConfigModal } from 'components/webrtc';
 import UserVideoComponent from './UserVideoComponent';
 import { useAuthState } from '@store';
 
@@ -66,7 +67,19 @@ export default function VideoChat(): ReactElement {
     }
   }
 
+  const handlerConfigModalCloseBtn = () => {
+    setIsConfigModalShow(false);
+    // TODO: 화상채팅 설정 취소 -> 이전페이지로 이동
+    console.log("Config cancel. Redirect previus page.");
+  }
+
+  const handlerJoinBtn = () => {
+    joinSession();
+  }
+
   const joinSession = () => {
+    setIsConfigModalShow(false);
+
     import('openvidu-browser')
       .then((OpenViduModule) => {
         OV = new OpenViduModule.OpenVidu();
@@ -220,6 +233,13 @@ export default function VideoChat(): ReactElement {
 
           </SessionContainer>
         </>
+      )}
+      {isConfigModalShow && (
+        <VideoRoomConfigModal
+          sessionTitle={sessionTitle}
+          handlerJoin={handlerJoinBtn}
+          handlerClose={handlerConfigModalCloseBtn}
+        />
       )}
     </Wrapper>
   );
