@@ -1,15 +1,19 @@
 import { ReactElement } from 'react';
 import styled from 'styled-components';
 import ModalWrapper from '../organisms/Modal/ModalWrapper';
+import { OpenVidu, StreamManager, Device } from 'openvidu-browser';
 
 import { Button, Label } from '@molecules';
 import { Icon, Input } from '@atoms';
+import { OpenViduVideoComponent } from 'components/webrtc';
 
 interface VideoRoomConfigModalProps {
+  OV: OpenVidu;
   sessionTitle: string;
   // TODO: handler type
   handlerClose: any;
   handlerJoin: any;
+  streamManager: StreamManager;
 }
 
 const SessionTitle = styled.span`
@@ -39,7 +43,6 @@ const GridContainer = styled.div`
     grid-area: camera;
     width: 320px;
     height: 240px;
-    background-color: black;
     margin: 10px;
   }
 
@@ -86,11 +89,12 @@ const IconsAndInputs = styled.div`
 
 export default function VideoRoomConfigModal({
   sessionTitle,
+  streamManager,
   handlerClose,
   handlerJoin
 }: VideoRoomConfigModalProps): ReactElement {
   return (
-    <ModalWrapper modalName="TEST">
+    <ModalWrapper modalName="videoConfigModal">
       <GridContainer>
         <div className="modal-header">
           <SessionTitle>
@@ -102,6 +106,9 @@ export default function VideoRoomConfigModal({
         </CloseBtn>
 
         <div className="self-video">
+          {streamManager !== undefined && (
+            <OpenViduVideoComponent streamManager={streamManager} />
+          )}
         </div>
 
         <div className="video-config">

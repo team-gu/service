@@ -54,6 +54,29 @@ export default function VideoChat(): ReactElement {
     }
   });
 
+  useEffect(() => {
+    // Dynamic import module
+    import('openvidu-browser')
+      .then((OpenViduModule) => {
+        OV = new OpenViduModule.OpenVidu();
+        let publisher = OV.initPublisher('', {  // targetElement is empty string
+          audioSource: undefined,               // 오디오. 기본값 마이크
+          videoSource: undefined,               // 비디오. 기본값 웹캠
+          publishAudio: false,                  // 오디오 킬 건지
+          publishVideo: true,                   // 비디오 킬 건지
+          resolution: '320x240',                // 해상도
+          frameRate: 30,                        // 프레임
+          insertMode: 'APPEND',                 // How the video is inserted in the target element 'video-container'
+          mirror: false,                        // 좌우반전
+        });
+
+        setPublisher(publisher);
+      })
+      .catch((error) => {
+        console.log('openvidu import error: ', error.code, error.message);
+      });
+  }, []);
+
   const onbeforeunload = () => {
     leaveSession();
   }
@@ -68,26 +91,15 @@ export default function VideoChat(): ReactElement {
   }
 
   const handlerConfigModalCloseBtn = () => {
+    setPublisher(undefined);
     setIsConfigModalShow(false);
     // TODO: 화상채팅 설정 취소 -> 이전페이지로 이동
     console.log("Config cancel. Redirect previus page.");
   }
 
   const handlerJoinBtn = () => {
-    joinSession();
-  }
-
-  const joinSession = () => {
     setIsConfigModalShow(false);
-
-    import('openvidu-browser')
-      .then((OpenViduModule) => {
-        OV = new OpenViduModule.OpenVidu();
-        setSession(OV.initSession());
-      })
-      .catch((error) => {
-        console.log('openvidu import error: ', error.code, error.message);
-      });
+    setSession(OV.initSession());
   }
 
   // 'session' hook
@@ -234,9 +246,11 @@ export default function VideoChat(): ReactElement {
           </SessionContainer>
         </>
       )}
-      {isConfigModalShow && (
+      {isConfigModalShow && publisher !== undefined && (
         <VideoRoomConfigModal
+          OV={OV}
           sessionTitle={sessionTitle}
+          streamManager={publisher}
           handlerJoin={handlerJoinBtn}
           handlerClose={handlerConfigModalCloseBtn}
         />
