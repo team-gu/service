@@ -4,13 +4,14 @@ import styled from 'styled-components';
 interface IconProps {
   iconName: string;
   size?: string;
-  color: string;
+  color?: string;
 }
 
 const Wrapper = styled.i<{ size: string; color: string }>`
   font-size: ${({ size }) => size};
   color: ${({ color }) => color};
   cursor: default;
+  user-select: none;
 `;
 
 export default function Icon({

@@ -11,19 +11,21 @@ const NameTagWrapper = styled.div`
   text-align: center;
 `;
 
-export default function UserVideoComponent({ streamManager }: UserVideoComponentProps): ReactElement {
+export default function UserVideoComponent({
+  streamManager,
+}: UserVideoComponentProps): ReactElement {
   const getNicknameTag = () => {
     return JSON.parse(streamManager.stream.connection.data).clientData;
-  }
+  };
 
   return (
     <div>
-      {streamManager !== undefined ? (
+      {streamManager !== undefined && (
         <div>
           <OpenViduVideoComponent streamManager={streamManager} />
           <NameTagWrapper>{getNicknameTag()}</NameTagWrapper>
         </div>
-      ) : null}
+      )}
     </div>
   );
 }
