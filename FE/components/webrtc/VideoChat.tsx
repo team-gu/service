@@ -1,13 +1,11 @@
 import { ReactElement, useState, useEffect } from 'react';
 import { OpenVidu, Session, StreamManager } from 'openvidu-browser';
-import { useAuthState } from '@store';
-import { Text } from '@atoms';
-import { Button } from '@molecules';
-
 import styled from 'styled-components';
 import axios from 'axios';
 
+import { Text } from '@atoms';
 import UserVideoComponent from './UserVideoComponent';
+import { useAuthState } from '@store';
 
 const Wrapper = styled.div`
   ${({ theme: { flexCol } }) => flexCol()}
@@ -37,6 +35,7 @@ export default function VideoChat(): ReactElement {
   const [session, setSession] = useState<Session>();
   const [publisher, setPublisher] = useState<StreamManager>();
   const [subscribers, setSubscribers] = useState<StreamManager[]>([]);
+  const [isConfigModalShow, setIsConfigModalShow] = useState<boolean>(true);
 
   const { name } = useAuthState();
   const myUserName = name ? name : 'MeetInSsafy';
@@ -82,9 +81,9 @@ export default function VideoChat(): ReactElement {
   useEffect(() => {
     if (!session)
       return;
-    
+
     let mySession = session;
-        
+
     // 어떤 새로운 스트림이 도착하면
     mySession.on('streamCreated', (event: any) => {
       let sub = mySession.subscribe(event.stream, ''); // targetElement(second param) ignored.
@@ -132,7 +131,7 @@ export default function VideoChat(): ReactElement {
   const leaveSession = () => {
     const mySession = session;
     if (mySession) {
-        mySession.disconnect();
+      mySession.disconnect();
     }
 
     OV = null;
@@ -204,37 +203,24 @@ export default function VideoChat(): ReactElement {
 
   return (
     <Wrapper>
-      {session === undefined ? (
-        <Join>
-          <Text text={sessionTitle} fontSetting='n36m' className="session-title"/>
-          
-          {publisher !== undefined ? (
-            <UserVideoComponent streamManager={publisher} />
-          ) : null}
-          <Text text={myUserName} fontSetting='n20m'/>
-
-          <Button title="세션 참여" func={joinSession} />
-        </Join>
-      ) : null}
-      {session !== undefined ? (
+      {session !== undefined && (
         <>
           <Text text={sessionTitle} fontSetting='n26b'></Text>
           <SessionContainer>
-            {publisher !== undefined ? (
-              <div className="stream-container col-md-6 col-xs-6">
+            {publisher !== undefined && (
+              <div>
                 <UserVideoComponent streamManager={publisher} />
               </div>
-            ) : null}
+            )}
             {subscribers.map((sub, i) => (
-              <div key={i} className="stream-container col-md-6 col-xs-6">
+              <div key={i}>
                 <UserVideoComponent streamManager={sub} />
               </div>
             ))}
 
           </SessionContainer>
         </>
-      ) : null}
-      
+      )}
     </Wrapper>
   );
 }
