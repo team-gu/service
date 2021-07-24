@@ -2,8 +2,8 @@ import { ReactElement } from 'react';
 import styled from 'styled-components';
 import ModalWrapper from '../Modal/ModalWrapper';
 
-import { Button } from '@molecules';
-import { Icon } from '@atoms';
+import { Button, Label } from '@molecules';
+import { Icon, Input } from '@atoms';
 
 interface VideoRoomConfigModalProps {
   sessionTitle: string;
@@ -57,6 +57,27 @@ const CloseBtn = styled.span`
   position: absolute;
   right: 10px;
   top: 10px;
+
+  i {
+    font-size: 30px;
+  }
+`;
+
+const IconsAndInputs = styled.div`
+  display: grid;
+  grid-template-columns: 60px auto;
+  grid-template-rows: 1fr 1fr 1fr;
+  align-items: center;
+
+  input {
+    margin: 0;
+    width: 100%;
+  }
+
+  i {
+    justify-self: center;
+    font-size: 32px;
+  }
 `;
 
 export default function VideoRoomConfigModal({
@@ -79,33 +100,38 @@ export default function VideoRoomConfigModal({
           </SessionTitle>
         </div>
         <CloseBtn onClick={handleClickClose}>
-          <Icon iconName="highlight_off" size="80px" color="indianred" />
+          <Icon iconName="highlight_off" color="indianred" />
         </CloseBtn>
+        
         <div className="self-video">
-          
         </div>
+
         <div className="video-config">
-          <div>
-            <span><Icon iconName="account_circle" size="80px" color="gray" /></span>
-            <label htmlFor="nickname">Nickname</label>
-            <input type="text" name="nickname"/>
-          </div>
-          <div>
-            <span><Icon iconName="mic" size="80px" color="gray" /></span>
-            <label htmlFor="mic">Microphone</label>
-            <select name="mic">
-              <option value="none">None</option>
-              <option value="mic1">Mic1</option>
-            </select>
-          </div>
-          <div>
-            <span><Icon iconName="videocam" size="80px" color="gray" /></span>
-            <label htmlFor="camera">Camera</label>
-            <select name="camera">
-              <option value="none">None</option>
-              <option value="cam1">Cam1</option>
-            </select>
-          </div>
+          <IconsAndInputs>
+            <Icon iconName="account_circle" color="gray" />
+            <Label text="Nickname">
+              <Input 
+                type="text"
+                value="meet-in-ssafy"
+                width="230px"
+                readOnly={true}
+              />
+            </Label>
+            <Icon iconName="mic" color="gray" />
+            <Label text="Microphone">
+              <select name="mic">
+                <option value="none">None</option>
+                <option value="mic1">Mic1</option>
+              </select>
+            </Label>
+            <Icon iconName="videocam" color="gray" />
+            <Label text="Camera">
+              <select name="camera">
+                <option value="none">None</option>
+                <option value="cam1">Cam1</option>
+              </select>
+            </Label>
+          </IconsAndInputs>
         </div>
         <div className="modal-footer">
           <Button title="JOIN" func={handleClickJoin}/>
