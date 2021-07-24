@@ -9,7 +9,7 @@ import { setLogout } from '@store';
 
 const Wrapper = styled.nav<{ isShowByScroll: Boolean }>`
   position: fixed;
-  top: ${(props) => (props.isShowByScroll ? 0 : '-100px')};
+  top: ${({ isShowByScroll }) => (isShowByScroll ? 0 : '-100px')};
   left: 0;
   width: 100%;
   display: flex;
