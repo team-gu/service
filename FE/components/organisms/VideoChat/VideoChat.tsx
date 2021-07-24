@@ -1,12 +1,11 @@
 import { ReactElement, useState, useEffect } from 'react';
 import { OpenVidu, Session, StreamManager } from 'openvidu-browser';
-import { useAuthState } from '@store';
-import { Text } from '@atoms';
-import { Button } from '@molecules';
-
 import styled from 'styled-components';
 import axios from 'axios';
 
+import { useAuthState } from '@store';
+import { Text } from '@atoms';
+import { Button } from '@molecules';
 import UserVideoComponent from './UserVideoComponent';
 
 const Wrapper = styled.div`
@@ -217,7 +216,7 @@ export default function VideoChat(): ReactElement {
 
   return (
     <Wrapper>
-      {session === undefined ? (
+      {session === undefined && (
         <Join>
           <Text
             text={sessionTitle}
@@ -232,16 +231,16 @@ export default function VideoChat(): ReactElement {
 
           <Button title="세션 참여" func={joinSession} />
         </Join>
-      ) : null}
-      {session !== undefined ? (
+      )}
+      {session !== undefined && (
         <>
           <Text text={sessionTitle} fontSetting="n26b"></Text>
           <SessionContainer>
-            {publisher !== undefined ? (
+            {publisher !== undefined && (
               <div className="stream-container col-md-6 col-xs-6">
                 <UserVideoComponent streamManager={publisher} />
               </div>
-            ) : null}
+            )}
             {subscribers.map((sub, i) => (
               <div key={i} className="stream-container col-md-6 col-xs-6">
                 <UserVideoComponent streamManager={sub} />
@@ -249,7 +248,7 @@ export default function VideoChat(): ReactElement {
             ))}
           </SessionContainer>
         </>
-      ) : null}
+      )}
     </Wrapper>
   );
 }
