@@ -4,6 +4,7 @@ import Footer from './Footer';
 import LineBackground from './LineBackground';
 import LoginComponent from './LoginComponent';
 import RegisterComponent from './RegisterComponent';
+import VideoChat from './VideoChat';
 
 export {
   Modal,
@@ -12,4 +13,5 @@ export {
   LineBackground,
   LoginComponent,
   RegisterComponent,
+  VideoChat,
 };
