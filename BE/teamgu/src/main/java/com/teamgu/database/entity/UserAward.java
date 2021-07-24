@@ -16,10 +16,10 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class UserAward {
+public class UserAward extends BaseEntity{
 	
-	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-	int id;
+//	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+//	int id;
 	@Column(length = 45)
 	String name;
 	@Column(length = 45)

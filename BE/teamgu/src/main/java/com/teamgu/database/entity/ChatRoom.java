@@ -20,11 +20,11 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class ChatRoom {
+public class ChatRoom extends BaseEntity{
 
-	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "chatRoomId")
-	int id;
+//	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+//	@Column(name = "chatRoomId")
+//	int id;
 	
 	@Column(length = 45)
 	String title;
