@@ -5,7 +5,9 @@ interface OpenViduVideoComponentProps {
   streamManager: StreamManager;
 }
 
-export default function UserVideoComponent({ streamManager }: OpenViduVideoComponentProps): ReactElement {
+export default function UserVideoComponent({
+  streamManager,
+}: OpenViduVideoComponentProps): ReactElement {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -15,7 +17,5 @@ export default function UserVideoComponent({ streamManager }: OpenViduVideoCompo
     }
   });
 
-  return (
-    <video autoPlay={true} ref={videoRef} />
-  );
+  return <video autoPlay={true} ref={videoRef} />;
 }
