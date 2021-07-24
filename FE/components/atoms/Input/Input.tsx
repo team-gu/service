@@ -12,6 +12,8 @@ interface InputProps {
   name?: string;
   maxLength?: number;
   error?: string;
+  readOnly?: boolean;
+  value?: string;
 }
 
 const Wrapper = styled.div<{ width: string; isSuccess: string | undefined }>`
@@ -42,6 +44,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       name,
       maxLength,
       error,
+      readOnly = false,
+      value,
     }: InputProps,
     ref,
   ): ReactElement => {
@@ -58,6 +62,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           onBlur={funcBlur}
           name={name}
           maxLength={maxLength}
+          readOnly={readOnly}
+          value={value}
         />
         {error?.split('/')[0] !== '' && <div>{error?.split('/')[0]}</div>}
       </Wrapper>
