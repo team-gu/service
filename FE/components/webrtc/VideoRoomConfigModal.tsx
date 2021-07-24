@@ -5,7 +5,7 @@ import { OpenVidu, StreamManager, Device } from 'openvidu-browser';
 
 import { Button, Label } from '@molecules';
 import { Icon, Input } from '@atoms';
-import { OpenViduVideoComponent } from 'components/webrtc';
+import { OpenViduVideoComponent } from '../webrtc';
 
 interface VideoRoomConfigModalProps {
   OV: OpenVidu;

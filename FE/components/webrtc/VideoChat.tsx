@@ -4,8 +4,7 @@ import styled from 'styled-components';
 import axios from 'axios';
 
 import { Text } from '@atoms';
-import { VideoRoomConfigModal } from 'components/webrtc';
-import { UserVideoComponent } from 'components/webrtc';
+import { VideoRoomConfigModal, UserVideoComponent } from '../webrtc';
 import { useAuthState } from '@store';
 
 const Wrapper = styled.div`
