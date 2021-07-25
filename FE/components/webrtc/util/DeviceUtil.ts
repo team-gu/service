@@ -68,19 +68,19 @@ export class DevicesUtil {
     this.log.d('Camera selected', this.camSelected);
   }
 
-  getCamSelected(): IDevice | undefined {
+  getCamSelected(): IDevice {
     if (this.cameras.length === 0) {
       this.log.e('No video devices found!');
-      return;
+      return { label: '', device: '' };
     }
 
     return this.camSelected || this.cameras[0];
   }
 
-  getMicSelected(): IDevice | undefined {
+  getMicSelected(): IDevice {
     if (this.microphones.length === 0) {
       this.log.e('No audio devices found!');
-      return;
+      return { label: '', device: '' };
     }
 
     return this.micSelected || this.microphones[0];
