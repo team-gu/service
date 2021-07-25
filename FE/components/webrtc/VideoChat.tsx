@@ -31,8 +31,8 @@ interface UserDevice {
   cam: string
 }
 
-const OPENVIDU_SERVER_URL = 'https://3.38.39.72:443';
-// const OPENVIDU_SERVER_URL = 'https://localhost:4443';
+// const OPENVIDU_SERVER_URL = 'https://3.38.39.72:4443';
+const OPENVIDU_SERVER_URL = 'https://localhost:4443';
 const OPENVIDU_SERVER_SECRET = 'MY_SECRET';
 
 export default function VideoChat(): ReactElement {
