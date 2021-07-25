@@ -8,6 +8,15 @@ export const parameters = {
   },
 };
 
+import * as nextImage from 'next/image';
+
+Object.defineProperty(nextImage, 'default', {
+  configurable: true,
+  value: (props) => {
+    return <img {...props} />;
+  },
+});
+
 import { addDecorator } from '@storybook/react';
 import GlobalStyles from '../styles/globalStyles';
 import { Provider } from 'react-redux';
