@@ -1,4 +1,4 @@
-import { MouseEventHandler, ReactElement, useEffect, useState } from 'react';
+import { MouseEventHandler, ReactElement, ChangeEvent, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import ModalWrapper from '../organisms/Modal/ModalWrapper';
 import { OpenVidu, StreamManager } from 'openvidu-browser';
@@ -103,20 +103,15 @@ export default function VideoRoomConfigModal({
 
   const [cameras, setCameras] = useState<IDevice[]>();
   const [microphones, setMicrophones] = useState<IDevice[]>();
-  const [camSelected, setCamSelected] = useState<IDevice>();
-  const [micSelected, setMicSelected] = useState<IDevice>();
+  const [camSelected, setCamSelected] = useState<string>();
+  const [micSelected, setMicSelected] = useState<string>();
   const [streamManager, setStreamManager] = useState<StreamManager>();
 
   useEffect(() => {
     (async function init() {
       loggerUtil = new LoggerUtil();
       util = new Util();
-
-      devicesUtil = new DevicesUtil(
-        OV,
-        loggerUtil,
-        util
-      );
+      devicesUtil = new DevicesUtil(OV, loggerUtil, util);
 
       await devicesUtil.initDevices();
       setDevicesInfo();
@@ -131,8 +126,33 @@ export default function VideoRoomConfigModal({
     setCameras([...cams]);
   }
 
-  const handleCameraChange = () => {
-    // TODO: 선택한 카메라 미리보기
+  const handleCameraChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    setCamSelected(event.target.value);
+  }
+
+  const handleMicrophoneChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    setMicSelected(event.target.value);
+  }
+
+  // Publish every time the camera changes
+  useEffect(() => {
+    setPublisher();
+  }, [camSelected]);
+
+  const setPublisher = () => {
+    const micIsNone = !micSelected || micSelected === '';
+    const camIsNone = !camSelected || camSelected === '';
+
+    const localUserCameraStream = OV.initPublisher('', {
+      audioSource: micIsNone ? undefined : micSelected,
+      videoSource: camIsNone ? undefined : camSelected,
+      publishAudio: micIsNone ? false : true,
+      publishVideo: camIsNone ? false : true,
+      resolution: '320x240',
+      frameRate: 30,
+      mirror: false,
+    });
+    setStreamManager(localUserCameraStream);
   }
 
   return (
@@ -166,9 +186,9 @@ export default function VideoRoomConfigModal({
             </Label>
             <Icon iconName="mic" color="gray" />
             <Label text="Microphone">
-              <select>
+              <select onChange={handleMicrophoneChange}>
                 {microphones?.map((mic, i) => (
-                  <option key={i} value={mic.label}>{mic.label}</option>
+                  <option key={i} value={mic.device}>{mic.label}</option>
                 ))}
               </select>
             </Label>
@@ -176,7 +196,7 @@ export default function VideoRoomConfigModal({
             <Label text="Camera">
               <select onChange={handleCameraChange}>
                 {cameras?.map((cam, i) => (
-                  <option key={i} value={cam.label}>{cam.label}</option>
+                  <option key={i} value={cam.device}>{cam.label}</option>
                 ))}
               </select>
             </Label>
