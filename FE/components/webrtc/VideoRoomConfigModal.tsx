@@ -16,8 +16,7 @@ interface VideoRoomConfigModalProps {
   OV: OpenVidu;
   sessionTitle: string;
   handlerClose: MouseEventHandler;
-  // TODO: Button 컴포넌트 func 타입 변경 MouseEventHandler
-  handlerJoin: any;
+  handlerJoin: MouseEventHandler;
 }
 
 const SessionTitle = styled.span`
