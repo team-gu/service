@@ -1,5 +1,6 @@
 import { ReactElement, useState, useEffect } from 'react';
 import { OpenVidu, Session, StreamManager } from 'openvidu-browser';
+import { useRouter } from 'next/router';
 import styled from 'styled-components';
 import axios from 'axios';
 
@@ -35,7 +36,10 @@ const OPENVIDU_SERVER_URL = 'https://localhost:4443';
 const OPENVIDU_SERVER_SECRET = 'MY_SECRET';
 
 export default function VideoChat(): ReactElement {
-  // TODO: OV의 초기값을 주고 싶은데, OpenVidu를 동적으로 로딩하다보니 그럴 수 없다. 
+  const router = useRouter();
+
+  // TODO: OV의 초기값을 주고 싶은데, OpenVidu를 동적으로 로딩하다보니 그럴 수 없다.
+  // 초기값을 부여하면 타입 에러가 없어질 것이다.
   const [OV, setOV] = useState<OpenVidu>();
   const [session, setSession] = useState<Session>();
   const [publisher, setPublisher] = useState<StreamManager>();
@@ -90,8 +94,8 @@ export default function VideoChat(): ReactElement {
   const handlerConfigModalCloseBtn = () => {
     setPublisher(undefined);
     setIsConfigModalShow(false);
-    // TODO: 화상채팅 설정 취소 -> 이전페이지로 이동
-    console.log("Config cancel. Redirect previus page.");
+    console.log("Config cancel. Redirect previous page.");
+    router.back();
   }
 
   const handlerJoinBtn = (micSelected: string, camSelected: string) => {

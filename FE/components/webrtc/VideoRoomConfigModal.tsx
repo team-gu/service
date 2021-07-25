@@ -140,6 +140,8 @@ export default function VideoRoomConfigModal({
 
   // Publish every time the camera changes
   useEffect(() => {
+    // TODO: 카메라가 필요없는 None을 선택해도 캠 사용 불빛이 꺼지지 않는다.
+
     if (camSelected || camSelected === '')
       publishUserCameraStream();
   }, [camSelected]);
