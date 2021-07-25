@@ -104,7 +104,7 @@ export default function VideoChat(): ReactElement {
       cam: camSelected,
     });
     setIsConfigModalShow(false);
-    setSession(OV.initSession());
+    setSession(OV?.initSession());
   }
 
   // 'session' hook
@@ -135,6 +135,9 @@ export default function VideoChat(): ReactElement {
     getToken()
       .then((token: string) => {
         mySession.connect(token, { clientData: myUserName }).then(() => {
+          if (!OV)
+            return;
+
           const micIsNone = !userDevice.mic || userDevice.mic === '';
           const camIsNone = !userDevice.cam || userDevice.cam === '';
 
@@ -168,7 +171,7 @@ export default function VideoChat(): ReactElement {
       mySession.disconnect();
     }
 
-    OV = null;
+    setOV(undefined);
     setSession(undefined);
     setSubscribers([]);
     setPublisher(undefined);
