@@ -89,6 +89,10 @@ const IconsAndInputs = styled.div`
     justify-self: center;
     font-size: 32px;
   }
+
+  select {
+    width: 250px;
+  }
 `;
 
 export default function VideoRoomConfigModal({
