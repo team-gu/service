@@ -203,7 +203,7 @@ export default function VideoRoomConfigModal({
           </IconsAndInputs>
         </div>
         <div className="modal-footer">
-          <Button title="JOIN" func={handlerJoin} />
+          <Button title="JOIN" func={() => handlerJoin(micSelected, camSelected)} />
         </div>
 
       </GridContainer>

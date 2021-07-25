@@ -25,16 +25,23 @@ const SessionContainer = styled.div`
   gap: 10px;
 `;
 
-const OPENVIDU_SERVER_URL = 'https://3.38.39.72:443';
-// const OPENVIDU_SERVER_URL = 'https://localhost:4443';
+interface UserDevice {
+  mic: string,
+  cam: string
+}
+
+// const OPENVIDU_SERVER_URL = 'https://3.38.39.72:443';
+const OPENVIDU_SERVER_URL = 'https://localhost:4443';
 const OPENVIDU_SERVER_SECRET = 'MY_SECRET';
 
 export default function VideoChat(): ReactElement {
+  // TODO: OV의 초기값을 주고 싶은데, OpenVidu를 동적으로 로딩하다보니 그럴 수 없다. 
   const [OV, setOV] = useState<OpenVidu>();
   const [session, setSession] = useState<Session>();
   const [publisher, setPublisher] = useState<StreamManager>();
   const [subscribers, setSubscribers] = useState<StreamManager[]>([]);
   const [isConfigModalShow, setIsConfigModalShow] = useState<boolean>(true);
+  const [userDevice, setUserDevice] = useState<UserDevice>({ mic: '', cam: '' });
 
   const { name } = useAuthState();
   const myUserName = name ? name : 'MeetInSsafy';
@@ -87,7 +94,11 @@ export default function VideoChat(): ReactElement {
     console.log("Config cancel. Redirect previus page.");
   }
 
-  const handlerJoinBtn = () => {
+  const handlerJoinBtn = (micSelected: string, camSelected: string) => {
+    setUserDevice({
+      mic: micSelected,
+      cam: camSelected,
+    });
     setIsConfigModalShow(false);
     setSession(OV.initSession());
   }
@@ -102,7 +113,6 @@ export default function VideoChat(): ReactElement {
     // 어떤 새로운 스트림이 도착하면
     mySession.on('streamCreated', (event: any) => {
       let sub = mySession.subscribe(event.stream, ''); // targetElement(second param) ignored.
-      console.log(sub);
       let subs = subscribers;
       subs.push(sub);
       setSubscribers([...subs]);
@@ -121,16 +131,17 @@ export default function VideoChat(): ReactElement {
     getToken()
       .then((token: string) => {
         mySession.connect(token, { clientData: myUserName }).then(() => {
+          const micIsNone = !userDevice.mic || userDevice.mic === '';
+          const camIsNone = !userDevice.cam || userDevice.cam === '';
+
           let publisher = OV.initPublisher('', {
-            // targetElement is empty string
-            audioSource: undefined, // 오디오. 기본값 마이크
-            videoSource: undefined, // 비디오. 기본값 웹캠
-            publishAudio: false, // 오디오 킬 건지
-            publishVideo: true, // 비디오 킬 건지
-            resolution: '640x320', // 해상도
-            frameRate: 30, // 프레임
-            insertMode: 'APPEND', // How the video is inserted in the target element 'video-container'
-            mirror: false, // 좌우반전
+            audioSource: micIsNone ? undefined : userDevice.mic,
+            videoSource: camIsNone ? undefined : userDevice.cam,
+            publishAudio: micIsNone ? false : true,
+            publishVideo: camIsNone ? false : true,
+            resolution: '640x320',
+            frameRate: 30,
+            mirror: false,
           });
 
           mySession.publish(publisher);
@@ -251,7 +262,7 @@ export default function VideoChat(): ReactElement {
           </>
         )}
       {
-        isConfigModalShow !== undefined && OV && (
+        isConfigModalShow && OV && (
           <VideoRoomConfigModal
             OV={OV}
             sessionTitle={sessionTitle}
