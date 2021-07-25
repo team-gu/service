@@ -29,9 +29,8 @@ const OPENVIDU_SERVER_URL = 'https://3.38.39.72:443';
 // const OPENVIDU_SERVER_URL = 'https://localhost:4443';
 const OPENVIDU_SERVER_SECRET = 'MY_SECRET';
 
-let OV: OpenVidu;
-
 export default function VideoChat(): ReactElement {
+  const [OV, setOV] = useState<OpenVidu>();
   const [session, setSession] = useState<Session>();
   const [publisher, setPublisher] = useState<StreamManager>();
   const [subscribers, setSubscribers] = useState<StreamManager[]>([]);
@@ -53,27 +52,19 @@ export default function VideoChat(): ReactElement {
     };
   });
 
+  // Dynamic module import
   useEffect(() => {
-    // Dynamic import module
-    import('openvidu-browser')
-      .then((OpenViduModule) => {
-        OV = new OpenViduModule.OpenVidu();
-        let publisher = OV.initPublisher('', {  // targetElement is empty string
-          audioSource: undefined,               // 오디오. 기본값 마이크
-          videoSource: undefined,               // 비디오. 기본값 웹캠
-          publishAudio: false,                  // 오디오 킬 건지
-          publishVideo: true,                   // 비디오 킬 건지
-          resolution: '320x240',                // 해상도
-          frameRate: 30,                        // 프레임
-          insertMode: 'APPEND',                 // How the video is inserted in the target element 'video-container'
-          mirror: false,                        // 좌우반전
+    (async () => {
+      import('openvidu-browser')
+        .then((OpenViduModule) => {
+          setOV(new OpenViduModule.OpenVidu());
+        })
+        .catch((error) => {
+          console.log('openvidu import error: ', error.code, error.message);
         });
 
-        setPublisher(publisher);
-      })
-      .catch((error) => {
-        console.log('openvidu import error: ', error.code, error.message);
-      });
+    })();
+
   }, []);
 
   const onbeforeunload = () => {
@@ -260,11 +251,10 @@ export default function VideoChat(): ReactElement {
           </>
         )}
       {
-        isConfigModalShow && publisher !== undefined && (
+        isConfigModalShow !== undefined && OV && (
           <VideoRoomConfigModal
             OV={OV}
             sessionTitle={sessionTitle}
-            streamManager={publisher}
             handlerJoin={handlerJoinBtn}
             handlerClose={handlerConfigModalCloseBtn}
           />

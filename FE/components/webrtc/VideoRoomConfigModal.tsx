@@ -1,19 +1,23 @@
-import { ReactElement } from 'react';
+import { MouseEventHandler, ReactElement, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import ModalWrapper from '../organisms/Modal/ModalWrapper';
-import { OpenVidu, StreamManager, Device } from 'openvidu-browser';
+import { OpenVidu, StreamManager } from 'openvidu-browser';
 
 import { Button, Label } from '@molecules';
 import { Icon, Input } from '@atoms';
-import { OpenViduVideoComponent } from '../webrtc';
+import { OpenViduVideoComponent } from 'components/webrtc';
+
+import { LoggerUtil } from './util/LoggerUtil';
+import { DevicesUtil } from './util/DeviceUtil';
+import { Util } from './util/Util';
+import { IDevice, CameraType } from './types/device-type';
 
 interface VideoRoomConfigModalProps {
   OV: OpenVidu;
   sessionTitle: string;
-  // TODO: handler type
-  handlerClose: any;
+  handlerClose: MouseEventHandler;
+  // TODO: Button 컴포넌트 func 타입 변경 MouseEventHandler
   handlerJoin: any;
-  streamManager: StreamManager;
 }
 
 const SessionTitle = styled.span`
@@ -88,11 +92,49 @@ const IconsAndInputs = styled.div`
 `;
 
 export default function VideoRoomConfigModal({
+  OV,
   sessionTitle,
-  streamManager,
   handlerClose,
-  handlerJoin
+  handlerJoin,
 }: VideoRoomConfigModalProps): ReactElement {
+  let loggerUtil: LoggerUtil;
+  let util: Util;
+  let devicesUtil: DevicesUtil;
+
+  const [cameras, setCameras] = useState<IDevice[]>();
+  const [microphones, setMicrophones] = useState<IDevice[]>();
+  const [camSelected, setCamSelected] = useState<IDevice>();
+  const [micSelected, setMicSelected] = useState<IDevice>();
+  const [streamManager, setStreamManager] = useState<StreamManager>();
+
+  useEffect(() => {
+    (async function init() {
+      loggerUtil = new LoggerUtil();
+      util = new Util();
+
+      devicesUtil = new DevicesUtil(
+        OV,
+        loggerUtil,
+        util
+      );
+
+      await devicesUtil.initDevices();
+      setDevicesInfo();
+    })();
+
+  }, []);
+
+  const setDevicesInfo = () => {
+    const cams = devicesUtil.getCameras();
+    const mics = devicesUtil.getMicrophones();
+    setMicrophones([...mics]);
+    setCameras([...cams]);
+  }
+
+  const handleCameraChange = () => {
+    // TODO: 선택한 카메라 미리보기
+  }
+
   return (
     <ModalWrapper modalName="videoConfigModal">
       <GridContainer>
@@ -124,16 +166,18 @@ export default function VideoRoomConfigModal({
             </Label>
             <Icon iconName="mic" color="gray" />
             <Label text="Microphone">
-              <select name="mic">
-                <option value="none">None</option>
-                <option value="mic1">Mic1</option>
+              <select>
+                {microphones?.map((mic, i) => (
+                  <option key={i} value={mic.label}>{mic.label}</option>
+                ))}
               </select>
             </Label>
             <Icon iconName="videocam" color="gray" />
             <Label text="Camera">
-              <select name="camera">
-                <option value="none">None</option>
-                <option value="cam1">Cam1</option>
+              <select onChange={handleCameraChange}>
+                {cameras?.map((cam, i) => (
+                  <option key={i} value={cam.label}>{cam.label}</option>
+                ))}
               </select>
             </Label>
           </IconsAndInputs>
