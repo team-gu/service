@@ -3,5 +3,6 @@ import Checkbox from './Checkbox';
 import FloatButton from './FloatButton';
 import Label from './Label';
 import Spinner from './Spinner';
+import Title from './Title';
 
-export { Button, Checkbox, FloatButton, Label, Spinner };
+export { Button, Checkbox, FloatButton, Label, Spinner, Title };
