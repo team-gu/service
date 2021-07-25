@@ -105,7 +105,7 @@ export default function VideoRoomConfigModal({
   const [microphones, setMicrophones] = useState<IDevice[]>();
   const [camSelected, setCamSelected] = useState<string>();
   const [micSelected, setMicSelected] = useState<string>();
-  const [streamManager, setStreamManager] = useState<StreamManager>();
+  const [publisher, setPublisher] = useState<StreamManager>();
 
   useEffect(() => {
     (async function init() {
@@ -136,10 +136,11 @@ export default function VideoRoomConfigModal({
 
   // Publish every time the camera changes
   useEffect(() => {
-    setPublisher();
+    if (camSelected || camSelected === '')
+      publishUserCameraStream();
   }, [camSelected]);
 
-  const setPublisher = () => {
+  const publishUserCameraStream = () => {
     const micIsNone = !micSelected || micSelected === '';
     const camIsNone = !camSelected || camSelected === '';
 
@@ -152,7 +153,7 @@ export default function VideoRoomConfigModal({
       frameRate: 30,
       mirror: false,
     });
-    setStreamManager(localUserCameraStream);
+    setPublisher(localUserCameraStream);
   }
 
   return (
@@ -168,8 +169,8 @@ export default function VideoRoomConfigModal({
         </CloseBtn>
 
         <div className="self-video">
-          {streamManager !== undefined && (
-            <OpenViduVideoComponent streamManager={streamManager} />
+          {publisher !== undefined && (
+            <OpenViduVideoComponent streamManager={publisher} />
           )}
         </div>
 
