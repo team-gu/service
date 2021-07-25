@@ -12,6 +12,7 @@ import javax.persistence.OneToOne;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,7 +25,7 @@ public class User extends BaseEntity{
 	String name;
 	@Column(length = 40)
 	String email;
-	@Column(length = 20)
+	
 	String password;
 	@Column(length = 45)
 	String refreshToken;
@@ -89,4 +90,16 @@ public class User extends BaseEntity{
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	private List<UserChat> userChat;
+	
+	
+	public User() {}
+
+
+	@Builder
+    public User(Long id, String email, String password){
+        this.id = id;
+        this.email = email;
+        this.password = password;
+    }
+
 }
