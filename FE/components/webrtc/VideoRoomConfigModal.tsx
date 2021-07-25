@@ -1,4 +1,4 @@
-import { MouseEventHandler, ReactElement, ChangeEvent, useEffect, useState } from 'react';
+import { MouseEventHandler, ReactElement, MouseEvent, ChangeEvent, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import ModalWrapper from '../organisms/Modal/ModalWrapper';
 import { OpenVidu, StreamManager } from 'openvidu-browser';
@@ -16,7 +16,7 @@ interface VideoRoomConfigModalProps {
   OV: OpenVidu;
   sessionTitle: string;
   handlerClose: MouseEventHandler;
-  handlerJoin: MouseEventHandler;
+  handlerJoin: (micSelected: string, camSelected: string) => void;
 }
 
 const SessionTitle = styled.span`
@@ -94,20 +94,21 @@ const IconsAndInputs = styled.div`
   }
 `;
 
+let loggerUtil: LoggerUtil;
+let util: Util;
+let devicesUtil: DevicesUtil;
+
 export default function VideoRoomConfigModal({
   OV,
   sessionTitle,
   handlerClose,
   handlerJoin,
 }: VideoRoomConfigModalProps): ReactElement {
-  let loggerUtil: LoggerUtil;
-  let util: Util;
-  let devicesUtil: DevicesUtil;
 
-  const [cameras, setCameras] = useState<IDevice[]>();
-  const [microphones, setMicrophones] = useState<IDevice[]>();
-  const [camSelected, setCamSelected] = useState<string>();
-  const [micSelected, setMicSelected] = useState<string>();
+  const [cameras, setCameras] = useState<IDevice[]>([]);
+  const [microphones, setMicrophones] = useState<IDevice[]>([]);
+  const [camSelected, setCamSelected] = useState<string>('');
+  const [micSelected, setMicSelected] = useState<string>('');
   const [publisher, setPublisher] = useState<StreamManager>();
 
   useEffect(() => {
@@ -116,18 +117,22 @@ export default function VideoRoomConfigModal({
       util = new Util();
       devicesUtil = new DevicesUtil(OV, loggerUtil, util);
 
+      // To get user's permission of video and audio
+      const defaultPublisher = await OV.initPublisherAsync('', {
+        resolution: '320x240',
+      });
+
+      // After permit, get devices
       await devicesUtil.initDevices();
-      setDevicesInfo();
+      setMicrophones([...devicesUtil.getMicrophones()]);
+      setCameras([...devicesUtil.getCameras()]);
+
+      // Set default device
+      setMicSelected(devicesUtil.getMicSelected().device);
+      setCamSelected(devicesUtil.getCamSelected().device);
     })();
 
   }, []);
-
-  const setDevicesInfo = () => {
-    const cams = devicesUtil.getCameras();
-    const mics = devicesUtil.getMicrophones();
-    setMicrophones([...mics]);
-    setCameras([...cams]);
-  }
 
   const handleCameraChange = (event: ChangeEvent<HTMLSelectElement>) => {
     setCamSelected(event.target.value);
@@ -143,6 +148,7 @@ export default function VideoRoomConfigModal({
 
     if (camSelected || camSelected === '')
       publishUserCameraStream();
+
   }, [camSelected]);
 
   const publishUserCameraStream = () => {
@@ -192,7 +198,7 @@ export default function VideoRoomConfigModal({
             </Label>
             <Icon iconName="mic" color="gray" />
             <Label text="Microphone">
-              <select onChange={handleMicrophoneChange}>
+              <select value={micSelected} onChange={handleMicrophoneChange}>
                 {microphones?.map((mic, i) => (
                   <option key={i} value={mic.device}>{mic.label}</option>
                 ))}
@@ -200,7 +206,7 @@ export default function VideoRoomConfigModal({
             </Label>
             <Icon iconName="videocam" color="gray" />
             <Label text="Camera">
-              <select onChange={handleCameraChange}>
+              <select value={camSelected} onChange={handleCameraChange}>
                 {cameras?.map((cam, i) => (
                   <option key={i} value={cam.device}>{cam.label}</option>
                 ))}
