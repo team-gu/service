@@ -154,14 +154,18 @@ export default function VideoRoomConfigModal({
   }, [camSelected]);
 
   const publishUserCameraStream = () => {
+    const micIsNone = !micSelected || micSelected === '';
     const camIsNone = !camSelected || camSelected === '';
 
     if (camIsNone && localCamStream) {
-      setLocalCamStream(undefined);
+      localCamStream.publishVideo(false);
+      // TODO: 타입 에러 localCamStream
+      setLocalCamStream({ ...localCamStream });
       return;
     }
 
     const stream = OV.initPublisher('', {
+      audioSource: micIsNone ? undefined : micSelected,
       videoSource: camIsNone ? undefined : camSelected,
       publishAudio: false,
       publishVideo: camIsNone ? false : true,

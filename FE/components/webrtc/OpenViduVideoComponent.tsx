@@ -17,5 +17,14 @@ export default function UserVideoComponent({
     }
   });
 
-  return <video autoPlay={true} ref={videoRef} />;
+  return (
+    <>
+      {streamManager.stream.videoActive && (
+        <video autoPlay={true} ref={videoRef} />
+      )}
+      {!streamManager.stream.videoActive && (
+        <div>대체이미지!대체이미지!대체이미지!대체이미지!대체이미지!</div>
+      )}
+    </>
+  );
 }
