@@ -3,7 +3,7 @@ import { Story } from '@storybook/react';
 import VideoChat from './VideoChat';
 
 export default {
-  title: 'Organisms/Video Chat',
+  title: 'webrtc/Video Chat',
   component: VideoChat,
 };
 
