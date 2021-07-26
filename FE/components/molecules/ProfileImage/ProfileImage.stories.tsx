@@ -14,6 +14,6 @@ const Template: Story = ({ src, isActive }) => (
 export const profileImage = Template.bind({});
 
 profileImage.args = {
-  src: '/profile.svg',
+  src: '/profile.png',
   isActive: true,
 };
