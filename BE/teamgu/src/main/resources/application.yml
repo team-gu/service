@@ -7,13 +7,7 @@ spring:
       ddl-auto: update 
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQL57Dialect 
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ssafy_web_db?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Seoul&zeroDateTimeBehavior=convertToNull&rewriteBatchedStatements=true
-    hikari:
-      username: ssafy
-      password: ssafy      
+        dialect: org.hibernate.dialect.MySQL57Dialect    
 jwt:
   issuer: teamgu
   secret: h2lsdmVybmluZS10ZWNoLXNwlmauZy1ib290LWp3dC10dXRvcmlhbC1zZWNyZXQtc2lsdmVybmluZS10ZWNoLXNwcmluZy1ib290LWp3dC10dXRvcmlhbC1zZWNyZXQK
