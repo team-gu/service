@@ -52,7 +52,7 @@ const GridContainer = styled.div`
     grid-area: camera;
     width: 320px;
     height: 240px;
-    margin: 10px;
+    margin: 10px 10px 10px 20px;
   }
 
   .video-config {
@@ -87,7 +87,7 @@ const IconsAndInputs = styled.div`
 
   input {
     margin: 0;
-    width: 100%;
+    width: 90%;
   }
 
   i {
@@ -96,7 +96,7 @@ const IconsAndInputs = styled.div`
   }
 
   select {
-    width: 250px;
+    width: 90%;
   }
 `;
 
@@ -114,7 +114,7 @@ export default function VideoRoomConfigModal({
   const [microphones, setMicrophones] = useState<IDevice[]>([]);
   const [camSelected, setCamSelected] = useState<string>('');
   const [micSelected, setMicSelected] = useState<string>('');
-  const [publisher, setPublisher] = useState<Publisher>();
+  const [localCamStream, setLocalCamStream] = useState<Publisher>();
 
   useEffect(() => {
     (async function init() {
@@ -123,7 +123,7 @@ export default function VideoRoomConfigModal({
       devicesUtil = new DevicesUtil(OV, loggerUtil, util);
 
       // To get user's permission of video and audio
-      const defaultPublisher = await OV.initPublisherAsync('', {
+      await OV.initPublisherAsync('', {
         resolution: '320x240',
       });
 
@@ -148,7 +148,7 @@ export default function VideoRoomConfigModal({
 
   // Publish every time the camera changes
   useEffect(() => {
-    // TODO: 카메라가 필요없는 None을 선택해도 캠 사용 불빛이 꺼지지 않는다.
+    // TODO: 카메라가 필요없는 None을 선택해도 On-Air 불빛이 꺼지지 않는다.
 
     if (camSelected || camSelected === '') publishUserCameraStream();
   }, [camSelected]);
@@ -157,21 +157,23 @@ export default function VideoRoomConfigModal({
     const micIsNone = !micSelected || micSelected === '';
     const camIsNone = !camSelected || camSelected === '';
 
-    if (camIsNone && publisher) {
-      setPublisher(undefined);
+    if (camIsNone && localCamStream) {
+      localCamStream.publishVideo(false);
+      // TODO: 타입 에러 localCamStream
+      setLocalCamStream({ ...localCamStream });
       return;
     }
 
-    const localUserCameraStream = OV.initPublisher('', {
+    const stream = OV.initPublisher('', {
       audioSource: micIsNone ? undefined : micSelected,
       videoSource: camIsNone ? undefined : camSelected,
-      publishAudio: micIsNone ? false : true,
+      publishAudio: false,
       publishVideo: camIsNone ? false : true,
       resolution: '320x240',
       frameRate: 30,
       mirror: true,
     });
-    setPublisher(localUserCameraStream);
+    setLocalCamStream(stream);
   };
 
   return (
@@ -185,10 +187,9 @@ export default function VideoRoomConfigModal({
         </CloseBtn>
 
         <div className="self-video">
-          {publisher !== undefined && (
-            <OpenViduVideoComponent streamManager={publisher} />
+          {localCamStream !== undefined && (
+            <OpenViduVideoComponent streamManager={localCamStream} />
           )}
-          {publisher === undefined && <div>대체 이미지</div>}
         </div>
 
         <div className="video-config">

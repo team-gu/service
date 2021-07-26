@@ -24,11 +24,13 @@ export class DevicesUtil {
     this.resetDevicesArray();
     if (this.hasAudioDeviceAvailable()) {
       this.initAudioDevices();
-      this.micSelected = this.getMicSelected();
+      const defaultMic = this.microphones.find((device) => device.device === 'default');
+      this.micSelected = defaultMic ? defaultMic : this.microphones[0];
     }
     if (this.hasVideoDeviceAvailable()) {
       this.initVideoDevices();
-      this.camSelected = this.cameras.find((device) => device.type === CameraType.FRONT);
+      const defaultCam = this.cameras.find((device) => device.type === CameraType.FRONT);
+      this.camSelected = defaultCam ? defaultCam : this.cameras[0]
     }
   }
   private async initOpenViduDevices() {
@@ -65,7 +67,6 @@ export class DevicesUtil {
 
       this.cameras.push(myDevice);
     });
-    this.log.d('Camera selected', this.camSelected);
   }
 
   getCamSelected(): IDevice {
@@ -86,14 +87,6 @@ export class DevicesUtil {
     return this.micSelected || this.microphones[0];
   }
 
-  needUpdateVideoTrack(newVideoSource: string): boolean {
-    return this.getCamSelected()?.device !== newVideoSource;
-  }
-
-  needUpdateAudioTrack(newAudioSource: string): boolean {
-    return this.getMicSelected()?.device !== newAudioSource;
-  }
-
   getCameras(): IDevice[] {
     return this.cameras;
   }
@@ -108,35 +101,6 @@ export class DevicesUtil {
 
   hasAudioDeviceAvailable(): boolean {
     return !!this.devices?.find((device) => device.kind === 'audioinput');
-  }
-
-  cameraNeedsMirror(deviceField: string): boolean {
-    return this.getCameraByDeviceField(deviceField)?.type === CameraType.FRONT;
-  }
-
-  areEmptyLabels(): boolean {
-    return !!this.cameras.find((device) => device.label === '') || !!this.microphones.find((device) => device.label === '');
-  }
-
-  disableVideoDevices() {
-    this.videoDevicesDisabled = true;
-  }
-
-  clear() {
-    this.devices = [];
-    this.cameras = [];
-    this.microphones = [];
-    this.camSelected = undefined;
-    this.micSelected = undefined;
-    this.videoDevicesDisabled = false;
-  }
-
-  private getCameraByDeviceField(deviceField: string): IDevice | undefined {
-    return this.cameras.find((opt: IDevice) => opt.device === deviceField || opt.label === deviceField);
-  }
-
-  private getMicrophoneByDeviceField(deviceField: string): IDevice | undefined {
-    return this.microphones.find((opt: IDevice) => opt.device === deviceField || opt.label === deviceField);
   }
 
   private resetDevicesArray() {

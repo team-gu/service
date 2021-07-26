@@ -1,12 +1,17 @@
 import { ReactElement, useState, useEffect } from 'react';
-import { OpenVidu, Session, StreamManager } from 'openvidu-browser';
+import { OpenVidu, Session, Subscriber, Publisher } from 'openvidu-browser';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
 import axios from 'axios';
 
-import { Text } from '@atoms';
-import { VideoRoomConfigModal, UserVideoComponent } from '../webrtc';
+import {
+  VideoRoomConfigModal,
+  UserVideoComponent,
+  VideoChatToolbar,
+} from '../webrtc';
 import { useAuthState } from '@store';
+
+var OpenViduBrowser: any;
 
 const Wrapper = styled.div`
   ${({ theme: { flexCol } }) => flexCol()}
@@ -14,6 +19,11 @@ const Wrapper = styled.div`
   .session-title {
     margin-bottom: 20px;
   }
+`;
+
+const SessionWrapper = styled.div`
+  display: relative;
+  width: 100%;
 `;
 
 const SessionContainer = styled.div`
@@ -27,8 +37,8 @@ interface UserDevice {
   cam: string;
 }
 
-// const OPENVIDU_SERVER_URL = 'https://3.38.39.72:4443';
-const OPENVIDU_SERVER_URL = 'https://localhost:4443';
+const OPENVIDU_SERVER_URL = 'https://3.38.39.72';
+// const OPENVIDU_SERVER_URL = 'https://localhost:4443';
 const OPENVIDU_SERVER_SECRET = 'MY_SECRET';
 
 export default function VideoChat(): ReactElement {
@@ -36,13 +46,16 @@ export default function VideoChat(): ReactElement {
 
   const [OV, setOV] = useState<OpenVidu>();
   const [session, setSession] = useState<Session>();
-  const [publisher, setPublisher] = useState<StreamManager>();
-  const [subscribers, setSubscribers] = useState<StreamManager[]>([]);
+  const [publisher, setPublisher] = useState<Publisher>();
+  const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
   const [isConfigModalShow, setIsConfigModalShow] = useState<boolean>(true);
   const [userDevice, setUserDevice] = useState<UserDevice>({
     mic: '',
     cam: '',
   });
+
+  const [micOn, setMicOn] = useState(false);
+  const [camOn, setCamOn] = useState(false);
 
   const { name } = useAuthState();
   const myUserName = name ? name : 'MeetInSsafy';
@@ -62,22 +75,30 @@ export default function VideoChat(): ReactElement {
 
   // Dynamic module import
   useEffect(() => {
-    (async () => {
+    importOpenVidu().then((ob) => {
+      OpenViduBrowser = ob;
+      setOV(new OpenViduBrowser.OpenVidu());
+    });
+  }, []);
+
+  const importOpenVidu = () => {
+    return new Promise<any>((resolve, reject) => {
       import('openvidu-browser')
-        .then((OpenViduModule) => {
-          setOV(new OpenViduModule.OpenVidu());
+        .then((ob) => {
+          resolve(ob);
         })
         .catch((error) => {
           console.log('openvidu import error: ', error.code, error.message);
+          reject();
         });
-    })();
-  }, []);
+    });
+  };
 
   const onbeforeunload = () => {
     leaveSession();
   };
 
-  const deleteSubscriber = (streamManager: StreamManager) => {
+  const deleteSubscriber = (streamManager: Subscriber) => {
     let subs = subscribers;
     let index = subscribers.indexOf(streamManager, 0);
     if (index > -1) {
@@ -98,6 +119,10 @@ export default function VideoChat(): ReactElement {
       mic: micSelected,
       cam: camSelected,
     });
+
+    setMicOn(micSelected !== '');
+    setCamOn(camSelected !== '');
+
     setIsConfigModalShow(false);
     setSession(OV?.initSession());
   };
@@ -141,7 +166,7 @@ export default function VideoChat(): ReactElement {
             publishVideo: camIsNone ? false : true,
             resolution: '640x320',
             frameRate: 30,
-            mirror: false,
+            mirror: true,
           });
 
           mySession.publish(publisher);
@@ -215,6 +240,32 @@ export default function VideoChat(): ReactElement {
     });
   };
 
+  const handleClickVideoOff = () => {
+    publisher?.publishVideo(false);
+    setCamOn(false);
+  };
+
+  const handleClickVideoOn = () => {
+    publisher?.publishVideo(true);
+    setCamOn(true);
+  };
+
+  const handleClickAudioOff = () => {
+    publisher?.publishAudio(false);
+    setMicOn(false);
+  };
+
+  const handleClickAudioOn = () => {
+    publisher?.publishAudio(true);
+    setMicOn(true);
+  };
+
+  const handleClickExit = () => {
+    leaveSession();
+    setOV(new OpenViduBrowser.OpenVidu());
+    setIsConfigModalShow(true);
+  };
+
   const createToken = (sessionId: string) => {
     return new Promise<string>((resolve, reject) => {
       let data = {};
@@ -241,21 +292,32 @@ export default function VideoChat(): ReactElement {
     <Wrapper>
       {session !== undefined && (
         <>
-          <Text text={sessionTitle} fontSetting="n26b"></Text>
-          <SessionContainer>
-            {publisher !== undefined && (
-              <div>
-                <UserVideoComponent streamManager={publisher} />
-              </div>
-            )}
-            {subscribers.map((sub, i) => (
-              <div key={i}>
-                <UserVideoComponent streamManager={sub} />
-              </div>
-            ))}
-          </SessionContainer>
+          <SessionWrapper>
+            <SessionContainer>
+              {publisher !== undefined && (
+                <div>
+                  <UserVideoComponent streamManager={publisher} />
+                </div>
+              )}
+              {subscribers.map((sub, i) => (
+                <div key={i}>
+                  <UserVideoComponent streamManager={sub} />
+                </div>
+              ))}
+            </SessionContainer>
+            <VideoChatToolbar
+              micOn={micOn}
+              camOn={camOn}
+              handleClickVideoOff={handleClickVideoOff}
+              handleClickVideoOn={handleClickVideoOn}
+              handleClickAudioOff={handleClickAudioOff}
+              handleClickAudioOn={handleClickAudioOn}
+              handleClickExit={handleClickExit}
+            />
+          </SessionWrapper>
         </>
       )}
+
       {isConfigModalShow && OV && (
         <VideoRoomConfigModal
           OV={OV}
