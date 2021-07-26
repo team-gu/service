@@ -16,10 +16,6 @@ const Wrapper = styled.div`
   }
 `;
 
-const Join = styled.div`
-  text-align: center;
-`;
-
 const SessionContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -27,8 +23,8 @@ const SessionContainer = styled.div`
 `;
 
 interface UserDevice {
-  mic: string,
-  cam: string
+  mic: string;
+  cam: string;
 }
 
 // const OPENVIDU_SERVER_URL = 'https://3.38.39.72:4443';
@@ -38,14 +34,15 @@ const OPENVIDU_SERVER_SECRET = 'MY_SECRET';
 export default function VideoChat(): ReactElement {
   const router = useRouter();
 
-  // TODO: OV의 초기값을 주고 싶은데, OpenVidu를 동적으로 로딩하다보니 그럴 수 없다.
-  // 초기값을 부여하면 타입 에러가 없어질 것이다.
   const [OV, setOV] = useState<OpenVidu>();
   const [session, setSession] = useState<Session>();
   const [publisher, setPublisher] = useState<StreamManager>();
   const [subscribers, setSubscribers] = useState<StreamManager[]>([]);
   const [isConfigModalShow, setIsConfigModalShow] = useState<boolean>(true);
-  const [userDevice, setUserDevice] = useState<UserDevice>({ mic: '', cam: '' });
+  const [userDevice, setUserDevice] = useState<UserDevice>({
+    mic: '',
+    cam: '',
+  });
 
   const { name } = useAuthState();
   const myUserName = name ? name : 'MeetInSsafy';
@@ -73,9 +70,7 @@ export default function VideoChat(): ReactElement {
         .catch((error) => {
           console.log('openvidu import error: ', error.code, error.message);
         });
-
     })();
-
   }, []);
 
   const onbeforeunload = () => {
@@ -94,9 +89,9 @@ export default function VideoChat(): ReactElement {
   const handlerConfigModalCloseBtn = () => {
     setPublisher(undefined);
     setIsConfigModalShow(false);
-    console.log("Config cancel. Redirect previous page.");
+    console.log('Config cancel. Redirect previous page.');
     router.back();
-  }
+  };
 
   const handlerJoinBtn = (micSelected: string, camSelected: string) => {
     setUserDevice({
@@ -105,12 +100,11 @@ export default function VideoChat(): ReactElement {
     });
     setIsConfigModalShow(false);
     setSession(OV?.initSession());
-  }
+  };
 
   // 'session' hook
   useEffect(() => {
-    if (!session)
-      return;
+    if (!session) return;
 
     let mySession = session;
 
@@ -135,8 +129,7 @@ export default function VideoChat(): ReactElement {
     getToken()
       .then((token: string) => {
         mySession.connect(token, { clientData: myUserName }).then(() => {
-          if (!OV)
-            return;
+          if (!OV) return;
 
           const micIsNone = !userDevice.mic || userDevice.mic === '';
           const camIsNone = !userDevice.cam || userDevice.cam === '';
@@ -204,17 +197,13 @@ export default function VideoChat(): ReactElement {
           } else {
             console.log(error);
             console.warn(
-              'No connection to OpenVidu Server. This may be a certificate error at ' +
-              OPENVIDU_SERVER_URL,
+              `No connection to OpenVidu Server. This may be a certificate error at ${OPENVIDU_SERVER_URL}`,
             );
             if (
               window.confirm(
-                'No connection to OpenVidu Server. This may be a certificate error at "' +
-                OPENVIDU_SERVER_URL +
-                '"\n\nClick OK to navigate and accept it. ' +
-                'If no certificate warning is shown, then check that your OpenVidu Server is up and running at "' +
-                OPENVIDU_SERVER_URL +
-                '"',
+                `No connection to OpenVidu Server. This may be a certificate error at ${OPENVIDU_SERVER_URL}
+                
+                Click OK to navigate and accept it. If no certificate warning is shown, then check that your OpenVidu Server is up and running at ${OPENVIDU_SERVER_URL}`,
               )
             ) {
               window.location.assign(
@@ -250,34 +239,31 @@ export default function VideoChat(): ReactElement {
 
   return (
     <Wrapper>
-      {
-        session !== undefined && (
-          <>
-            <Text text={sessionTitle} fontSetting="n26b"></Text>
-            <SessionContainer>
-              {publisher !== undefined && (
-                <div>
-                  <UserVideoComponent streamManager={publisher} />
-                </div>
-              )}
-              {subscribers.map((sub, i) => (
-                <div key={i}>
-                  <UserVideoComponent streamManager={sub} />
-                </div>
-              ))}
-            </SessionContainer>
-          </>
-        )}
-      {
-        isConfigModalShow && OV && (
-          <VideoRoomConfigModal
-            OV={OV}
-            sessionTitle={sessionTitle}
-            handlerJoin={handlerJoinBtn}
-            handlerClose={handlerConfigModalCloseBtn}
-          />
-        )
-      }
-    </Wrapper >
+      {session !== undefined && (
+        <>
+          <Text text={sessionTitle} fontSetting="n26b"></Text>
+          <SessionContainer>
+            {publisher !== undefined && (
+              <div>
+                <UserVideoComponent streamManager={publisher} />
+              </div>
+            )}
+            {subscribers.map((sub, i) => (
+              <div key={i}>
+                <UserVideoComponent streamManager={sub} />
+              </div>
+            ))}
+          </SessionContainer>
+        </>
+      )}
+      {isConfigModalShow && OV && (
+        <VideoRoomConfigModal
+          OV={OV}
+          sessionTitle={sessionTitle}
+          handlerJoin={handlerJoinBtn}
+          handlerClose={handlerConfigModalCloseBtn}
+        />
+      )}
+    </Wrapper>
   );
 }
