@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import axios from 'axios';
 
 import { Text } from '@atoms';
-import { VideoRoomConfigModal, UserVideoComponent } from '../webrtc';
+import { VideoRoomConfigModal, UserVideoComponent, VideoChatToolbar } from '../webrtc';
 import { useAuthState } from '@store';
 
 const Wrapper = styled.div`
@@ -14,6 +14,11 @@ const Wrapper = styled.div`
   .session-title {
     margin-bottom: 20px;
   }
+`;
+
+const SessionWrapper = styled.div`
+  display: relative;
+  width: 100%;
 `;
 
 const SessionContainer = styled.div`
@@ -27,8 +32,8 @@ interface UserDevice {
   cam: string;
 }
 
-// const OPENVIDU_SERVER_URL = 'https://3.38.39.72:4443';
-const OPENVIDU_SERVER_URL = 'https://localhost:4443';
+const OPENVIDU_SERVER_URL = 'https://3.38.39.72';
+// const OPENVIDU_SERVER_URL = 'https://localhost:4443';
 const OPENVIDU_SERVER_SECRET = 'MY_SECRET';
 
 export default function VideoChat(): ReactElement {
@@ -241,21 +246,25 @@ export default function VideoChat(): ReactElement {
     <Wrapper>
       {session !== undefined && (
         <>
-          <Text text={sessionTitle} fontSetting="n26b"></Text>
-          <SessionContainer>
-            {publisher !== undefined && (
-              <div>
-                <UserVideoComponent streamManager={publisher} />
-              </div>
-            )}
-            {subscribers.map((sub, i) => (
-              <div key={i}>
-                <UserVideoComponent streamManager={sub} />
-              </div>
-            ))}
-          </SessionContainer>
+          <SessionWrapper>
+            <Text text={sessionTitle} fontSetting="n26b"></Text>
+            <SessionContainer>
+              {publisher !== undefined && (
+                <div>
+                  <UserVideoComponent streamManager={publisher} />
+                </div>
+              )}
+              {subscribers.map((sub, i) => (
+                <div key={i}>
+                  <UserVideoComponent streamManager={sub} />
+                </div>
+              ))}
+            </SessionContainer>
+            <VideoChatToolbar />
+          </SessionWrapper>
         </>
       )}
+
       {isConfigModalShow && OV && (
         <VideoRoomConfigModal
           OV={OV}
