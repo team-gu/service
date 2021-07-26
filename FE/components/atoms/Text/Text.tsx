@@ -10,6 +10,7 @@ interface TextProps {
 const Wrapper = styled.div<{ fontSetting: string }>`
   ${({ theme: { font }, fontSetting }) => font[fontSetting]};
 `;
+
 export default function Text({
   text,
   fontSetting = 'n14m',
