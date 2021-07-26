@@ -1,11 +1,10 @@
-import { ReactElement } from 'react';
+import { ReactElement, MouseEventHandler } from 'react';
 import styled from 'styled-components';
 import { Text } from '@atoms';
 
 interface EachButtonProps {
   title: string;
-  // TODO: 추후에 수정
-  func: () => void | Function | any;
+  func: MouseEventHandler;
   width?: string;
 }
 
@@ -17,10 +16,10 @@ const WrapEachButton = styled.button<{ width: string }>`
   margin: 0 auto;
 
   background-color: ${({
-    theme: {
-      colors: { black },
-    },
-  }) => black};
+  theme: {
+    colors: { black },
+  },
+}) => black};
 
   border: none;
   border-radius: 8px;
@@ -28,10 +27,10 @@ const WrapEachButton = styled.button<{ width: string }>`
   box-shadow: 0px 0px 4px 2px rgba(55, 53, 47, 0.4);
 
   color: ${({
-    theme: {
-      colors: { white },
-    },
-  }) => white};
+  theme: {
+    colors: { white },
+  },
+}) => white};
 
   transition: 300ms;
   animation: 800ms ease fadeIn;

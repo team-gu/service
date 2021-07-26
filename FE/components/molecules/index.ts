@@ -4,5 +4,6 @@ import FloatButton from './FloatButton';
 import Label from './Label';
 import ProfileImage from './ProfileImage';
 import Spinner from './Spinner';
+import Title from './Title';
 
-export { Button, Checkbox, FloatButton, Label, ProfileImage, Spinner };
+export { Button, Checkbox, FloatButton, Label, ProfileImage, Spinner, Title };
