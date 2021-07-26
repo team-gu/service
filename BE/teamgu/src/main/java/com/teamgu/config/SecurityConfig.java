@@ -58,8 +58,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .authorizeRequests()
                 .antMatchers(
-                        "/api/auth/signIn",
-                        "/api/auth/login"
+                        "/api/auth/saveDumyData",
+                        "/api/auth/login",
+                        "/v2/api-docs",
+                        "/configuration/ui",
+                        "/swagger-resources/**", 
+                        "/configuration/security",
+                        "/swagger-ui/**",
+                        "/webjars/**",
+                        "/swagger/**"
                        )
                 .permitAll()
                 // 다른 모든 요청은 인증을 한다.
