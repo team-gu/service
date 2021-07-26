@@ -1,5 +1,6 @@
 import { StreamManager } from 'openvidu-browser';
 import { ReactElement, useEffect, useRef } from 'react';
+import Image from 'next/image';
 
 interface OpenViduVideoComponentProps {
   streamManager: StreamManager;
@@ -23,7 +24,7 @@ export default function UserVideoComponent({
         <video autoPlay={true} ref={videoRef} />
       )}
       {!streamManager.stream.videoActive && (
-        <div>대체이미지!대체이미지!대체이미지!대체이미지!대체이미지!</div>
+        <Image src={'/profile.svg'} alt="profile" width={'320px'} height={'240px'} objectFit='contain' />
       )}
     </>
   );
