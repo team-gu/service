@@ -11,6 +11,7 @@ const theme: DefaultTheme = {
     black: '#000000',
     white: '#ffffff',
     gray: '#EEEEEE',
+    daangn: '#E49143',
   },
   layout: {
     pageMaxWidth: '1440px',
