@@ -1,7 +1,5 @@
 package com.teamgu.api.controller;
 
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.teamgu.api.dto.req.LoginReqDto;
 import com.teamgu.api.dto.res.LoginResDto;
 import com.teamgu.api.service.UserServiceImpl;
-import com.teamgu.common.auth.JwtUserDetailsService;
-import com.teamgu.common.auth.TeamguUserDetails;
 import com.teamgu.common.util.JwtTokenUtil;
 import com.teamgu.database.entity.User;
 
@@ -44,7 +40,7 @@ public class JwtAuthController {
 	@Autowired
 	private JwtTokenUtil jwtTokenUtil;
 
-	@PostMapping("/signIn")
+	@PostMapping("/saveDumyData")
 	public ResponseEntity<ApiResponse> signIn(
 			@RequestBody @ApiParam(value = "회원가입 정보(email,pw)", required = true) LoginReqDto loginReq) {
 		String email = loginReq.getEmail();
@@ -67,23 +63,9 @@ public class JwtAuthController {
 			String accessToken = jwtTokenUtil.getAccessToken(email);
 			String refreshToken = jwtTokenUtil.getRefreshToken(email);
 			
-			return ResponseEntity.ok(new LoginResDto(200, "Success", accessToken, refreshToken));
+			return ResponseEntity.ok(new LoginResDto(200, "Success", accessToken, refreshToken, user));
 		}
-		return ResponseEntity.status(401).body(new LoginResDto(401,"Invalid Password",null,null));
-	}
-
-	private void authenticate(String email, String password) {
-		System.out.println("authemticate method");
-		try {
-			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
-			System.out.println("done");
-		} catch (DisabledException ex) {
-			System.out.println("disable");
-			throw new DisabledException("USER_DISABLED", ex);
-		} catch (BadCredentialsException ex) {
-			System.out.println("bad");
-			throw new BadCredentialsException("INVALID_CREDENTIALS", ex);
-		}
+		return ResponseEntity.status(401).body(new LoginResDto(401,"Invalid Password",null,null,null));
 	}
 
 }

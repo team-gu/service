@@ -1,5 +1,7 @@
 package com.teamgu.api.dto.res;
 
+import com.teamgu.database.entity.User;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -13,12 +15,16 @@ public class LoginResDto extends BaseResDto {
 	String accessToken;
 	@ApiModelProperty(name="refresh 토큰", example = "")
 	String refreshToken;
+	@ApiModelProperty(name="유저 정보", example = "")
+	User userInfo;
+	
 	public LoginResDto() {}
 	
-	public LoginResDto(int statusCode, String message, String accessToken,String refreshToken) {
+	public LoginResDto(int statusCode, String message, String accessToken,String refreshToken, User userInfo) {
 		super(statusCode, message);
 		this.accessToken = accessToken;
 		this.refreshToken = refreshToken;
+		this.userInfo = userInfo;
 	}
 	
 	
