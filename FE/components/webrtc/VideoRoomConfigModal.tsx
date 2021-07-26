@@ -52,7 +52,7 @@ const GridContainer = styled.div`
     grid-area: camera;
     width: 320px;
     height: 240px;
-    margin: 10px;
+    margin: 10px 10px 10px 20px;
   }
 
   .video-config {
@@ -87,7 +87,7 @@ const IconsAndInputs = styled.div`
 
   input {
     margin: 0;
-    width: 100%;
+    width: 90%;
   }
 
   i {
@@ -96,7 +96,7 @@ const IconsAndInputs = styled.div`
   }
 
   select {
-    width: 250px;
+    width: 90%;
   }
 `;
 
@@ -133,6 +133,8 @@ export default function VideoRoomConfigModal({
       setCameras([...devicesUtil.getCameras()]);
 
       // Set default device
+      console.log(devicesUtil.getMicSelected());
+      console.log(devicesUtil.getCamSelected());
       setMicSelected(devicesUtil.getMicSelected().device);
       setCamSelected(devicesUtil.getCamSelected().device);
     })();
