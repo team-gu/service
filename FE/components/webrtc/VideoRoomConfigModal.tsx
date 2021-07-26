@@ -133,8 +133,6 @@ export default function VideoRoomConfigModal({
       setCameras([...devicesUtil.getCameras()]);
 
       // Set default device
-      console.log(devicesUtil.getMicSelected());
-      console.log(devicesUtil.getCamSelected());
       setMicSelected(devicesUtil.getMicSelected().device);
       setCamSelected(devicesUtil.getCamSelected().device);
     })();
