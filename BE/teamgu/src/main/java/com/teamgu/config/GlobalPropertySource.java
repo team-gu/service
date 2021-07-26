@@ -7,7 +7,7 @@ import org.springframework.context.annotation.PropertySources;
 @Configuration
 @PropertySources({
     @PropertySource( value = "file:c:/rds_secure/config.yml", ignoreResourceNotFound = true ),
-    @PropertySource( value = "file:${user.home}/rds_secure/config.yml", ignoreResourceNotFound = true)
+    @PropertySource( value = "file:/home/rds_secure/config.yml", ignoreResourceNotFound = true)
 })
 public class GlobalPropertySource { 
     @Value("${spring.datasource.driverClassName}")
