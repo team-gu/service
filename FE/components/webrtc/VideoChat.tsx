@@ -260,6 +260,13 @@ export default function VideoChat(): ReactElement {
     setMicOn(true);
   };
 
+  const handleClickExit = () => {
+    console.log('Exit');
+    leaveSession();
+    setOV(new OpenViduBrowser.OpenVidu());
+    setIsConfigModalShow(true);
+  };
+
   const createToken = (sessionId: string) => {
     return new Promise<string>((resolve, reject) => {
       let data = {};
@@ -306,6 +313,7 @@ export default function VideoChat(): ReactElement {
               handleClickVideoOn={handleClickVideoOn}
               handleClickAudioOff={handleClickAudioOff}
               handleClickAudioOn={handleClickAudioOn}
+              handleClickExit={handleClickExit}
             />
           </SessionWrapper>
         </>
