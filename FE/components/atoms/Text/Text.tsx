@@ -8,7 +8,13 @@ interface TextProps {
 }
 
 const Wrapper = styled.div<{ fontSetting: string }>`
+  width: 100%;
   ${({ theme: { font }, fontSetting }) => font[fontSetting]};
+  ${({
+    theme: {
+      font: { ellipse },
+    },
+  }) => ellipse()};
 `;
 
 export default function Text({
