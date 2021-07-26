@@ -4,8 +4,14 @@ import { useRouter } from 'next/router';
 import styled from 'styled-components';
 import axios from 'axios';
 
-import { VideoRoomConfigModal, UserVideoComponent, VideoChatToolbar } from '../webrtc';
+import {
+  VideoRoomConfigModal,
+  UserVideoComponent,
+  VideoChatToolbar,
+} from '../webrtc';
 import { useAuthState } from '@store';
+
+var OpenViduBrowser: any;
 
 const Wrapper = styled.div`
   ${({ theme: { flexCol } }) => flexCol()}
@@ -69,16 +75,24 @@ export default function VideoChat(): ReactElement {
 
   // Dynamic module import
   useEffect(() => {
-    (async () => {
+    importOpenVidu().then((ob) => {
+      OpenViduBrowser = ob;
+      setOV(new OpenViduBrowser.OpenVidu());
+    });
+  }, []);
+
+  const importOpenVidu = () => {
+    return new Promise<any>((resolve, reject) => {
       import('openvidu-browser')
-        .then((OpenViduModule) => {
-          setOV(new OpenViduModule.OpenVidu());
+        .then((ob) => {
+          resolve(ob);
         })
         .catch((error) => {
           console.log('openvidu import error: ', error.code, error.message);
+          reject();
         });
-    })();
-  }, []);
+    });
+  };
 
   const onbeforeunload = () => {
     leaveSession();
