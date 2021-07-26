@@ -2,7 +2,7 @@
 import VideoRoomConfigModal from './VideoRoomConfigModal';
 
 export default {
-  title: 'Organisms/VideoRoomConfigModal',
+  title: 'WebRTC/VideoRoomConfigModal',
   component: VideoRoomConfigModal,
 };
 

@@ -2,7 +2,7 @@
 import VideoChat from './VideoChat';
 
 export default {
-  title: 'Organisms/VideoChat',
+  title: 'WebRTC/VideoChat',
   component: VideoChat,
 };
 
