@@ -12,16 +12,17 @@ const Wrapper = styled.div<{ size: number; isActive: boolean }>`
   border-radius: ${({ size }) => size}px;
   width: ${({ size }) => size}px;
   height: ${({ size }) => size}px;
-  ${({
-    isActive,
-    theme: {
-      colors: { daangn },
-    },
-  }) => isActive && `border: 3px solid ${daangn};`}
+  border: 3px solid
+    ${({
+      isActive,
+      theme: {
+        colors: { daangn },
+      },
+    }) => (isActive ? daangn : 'lightgray')};
 `;
 
 export default function ProfileImage({
-  src = '/profile.svg',
+  src = '/profile.png',
   size = 50,
   isActive = false,
 }: ProfileImageProps): ReactElement {
