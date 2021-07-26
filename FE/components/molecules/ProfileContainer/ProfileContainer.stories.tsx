@@ -7,13 +7,21 @@ export default {
   component: ProfileContainer,
 };
 
-const Template: Story = ({ src, name, content, time, isActive }) => (
+const Template: Story = ({
+  src,
+  name,
+  content,
+  time,
+  isActive,
+  alertNumber,
+}) => (
   <ProfileContainer
     src={src}
     name={name}
     content={content}
     time={time}
     isActive={isActive}
+    alertNumber={alertNumber}
   />
 );
 
@@ -25,4 +33,5 @@ profileContainer.args = {
   content: '안녕하세요',
   time: '11:22 PM',
   isActive: true,
+  alertNumber: 100,
 };
