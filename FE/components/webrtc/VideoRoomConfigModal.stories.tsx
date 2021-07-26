@@ -1,24 +1,27 @@
 import VideoRoomConfigModal from './VideoRoomConfigModal';
 import { OpenVidu } from 'openvidu-browser';
+import { Story } from '@storybook/react';
 
 export default {
-  title: 'WebRTC/VideoRoomConfigModal',
+  title: 'webrtc/VideoRoomConfigModal',
   component: VideoRoomConfigModal,
 };
 
 const handlerJoinBtn = () => {
   alert('JOIN');
-}
+};
 
 const handlerConfigModalCloseBtn = () => {
   alert('EXIT');
-}
+};
 
-export const videoRoomConfigModal = () => (
-  <VideoRoomConfigModal 
+const Template: Story = () => (
+  <VideoRoomConfigModal
     OV={new OpenVidu()}
-    sessionTitle="MeetInSsafy 님의 세션" 
+    sessionTitle="MeetInSsafy 님의 세션"
     handlerJoin={handlerJoinBtn}
     handlerClose={handlerConfigModalCloseBtn}
   />
 );
+
+export const videoRoomConfigModal = Template.bind({});

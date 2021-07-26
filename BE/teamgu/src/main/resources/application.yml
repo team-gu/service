@@ -15,11 +15,10 @@ spring:
       username: ssafy
       password: ssafy      
 jwt:
-  header: Authorization
+  issuer: teamgu
   secret: h2lsdmVybmluZS10ZWNoLXNwlmauZy1ib290LWp3dC10dXRvcmlhbC1zZWNyZXQtc2lsdmVybmluZS10ZWNoLXNwcmluZy1ib290LWp3dC10dXRvcmlhbC1zZWNyZXQK
-  # 15 * 24 * 60 * 60 * 1000 = 15days
-  expiration: 1296000000       
-management:
+  
+management:       
   servlet:
     context-path: /manage
   health:

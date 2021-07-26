@@ -1,12 +1,12 @@
-/* eslint-disable react/jsx-props-no-spreading */
+import { Story } from '@storybook/react';
 import VideoChatToolbar from './VideoChatToolbar';
 
 export default {
-  title: 'WebRTC/VideoChatToolbar',
+  title: 'webrtc/VideoChatToolbar',
   component: VideoChatToolbar,
 };
 
-export const videoChatToolbar = () => (
+const Template: Story = () => (
   <VideoChatToolbar
     micOn={false}
     camOn={false}
@@ -17,3 +17,5 @@ export const videoChatToolbar = () => (
     handleClickExit={() => alert('Exit')}
   />
 );
+
+export const videoChatToolbar = Template.bind({});
