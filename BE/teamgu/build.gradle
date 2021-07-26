@@ -155,6 +155,7 @@ dependencies {
     testImplementation("com.jayway.jsonpath:json-path:2.4.0")
 
     implementation("com.auth0:java-jwt:3.10.3")
+    implementation group: 'io.jsonwebtoken', name: 'jjwt', version: '0.2'
     
     implementation("io.springfox:springfox-swagger2:3.0.0")
     implementation("io.springfox:springfox-swagger-ui:3.0.0")
@@ -168,11 +169,11 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok:1.18.20")
 
 	implementation 'org.springframework.boot:spring-boot-starter-validation' //for notnull
-    //testCompile('org.springframework.boot:spring-boot-starter-test')
-	//{
-	//   	exclude module: 'junit'//junit4 제거
-    //}
-    //testImplementation('org.springframework.boot:spring-boot-starter-test')
+//    testCompile('org.springframework.boot:spring-boot-starter-test')
+//	{
+//	   	exclude module: 'junit'//junit4 제거
+//    }
+    testImplementation('org.springframework.boot:spring-boot-starter-test')
 }
 
 test {
