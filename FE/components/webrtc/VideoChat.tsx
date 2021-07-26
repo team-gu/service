@@ -1,12 +1,12 @@
 import { ReactElement, useState, useEffect } from 'react';
 import { OpenVidu, Session, StreamManager } from 'openvidu-browser';
+import { useRouter } from 'next/router';
 import styled from 'styled-components';
 import axios from 'axios';
 
-import { useAuthState } from '@store';
 import { Text } from '@atoms';
-import { Button } from '@molecules';
-import UserVideoComponent from './UserVideoComponent';
+import { VideoRoomConfigModal, UserVideoComponent } from '../webrtc';
+import { useAuthState } from '@store';
 
 const Wrapper = styled.div`
   ${({ theme: { flexCol } }) => flexCol()}
@@ -16,26 +16,33 @@ const Wrapper = styled.div`
   }
 `;
 
-const Join = styled.div`
-  text-align: center;
-`;
-
 const SessionContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 10px;
 `;
 
-const OPENVIDU_SERVER_URL = 'https://3.38.39.72:443';
-// const OPENVIDU_SERVER_URL = 'https://localhost:4443';
+interface UserDevice {
+  mic: string;
+  cam: string;
+}
+
+// const OPENVIDU_SERVER_URL = 'https://3.38.39.72:4443';
+const OPENVIDU_SERVER_URL = 'https://localhost:4443';
 const OPENVIDU_SERVER_SECRET = 'MY_SECRET';
 
-let OV: OpenVidu;
-
 export default function VideoChat(): ReactElement {
+  const router = useRouter();
+
+  const [OV, setOV] = useState<OpenVidu>();
   const [session, setSession] = useState<Session>();
   const [publisher, setPublisher] = useState<StreamManager>();
   const [subscribers, setSubscribers] = useState<StreamManager[]>([]);
+  const [isConfigModalShow, setIsConfigModalShow] = useState<boolean>(true);
+  const [userDevice, setUserDevice] = useState<UserDevice>({
+    mic: '',
+    cam: '',
+  });
 
   const { name } = useAuthState();
   const myUserName = name ? name : 'MeetInSsafy';
@@ -53,6 +60,19 @@ export default function VideoChat(): ReactElement {
     };
   });
 
+  // Dynamic module import
+  useEffect(() => {
+    (async () => {
+      import('openvidu-browser')
+        .then((OpenViduModule) => {
+          setOV(new OpenViduModule.OpenVidu());
+        })
+        .catch((error) => {
+          console.log('openvidu import error: ', error.code, error.message);
+        });
+    })();
+  }, []);
+
   const onbeforeunload = () => {
     leaveSession();
   };
@@ -66,15 +86,20 @@ export default function VideoChat(): ReactElement {
     }
   };
 
-  const joinSession = () => {
-    import('openvidu-browser')
-      .then((OpenViduModule) => {
-        OV = new OpenViduModule.OpenVidu();
-        setSession(OV.initSession());
-      })
-      .catch((error) => {
-        console.log('openvidu import error: ', error.code, error.message);
-      });
+  const handlerConfigModalCloseBtn = () => {
+    setPublisher(undefined);
+    setIsConfigModalShow(false);
+    console.log('Config cancel. Redirect previous page.');
+    router.back();
+  };
+
+  const handlerJoinBtn = (micSelected: string, camSelected: string) => {
+    setUserDevice({
+      mic: micSelected,
+      cam: camSelected,
+    });
+    setIsConfigModalShow(false);
+    setSession(OV?.initSession());
   };
 
   // 'session' hook
@@ -86,7 +111,6 @@ export default function VideoChat(): ReactElement {
     // 어떤 새로운 스트림이 도착하면
     mySession.on('streamCreated', (event: any) => {
       let sub = mySession.subscribe(event.stream, ''); // targetElement(second param) ignored.
-      console.log(sub);
       let subs = subscribers;
       subs.push(sub);
       setSubscribers([...subs]);
@@ -105,16 +129,19 @@ export default function VideoChat(): ReactElement {
     getToken()
       .then((token: string) => {
         mySession.connect(token, { clientData: myUserName }).then(() => {
+          if (!OV) return;
+
+          const micIsNone = !userDevice.mic || userDevice.mic === '';
+          const camIsNone = !userDevice.cam || userDevice.cam === '';
+
           let publisher = OV.initPublisher('', {
-            // targetElement is empty string
-            audioSource: undefined, // 오디오. 기본값 마이크
-            videoSource: undefined, // 비디오. 기본값 웹캠
-            publishAudio: false, // 오디오 킬 건지
-            publishVideo: true, // 비디오 킬 건지
-            resolution: '640x320', // 해상도
-            frameRate: 30, // 프레임
-            insertMode: 'APPEND', // How the video is inserted in the target element 'video-container'
-            mirror: false, // 좌우반전
+            audioSource: micIsNone ? undefined : userDevice.mic,
+            videoSource: camIsNone ? undefined : userDevice.cam,
+            publishAudio: micIsNone ? false : true,
+            publishVideo: camIsNone ? false : true,
+            resolution: '640x320',
+            frameRate: 30,
+            mirror: false,
           });
 
           mySession.publish(publisher);
@@ -137,7 +164,7 @@ export default function VideoChat(): ReactElement {
       mySession.disconnect();
     }
 
-    OV = null;
+    setOV(undefined);
     setSession(undefined);
     setSubscribers([]);
     setPublisher(undefined);
@@ -170,17 +197,13 @@ export default function VideoChat(): ReactElement {
           } else {
             console.log(error);
             console.warn(
-              'No connection to OpenVidu Server. This may be a certificate error at ' +
-                OPENVIDU_SERVER_URL,
+              `No connection to OpenVidu Server. This may be a certificate error at ${OPENVIDU_SERVER_URL}`,
             );
             if (
               window.confirm(
-                'No connection to OpenVidu Server. This may be a certificate error at "' +
-                  OPENVIDU_SERVER_URL +
-                  '"\n\nClick OK to navigate and accept it. ' +
-                  'If no certificate warning is shown, then check that your OpenVidu Server is up and running at "' +
-                  OPENVIDU_SERVER_URL +
-                  '"',
+                `No connection to OpenVidu Server. This may be a certificate error at ${OPENVIDU_SERVER_URL}
+                
+                Click OK to navigate and accept it. If no certificate warning is shown, then check that your OpenVidu Server is up and running at ${OPENVIDU_SERVER_URL}`,
               )
             ) {
               window.location.assign(
@@ -216,38 +239,30 @@ export default function VideoChat(): ReactElement {
 
   return (
     <Wrapper>
-      {session === undefined && (
-        <Join>
-          <Text
-            text={sessionTitle}
-            fontSetting="n36m"
-            className="session-title"
-          />
-
-          {publisher !== undefined ? (
-            <UserVideoComponent streamManager={publisher} />
-          ) : null}
-          <Text text={myUserName} fontSetting="n20m" />
-
-          <Button title="세션 참여" func={joinSession} />
-        </Join>
-      )}
       {session !== undefined && (
         <>
           <Text text={sessionTitle} fontSetting="n26b"></Text>
           <SessionContainer>
             {publisher !== undefined && (
-              <div className="stream-container col-md-6 col-xs-6">
+              <div>
                 <UserVideoComponent streamManager={publisher} />
               </div>
             )}
             {subscribers.map((sub, i) => (
-              <div key={i} className="stream-container col-md-6 col-xs-6">
+              <div key={i}>
                 <UserVideoComponent streamManager={sub} />
               </div>
             ))}
           </SessionContainer>
         </>
+      )}
+      {isConfigModalShow && OV && (
+        <VideoRoomConfigModal
+          OV={OV}
+          sessionTitle={sessionTitle}
+          handlerJoin={handlerJoinBtn}
+          handlerClose={handlerConfigModalCloseBtn}
+        />
       )}
     </Wrapper>
   );

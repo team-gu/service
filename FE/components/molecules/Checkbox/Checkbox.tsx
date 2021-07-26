@@ -4,7 +4,7 @@ import styled from 'styled-components';
 interface CheckboxProps {
   children: ReactElement;
   // TODO: 타입 정의
-  func: () => any;
+  func: any;
 }
 
 const Wrapper = styled.div`

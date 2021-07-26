@@ -21,7 +21,7 @@ export default function UserVideoComponent({
   return (
     <div>
       {streamManager !== undefined && (
-        <div className="streamcomponent">
+        <div>
           <OpenViduVideoComponent streamManager={streamManager} />
           <NameTagWrapper>{getNicknameTag()}</NameTagWrapper>
         </div>
