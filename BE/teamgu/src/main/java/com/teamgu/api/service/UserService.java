@@ -9,5 +9,6 @@ import com.teamgu.database.entity.User;
  * */
 public interface UserService {
 	Optional<User> getUserByEmail(String email);
-	void save(User user);
+	boolean save(User user);
+	void setRefreshToken(String refreshToken, User user);
 }

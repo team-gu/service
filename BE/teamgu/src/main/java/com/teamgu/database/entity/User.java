@@ -27,7 +27,7 @@ public class User extends BaseEntity{
 	String email;
 	
 	String password;
-	@Column(length = 45)
+	
 	String refreshToken;
 	@Column(length = 7)
 	String studentNumber;

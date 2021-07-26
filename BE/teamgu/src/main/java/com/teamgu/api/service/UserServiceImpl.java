@@ -23,8 +23,14 @@ public class UserServiceImpl implements UserService {
 		return user;
 	}
 	@Override
-	public void save(User user) {
+	public boolean save(User user) {
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
+	    if(userRepository.save(user)==null)return false;
+	    return true;
+	}
+	@Override
+	public void setRefreshToken(String refreshToken, User user) {
+		user.setRefreshToken(refreshToken);
 		userRepository.save(user);
 	}
 

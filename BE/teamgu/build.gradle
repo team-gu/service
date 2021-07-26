@@ -169,11 +169,11 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok:1.18.20")
 
 	implementation 'org.springframework.boot:spring-boot-starter-validation' //for notnull
-    //testCompile('org.springframework.boot:spring-boot-starter-test')
-	//{
-	//   	exclude module: 'junit'//junit4 제거
-    //}
-    //testImplementation('org.springframework.boot:spring-boot-starter-test')
+//    testCompile('org.springframework.boot:spring-boot-starter-test')
+//	{
+//	   	exclude module: 'junit'//junit4 제거
+//    }
+    testImplementation('org.springframework.boot:spring-boot-starter-test')
 }
 
 test {
