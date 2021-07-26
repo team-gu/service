@@ -4,7 +4,6 @@ import { useRouter } from 'next/router';
 import styled from 'styled-components';
 import axios from 'axios';
 
-import { Text } from '@atoms';
 import { VideoRoomConfigModal, UserVideoComponent, VideoChatToolbar } from '../webrtc';
 import { useAuthState } from '@store';
 
@@ -274,7 +273,6 @@ export default function VideoChat(): ReactElement {
       {session !== undefined && (
         <>
           <SessionWrapper>
-            <Text text={sessionTitle} fontSetting="n26b"></Text>
             <SessionContainer>
               {publisher !== undefined && (
                 <div>
