@@ -1,5 +1,5 @@
 import { ReactElement, useState, useEffect } from 'react';
-import { OpenVidu, Session, StreamManager } from 'openvidu-browser';
+import { OpenVidu, Session, Subscriber, Publisher } from 'openvidu-browser';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
 import axios from 'axios';
@@ -46,8 +46,8 @@ export default function VideoChat(): ReactElement {
 
   const [OV, setOV] = useState<OpenVidu>();
   const [session, setSession] = useState<Session>();
-  const [publisher, setPublisher] = useState<StreamManager>();
-  const [subscribers, setSubscribers] = useState<StreamManager[]>([]);
+  const [publisher, setPublisher] = useState<Publisher>();
+  const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
   const [isConfigModalShow, setIsConfigModalShow] = useState<boolean>(true);
   const [userDevice, setUserDevice] = useState<UserDevice>({
     mic: '',
@@ -98,7 +98,7 @@ export default function VideoChat(): ReactElement {
     leaveSession();
   };
 
-  const deleteSubscriber = (streamManager: StreamManager) => {
+  const deleteSubscriber = (streamManager: Subscriber) => {
     let subs = subscribers;
     let index = subscribers.indexOf(streamManager, 0);
     if (index > -1) {
@@ -166,7 +166,7 @@ export default function VideoChat(): ReactElement {
             publishVideo: camIsNone ? false : true,
             resolution: '640x320',
             frameRate: 30,
-            mirror: false,
+            mirror: true,
           });
 
           mySession.publish(publisher);
@@ -241,27 +241,26 @@ export default function VideoChat(): ReactElement {
   };
 
   const handleClickVideoOff = () => {
-    console.log('Video OFF');
+    publisher?.publishVideo(false);
     setCamOn(false);
   };
 
   const handleClickVideoOn = () => {
-    console.log('Video ON');
+    publisher?.publishVideo(true);
     setCamOn(true);
   };
 
   const handleClickAudioOff = () => {
-    console.log('Audio OFF');
+    publisher?.publishAudio(false);
     setMicOn(false);
   };
 
   const handleClickAudioOn = () => {
-    console.log('Audio ON');
+    publisher?.publishAudio(true);
     setMicOn(true);
   };
 
   const handleClickExit = () => {
-    console.log('Exit');
     leaveSession();
     setOV(new OpenViduBrowser.OpenVidu());
     setIsConfigModalShow(true);
