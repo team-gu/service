@@ -57,22 +57,20 @@ export default function VideoChatToolbar({
     <Wrapper>
       <ToolbarBackground />
       <ToolbarContainer>
-        {camOn && (
+        {camOn ? (
           <span onClick={handleClickVideoOff}>
             <Icon iconName="videocam" />
           </span>
-        )}
-        {!camOn && (
+        ) : (
           <span onClick={handleClickVideoOn}>
             <Icon iconName="videocam_off" />
           </span>
         )}
-        {micOn && (
+        {micOn ? (
           <span onClick={handleClickAudioOff}>
             <Icon iconName="mic" />
           </span>
-        )}
-        {!micOn && (
+        ) : (
           <span onClick={handleClickAudioOn}>
             <Icon iconName="mic_off" />
           </span>
