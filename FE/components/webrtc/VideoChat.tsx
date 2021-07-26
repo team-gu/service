@@ -49,6 +49,9 @@ export default function VideoChat(): ReactElement {
     cam: '',
   });
 
+  const [micOn, setMicOn] = useState(false);
+  const [camOn, setCamOn] = useState(false);
+
   const { name } = useAuthState();
   const myUserName = name ? name : 'MeetInSsafy';
   const mySessionId = `session_of_${myUserName}`;
@@ -103,6 +106,10 @@ export default function VideoChat(): ReactElement {
       mic: micSelected,
       cam: camSelected,
     });
+
+    setMicOn(micSelected !== '');
+    setCamOn(camSelected !== '');
+
     setIsConfigModalShow(false);
     setSession(OV?.initSession());
   };
@@ -220,6 +227,26 @@ export default function VideoChat(): ReactElement {
     });
   };
 
+  const handleClickVideoOff = () => {
+    console.log('Video OFF');
+    setCamOn(false);
+  };
+
+  const handleClickVideoOn = () => {
+    console.log('Video ON');
+    setCamOn(true);
+  };
+
+  const handleClickAudioOff = () => {
+    console.log('Audio OFF');
+    setMicOn(false);
+  };
+
+  const handleClickAudioOn = () => {
+    console.log('Audio ON');
+    setMicOn(true);
+  };
+
   const createToken = (sessionId: string) => {
     return new Promise<string>((resolve, reject) => {
       let data = {};
@@ -260,7 +287,14 @@ export default function VideoChat(): ReactElement {
                 </div>
               ))}
             </SessionContainer>
-            <VideoChatToolbar />
+            <VideoChatToolbar
+              micOn={micOn}
+              camOn={camOn}
+              handleClickVideoOff={handleClickVideoOff}
+              handleClickVideoOn={handleClickVideoOn}
+              handleClickAudioOff={handleClickAudioOff}
+              handleClickAudioOn={handleClickAudioOn}
+            />
           </SessionWrapper>
         </>
       )}
