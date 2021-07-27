@@ -2,6 +2,10 @@ package com.teamgu.api.service;
 
 import java.util.Optional;
 
+import com.teamgu.api.dto.req.LoginReqDto;
+import com.teamgu.api.dto.req.TokenReqDto;
+import com.teamgu.api.dto.res.LoginResDto;
+import com.teamgu.api.dto.res.TokenResDto;
 import com.teamgu.database.entity.User;
 
 /**
@@ -11,4 +15,6 @@ public interface UserService {
 	Optional<User> getUserByEmail(String email);
 	boolean save(User user);
 	void setRefreshToken(String refreshToken, User user);
+	public LoginResDto login(LoginReqDto loginReq, User user);
+	public TokenResDto reissue(TokenReqDto tokenReq);
 }

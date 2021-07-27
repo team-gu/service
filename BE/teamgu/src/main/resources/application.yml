@@ -13,10 +13,10 @@ spring:
         dialect: org.hibernate.dialect.MySQL57Dialect
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver    
-    url: ENC(g2Fh8RH8HZvH7IA+IEVyrl03kvbYD3AlfYt9iOfNpuMX47tB4NIMbZrawzkW3o3vlaD0WdpLshpEY7J4n8w2kw+Eregh4KBp7znBpU9a3sFRT+8SQeCTCiENolbLwnbnl+dh4cTeVaiWDfpFf0HhAwxbvSLR131+Owk0A3Ic1O45TMBJL3zPYk+mAMO6GfQpipRm5ziPHlrIvEhA1ojhdF/H6nXUhmN/FH/KPqvw6Gl97eN0QYI8c1uZmQorB+BSIJe0ahxaA1O9+AvG0faTTaS9jLMtOA0XbexD+hx7i3o=)
+    url: jdbc:mysql://database-2.c9wk2jscggn1.ap-northeast-2.rds.amazonaws.com:3306/teamgu?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Seoul&zeroDateTimeBehavior=convertToNull&rewriteBatchedStatements=true
     hikari:
-      username: ENC(J4D73HG0S6p4WiY0nZYRMQ==)
-      password: ENC(HWQv8s6Ptz59zAnjzk9wK00Vtd9naGEg)
+      username: admin
+      password: teamguptj
 jwt:
   issuer: teamgu
   secret: h2lsdmVybmluZS10ZWNoLXNwlmauZy1ib290LWp3dC10dXRvcmlhbC1zZWNyZXQtc2lsdmVybmluZS10ZWNoLXNwcmluZy1ib290LWp3dC10dXRvcmlhbC1zZWNyZXQK

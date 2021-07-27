@@ -12,6 +12,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.csrf.CsrfFilter;
+import org.springframework.web.filter.CharacterEncodingFilter;
 
 import com.teamgu.common.auth.JwtAuthEntryPoint;
 import com.teamgu.common.auth.JwtRequestFilter;
@@ -53,13 +55,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception{
-        http
+        
+    	CharacterEncodingFilter filter = new CharacterEncodingFilter();
+
+        filter.setEncoding("UTF-8");
+
+        filter.setForceEncoding(true);
+
+        http.addFilterBefore(filter,CsrfFilter.class)
                 .cors().disable()
                 .csrf().disable()
                 .authorizeRequests()
                 .antMatchers(
-                        "/api/auth/saveDumyData",
+                        "/api/auth/saveDummyData",
                         "/api/auth/login",
+                        "/api/auth/reissue",
                         "/v2/api-docs",
                         "/configuration/ui",
                         "/swagger-resources/**", 
