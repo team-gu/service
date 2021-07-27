@@ -125,6 +125,10 @@ export default function VideoChat(): ReactElement {
     }
   };
 
+  const updateSubscribers = () => {
+    setSubscribers((subs) => subs.slice());
+  };
+
   const handlerConfigModalCloseBtn = () => {
     setPublisher(undefined);
     setIsConfigModalShow(false);
@@ -167,6 +171,11 @@ export default function VideoChat(): ReactElement {
     // 예외가 발생하면
     mySession.on('exception', (exception: any) => {
       console.warn(exception);
+    });
+
+    // 스트림 속성이 변경되면
+    mySession.on('streamPropertyChanged', () => {
+      updateSubscribers();
     });
 
     getToken()
