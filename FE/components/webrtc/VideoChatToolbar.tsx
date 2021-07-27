@@ -7,8 +7,11 @@ const Wrapper = styled.div`
 `;
 
 const ToolbarBackground = styled.div`
-  position: absolute;
-  top: 80px;
+  position: fixed;
+  bottom: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+
   width: 550px;
   height: 30px;
   text-align: center;
@@ -20,15 +23,18 @@ const ToolbarBackground = styled.div`
 `;
 
 const ToolbarContainer = styled.div`
-  position: absolute;
-  top: 80px;
+  position: fixed;
+  bottom: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+
   width: 550px;
   height: 30px;
   text-align: center;
   padding: 10px 0;
 
   i {
-    margin: 0 10px;
+    margin: 0 20px;
     font-size: 32px;
     cursor: pointer;
   }
