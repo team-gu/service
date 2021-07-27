@@ -8,6 +8,8 @@ declare module 'styled-components' {
       white: string;
       gray: string;
       daangn: string;
+      microBlue: string;
+      lightBlue: string;
     };
     layout: {
       pageMaxWidth: string;
