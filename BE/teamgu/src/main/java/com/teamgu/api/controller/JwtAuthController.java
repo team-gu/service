@@ -35,7 +35,7 @@ public class JwtAuthController {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 	
-	@PostMapping("/saveDummyData")
+	@PostMapping("/dummyData")
 	@ApiOperation(value = "더미 데이터 추가", notes = "사용자 초기정보(email/pwd/name/role)를 추가 한다") 
 	public ResponseEntity<BaseResDto> signIn(
 			@RequestBody @ApiParam(value = "더미 데이터 추가 (email,pw)", required = true) DummyReqDto dummyReq) {

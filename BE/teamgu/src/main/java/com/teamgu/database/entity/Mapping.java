@@ -22,9 +22,6 @@ public class Mapping extends BaseEntity {
 	int trackCode;
 	
 	@OneToMany(mappedBy="mapping")
-	private List<WishTrack> wishTracks = new ArrayList<>();
-	
-	@OneToMany(mappedBy="mapping")
 	private List<Team> teams = new ArrayList<>();
 	
 }
