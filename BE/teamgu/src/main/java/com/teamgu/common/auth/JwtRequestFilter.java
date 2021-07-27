@@ -8,20 +8,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.teamgu.common.util.JwtTokenUtil;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
-
-	@Autowired
-	private JwtUserDetailsService jwtUserDetailsService;
+	
+	 public static final String AUTHORIZATION_HEADER = "Authorization";
+	    public static final String BEARER_PREFIX = "Bearer ";
 
 	@Autowired
 	private JwtTokenUtil jwtTokenUtil;
@@ -30,40 +29,25 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 
-		String tokenHeader = request.getHeader("Authorization");
+		// 1. Request Header 에서 토큰 꺼내기 
+        String jwt = resolveToken(request);
 
-		String userEmail = null;
-		String jwtToken = null;
+        // 2. validateToken 으로 토큰 유효성 검사
+        // 정상 토큰이면 해당 토큰으로 Authentication 을 가져와서 SecurityContext 에 저장
+        if (StringUtils.hasText(jwt) && jwtTokenUtil.validateToken(jwt)) {
+            Authentication authentication = jwtTokenUtil.getAuthentication(jwt);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        }
 
-		// 1) JWT 토큰은 "Beare token"을 받는다.
-		if (tokenHeader != null && tokenHeader.startsWith("Bearer ")) {
-			jwtToken = tokenHeader.substring(7);
-			try {
-				userEmail = jwtTokenUtil.getEmailFromToken(jwtToken);
-			} catch (Exception e) {
-				e.printStackTrace();
-				throw new RuntimeException("11 UserEmail from token error");
-			}
-		} else {
-			logger.warn("JWT token does not begin with Bearer String");
-		}
-
-		// 2) 토큰을 검증한다.
-		if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-			TeamguUserDetails userDetails = (TeamguUserDetails) this.jwtUserDetailsService
-					.loadUserByUsername(userEmail);
-
-			// 2-1) 유효 토큰인지 확인
-			if (jwtTokenUtil.isValidToken(jwtToken, userDetails)) {
-				UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-						userDetails, null, userDetails.getAuthorities());
-				usernamePasswordAuthenticationToken
-						.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-				SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-			}
-		}
-		filterChain.doFilter(request, response);
+        filterChain.doFilter(request, response);
 	}
+	 // Request Header 에서 토큰 정보를 꺼내오기
+    private String resolveToken(HttpServletRequest request) {
+        String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
+            return bearerToken.substring(7);
+        }
+        return null;
+    }
 
 }

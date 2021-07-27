@@ -27,7 +27,7 @@ public class User extends BaseEntity{
 	String email;
 	
 	String password;
-	
+
 	String refreshToken;
 	@Column(length = 7)
 	String studentNumber;
@@ -96,10 +96,12 @@ public class User extends BaseEntity{
 
 
 	@Builder
-    public User(Long id, String email, String password){
+    public User(Long id, String email, String password, String name, short role){
         this.id = id;
         this.email = email;
         this.password = password;
+        this.name = name;
+        this.role = role;
     }
 
 }

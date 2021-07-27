@@ -29,6 +29,11 @@ public class TeamguUserDetails implements UserDetails {
 		this.user = user;
 	}
 
+	public TeamguUserDetails(String subject, String string, Collection<? extends GrantedAuthority> authorities) {
+		this.user.setEmail(subject);
+		this.roles = (List<GrantedAuthority>) authorities;
+	}
+
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return this.roles;
