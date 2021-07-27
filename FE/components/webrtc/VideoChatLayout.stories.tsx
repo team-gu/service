@@ -5,10 +5,7 @@ export default {
   title: 'webrtc/Video Chat Layout',
 };
 
-const arr = [1, 2, 2, 2];
-
-// 9 ~
-const Wrapper = styled.div<{ number: number }>`
+const Wrapper = styled.div`
   display: flex;
   flex-flow: row wrap;
   justify-content: center;
@@ -38,20 +35,8 @@ const Wrapper = styled.div<{ number: number }>`
   }
 `;
 
-// ${({ number }) => {
-//     if (number > 8) {
-//       return `.item { flex: 0 0 240px }`;
-//     } else if (number > 4) {
-//       return `.item { flex: 0 0 360px }`;
-//     } else if (number > 2) {
-//       return `.item { flex: 0 0 480px }`;
-//     } else {
-//       return `.item { flex: 0 0 640px }`;
-//     }
-//   }}
-
-const Template: Story = () => (
-  <Wrapper number={arr.length}>
+const Template: Story = ({arr}) => (
+  <Wrapper>
     {arr.map((item, index) =>
       item % 2 == 0 ? (
         <div key={index} className="item">
@@ -67,3 +52,7 @@ const Template: Story = () => (
 );
 
 export const videoChatLayout = Template.bind({});
+
+videoChatLayout.args = {
+  arr: [1,2,2,1]
+}
