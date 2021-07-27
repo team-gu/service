@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -14,6 +15,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
+import com.teamgu.common.auth.JwtUserDetailsService;
 import com.teamgu.common.auth.TeamguUserDetails;
 import com.teamgu.database.entity.User;
 
@@ -26,6 +28,9 @@ import io.jsonwebtoken.UnsupportedJwtException;
 
 @Service
 public class JwtTokenUtil {
+	
+	@Autowired
+	JwtUserDetailsService jwtUserDetailsService;
 	
 	private static final Logger logger = LoggerFactory.getLogger(JwtTokenUtil.class);
 	
@@ -83,11 +88,11 @@ public class JwtTokenUtil {
 	                        .collect(Collectors.toList());
 
 		// UserDetails 객체를 만들어서 Authentication 리턴
-		TeamguUserDetails principal = new TeamguUserDetails(claims.getSubject(), "", authorities);
+		TeamguUserDetails principal = (TeamguUserDetails) jwtUserDetailsService.loadUserByUsername(claims.getSubject());
 
 		return new UsernamePasswordAuthenticationToken(principal, "", authorities);
 	}
-
+	
 	private Claims parseClaims(String accessToken) {
 		try {
 			return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(accessToken).getBody();
