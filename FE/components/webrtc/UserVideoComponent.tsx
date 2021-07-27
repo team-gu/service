@@ -8,11 +8,15 @@ interface UserVideoComponentProps {
 }
 
 const NameTagWrapper = styled.div`
-  text-align: center;
+  position: absolute;
+  top: 0;
+  background-color: black;
+  color: white;
+  padding: 3px 5px;
 `;
 
 const Wrapper = styled.div`
-  text-align: center;
+  position: relative;
 `;
 
 export default function UserVideoComponent({
