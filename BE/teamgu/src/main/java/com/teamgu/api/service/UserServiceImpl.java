@@ -13,6 +13,7 @@ import com.teamgu.api.dto.req.TokenReqDto;
 import com.teamgu.api.dto.req.UserInfoReqDto;
 import com.teamgu.api.dto.res.LoginResDto;
 import com.teamgu.api.dto.res.TokenResDto;
+import com.teamgu.api.dto.res.UserInfoResDto;
 import com.teamgu.common.auth.JwtUserDetailsService;
 import com.teamgu.common.util.JwtTokenUtil;
 import com.teamgu.database.entity.Skill;
@@ -126,13 +127,17 @@ public class UserServiceImpl implements UserService {
 		// 토큰 발급
 		return tokenDto;
 	}
-	
+	/**
+	 * 초기 마이페이지 데이터 입력 함수  
+	 */
 	@Override
-	public User setUserDetailInfo(UserInfoReqDto userInfoReq) {
+	public void setUserDetailInfo(UserInfoReqDto userInfoReq) {
+		
 		User user = getUserByEmail(userInfoReq.getEmail()).get();
 		user.setPassword(passwordEncoder.encode(userInfoReq.getPassword()));
 		user.setStudentNumber(userInfoReq.getStudentNumber());
 		user.setWishPosition(userInfoReq.getWishPosition());
+		
 		// 선호 트랙 저장 
 		List<Integer> wishTracks = userInfoReq.getWishTrack();
 		WishTrack wishTrack = new WishTrack();
@@ -162,7 +167,20 @@ public class UserServiceImpl implements UserService {
 		}
 		userRepository.save(user);
 		user =  getUserByEmail(user.getEmail()).get();
-		return user;
+	}
+	/**
+	 * 마이페이지 데이터 조회 함수  
+	 */
+	public UserInfoResDto getUserDetailInfo(String email) {
+		User user = userRepository.findByEmail(email).get();
+		UserInfoResDto userInfoRes = new UserInfoResDto();
+		userInfoRes.setPassword(user.getPassword());
+		userInfoRes.setStudentNumber(user.getStudentNumber());
+		userInfoRes.setWishPosition(user.getWishPosition());
+		userInfoRes.setIntroduce(user.getIntroduce());
+		userInfoRes.setProjects(user.getUserProject());
+		userInfoRes.setAwards(user.getUserAward());
+		return userInfoRes;
 	}
 	
 	
