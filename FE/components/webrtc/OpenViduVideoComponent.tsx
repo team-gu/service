@@ -20,11 +20,16 @@ export default function UserVideoComponent({
 
   return (
     <>
-      {streamManager.stream.videoActive && (
+      {streamManager.stream.videoActive ? (
         <video autoPlay={true} ref={videoRef} />
-      )}
-      {!streamManager.stream.videoActive && (
-        <Image src={'/profile.png'} alt="profile" width={'320px'} height={'240px'} objectFit='contain' />
+      ) : (
+        <Image
+          src={'/profile.png'}
+          alt="profile"
+          width={'320px'}
+          height={'240px'}
+          objectFit="contain"
+        />
       )}
     </>
   );
