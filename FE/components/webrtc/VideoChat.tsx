@@ -26,10 +26,28 @@ const SessionWrapper = styled.div`
   width: 100%;
 `;
 
-const SessionContainer = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
+const SessionContainer = styled.div<{ number: number }>`
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  flex-grow: 1;
+
+  .item {
+    background-color: yellow;
+    border: solid red 1px;
+  }
+
+  ${({ number }) => {
+    if (number > 8) {
+      return `.item { flex: 0 0 240px }`;
+    } else if (number > 4) {
+      return `.item { flex: 0 0 360px }`;
+    } else if (number > 1) {
+      return `.item { flex: 0 0 480px }`;
+    } else {
+      return `.item { flex: 0 0 640px }`;
+    }
+  }}
 `;
 
 interface UserDevice {
@@ -37,8 +55,8 @@ interface UserDevice {
   cam: string;
 }
 
-const OPENVIDU_SERVER_URL = 'https://3.38.39.72';
-// const OPENVIDU_SERVER_URL = 'https://localhost:4443';
+// const OPENVIDU_SERVER_URL = 'https://3.38.39.72';
+const OPENVIDU_SERVER_URL = 'https://localhost:4443';
 const OPENVIDU_SERVER_SECRET = 'MY_SECRET';
 
 export default function VideoChat(): ReactElement {
@@ -293,14 +311,14 @@ export default function VideoChat(): ReactElement {
       {session !== undefined && (
         <>
           <SessionWrapper>
-            <SessionContainer>
+            <SessionContainer number={subscribers.length + 1}>
               {publisher !== undefined && (
-                <div>
+                <div className="flexItem">
                   <UserVideoComponent streamManager={publisher} />
                 </div>
               )}
               {subscribers.map((sub, i) => (
-                <div key={i}>
+                <div key={i} className="flexItem">
                   <UserVideoComponent streamManager={sub} />
                 </div>
               ))}
