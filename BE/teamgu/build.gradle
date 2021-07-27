@@ -7,7 +7,7 @@ buildscript{
         querydslPluginVer = '1.0.10'
         springDependencyMgmtVer = '1.0.11'
         springLoadedVer = '1.2.8'
-        nodePluginVer = '1.3.1'
+        //nodePluginVer = '1.3.1'
     }
     repositories {
         mavenCentral()
@@ -18,7 +18,7 @@ buildscript{
         classpath "io.spring.gradle:dependency-management-plugin:${springDependencyMgmtVer}.RELEASE"
         classpath "org.springframework:springloaded:${springLoadedVer}.RELEASE"
         classpath "gradle.plugin.com.ewerk.gradle.plugins:querydsl-plugin:${querydslPluginVer}"
-        classpath "com.github.node-gradle:gradle-node-plugin:3.1.0"
+        //classpath "com.github.node-gradle:gradle-node-plugin:3.1.0"
     }
 }
 plugins {
@@ -29,7 +29,7 @@ plugins {
 apply plugin: 'com.ewerk.gradle.plugins.querydsl'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'eclipse'
-apply plugin: 'com.github.node-gradle.node'
+//apply plugin: 'com.github.node-gradle.node'
 
 repositories {
     mavenCentral()
@@ -45,22 +45,27 @@ group = 'com.teamgu'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
 
+/*
 node {
     download = true
     version = '14.17.0'
-    nodeModulesDir = file("${project.projectDir}/../frontend")
+    nodeModulesDir = file("${project.projectDir}/../FE")
 }
+*/
 
 configurations {
     providedRuntime
 }
 
+/*
 task webpack(type: NpmTask, dependsOn: 'npmInstall') {
     args = ['run','build']
 }
+*/
 
 // processResources is a Java task. Run the webpack bundling before this task using the 'build' task in the package.json
-processResources.dependsOn 'webpack'
+//npm build 오류로 주석처리한다.
+//processResources.dependsOn 'webpack'
 
 //set build time and inject value to application.properties
 def buildTime() {
@@ -71,22 +76,23 @@ def buildTime() {
 
 project.ext.set("build.date", buildTime())
 
-processResources {
-    with copySpec {
-        from "src/main/resources"
-        include "**/application*.yml"
-        include "**/application*.yaml"
-        include "**/application*.properties"
-        project.properties.findAll().each {
-            prop ->
-                if (prop.value != null) {
-                    filter(ReplaceTokens, tokens: [ (prop.key): String.valueOf(prop.value)])
-                    filter(ReplaceTokens, tokens: [ ('project.' + prop.key): String.valueOf(prop.value)])
-                    filter(ReplaceTokens, tokens: [ ('project.ext.' + prop.key): String.valueOf(prop.value)])
-                }
-        }
-    }
-}
+
+//processResources {
+//    with copySpec {
+//        from "src/main/resources"
+//        include "**/application*.yml"
+//        include "**/application*.yaml"
+//        include "**/application*.properties"
+//        project.properties.findAll().each {
+//            prop ->
+//                if (prop.value != null) {
+//                    filter(ReplaceTokens, tokens: [ (prop.key): String.valueOf(prop.value)])
+//                    filter(ReplaceTokens, tokens: [ ('project.' + prop.key): String.valueOf(prop.value)])
+//                    filter(ReplaceTokens, tokens: [ ('project.ext.' + prop.key): String.valueOf(prop.value)])
+//                }
+//        }
+//    }
+//}
 
 
 def querydslDir = 'src/main/generated'
@@ -134,13 +140,16 @@ dependencies {
 
     //STOMP 웹소캣 서버 사이드 테스트를 위한 의존성 추가
     implementation("org.springframework.boot:spring-boot-starter-mustache")
+    
     //STOMP 관련 프론트 라이브러리
     implementation('org.webjars.bower:jquery:3.3.1')
     implementation('org.webjars:sockjs-client:1.1.2')
     implementation('org.webjars:stomp-websocket:2.3.3-1')
     implementation('org.webjars:webjars-locator:0.30')
+    
     //WebRTC 클라이언트 의존성 추가
     implementation('org.webjars.bower:webrtc-adapter:7.4.0')
+    
     //Kurento (미디어서버) 관련 의존성 추가 => openvidu
     implementation('org.kurento:kurento-client:6.16.0')
     implementation('org.kurento:kurento-utils-js:6.15.0')
@@ -154,9 +163,13 @@ dependencies {
 
     testImplementation("com.jayway.jsonpath:json-path:2.4.0")
 
+	//민감정보 암호화
+	implementation("com.github.ulisesbocchio:jasypt-spring-boot-starter:1.17")
+
+
     implementation("com.auth0:java-jwt:3.10.3")
     implementation group: 'io.jsonwebtoken', name: 'jjwt', version: '0.2'
-    
+        
     implementation("io.springfox:springfox-swagger2:3.0.0")
     implementation("io.springfox:springfox-swagger-ui:3.0.0")
     implementation("io.springfox:springfox-data-rest:3.0.0")
@@ -176,6 +189,6 @@ dependencies {
     testImplementation('org.springframework.boot:spring-boot-starter-test')
 }
 
-test {
-    useJUnitPlatform()
-}
+//test {
+//    useJUnitPlatform()
+//}
