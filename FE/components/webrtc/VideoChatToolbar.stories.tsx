@@ -2,7 +2,7 @@ import { Story } from '@storybook/react';
 import VideoChatToolbar from './VideoChatToolbar';
 
 export default {
-  title: 'webrtc/VideoChatToolbar',
+  title: 'webrtc/Video Chat Toolbar',
   component: VideoChatToolbar,
 };
 

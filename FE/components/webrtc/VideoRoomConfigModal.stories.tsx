@@ -3,7 +3,7 @@ import { OpenVidu } from 'openvidu-browser';
 import { Story } from '@storybook/react';
 
 export default {
-  title: 'webrtc/VideoRoomConfigModal',
+  title: 'webrtc/Video Room Config Modal',
   component: VideoRoomConfigModal,
 };
 
