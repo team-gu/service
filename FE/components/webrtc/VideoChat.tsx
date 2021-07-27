@@ -30,24 +30,11 @@ const SessionContainer = styled.div<{ number: number }>`
   display: flex;
   flex-flow: row wrap;
   justify-content: center;
-  flex-grow: 1;
+  align-items: center;
 
-  .item {
-    background-color: yellow;
-    border: solid red 1px;
+  .flexItem {
+    flex: 0 0 640px;
   }
-
-  ${({ number }) => {
-    if (number > 8) {
-      return `.item { flex: 0 0 240px }`;
-    } else if (number > 4) {
-      return `.item { flex: 0 0 360px }`;
-    } else if (number > 1) {
-      return `.item { flex: 0 0 480px }`;
-    } else {
-      return `.item { flex: 0 0 640px }`;
-    }
-  }}
 `;
 
 interface UserDevice {
@@ -55,8 +42,8 @@ interface UserDevice {
   cam: string;
 }
 
-const OPENVIDU_SERVER_URL = 'https://3.38.39.72';
-// const OPENVIDU_SERVER_URL = 'https://localhost:4443';
+// const OPENVIDU_SERVER_URL = 'https://3.38.39.72';
+const OPENVIDU_SERVER_URL = 'https://localhost:4443';
 const OPENVIDU_SERVER_SECRET = 'MY_SECRET';
 
 export default function VideoChat(): ReactElement {
