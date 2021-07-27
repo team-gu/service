@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "prepare": "husky install",
+    "dev": "cd FE && yarn dev",
+    "storybook": "cd FE && yarn storybook",
     "lint": "cd FE && yarn lint",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
