@@ -1,4 +1,5 @@
 import Button from './Button';
+import ChatInput from './ChatInput';
 import Checkbox from './Checkbox';
 import FloatButton from './FloatButton';
 import Label from './Label';
@@ -9,6 +10,7 @@ import Title from './Title';
 
 export {
   Button,
+  ChatInput,
   Checkbox,
   FloatButton,
   Label,
