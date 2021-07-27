@@ -9,6 +9,7 @@ interface ProfileContainerProps {
   content: string;
   isActive: boolean;
   time: string;
+  alertNumber?: number;
 }
 
 const Wrapper = styled.div`
@@ -21,8 +22,9 @@ const Wrapper = styled.div`
   padding-right: 5%;
 
   .container {
-    width: 85%;
     ${({ theme: { flexRow } }) => flexRow('flex-start')}
+    width: 85%;
+
     .container-content {
       width: 80%;
       ${({ theme: { flexCol } }) => flexCol('center', 'flex-start')}
@@ -30,8 +32,19 @@ const Wrapper = styled.div`
     }
   }
   .time {
+    ${({ theme: { flexCol } }) => flexCol('center', 'flex-end')}
     width: 100px;
     text-align: right;
+    .notification {
+      ${({ theme: { flexCol } }) => flexCol('center')}
+      min-width: 10px;
+      height: 20px;
+      padding: 0 5px;
+      border-radius: 20px;
+      background-color: red;
+      font-family: system-ui;
+      color: white;
+    }
   }
 `;
 
@@ -41,6 +54,7 @@ export default function ProfileContainer({
   content,
   isActive,
   time,
+  alertNumber = 0,
 }: ProfileContainerProps): ReactElement {
   return (
     <Wrapper>
@@ -53,6 +67,7 @@ export default function ProfileContainer({
       </div>
       <div className="time">
         <Text text={time} />
+        {alertNumber > 0 && <div className="notification">{alertNumber}</div>}
       </div>
     </Wrapper>
   );
