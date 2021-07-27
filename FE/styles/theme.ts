@@ -12,6 +12,8 @@ const theme: DefaultTheme = {
     white: '#ffffff',
     gray: '#EEEEEE',
     daangn: '#E49143',
+    microBlue: '#F3F8FF',
+    lightBlue: '#E1EDFF'
   },
   layout: {
     pageMaxWidth: '1440px',
