@@ -94,18 +94,6 @@ const theme: DefaultTheme = {
       display: block;
     `,
   },
-  input: css`
-    width: 180px;
-    height: 10px;
-    padding: 10px;
-
-    border: 1px solid
-      ${({
-        theme: {
-          colors: { gray },
-        },
-      }) => gray};
-  `,
 };
 
 export default theme;
