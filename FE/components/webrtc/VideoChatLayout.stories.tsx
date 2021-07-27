@@ -5,7 +5,7 @@ export default {
   title: 'webrtc/Video Chat Layout',
 };
 
-const arr = [1,2,2,2];
+const arr = [1, 2, 2, 2];
 
 // 9 ~
 const Wrapper = styled.div<{ number: number }>`
