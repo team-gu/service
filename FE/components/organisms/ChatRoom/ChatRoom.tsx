@@ -52,11 +52,11 @@ export default function Chatroom({
     handleScrollToEnd();
   }, []);
 
-  // TODO: DateTime.fromISO(time).toRelative()를 위해 1초마다 리렌더링이 일어나도록 강제.. 근데 좋은 코드인지는 모르겠음 추후 리펙토링
+  // TODO: DateTime.fromISO(time).toRelative()를 위해 60초마다 리렌더링이 일어나도록 강제.. 근데 좋은 코드인지는 모르겠음 추후 리펙토링
   useEffect(() => {
     const interval = setInterval(() => {
       setChatData([...chatData]);
-    }, 1000);
+    }, 60000);
 
     return () => clearInterval(interval);
   });
@@ -69,7 +69,11 @@ export default function Chatroom({
             key={id}
             userName={userName}
             profileSrc={profileSrc}
-            time={DateTime.fromISO(time).toRelative()}
+            time={
+              Number(DateTime.now()) - Number(DateTime.fromISO(time)) < 60000
+                ? 'just now'
+                : DateTime.fromISO(time).toRelative()
+            }
             message={message}
             isMe={isMe}
           />
