@@ -2,13 +2,9 @@ import { ReactElement, useState, MouseEventHandler } from 'react';
 import styled from 'styled-components';
 import { Icon } from '@atoms';
 
-const Wrapper = styled.div`
-  ${({ theme: { flexCol } }) => flexCol()}
-`;
-
 const ToolbarBackground = styled.div`
   position: fixed;
-  bottom: 70px;
+  bottom: 50px;
   left: 50%;
   transform: translateX(-50%);
 
@@ -24,7 +20,7 @@ const ToolbarBackground = styled.div`
 
 const ToolbarContainer = styled.div`
   position: fixed;
-  bottom: 70px;
+  bottom: 50px;
   left: 50%;
   transform: translateX(-50%);
 
@@ -60,7 +56,7 @@ export default function VideoChatToolbar({
   handleClickExit,
 }: VideoChatToolbarProps): ReactElement {
   return (
-    <Wrapper>
+    <>
       <ToolbarBackground />
       <ToolbarContainer>
         {camOn ? (
@@ -88,6 +84,6 @@ export default function VideoChatToolbar({
           <Icon iconName="logout" />
         </span>
       </ToolbarContainer>
-    </Wrapper>
+    </>
   );
 }
