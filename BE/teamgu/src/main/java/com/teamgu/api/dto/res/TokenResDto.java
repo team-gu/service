@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@ApiModel(description = "토큰 재생성 요청 모델")
+@ApiModel(description = "토큰 재생성 응답 모델")
 public class TokenResDto {
 	@ApiModelProperty(name="access 토큰", example = "")
 	String accessToken;

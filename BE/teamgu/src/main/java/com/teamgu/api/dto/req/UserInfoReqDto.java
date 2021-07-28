@@ -16,21 +16,16 @@ import lombok.Setter;
 public class UserInfoReqDto {
 	@ApiModelProperty(name = "user email", example = "idea@naver.com")
 	String email;
-	@ApiModelProperty(name = "password", example = "새로운 비밀번호")
-	String password;
+
 	@ApiModelProperty(name = "studentNumber", example = "0546419")
 	String studentNumber;
 	@ApiModelProperty(name = "wishPosition", example = "101")
 	int wishPosition;
 	@ApiModelProperty(name = "wishTrack")
-	List<Integer> wishTrack;
+	List<String> wishTrack;
 	@ApiModelProperty(name = "introduce", example = "안녕하세요! 할말이 없어요!")
 	String introduce;
-	@ApiModelProperty(name = "skillCode")
-	List<Integer> skillCode;
-	@ApiModelProperty(name = "project")
-	List<UserProject> projects;
-	@ApiModelProperty(name = "awards")
-	List<UserAward> awards;
+	@ApiModelProperty(name = "skill")
+	List<String> skill;
 	
 }
