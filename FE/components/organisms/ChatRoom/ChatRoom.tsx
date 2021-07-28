@@ -40,13 +40,17 @@ export default function Chatroom({
 }: ChatRoomProps): ReactElement {
   const chatBoxRef: any = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
+  const handleScrollToEnd = () => {
     chatBoxRef.current.scrollTo({
       top: chatBoxRef.current.scrollHeight - chatBoxRef.current.clientHeight,
       left: 0,
       behavior: 'smooth',
     });
-  }, [chatData]);
+  };
+
+  useEffect(() => {
+    handleScrollToEnd();
+  }, []);
 
   // TODO: DateTime.fromISO(time).toRelative()를 위해 1초마다 리렌더링이 일어나도록 강제.. 근데 좋은 코드인지는 모르겠음 추후 리펙토링
   useEffect(() => {
@@ -73,7 +77,7 @@ export default function Chatroom({
       </div>
       {/* TODO: 채팅 로직 확정되면 반영 */}
       <ChatInput
-        func={(data: string) =>
+        func={(data: string) => {
           setChatData([
             ...chatData,
             {
@@ -84,8 +88,10 @@ export default function Chatroom({
               message: data,
               isMe: true,
             },
-          ])
-        }
+          ]);
+
+          handleScrollToEnd();
+        }}
       />
     </Wrapper>
   );
