@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -14,10 +13,10 @@ import java.util.List;
 @ApiModel("NoticeDetailResponse")
 public class NoticeDetailResDto extends BaseResDto {
     @ApiModelProperty(name = "공지사항 생성일", example = "")
-    Date createDate;
+    String createDate;
 
     @ApiModelProperty(name = "공지사항 수정일", example = "")
-    Date mdfyDate;
+    String mdifyDate;
 
     @ApiModelProperty(name = "공지사항 제목", example = "")
     String title;
