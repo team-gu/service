@@ -16,21 +16,15 @@ const WrapEachButton = styled.button<{ width: string }>`
   margin: 0 auto;
 
   background-color: ${({
-  theme: {
-    colors: { black },
-  },
-}) => black};
+    theme: {
+      colors: { black },
+    },
+  }) => black};
 
   border: none;
   border-radius: 8px;
 
   box-shadow: 0px 0px 4px 2px rgba(55, 53, 47, 0.4);
-
-  color: ${({
-  theme: {
-    colors: { white },
-  },
-}) => white};
 
   transition: 300ms;
   animation: 800ms ease fadeIn;
@@ -51,7 +45,7 @@ export default function Button({
 }: EachButtonProps): ReactElement {
   return (
     <WrapEachButton type="button" onClick={func} width={width}>
-      <Text text={title} fontSetting="n14b" />
+      <Text text={title} fontSetting="n14b" color="white" />
     </WrapEachButton>
   );
 }
