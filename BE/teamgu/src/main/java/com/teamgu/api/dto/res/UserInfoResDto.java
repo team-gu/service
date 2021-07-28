@@ -1,4 +1,4 @@
-package com.teamgu.api.dto.req;
+package com.teamgu.api.dto.res;
 
 import java.util.List;
 
@@ -13,7 +13,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @ApiModel(description = "사용자 정보 요청 모델")
-public class UserInfoReqDto {
+public class UserInfoResDto {
 	@ApiModelProperty(name = "user email", example = "idea@naver.com")
 	String email;
 	@ApiModelProperty(name = "password", example = "새로운 비밀번호")

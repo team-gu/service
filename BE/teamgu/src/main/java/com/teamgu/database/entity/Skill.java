@@ -1,13 +1,12 @@
 package com.teamgu.database.entity;
 
-import java.io.Serializable;
-
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.ManyToOne;
-import javax.validation.constraints.NotNull;
+
+import com.teamgu.database.entity.pk.SkillPK;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -15,7 +14,8 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class Skill implements Serializable {
+@IdClass(SkillPK.class)
+public class Skill {
 	@Id
 	int skillCode;
 	@Id

@@ -1,5 +1,6 @@
 package com.teamgu.api.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,12 +10,22 @@ import org.springframework.stereotype.Service;
 
 import com.teamgu.api.dto.req.LoginReqDto;
 import com.teamgu.api.dto.req.TokenReqDto;
+import com.teamgu.api.dto.req.UserInfoReqDto;
 import com.teamgu.api.dto.res.LoginResDto;
 import com.teamgu.api.dto.res.TokenResDto;
+import com.teamgu.api.dto.res.UserInfoResDto;
 import com.teamgu.common.auth.JwtUserDetailsService;
 import com.teamgu.common.util.JwtTokenUtil;
+import com.teamgu.database.entity.Skill;
 import com.teamgu.database.entity.User;
+import com.teamgu.database.entity.UserAward;
+import com.teamgu.database.entity.UserProject;
+import com.teamgu.database.entity.WishTrack;
+import com.teamgu.database.repository.AwardRepository;
+import com.teamgu.database.repository.ProjectRepository;
+import com.teamgu.database.repository.SkillRepository;
 import com.teamgu.database.repository.UserRepository;
+import com.teamgu.database.repository.WishTrackRepository;
 
 @Service("userService")
 public class UserServiceImpl implements UserService {
@@ -26,7 +37,15 @@ public class UserServiceImpl implements UserService {
 	PasswordEncoder passwordEncoder;
 
 	@Autowired
-	UserRepository userRepository;
+	UserRepository userRepository;	
+	@Autowired
+	WishTrackRepository wishTrackRepository;
+	@Autowired
+	SkillRepository skillRepository;
+	@Autowired
+	ProjectRepository projectRepository;
+	@Autowired
+	AwardRepository awardRepository;
 
 	@Autowired
 	JwtUserDetailsService userDetailsService;
@@ -107,6 +126,61 @@ public class UserServiceImpl implements UserService {
 
 		// 토큰 발급
 		return tokenDto;
+	}
+	/**
+	 * 초기 마이페이지 데이터 입력 함수  
+	 */
+	@Override
+	public void setUserDetailInfo(UserInfoReqDto userInfoReq) {
+		
+		User user = getUserByEmail(userInfoReq.getEmail()).get();
+		user.setPassword(passwordEncoder.encode(userInfoReq.getPassword()));
+		user.setStudentNumber(userInfoReq.getStudentNumber());
+		user.setWishPosition(userInfoReq.getWishPosition());
+		
+		// 선호 트랙 저장 
+		List<Integer> wishTracks = userInfoReq.getWishTrack();
+		WishTrack wishTrack = new WishTrack();
+		for(Integer code : wishTracks) {
+			wishTrack.setUser(user);
+			wishTrack.setWishTrackCode(code);
+			wishTrackRepository.save(wishTrack);
+		}
+		
+		user.setIntroduce(userInfoReq.getIntroduce());
+		// 기술 스택 저장 
+		List<Integer> skills = userInfoReq.getSkillCode();
+		Skill skill = new Skill();
+		for(Integer code : skills) {
+			skill.setUser(user);
+			skill.setSkillCode(code);
+			skillRepository.save(skill);
+		}
+		// 프로젝트 저장 
+		List<UserProject> projects = userInfoReq.getProjects();
+		for(UserProject project : projects) {
+			projectRepository.save(project);
+		}
+		List<UserAward> awards = userInfoReq.getAwards();
+		for(UserAward award : awards) {
+			awardRepository.save(award);
+		}
+		userRepository.save(user);
+		user =  getUserByEmail(user.getEmail()).get();
+	}
+	/**
+	 * 마이페이지 데이터 조회 함수  
+	 */
+	public UserInfoResDto getUserDetailInfo(String email) {
+		User user = userRepository.findByEmail(email).get();
+		UserInfoResDto userInfoRes = new UserInfoResDto();
+		userInfoRes.setPassword(user.getPassword());
+		userInfoRes.setStudentNumber(user.getStudentNumber());
+		userInfoRes.setWishPosition(user.getWishPosition());
+		userInfoRes.setIntroduce(user.getIntroduce());
+		userInfoRes.setProjects(user.getUserProject());
+		userInfoRes.setAwards(user.getUserAward());
+		return userInfoRes;
 	}
 	
 	

@@ -67,7 +67,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .authorizeRequests()
                 .antMatchers(
-                        "/api/auth/saveDummyData",
+                        "/api/auth/dummyData",
                         "/api/auth/login",
                         "/api/auth/reissue",
                         "/v2/api-docs",
