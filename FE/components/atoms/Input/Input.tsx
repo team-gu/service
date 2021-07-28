@@ -8,7 +8,9 @@ interface InputProps {
   // TODO: any 처리
   func?: (() => ChangeEvent<HTMLInputElement>) | any;
   funcBlur?: (() => void) | any;
+  onKeyDown?: any;
   width?: string;
+  height?: string;
   name?: string;
   maxLength?: number;
   error?: string;
@@ -16,11 +18,14 @@ interface InputProps {
   value?: string;
 }
 
-const Wrapper = styled.div<{ width: string; isSuccess: string | undefined }>`
+const Wrapper = styled.div<{
+  width: string;
+  height: string;
+  isSuccess: string | undefined;
+}>`
+  position: relative;
   width: ${({ width }) => width};
-  > input {
-    ${({ theme: { input } }) => input};
-  }
+  height: ${({ height }) => height};
 
   > div {
     ${({
@@ -29,6 +34,17 @@ const Wrapper = styled.div<{ width: string; isSuccess: string | undefined }>`
       },
     }) => n12b}
     color: ${({ isSuccess }) => (isSuccess === '1' ? 'green' : 'red')};
+  }
+
+  input {
+    width: 100%;
+    height: 100%;
+    border: 1px solid
+      ${({
+        theme: {
+          colors: { gray },
+        },
+      }) => gray};
   }
 `;
 
@@ -40,7 +56,9 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       placeHolder = '',
       func,
       funcBlur,
+      onKeyDown = () => {},
       width = '200px',
+      height = '20px',
       name,
       maxLength,
       error,
@@ -50,15 +68,20 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     ref,
   ): ReactElement => {
     // TODO: 추후 any 제거
-
     return (
-      <Wrapper className="input" width={width} isSuccess={error?.split('/')[1]}>
+      <Wrapper
+        className="input"
+        width={width}
+        height={height}
+        isSuccess={error?.split('/')[1]}
+      >
         <input
           type={type}
           ref={ref}
           placeholder={placeHolder}
           // TODO: () => {} 이 계속 실행되면 비효율이 발생되는가?
           onChange={func}
+          onKeyDown={onKeyDown}
           onBlur={funcBlur}
           name={name}
           maxLength={maxLength}
