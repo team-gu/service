@@ -10,6 +10,7 @@ import {
   VideoChatToolbar,
 } from '../webrtc';
 import { useAuthState } from '@store';
+import FloatingCounter from './FloatingCounter';
 
 var OpenViduBrowser: any;
 
@@ -365,6 +366,7 @@ export default function VideoChat(): ReactElement {
               handleClickAudioOn={handleClickAudioOn}
               handleClickExit={handleClickExit}
             />
+            <FloatingCounter />
           </SessionWrapper>
         </>
       )}
