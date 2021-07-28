@@ -8,7 +8,7 @@ interface InputProps {
   // TODO: any 처리
   func?: (() => ChangeEvent<HTMLInputElement>) | any;
   funcBlur?: (() => void) | any;
-  onKeyDown?: any;
+  onKeyPress?: any;
   width?: string;
   height?: string;
   name?: string;
@@ -56,7 +56,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       placeHolder = '',
       func,
       funcBlur,
-      onKeyDown = () => {},
+      onKeyPress = () => {},
       width = '200px',
       height = '20px',
       name,
@@ -81,7 +81,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           placeholder={placeHolder}
           // TODO: () => {} 이 계속 실행되면 비효율이 발생되는가?
           onChange={func}
-          onKeyDown={onKeyDown}
+          onKeyPress={onKeyPress}
           onBlur={funcBlur}
           name={name}
           maxLength={maxLength}

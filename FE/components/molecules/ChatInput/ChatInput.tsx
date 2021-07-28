@@ -2,6 +2,7 @@ import { ReactElement, useRef, KeyboardEvent } from 'react';
 import styled from 'styled-components';
 import { Button } from '@molecules';
 import { Input } from '@atoms';
+import { chatInput } from './ChatInput.stories';
 
 interface ChatInputProps {
   // TODO: 타입 추후 정의
@@ -34,8 +35,9 @@ const Wrapper = styled.div`
 export default function ChatInput({ func }: ChatInputProps): ReactElement {
   const chatInputRef: any = useRef<HTMLInputElement>(null);
 
-  const handleSend = () => {
-    func(chatInputRef.current.value);
+  const handleSend = async () => {
+    if (chatInputRef.current.value === '') return;
+    await func(chatInputRef.current.value);
     chatInputRef.current.value = '';
   };
 
@@ -43,7 +45,7 @@ export default function ChatInput({ func }: ChatInputProps): ReactElement {
     <Wrapper>
       <Input
         ref={chatInputRef}
-        onKeyDown={({ key }: KeyboardEvent<HTMLDivElement>) =>
+        onKeyPress={({ key }: KeyboardEvent<HTMLDivElement>) =>
           key === 'Enter' && handleSend()
         }
         width="100%"
