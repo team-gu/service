@@ -8,8 +8,13 @@ interface OpenViduVideoComponentProps {
 }
 
 const Wrapper = styled.div`
-  > div {
-    margin: 0 auto;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  video {
+    min-width: 100%;
   }
 `;
 
@@ -30,7 +35,7 @@ export default function UserVideoComponent({
       {streamManager.stream.videoActive ? (
         <video autoPlay={true} ref={videoRef} />
       ) : (
-        <ProfileImage src={'/profile.png'} size={240} />
+        <ProfileImage src={'/profile.png'} size={230} />
       )}
     </Wrapper>
   );

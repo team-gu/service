@@ -31,10 +31,39 @@ const SessionContainer = styled.div<{ number: number }>`
   flex-flow: row wrap;
   justify-content: center;
   align-items: center;
+  gap: 5px;
 
   .flexItem {
-    flex: 0 0 640px;
+    align-self: stretch;
   }
+
+  ${({ number }) => {
+    if (number > 8) {
+      return `
+        .flexItem {
+          flex: 0 0 240px;
+        }
+      `;
+    } else if (number > 4) {
+      return `
+        .flexItem {
+          flex: 0 0 360px;
+        }
+      `;
+    } else if (number > 2) {
+      return `
+        .flexItem {
+          flex: 0 0 480px;
+        }
+      `;
+    } else {
+      return `
+        .flexItem {
+          flex: 0 0 640px;
+        }
+      `;
+    }
+  }};
 `;
 
 interface UserDevice {
@@ -42,8 +71,8 @@ interface UserDevice {
   cam: string;
 }
 
-// const OPENVIDU_SERVER_URL = 'https://3.38.39.72';
-const OPENVIDU_SERVER_URL = 'https://localhost:4443';
+const OPENVIDU_SERVER_URL = 'https://teamgu.xyz';
+// const OPENVIDU_SERVER_URL = 'https://localhost:4443';
 const OPENVIDU_SERVER_SECRET = 'MY_SECRET';
 
 export default function VideoChat(): ReactElement {
@@ -71,19 +100,17 @@ export default function VideoChat(): ReactElement {
   useEffect(() => {
     // componentDidMount
     window.addEventListener('beforeunload', onbeforeunload);
-
-    // componentWillUnmount
-    return () => {
-      window.removeEventListener('beforeunload', onbeforeunload);
-    };
-  });
-
-  // Dynamic module import
-  useEffect(() => {
+    // Dynamic module import
     importOpenVidu().then((ob) => {
       OpenViduBrowser = ob;
       setOV(new OpenViduBrowser.OpenVidu());
     });
+
+    // componentWillUnmount
+    return () => {
+      window.removeEventListener('beforeunload', onbeforeunload);
+      clear();
+    };
   }, []);
 
   const importOpenVidu = () => {
@@ -111,6 +138,16 @@ export default function VideoChat(): ReactElement {
       setSubscribers([...subs]);
     }
   };
+
+  const clear = () => {
+    setOV(new OpenViduBrowser.OpenVidu());
+    setSession(undefined);
+    setPublisher(undefined);
+    setSubscribers([]);
+    setUserDevice({mic:'',cam:''});
+    setMicOn(false);
+    setCamOn(false);
+	}
 
   const updateSubscribers = () => {
     setSubscribers((subs) => subs.slice());
@@ -178,7 +215,7 @@ export default function VideoChat(): ReactElement {
             videoSource: camIsNone ? undefined : userDevice.cam,
             publishAudio: micIsNone ? false : true,
             publishVideo: camIsNone ? false : true,
-            resolution: '640x320',
+            resolution: '640x480',
             frameRate: 30,
             mirror: true,
           });
@@ -276,7 +313,7 @@ export default function VideoChat(): ReactElement {
 
   const handleClickExit = () => {
     leaveSession();
-    setOV(new OpenViduBrowser.OpenVidu());
+    clear();
     setIsConfigModalShow(true);
   };
 

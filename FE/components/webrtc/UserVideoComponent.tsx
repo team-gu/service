@@ -17,6 +17,7 @@ const NameTagWrapper = styled.div`
 
 const Wrapper = styled.div`
   position: relative;
+  height: 100%;
 `;
 
 export default function UserVideoComponent({
@@ -27,13 +28,13 @@ export default function UserVideoComponent({
   };
 
   return (
-    <>
+    <Wrapper>
       {streamManager && (
-        <Wrapper>
+        <>
           <OpenViduVideoComponent streamManager={streamManager} />
           <NameTagWrapper>{getNicknameTag()}</NameTagWrapper>
-        </Wrapper>
+        </>
       )}
-    </>
+    </Wrapper>
   );
 }
