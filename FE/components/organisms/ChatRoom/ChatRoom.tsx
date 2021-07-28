@@ -81,8 +81,8 @@ export default function Chatroom({
       </div>
       {/* TODO: 채팅 로직 확정되면 반영 */}
       <ChatInput
-        func={(data: string) => {
-          setChatData([
+        func={async (data: string) => {
+          await setChatData([
             ...chatData,
             {
               id: `${chatData.length}`,
