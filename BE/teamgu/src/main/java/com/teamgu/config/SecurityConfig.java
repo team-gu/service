@@ -76,8 +76,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/configuration/security",
                         "/swagger-ui/**",
                         "/webjars/**",
-                        "/swagger/**",
-                        "/api/**"
+                        "/swagger/**"
                        )
                 .permitAll()
                 // 다른 모든 요청은 인증을 한다.
