@@ -2,6 +2,7 @@ package com.teamgu.api.service;
 
 import com.teamgu.api.dto.res.NoticeDetailResDto;
 import com.teamgu.api.dto.res.NoticeListResDto;
+import com.teamgu.database.repository.NoticeFileRepository;
 import com.teamgu.database.repository.NoticeRepository;
 import com.teamgu.mapper.NoticeDetailMapper;
 import com.teamgu.mapper.NoticeListMapper;
@@ -9,8 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service("noticeService")
@@ -18,6 +19,9 @@ public class NoticeServiceImpl implements NoticeService {
 
     @Autowired
     NoticeRepository noticeRepository;
+
+    @Autowired
+    NoticeFileRepository noticeFileRepository;
 
     @Override //클라로부터 입력받은 Pageable 정보로 page 리턴
     public Page<NoticeListResDto> getNoticeList(Pageable pageable) {
@@ -32,6 +36,19 @@ public class NoticeServiceImpl implements NoticeService {
 
         //Optional이기에 null Exception처리 필요
         //Optional 사용방법 중 가장 클린 코드 방식이라고 한다
-        return notice.orElseThrow(() -> new NoSuchElementException());
+        return notice.orElse(null);
     }
+
+    @Override
+    @Transactional
+    public boolean deleteNotice(long id) {
+        boolean ret = noticeRepository.existsById(id);
+
+        if(ret) {
+            noticeRepository.deleteById(id);
+        }
+
+        return ret;
+    }
+
 }
