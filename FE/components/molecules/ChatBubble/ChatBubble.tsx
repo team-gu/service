@@ -6,7 +6,8 @@ import { Text } from '@atoms';
 interface ChatBubbleProps {
   profileSrc: string;
   userName: string;
-  time: string;
+  // TODO: 추후 타입 정의
+  time: string | any;
   message: string;
   isMe?: boolean;
 }
