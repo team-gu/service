@@ -3,6 +3,7 @@ package com.teamgu.api.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.teamgu.api.dto.req.DummyReqDto;
 import com.teamgu.api.dto.req.LoginReqDto;
 import com.teamgu.api.dto.req.TokenReqDto;
-import com.teamgu.api.dto.req.UserInfoReqDto;
 import com.teamgu.api.dto.res.BaseResDto;
 import com.teamgu.api.dto.res.LoginResDto;
 import com.teamgu.api.dto.res.TokenResDto;
@@ -35,7 +35,7 @@ public class JwtAuthController {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 	
-	@PostMapping("/saveDummyData")
+	@PostMapping("/dummyData")
 	@ApiOperation(value = "더미 데이터 추가", notes = "사용자 초기정보(email/pwd/name/role)를 추가 한다") 
 	public ResponseEntity<BaseResDto> signIn(
 			@RequestBody @ApiParam(value = "더미 데이터 추가 (email,pw)", required = true) DummyReqDto dummyReq) {
@@ -74,10 +74,11 @@ public class JwtAuthController {
 		return ResponseEntity.status(404).body(new LoginResDto(404,"Invalid Password",null,null,null)); 
 	}
 	
-	@PostMapping("/reissue")
+	@GetMapping("/reissue")
 	@ApiOperation(value = "토큰 재발급", notes = "token을 재발급 받는다.") 
 	public ResponseEntity<TokenResDto> reissue(@RequestBody @ApiParam(value = "토큰 재발급 요청", required = true) TokenReqDto tokenReq){
 		return  ResponseEntity.ok(userService.reissue(tokenReq));
 	}
+	
 
 }
