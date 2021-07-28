@@ -14,16 +14,17 @@ interface ChatBubbleProps {
 const Wrapper = styled.div<{ isMe: boolean }>`
   display: flex;
   ${({ theme: { flexRow }, isMe }) =>
-    flexRow(isMe ? 'flex-end' : 'flex-start', 'flex-start')}
+    flexRow(isMe ? 'flex-end' : 'flex-start', isMe ? 'flex-end' : 'flex-start')}
 
   margin: 25px 0;
 
   > div {
-    margin-right: 15px;
+    ${({ isMe }) => !isMe && 'margin-right: 15px;'}
   }
 
   .chat {
-    ${({ theme: { flexCol } }) => flexCol('center', 'flex-start')};
+    ${({ theme: { flexRow, flexCol }, isMe }) =>
+      isMe ? flexRow('flex-end', 'flex-end') : flexCol('center', 'flex-start')};
 
     .chat-info {
       > div {
@@ -33,22 +34,26 @@ const Wrapper = styled.div<{ isMe: boolean }>`
           margin-right: 10px;
         }
       }
-
       padding-bottom: 5px;
+
+      ${({ isMe }) => isMe && 'text-align: end;'}
     }
 
     .chat-message {
+      max-width: 200px;
       min-height: 20px;
       line-height: 1.1;
 
       padding: 8px 16px 8px 16px;
-      border-radius: 0px 16px 16px 16px;
+      border-radius: ${({ isMe }) =>
+        isMe ? '16px 0px 16px 16px' : '0px 16px 16px 16px'};
 
       background-color: ${({
         theme: {
-          colors: { microBlue },
+          colors: { microBlue, lightBlue },
         },
-      }) => microBlue};
+        isMe,
+      }) => (isMe ? lightBlue : microBlue)};
     }
   }
 `;
@@ -65,7 +70,7 @@ export default function ChatBubble({
       {!isMe && <ProfileImage src={profileSrc} />}
       <div className="chat">
         <div className="chat-info">
-          <Text text={userName} fontSetting="n14b" />
+          {!isMe && <Text text={userName} fontSetting="n14b" />}
           <Text text={time} fontSetting="n12m" />
         </div>
         <div className="chat-message">
