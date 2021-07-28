@@ -6,9 +6,14 @@ interface TextProps {
   fontSetting?: string;
   color?: string;
   className?: string;
+  isLineBreak?: boolean;
 }
 
-const Wrapper = styled.div<{ fontSetting: string; color: string }>`
+const Wrapper = styled.div<{
+  fontSetting: string;
+  color: string;
+  isLineBreak: boolean;
+}>`
   max-width: 100%;
   ${({ theme: { font }, fontSetting }) => font[fontSetting]};
   color: ${({ color }) => color};
@@ -16,7 +21,8 @@ const Wrapper = styled.div<{ fontSetting: string; color: string }>`
     theme: {
       font: { ellipse },
     },
-  }) => ellipse()};
+    isLineBreak,
+  }) => !isLineBreak && ellipse()};
 `;
 
 export default function Text({
@@ -24,9 +30,15 @@ export default function Text({
   fontSetting = 'n14m',
   color = 'black',
   className = '',
+  isLineBreak = false,
 }: TextProps): ReactElement {
   return (
-    <Wrapper className={className} fontSetting={fontSetting} color={color}>
+    <Wrapper
+      className={className}
+      fontSetting={fontSetting}
+      color={color}
+      isLineBreak={isLineBreak}
+    >
       {text}
     </Wrapper>
   );
