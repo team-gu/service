@@ -16,7 +16,7 @@ import { OpenViduVideoComponent } from '../webrtc';
 import { LoggerUtil } from './util/LoggerUtil';
 import { DevicesUtil } from './util/DeviceUtil';
 import { Util } from './util/Util';
-import { IDevice, CameraType } from './types/device-type';
+import { IDevice } from './types/device-type';
 
 interface VideoRoomConfigModalProps {
   OV: OpenVidu;
