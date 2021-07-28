@@ -8,7 +8,16 @@ interface UserVideoComponentProps {
 }
 
 const NameTagWrapper = styled.div`
-  text-align: center;
+  position: absolute;
+  top: 0;
+  background-color: black;
+  color: white;
+  padding: 3px 5px;
+`;
+
+const Wrapper = styled.div`
+  position: relative;
+  height: 100%;
 `;
 
 export default function UserVideoComponent({
@@ -19,13 +28,13 @@ export default function UserVideoComponent({
   };
 
   return (
-    <div>
-      {streamManager !== undefined && (
-        <div>
+    <Wrapper>
+      {streamManager && (
+        <>
           <OpenViduVideoComponent streamManager={streamManager} />
           <NameTagWrapper>{getNicknameTag()}</NameTagWrapper>
-        </div>
+        </>
       )}
-    </div>
+    </Wrapper>
   );
 }

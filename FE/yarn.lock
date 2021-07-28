@@ -9099,10 +9099,10 @@ open@^7.0.2, open@^7.0.3:
     is-docker "^2.0.0"
     is-wsl "^2.1.1"
 
-openvidu-browser@2.18.0:
-  version "2.18.0"
-  resolved "https://registry.yarnpkg.com/openvidu-browser/-/openvidu-browser-2.18.0.tgz#594eae4471123c37bc384d5cb025de1d683ea639"
-  integrity sha512-a9HPAG8p2vG9XGThPUbZWPI5sO1OFmrxKQdCZM3RLmasXQa2Lwj7X1Aicsznb7RtDBg/lD8NdNwAQjm4ZDt2Nw==
+openvidu-browser@2.19.0:
+  version "2.19.0"
+  resolved "https://registry.yarnpkg.com/openvidu-browser/-/openvidu-browser-2.19.0.tgz#fb988251180534d23de473622f938acdb00642f9"
+  integrity sha512-Viqe42+dfQUjHMomPz7Or39yJAUlqSwMy8xkz7a5HAhca7Szo8/89aA97Y1uFRowfu/BS8zgYFY0c6PnKGoAnA==
   dependencies:
     freeice "2.2.2"
     hark "1.2.3"
