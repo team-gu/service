@@ -16,7 +16,7 @@ public class NoticeDetailResDto extends BaseResDto {
     String createDate;
 
     @ApiModelProperty(name = "공지사항 수정일", example = "")
-    String mdifyDate;
+    String modifyDate;
 
     @ApiModelProperty(name = "공지사항 제목", example = "")
     String title;

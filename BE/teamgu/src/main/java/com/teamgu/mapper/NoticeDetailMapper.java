@@ -14,6 +14,6 @@ public interface NoticeDetailMapper {
     @Mapping(target = "message", ignore = true)
     @Mapping(target = "statusCode", ignore = true)
     @Mapping(source = "createDate", target = "createDate", dateFormat = "yyyy.mm.dd")
-    @Mapping(source = "mdifyDate", target = "mdifyDate", dateFormat = "yyyy.mm.dd")
+    @Mapping(source = "modifyDate", target = "modifyDate", dateFormat = "yyyy.mm.dd")
     NoticeDetailResDto noticeToDto(Notice notice);
 }
