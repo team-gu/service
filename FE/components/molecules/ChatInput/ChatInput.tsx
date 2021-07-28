@@ -12,11 +12,19 @@ const Wrapper = styled.div`
   ${({ theme: { flexRow } }) => flexRow()}
   > div > input {
     border-right-color: transparent;
-		position: absolute;
+    position: absolute;
     top: -2px;
-    width: 100%;
+    width: calc(100% - 20px);
     height: 100%;
     z-index: 0;
+
+    padding: 0 10px;
+
+    ${({
+      theme: {
+        font: { n16r },
+      },
+    }) => n16r}
   }
   > button {
     z-index: 1;
@@ -26,23 +34,22 @@ const Wrapper = styled.div`
 export default function ChatInput({ func }: ChatInputProps): ReactElement {
   const chatInputRef: any = useRef<HTMLInputElement>(null);
 
+  const handleSend = () => {
+    func(chatInputRef.current.value);
+    chatInputRef.current.value = '';
+  };
+
   return (
     <Wrapper>
       <Input
         ref={chatInputRef}
         onKeyDown={({ key }: KeyboardEvent<HTMLDivElement>) =>
-          key === 'Enter' && func(chatInputRef.current.value)
+          key === 'Enter' && handleSend()
         }
         width="100%"
         height="35px"
       />
-      <Button
-        title="전송"
-        func={() => {
-          func(chatInputRef.current.value);
-        }}
-        width="50px"
-      />
+      <Button title="전송" func={() => handleSend()} width="50px" />
     </Wrapper>
   );
 }
