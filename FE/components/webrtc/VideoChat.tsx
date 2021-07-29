@@ -146,10 +146,10 @@ export default function VideoChat(): ReactElement {
     setSession(undefined);
     setPublisher(undefined);
     setSubscribers([]);
-    setUserDevice({mic:'',cam:''});
+    setUserDevice({ mic: '', cam: '' });
     setMicOn(false);
     setCamOn(false);
-	}
+  };
 
   const updateSubscribers = () => {
     setSubscribers((subs) => subs.slice());
@@ -320,16 +320,17 @@ export default function VideoChat(): ReactElement {
   };
 
   const handleClickScreenShare = () => {
-    alert("화면 공유");
-  }
+    alert('화면 공유');
+  };
 
   const handleClickGame = () => {
-    alert("TMI 게임");
-  }
+    alert('TMI 게임');
+  };
 
   const handleClickGroupAdd = () => {
-    alert("초대");
-  }
+    alert('초대');
+  };
+
   const handleClickChat = () => {
     alert('채팅');
   };
