@@ -1,25 +1,27 @@
-import { ReactElement, useRef, KeyboardEvent } from 'react';
+import { ReactElement, useRef, useEffect, KeyboardEvent } from 'react';
 import styled from 'styled-components';
 import { Button } from '@molecules';
 import { Input } from '@atoms';
-import { chatInput } from './ChatInput.stories';
 
 interface ChatInputProps {
-  // TODO: 타입 추후 정의
-  func: any;
+  func: (data: string) => Promise<void>;
 }
 
 const Wrapper = styled.div`
   ${({ theme: { flexRow } }) => flexRow()}
   > div > input {
-    border-right-color: transparent;
     position: absolute;
     top: -2px;
-    width: calc(100% - 20px);
-    height: 100%;
+
+    width: calc(100% - 15px);
+    height: 37px;
+
     z-index: 0;
 
     padding: 0 10px;
+
+    border-right-color: transparent;
+    border-radius: 10px;
 
     ${({
       theme: {
@@ -29,6 +31,8 @@ const Wrapper = styled.div`
   }
   > button {
     z-index: 1;
+    box-shadow: none;
+    border-radius: 0 10px 10px 0;
   }
 `;
 
@@ -40,6 +44,10 @@ export default function ChatInput({ func }: ChatInputProps): ReactElement {
     await func(chatInputRef.current.value);
     chatInputRef.current.value = '';
   };
+
+  useEffect(() => {
+    chatInputRef.current.focus();
+  }, []);
 
   return (
     <Wrapper>
