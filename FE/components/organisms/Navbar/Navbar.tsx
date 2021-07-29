@@ -13,7 +13,7 @@ const Wrapper = styled.nav<{ isShowByScroll: Boolean }>`
   left: 0;
   width: 100%;
   display: flex;
-  box-shadow: 0 0 10px 0 #000;
+  border-bottom: 1px solid #000;
   ${({ theme: { flexRow } }) => flexRow('space-between')};
   transition: 0.5s;
   padding: 10px 0 0 5%;
@@ -40,19 +40,18 @@ const Wrapper = styled.nav<{ isShowByScroll: Boolean }>`
     li {
       position: relative;
       list-style: none;
+      margin-left: 10px;
+      letter-spacing: 2px;
+      &:hover {
+        color: red;
+      }
 
       a {
         position: relative;
-        margin: 0 15px;
         color: black;
         text-decoration: none;
-        letter-spacing: 2px;
         font-weight: 500;
         transition: 0.5s;
-
-        &:hover {
-          color: red;
-        }
       }
     }
   }
@@ -60,7 +59,7 @@ const Wrapper = styled.nav<{ isShowByScroll: Boolean }>`
 export default function Navbar(): ReactElement {
   const dispatch = useAppDispatch();
   const router = useRouter();
-  const { name } = useAuthState();
+  const { user } = useAuthState();
 
   const [hideOnScroll, setHideOnScroll] = useState(true);
 
@@ -82,37 +81,44 @@ export default function Navbar(): ReactElement {
           <a>
             <Image
               className="fixed-logo"
-              alt="당근마켓"
-              src="/logo.svg"
-              width={100}
+              alt="팀구"
+              src="/logo.png"
+              width={120}
               height={50}
             />
           </a>
         </Link>
       </div>
       <ul>
-        {name ? (
-          <li
-            onClick={() => {
-              dispatch(setLogout());
-              router.push('/');
-            }}
-          >
-            로그아웃
-          </li>
-        ) : (
+        {user.name ? (
           <>
+            <li>공지사항</li>
             <li>
-              <Link href="login">
-                <a>로그인</a>
+              <Link href="userdetail">
+                <a>마이페이지</a>
               </Link>
             </li>
             <li>
-              <Link href="register">
-                <a>회원가입</a>
+              <Link href="humanpool">
+                <a>인력풀</a>
               </Link>
+            </li>
+            <li>팀구성현황</li>
+            <li
+              onClick={() => {
+                dispatch(setLogout());
+                router.push('/');
+              }}
+            >
+              로그아웃
             </li>
           </>
+        ) : (
+          <li>
+            <Link href="login">
+              <a>로그인</a>
+            </Link>
+          </li>
         )}
       </ul>
     </Wrapper>
