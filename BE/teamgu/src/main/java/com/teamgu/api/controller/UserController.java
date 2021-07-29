@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,6 +26,7 @@ import io.swagger.annotations.ApiParam;
 
 @Api(value = "마이페이지 정보 입력", tags = { "User." })
 @RestController
+@CrossOrigin("*")
 @RequestMapping("/api/auth")
 public class UserController {
 

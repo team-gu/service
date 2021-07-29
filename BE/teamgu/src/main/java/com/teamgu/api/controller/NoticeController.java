@@ -16,6 +16,7 @@ import java.util.Optional;
 
 @Api(value = "공지사항 API", tags = {"Notice."})
 @RestController
+@CrossOrigin("*")
 @RequestMapping("/api/notice")
 public class NoticeController {
 
