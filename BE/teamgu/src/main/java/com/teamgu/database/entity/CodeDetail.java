@@ -19,13 +19,12 @@ import lombok.Setter;
 @IdClass(CodeDetailPK.class)
 public class CodeDetail {
 	@Id
-	int codeDetail;
-	@Column(length = 45)
-	String Name;
-	
-	@Id
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name= "code_id")
 	private Code code;
 	
+	@Id
+	int codeDetail;
+	@Column(length = 45)
+	String Name;	
 }

@@ -23,7 +23,7 @@ public class UserProject extends BaseEntity {
 	int positionCode;
 	@Column(length = 1000)
 	String introduce;
-	@Column(length = 45)
+	@Column(length = 200)
 	String url;
 	
 	@ManyToOne

@@ -1,6 +1,7 @@
 package com.teamgu.database.entity;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -9,6 +10,7 @@ import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -23,7 +25,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class User extends BaseEntity{
-	short role;
+	short role;//0:퇴소자, 1:교육생, 2:관리자, 3:총관리자
 	@Column(length = 20)
 	String name;
 	@Column(length = 40)
@@ -38,21 +40,29 @@ public class User extends BaseEntity{
 	String studentNumber;
 	@Column(length = 1000)
 	String introduce;
-	int wishPosition;
 	
-	@OneToMany(mappedBy="user", cascade = CascadeType.ALL)
+	int wishPositionCode;
+	
+	/**
+	 * user가 하나 삭제 됐을 때, UserConference는 삭제되어야 하지만
+	 * Conference는 삭제되면 안된다.
+	 * */
+	@OneToMany(mappedBy="user", cascade = CascadeType.ALL, orphanRemoval=true)	
+	@OnDelete(action = OnDeleteAction.CASCADE)
+	List<UserConference> userConferences = new ArrayList<>();
+	
+	@OneToMany(mappedBy="user", cascade = CascadeType.ALL, orphanRemoval=true)
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	private List<Skill> skills = new ArrayList<>();
 
-//	유저가 팀과 1:다 관계를 맺을 필요가 없다.
-//	@OneToMany(mappedBy="user", cascade = CascadeType.ALL )
-//	@OnDelete(action = OnDeleteAction.CASCADE)
-//	private List<Team> teams = new ArrayList<>();
+	@OneToMany(mappedBy="user")
+	private List<Team> teams = new ArrayList<>();
 	
-	@OneToMany(mappedBy="user" )
+	@OneToMany(mappedBy="user", cascade = CascadeType.ALL, orphanRemoval=true)
+	@OnDelete(action = OnDeleteAction.CASCADE)
 	private List<UserTeam> userTeams = new ArrayList<>();
 	
-	@OneToMany(mappedBy="user")
+	@OneToMany(mappedBy="user")//cascade를 걸면 유저가 지워지면 컨퍼런스도 지워진다
 	private List<Conference> conferences = new ArrayList<>();
 	
 	@OneToMany(mappedBy="user")
@@ -65,7 +75,7 @@ public class User extends BaseEntity{
 	@OneToMany(mappedBy="user")
 	private List<UserFollow> fromuserFollows = new ArrayList<>();
 	
-	@OneToMany(mappedBy="user")
+	@OneToMany(mappedBy="userT")
 	private List<UserFollow> toUserFollows = new ArrayList<>();
 	
 	@OneToMany(mappedBy="user")
@@ -76,27 +86,35 @@ public class User extends BaseEntity{
 	
 	@OneToMany(mappedBy = "user", cascade = {CascadeType.ALL})
 	@OnDelete(action = OnDeleteAction.CASCADE)
-	private List<UserAward> userAward;
+	@JsonIgnore
+	private List<UserAward> userAward = new ArrayList<>();
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	@OnDelete(action = OnDeleteAction.CASCADE)
-	private List<UserProject> userProject;
-
-	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-	@OnDelete(action = OnDeleteAction.CASCADE)
-	private UserFile userFile;
+	@JsonIgnore
+	private List<UserProject> userProject = new ArrayList<>();
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	@OnDelete(action = OnDeleteAction.CASCADE)
-	private List<UserClass> userClass;
+	@JsonIgnore
+	private List<UserClass> userClass = new ArrayList<>();
 
 	@OneToMany(mappedBy = "user")
-	private List<Chat> chat;
+	private List<Chat> chats = new ArrayList<>();
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	private List<UserChat> userChat;
 	
+	
+	/**
+	 * 유저 생성 시, 기본적으로 default 값이 들어가야 한다.
+	 */
+	private String profileOriginName;
+	
+	private String profileServerName;
+	
+	private String profileExtension;
 	
 	public User() {}
 

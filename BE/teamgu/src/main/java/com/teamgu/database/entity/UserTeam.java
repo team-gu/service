@@ -21,9 +21,4 @@ public class UserTeam extends BaseEntity{
 	@ManyToOne(fetch = FetchType.LAZY)
 	@NotNull
 	private Team team;
-	
-	//리더의 여부를 나타낸다 {리더:1,일반:0}	
-	@NotNull
-	@ColumnDefault("0")//Default값으로 0을 부여한다
-	private short leader_YN;
 }

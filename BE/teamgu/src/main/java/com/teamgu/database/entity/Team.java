@@ -7,6 +7,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -20,7 +21,7 @@ import lombok.Setter;
 public class Team extends BaseEntity {
 	@Column(length = 45)
 	String name;
-	short completeYn;
+	short completeYn; //complete_yn
 	int maxMember;
 	
 	@OneToMany(mappedBy="team")
@@ -28,4 +29,8 @@ public class Team extends BaseEntity {
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Mapping mapping;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "leaderId")
+	private User user;
 }
