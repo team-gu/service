@@ -30,7 +30,7 @@ public class Notice extends BaseEntity {
 	private User user;
 	
 
-	@OneToMany(mappedBy="notice")
+	@OneToMany(mappedBy="notice", orphanRemoval = true)
 	private List<NoticeFile> noticeFiles = new ArrayList<>();
 	
 }
