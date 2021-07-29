@@ -17,7 +17,7 @@ const Wrapper = styled.div`
 `;
 
 const StyledSection = styled.section`
-  top: -34px;
+  top: -36px;
   position: relative;
   min-height: 100vh;
   overflow: hidden;
@@ -167,13 +167,13 @@ const Card = styled(motion.div)`
 const firstLineTitleVariants = {
   hidden: {
     x: '-100vw',
-    fontSize: '100px',
+    fontSize: '7vw',
     lineHeight: '50vh',
     color: 'white',
   },
   visible: {
     x: 0,
-    fontSize: '100px',
+    fontSize: '7vw',
     lineHeight: '50vh',
     color: 'white',
     marginLeft: '20%',
@@ -190,13 +190,13 @@ const secondLineTitleVariants = {
   hidden: {
     x: '100vw',
     color: 'white',
-    fontSize: '100px',
+    fontSize: '7vw',
   },
   visible: {
     x: 0,
     color: 'white',
-    fontSize: '100px',
-    marginLeft: '40%',
+    fontSize: '7vw',
+    marginLeft: '35%',
     transition: {
       type: 'spring',
       delay: 2.5,
@@ -254,7 +254,7 @@ export default function Home(): ReactElement {
           animate="visible"
           exit="pageExit"
         >
-          당신을 구합니다.
+          당신을 구합니다
         </motion.div>
       </StyledSection>
       {showCards && (
