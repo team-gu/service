@@ -32,6 +32,10 @@ const ToolbarContainer = styled.div`
   i {
     margin: 0 20px;
     font-size: 32px;
+    opacity: 1;
+    :hover {
+      opacity: 0.75;
+    }
     cursor: pointer;
   }
 `;
