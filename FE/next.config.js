@@ -2,6 +2,9 @@ const path = require('path');
 
 module.exports = {
   reactStrictMode: true,
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   webpack(config, options) {
     config.resolve = {
       alias: {
