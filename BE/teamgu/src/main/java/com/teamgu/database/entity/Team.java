@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -27,6 +28,6 @@ public class Team extends BaseEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Mapping mapping;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	@OneToOne(mappedBy = "team")
 	private User user;
 }

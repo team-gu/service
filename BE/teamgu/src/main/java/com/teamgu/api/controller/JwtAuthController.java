@@ -1,8 +1,13 @@
 package com.teamgu.api.controller;
 
+import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,6 +31,7 @@ import io.swagger.annotations.ApiResponses;
 
 @Api(value = "인증(로그인, 로그아웃) API", tags = { "Auth." })
 @RestController
+@CrossOrigin("*")
 @RequestMapping("/api/auth")
 public class JwtAuthController {
 
@@ -35,11 +41,13 @@ public class JwtAuthController {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 	
+	Logger logger = LoggerFactory.getLogger(JwtAuthController.class);
+	
 	@PostMapping("/dummyData")
 	@ApiOperation(value = "더미 데이터 추가", notes = "사용자 초기정보(email/pwd/name/role)를 추가 한다") 
 	public ResponseEntity<BaseResDto> signIn(
 			@RequestBody @ApiParam(value = "더미 데이터 추가 (email,pw)", required = true) DummyReqDto dummyReq) {
-		System.out.println("aa");
+		
 		String email = dummyReq.getEmail();
 		String password = dummyReq.getPassword();
 		String name = dummyReq.getName();
@@ -66,13 +74,19 @@ public class JwtAuthController {
         @ApiResponse(code = 500, message = "서버 오류", response = BaseResDto.class)
     })
 	public ResponseEntity<LoginResDto> login(@RequestBody @ApiParam(value = "로그인 정보(email,pw)", required = true) LoginReqDto loginReq) {
+		
 		String email = loginReq.getEmail();
 		String password = loginReq.getPassword();
-		User user = userService.getUserByEmail(email).get();
-		if(passwordEncoder.matches(password, user.getPassword())) {
-			return ResponseEntity.ok(userService.login(loginReq, user));
+		logger.info("email: "+email+" password: "+password);
+		
+		Optional<User> opuser = userService.getUserByEmail(email);
+		if(opuser.isPresent()) {		
+			User user = opuser.get();		
+			if(passwordEncoder.matches(password, user.getPassword())) {
+				return ResponseEntity.ok(userService.login(loginReq, user));
+			}	
 		}
-		return ResponseEntity.status(404).body(new LoginResDto(404,"Invalid Password",null,null,null)); 
+		return ResponseEntity.status(404).body(new LoginResDto(404,"Invalid account",null,null,null)); 
 	}
 	
 	@GetMapping("/reissue")
