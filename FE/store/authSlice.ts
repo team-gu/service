@@ -1,37 +1,69 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction, Dispatch } from '@reduxjs/toolkit';
 import { postLoginApi, getUserInfo } from '@repository/baseRepository';
 import { NextRouter } from 'next/router';
 import { saveItem, removeItem } from '@utils/storage';
 import { setLoading } from '@store';
 
 interface AuthState {
-  userId: string;
+  chat: string[];
+  conference: string[];
+  email: string;
+  fromuserFollows: string[];
+  id: number;
+  introduce: string;
   name: string;
-  position: string;
-  department: string;
+  notices: string[];
+  quizScores: number[];
+  quizs: string[];
+  role: number;
+  skills: string[];
+  studentNumber: number;
+  teams: number[];
+  toUserFollows: string[];
+  userAward: string[];
+  userChat: string[];
+  userClass: number[];
+  userFile: string;
+  userProject: string[];
+  userTeams: string[];
+  wishPosition: number;
+  wishTracks: string[];
 }
 
 const initialState: AuthState = {
-  userId: '',
+  chat: [],
+  conference: [],
+  email: '',
+  fromuserFollows: [],
+  id: 0,
+  introduce: '',
   name: '',
-  position: '',
-  department: '',
+  notices: [],
+  quizScores: [],
+  quizs: [],
+  role: 0,
+  skills: [],
+  studentNumber: 0,
+  teams: [],
+  toUserFollows: [],
+  userAward: [],
+  userChat: [],
+  userClass: [],
+  userFile: '',
+  userProject: [],
+  userTeams: [],
+  wishPosition: 0,
+  wishTracks: [],
 };
 
 const authReducer = createSlice({
   name: 'auth',
-  initialState,
+  initialState: {
+    user: initialState,
+  },
   reducers: {
-    setUser(
-      state,
-      {
-        payload: { userId, name, position, department },
-      }: PayloadAction<AuthState>,
-    ) {
-      state.userId = userId;
-      state.name = name;
-      state.position = position;
-      state.department = department;
+    setUser(state, action) {
+      state.user = action.payload;
     },
   },
 });
@@ -39,18 +71,17 @@ const authReducer = createSlice({
 export const { setUser } = authReducer.actions;
 export default authReducer.reducer;
 
-// TODO: 추후 dispatch 타입 변경
 export const setLogin =
-  (param: object, router: NextRouter) => async (dispatch: any) => {
+  (param: object, router: NextRouter) => async (dispatch: Dispatch) => {
     dispatch(setLoading({ isLoading: true }));
     try {
-      const {
-        data: { name, accessToken },
-      } = await postLoginApi(param);
-
-      saveItem('accessToken', accessToken);
-
-      router.push('/main');
+      const { data } = await postLoginApi(param);
+      saveItem('accessToken', data.accessToken);
+      saveItem('refreshToken', data.refreshToken);
+      dispatch(setUser(data.userInfo));
+      data.userInfo.name === '팀구'
+        ? router.push('/userdetail')
+        : router.push('/humanpool');
     } catch (error) {
       console.error(error);
     } finally {
@@ -58,7 +89,7 @@ export const setLogin =
     }
   };
 
-export const setUserInfo = () => async (dispatch: any) => {
+export const setUserInfo = () => async (dispatch: Dispatch) => {
   dispatch(setLoading({ isLoading: true }));
   try {
     const {
@@ -73,7 +104,8 @@ export const setUserInfo = () => async (dispatch: any) => {
   }
 };
 
-export const setLogout = () => () => {
-  setUser({ userId: '', name: '', position: '', department: '' });
+export const setLogout = () => (dispatch: Dispatch) => {
+  dispatch(setUser(initialState));
   removeItem('accessToken');
+  removeItem('refreshToken');
 };
