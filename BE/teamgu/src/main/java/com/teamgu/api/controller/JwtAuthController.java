@@ -1,5 +1,7 @@
 package com.teamgu.api.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -35,11 +37,13 @@ public class JwtAuthController {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 	
+	Logger logger = LoggerFactory.getLogger(JwtAuthController.class);
+	
 	@PostMapping("/dummyData")
 	@ApiOperation(value = "더미 데이터 추가", notes = "사용자 초기정보(email/pwd/name/role)를 추가 한다") 
 	public ResponseEntity<BaseResDto> signIn(
 			@RequestBody @ApiParam(value = "더미 데이터 추가 (email,pw)", required = true) DummyReqDto dummyReq) {
-		System.out.println("aa");
+		
 		String email = dummyReq.getEmail();
 		String password = dummyReq.getPassword();
 		String name = dummyReq.getName();
@@ -66,8 +70,11 @@ public class JwtAuthController {
         @ApiResponse(code = 500, message = "서버 오류", response = BaseResDto.class)
     })
 	public ResponseEntity<LoginResDto> login(@RequestBody @ApiParam(value = "로그인 정보(email,pw)", required = true) LoginReqDto loginReq) {
+		
 		String email = loginReq.getEmail();
 		String password = loginReq.getPassword();
+		logger.info("email: "+email+" password: "+password);
+		
 		User user = userService.getUserByEmail(email).get();
 		if(passwordEncoder.matches(password, user.getPassword())) {
 			return ResponseEntity.ok(userService.login(loginReq, user));
