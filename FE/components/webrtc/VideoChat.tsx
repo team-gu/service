@@ -9,6 +9,7 @@ import {
   UserVideoComponent,
   VideoChatToolbar,
   FloatingCounter,
+  FloatingChatButton,
 } from '../webrtc';
 import { useAuthState } from '@store';
 
@@ -329,6 +330,9 @@ export default function VideoChat(): ReactElement {
   const handleClickGroupAdd = () => {
     alert("초대");
   }
+  const handleClickChat = () => {
+    alert('채팅');
+  };
 
   const createToken = (sessionId: string) => {
     return new Promise<string>((resolve, reject) => {
@@ -382,6 +386,7 @@ export default function VideoChat(): ReactElement {
               handleClickGroupAdd={handleClickGroupAdd}
             />
             <FloatingCounter />
+            <FloatingChatButton handleClick={handleClickChat} />
           </SessionWrapper>
         </>
       )}
