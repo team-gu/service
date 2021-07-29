@@ -8,9 +8,9 @@ import {
   VideoRoomConfigModal,
   UserVideoComponent,
   VideoChatToolbar,
+  FloatingCounter,
 } from '../webrtc';
 import { useAuthState } from '@store';
-import FloatingCounter from './FloatingCounter';
 
 var OpenViduBrowser: any;
 
@@ -318,6 +318,18 @@ export default function VideoChat(): ReactElement {
     setIsConfigModalShow(true);
   };
 
+  const handleClickScreenShare = () => {
+    alert("화면 공유");
+  }
+
+  const handleClickGame = () => {
+    alert("TMI 게임");
+  }
+
+  const handleClickGroupAdd = () => {
+    alert("초대");
+  }
+
   const createToken = (sessionId: string) => {
     return new Promise<string>((resolve, reject) => {
       let data = {};
@@ -365,6 +377,9 @@ export default function VideoChat(): ReactElement {
               handleClickAudioOff={handleClickAudioOff}
               handleClickAudioOn={handleClickAudioOn}
               handleClickExit={handleClickExit}
+              handleClickScreenShare={handleClickScreenShare}
+              handleClickGame={handleClickGame}
+              handleClickGroupAdd={handleClickGroupAdd}
             />
             <FloatingCounter />
           </SessionWrapper>
