@@ -9,11 +9,11 @@ interface FloatChatBtnProps {
 
 const ChatBtnBackground = styled.div`
   position: fixed;
-  top: 30px;
+  bottom: 50px;
   right: 30px;
 
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
   border-radius: 60px;
 
   text-align: center;
@@ -28,11 +28,11 @@ const ChatBtnContainer = styled(motion.div)`
   ${({ theme: { flexRow } }) => flexRow()}
 
   position: fixed;
-  top: 30px;
+  bottom: 50px;
   right: 30px;
 
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
   border-radius: 60px;
 
   opacity: 1;
