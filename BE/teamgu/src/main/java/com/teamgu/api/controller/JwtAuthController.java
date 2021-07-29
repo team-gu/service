@@ -1,5 +1,7 @@
 package com.teamgu.api.controller;
 
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,11 +77,14 @@ public class JwtAuthController {
 		String password = loginReq.getPassword();
 		logger.info("email: "+email+" password: "+password);
 		
-		User user = userService.getUserByEmail(email).get();
-		if(passwordEncoder.matches(password, user.getPassword())) {
-			return ResponseEntity.ok(userService.login(loginReq, user));
+		Optional<User> opuser = userService.getUserByEmail(email);
+		if(opuser.isPresent()) {		
+			User user = opuser.get();		
+			if(passwordEncoder.matches(password, user.getPassword())) {
+				return ResponseEntity.ok(userService.login(loginReq, user));
+			}	
 		}
-		return ResponseEntity.status(404).body(new LoginResDto(404,"Invalid Password",null,null,null)); 
+		return ResponseEntity.status(404).body(new LoginResDto(404,"Invalid account",null,null,null)); 
 	}
 	
 	@GetMapping("/reissue")
