@@ -17,14 +17,11 @@ import lombok.Setter;
 @Getter
 @Setter
 public class StdClass extends BaseEntity {
-	
-//	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-//	@Column(name = "classId")
-//	int id;
 	int name;
 	int stageCode;
 	int projectCode;
+	int regionCode;
 	
-	@OneToMany(mappedBy = "classInfo", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "stdClass", cascade = CascadeType.ALL)
 	private List<UserClass> userClass;
 }
