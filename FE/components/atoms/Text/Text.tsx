@@ -22,7 +22,7 @@ const Wrapper = styled.div<{
       font: { ellipse },
     },
     isLineBreak,
-  }) => !isLineBreak && ellipse()};
+  }) => isLineBreak ? 'word-break: break-word;': ellipse()};
 `;
 
 export default function Text({

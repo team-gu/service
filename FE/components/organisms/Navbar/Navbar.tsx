@@ -70,7 +70,7 @@ export default function Navbar(): ReactElement {
       if (isShow !== hideOnScroll) setHideOnScroll(isShow);
     },
     [hideOnScroll],
-    null,
+    undefined,
     false,
     100,
   );

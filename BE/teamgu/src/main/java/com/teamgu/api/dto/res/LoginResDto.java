@@ -9,7 +9,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@ApiModel("UserLoginResponse")
+@ApiModel(description = "로그인 응답 모델")
 public class LoginResDto extends BaseResDto {
 	@ApiModelProperty(name="access 토큰", example = "")
 	String accessToken;

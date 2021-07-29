@@ -12,7 +12,7 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQL57Dialect
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver    
+    driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://teamgu-mysql-db.c9wk2jscggn1.ap-northeast-2.rds.amazonaws.com:3306/teamgu?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Seoul&zeroDateTimeBehavior=convertToNull&rewriteBatchedStatements=true
     hikari:
       username: root

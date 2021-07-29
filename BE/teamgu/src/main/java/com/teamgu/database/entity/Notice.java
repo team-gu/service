@@ -19,7 +19,7 @@ import lombok.Setter;
 public class Notice extends BaseEntity {
 
 	Date createDate;
-	Date mdifyDate;
+	Date modifyDate;
 	@Column(length = 80)
 	String title;
 	@Column(length = 2000)

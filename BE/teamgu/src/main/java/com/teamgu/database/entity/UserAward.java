@@ -18,8 +18,6 @@ import lombok.Setter;
 @Setter
 public class UserAward extends BaseEntity{
 	
-//	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-//	int id;
 	@Column(length = 45)
 	String name;
 	@Column(length = 45)
