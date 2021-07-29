@@ -5,6 +5,7 @@ import OpenViduVideoComponent from './OpenViduVideoComponent';
 import VideoChatToolbar from './VideoChatToolbar';
 import FloatingCounter from './FloatingCounter';
 import FloatingChatButton from './FloatingChatButton';
+import SidebarChat from './SidebarChat';
 
 export {
   VideoChat,
@@ -14,4 +15,5 @@ export {
   VideoChatToolbar,
   FloatingCounter,
   FloatingChatButton,
+  SidebarChat,
 };
