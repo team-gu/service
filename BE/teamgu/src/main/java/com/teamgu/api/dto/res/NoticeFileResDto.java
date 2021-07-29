@@ -2,13 +2,15 @@ package com.teamgu.api.dto.res;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@Builder
 @ApiModel("NoticeFileResponse")
-public class NoticeFileResDto extends BaseResDto {
+public class NoticeFileResDto {
     @ApiModelProperty(name = "파일 원본명", example = "")
     String originalName;
 
@@ -19,5 +21,5 @@ public class NoticeFileResDto extends BaseResDto {
     String extension;
 
     @ApiModelProperty(name = "파일 등록일", example = "")
-    String date;
+    String registDate;
 }

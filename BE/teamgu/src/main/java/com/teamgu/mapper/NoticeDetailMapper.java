@@ -10,10 +10,14 @@ import org.mapstruct.factory.Mappers;
 public interface NoticeDetailMapper {
     NoticeDetailMapper INSTANCE = Mappers.getMapper(NoticeDetailMapper.class);
 
-    //매핑 무시 조건 추가
-    @Mapping(target = "message", ignore = true)
-    @Mapping(target = "statusCode", ignore = true)
-    @Mapping(source = "createDate", target = "createDate", dateFormat = "yyyy.mm.dd")
-    @Mapping(source = "modifyDate", target = "modifyDate", dateFormat = "yyyy.mm.dd")
+    @Mapping(source = "createDate", target = "createDate", dateFormat = "yyyy.MM.dd")
+    @Mapping(source = "modifyDate", target = "modifyDate", dateFormat = "yyyy.MM.dd")
     NoticeDetailResDto noticeToDto(Notice notice);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "user", ignore = true)
+    @Mapping(source = "createDate", target = "createDate", qualifiedByName = "stringToDate")
+    @Mapping(source = "modifyDate", target = "modifyDate", qualifiedByName = "stringToDate")
+    Notice dtoToNotice(NoticeDetailResDto noticeDetailResDto);
+
 }

@@ -2,16 +2,17 @@ package com.teamgu.api.dto.res;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @Setter
+@Builder
 @ApiModel("NoticeDetailResponse")
-public class NoticeDetailResDto extends BaseResDto {
+public class NoticeDetailResDto {
     @ApiModelProperty(name = "공지사항 생성일", example = "")
     String createDate;
 
@@ -25,5 +26,5 @@ public class NoticeDetailResDto extends BaseResDto {
     String content;
 
     @ApiModelProperty(name = "공지사항 첨부파일 목록", example = "")
-    private List<NoticeFileResDto> noticeFiles = new ArrayList<>();
+    private List<NoticeFileResDto> noticeFiles;
 }

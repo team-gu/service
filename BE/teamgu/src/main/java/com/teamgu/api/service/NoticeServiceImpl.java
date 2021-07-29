@@ -1,9 +1,16 @@
 package com.teamgu.api.service;
 
+import com.teamgu.api.dto.req.NoticeCreateReqDto;
 import com.teamgu.api.dto.res.NoticeDetailResDto;
 import com.teamgu.api.dto.res.NoticeListResDto;
+import com.teamgu.common.util.DateTimeUtil;
+import com.teamgu.database.entity.Notice;
+import com.teamgu.database.entity.NoticeFile;
+import com.teamgu.database.entity.User;
 import com.teamgu.database.repository.NoticeFileRepository;
 import com.teamgu.database.repository.NoticeRepository;
+import com.teamgu.database.repository.UserRepository;
+import com.teamgu.handler.NoticeFileHandler;
 import com.teamgu.mapper.NoticeDetailMapper;
 import com.teamgu.mapper.NoticeListMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,16 +19,24 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Optional;
 
 @Service("noticeService")
 public class NoticeServiceImpl implements NoticeService {
 
     @Autowired
+    UserRepository userRepository;
+    @Autowired
+    DateTimeUtil dateTimeUtil;
+    @Autowired
     NoticeRepository noticeRepository;
-
     @Autowired
     NoticeFileRepository noticeFileRepository;
+    @Autowired
+    NoticeFileHandler noticeFileHandler;
 
     @Override //클라로부터 입력받은 Pageable 정보로 page 리턴
     public Page<NoticeListResDto> getNoticeList(Pageable pageable) {
@@ -44,11 +59,33 @@ public class NoticeServiceImpl implements NoticeService {
     public boolean deleteNotice(long id) {
         boolean ret = noticeRepository.existsById(id);
 
-        if(ret) {
+        if (ret) {
             noticeRepository.deleteById(id);
         }
 
         return ret;
+    }
+
+    @Override
+    @Transactional
+    public boolean createNotice(NoticeCreateReqDto noticeCreateReqDto) {
+        String curDate = dateTimeUtil.getDateAndTime();
+        User user = userRepository.getOne(noticeCreateReqDto.getUserId());
+        List<NoticeFile> fileList = noticeFileHandler.parseFileInfo(noticeCreateReqDto.getNoticeFiles());
+        Notice notice = NoticeDetailMapper.INSTANCE.dtoToNotice(
+                NoticeDetailResDto.builder()
+                        .title(noticeCreateReqDto.getTitle())
+                        .content(noticeCreateReqDto.getContent())
+                        .createDate(curDate)
+                        .modifyDate(curDate)
+                        .build());
+
+        notice.setUser(user);
+        for (NoticeFile noticeFile : fileList) {
+            notice.addFile(noticeFile);
+        }
+
+        return noticeRepository.save(notice) != null;
     }
 
 }
