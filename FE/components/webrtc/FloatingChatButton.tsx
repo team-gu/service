@@ -1,10 +1,8 @@
 import { ReactElement, MouseEventHandler } from 'react';
 import styled from 'styled-components';
-import { motion } from 'framer-motion';
-import { FloatButton } from '@molecules';
-import { Icon } from '@atoms';
+import { FloatingButton } from '@molecules';
 
-interface FloatChatButtonProps {
+interface FloatingChatButtonProps {
   handleClick: MouseEventHandler<HTMLSpanElement>;
 }
 
@@ -27,11 +25,11 @@ const ChatBtnBackground = styled.div`
 
 export default function FloatingChatButton({
   handleClick,
-}: FloatChatButtonProps): ReactElement {
+}: FloatingChatButtonProps): ReactElement {
   return (
     <span onClick={handleClick}>
       <ChatBtnBackground />
-      <FloatButton isRtc />
+      <FloatingButton isRtc />
     </span>
   );
 }

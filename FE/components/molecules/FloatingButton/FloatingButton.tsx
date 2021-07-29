@@ -5,7 +5,7 @@ import styled from 'styled-components';
 
 import { Icon } from '@atoms';
 
-interface FloatButtonProps {
+interface FloatingButtonProps {
   func?: MouseEventHandler<HTMLSpanElement>;
   isRtc?: boolean;
 }
@@ -50,10 +50,10 @@ const Wrapper = styled(motion.div)<{ isRtc: boolean }>`
   `}
 `;
 
-export default function FloatButton({
+export default function FloatingButton({
   func = () => {},
   isRtc = false,
-}: FloatButtonProps): ReactElement {
+}: FloatingButtonProps): ReactElement {
   return (
     <Wrapper onClick={func} whileTap={{ rotate: 90, scale: 0.9 }} isRtc={isRtc}>
       <Icon iconName="message" size="24px" />
