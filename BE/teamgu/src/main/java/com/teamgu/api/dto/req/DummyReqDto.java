@@ -14,6 +14,6 @@ public class DummyReqDto {
 	String password;
 	@ApiModelProperty(name = "name", example = "팀구")
 	String name;
-	@ApiModelProperty(name = "role", example = "1 : student")
+	@ApiModelProperty(name = "role", example = "1")
 	short role;
 }
