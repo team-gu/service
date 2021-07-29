@@ -1,11 +1,12 @@
 package com.teamgu.database.entity;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
+
+import com.teamgu.database.entity.pk.ProjectDetailPK;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -13,7 +14,8 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class ProjectDetail implements Serializable{
+@IdClass(ProjectDetailPK.class)
+public class ProjectDetail{
 	@Id
 	int stageCode;
 	@Id

@@ -1,7 +1,5 @@
 package com.teamgu.database.entity;
 
-import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -10,13 +8,16 @@ import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import com.teamgu.database.entity.pk.CodeDetailPK;
+
 import lombok.Getter;
 import lombok.Setter;
 
 @Entity
 @Getter
 @Setter
-public class CodeDetail implements Serializable{
+@IdClass(CodeDetailPK.class)
+public class CodeDetail {
 	@Id
 	int codeDetail;
 	@Column(length = 45)

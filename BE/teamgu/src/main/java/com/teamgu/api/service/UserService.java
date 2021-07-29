@@ -1,8 +1,12 @@
 package com.teamgu.api.service;
 
+import java.util.List;
 import java.util.Optional;
 
+import com.teamgu.api.dto.req.AwardReqDto;
 import com.teamgu.api.dto.req.LoginReqDto;
+import com.teamgu.api.dto.req.PasswordReqDto;
+import com.teamgu.api.dto.req.ProjectReqDto;
 import com.teamgu.api.dto.req.TokenReqDto;
 import com.teamgu.api.dto.req.UserInfoReqDto;
 import com.teamgu.api.dto.res.LoginResDto;
@@ -25,6 +29,13 @@ public interface UserService {
 	TokenResDto reissue(TokenReqDto tokenReq);
 
 	void setUserDetailInfo(UserInfoReqDto userInfoReq);
+
+	void setProjectInfo(List<ProjectReqDto> projectInfoReq);
+
+	void setAwardInfo(List<AwardReqDto> awardReqDto);
+	
+	void setPassward(PasswordReqDto passwordReq);
 	
 	UserInfoResDto getUserDetailInfo(String email);
+	 
 }

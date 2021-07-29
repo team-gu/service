@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,5 +24,13 @@ public class Mapping extends BaseEntity {
 	
 	@OneToMany(mappedBy="mapping")
 	private List<Team> teams = new ArrayList<>();
+	
+
+	@Builder
+    public Mapping(int stageCode, int projectCode, int trackCode){
+        this.stageCode = stageCode;
+        this.projectCode = projectCode;
+        this.trackCode = trackCode;
+    }
 	
 }
