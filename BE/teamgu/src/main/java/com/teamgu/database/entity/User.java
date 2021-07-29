@@ -43,10 +43,11 @@ public class User extends BaseEntity{
 	@OneToMany(mappedBy="user", cascade = CascadeType.ALL)
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	private List<Skill> skills = new ArrayList<>();
-	
-	@OneToMany(mappedBy="user", cascade = CascadeType.ALL )
-	@OnDelete(action = OnDeleteAction.CASCADE)
-	private List<Team> teams = new ArrayList<>();
+
+//	유저가 팀과 1:다 관계를 맺을 필요가 없다.
+//	@OneToMany(mappedBy="user", cascade = CascadeType.ALL )
+//	@OnDelete(action = OnDeleteAction.CASCADE)
+//	private List<Team> teams = new ArrayList<>();
 	
 	@OneToMany(mappedBy="user" )
 	private List<UserTeam> userTeams = new ArrayList<>();
