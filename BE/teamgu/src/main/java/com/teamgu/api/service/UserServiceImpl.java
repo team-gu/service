@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -48,7 +50,6 @@ public class UserServiceImpl implements UserService {
 	PasswordEncoder passwordEncoder;
 
 	@Autowired
-
 	UserRepository userRepository;
 	
 	@Autowired
@@ -73,10 +74,18 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	JwtUserDetailsService userDetailsService;
-
+	
+	Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
+	
 	@Override
 	public Optional<User> getUserByEmail(String email) {
+		logger.info(email);
 		Optional<User> user = userRepository.findByEmail(email);
+		if(user.isPresent()) {//Optional의 null 체크(값ㅇ ㅣ있는 경우)
+			logger.info(user.get().getEmail());			
+		}else {//없는 경우
+			logger.info("user가 비었습니다.");
+		}
 		return user;
 	}
 
