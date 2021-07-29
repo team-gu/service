@@ -1,3 +1,4 @@
+import ChatList from './ChatList';
 import ChatRoom from './ChatRoom';
 import Modal from './Modal';
 import Navbar from './Navbar';
@@ -8,6 +9,7 @@ import LoginComponent from './LoginComponent';
 import RegisterComponent from './RegisterComponent';
 
 export {
+  ChatList,
   ChatRoom,
   Modal,
   Navbar,
