@@ -1,10 +1,10 @@
-import { ReactElement, MouseEventHandler } from 'react';
+import { ReactElement, ButtonHTMLAttributes, MouseEventHandler } from 'react';
 import styled from 'styled-components';
 import { Text } from '@atoms';
 
-interface EachButtonProps {
+interface EachButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   title: string;
-  func: MouseEventHandler;
+  func?: MouseEventHandler;
   width?: string;
 }
 
@@ -40,11 +40,12 @@ const WrapEachButton = styled.button<{ width: string }>`
 
 export default function Button({
   title,
-  func,
+  func = () => {},
   width = '200px',
+  type = 'button',
 }: EachButtonProps): ReactElement {
   return (
-    <WrapEachButton type="button" onClick={func} width={width}>
+    <WrapEachButton type={type} onClick={func} width={width}>
       <Text text={title} fontSetting="n14b" color="white" />
     </WrapEachButton>
   );
