@@ -27,7 +27,7 @@ public class Notice extends BaseEntity{
 
     @OneToMany(
             mappedBy = "notice",
-            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE},
             orphanRemoval=true
     )
     private List<NoticeFile> noticeFiles = new ArrayList<>();

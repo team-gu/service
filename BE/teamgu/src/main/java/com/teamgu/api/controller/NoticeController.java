@@ -1,6 +1,6 @@
 package com.teamgu.api.controller;
 
-import com.teamgu.api.dto.req.NoticeCreateReqDto;
+import com.teamgu.api.dto.req.NoticeReqDto;
 import com.teamgu.api.dto.res.*;
 import com.teamgu.api.service.NoticeServiceImpl;
 import io.swagger.annotations.Api;
@@ -59,13 +59,27 @@ public class NoticeController {
     }
 
     @PostMapping //공지사항 등록
-    @ApiOperation(value = "공지사항 등록하기", notes = "NoticeFileReqDto 형태로 입력이 들어와 성공 여부 리턴")
+    @ApiOperation(value = "공지사항 등록하기", notes = "NoticeReqDto 형태로 입력이 들어와 성공 여부 리턴")
     public ResponseEntity<? extends BasicResponse> createNotice(
-            @ModelAttribute @ApiParam(value = "공지사항 VO", required = true) NoticeCreateReqDto noticeCreateReqDto) {
+            @ApiParam(value = "공지사항 VO", required = true) NoticeReqDto noticeReqDto) {
 
-        if (!noticeService.createNotice(noticeCreateReqDto)) {
+        if (!noticeService.createNotice(noticeReqDto)) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ErrorResponse("공지사항 등록에 실패하였습니다."));
+        }
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}")
+    @ApiOperation(value = "공지사항 수정하기", notes = "수정할 공지사항의 id, NoticeReqDto 형태로 입력이 들어와 성공 여부 리턴")
+    public ResponseEntity<? extends BasicResponse> updateNotice(
+            @PathVariable @ApiParam(value = "공지사항 id", required = true) long id,
+            @ApiParam(value = "공지사항 VO", required = true) NoticeReqDto noticeReqDto
+    ) {
+        if(!noticeService.updateNotice(id, noticeReqDto)) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse("공지사항 수정에 실패하였습니다."));
         }
 
         return ResponseEntity.noContent().build();

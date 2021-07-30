@@ -1,6 +1,6 @@
 package com.teamgu.api.service;
 
-import com.teamgu.api.dto.req.NoticeCreateReqDto;
+import com.teamgu.api.dto.req.NoticeReqDto;
 import com.teamgu.api.dto.res.NoticeDetailResDto;
 import com.teamgu.api.dto.res.NoticeListResDto;
 import com.teamgu.common.util.DateTimeUtil;
@@ -18,9 +18,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -68,14 +69,14 @@ public class NoticeServiceImpl implements NoticeService {
 
     @Override
     @Transactional
-    public boolean createNotice(NoticeCreateReqDto noticeCreateReqDto) {
+    public boolean createNotice(NoticeReqDto noticeReqDto) {
         String curDate = dateTimeUtil.getDateAndTime();
-        User user = userRepository.getOne(noticeCreateReqDto.getUserId());
-        List<NoticeFile> fileList = noticeFileHandler.parseFileInfo(noticeCreateReqDto.getNoticeFiles());
+        User user = userRepository.getOne(noticeReqDto.getUserId());
+        List<NoticeFile> fileList = noticeFileHandler.parseFileInfo(noticeReqDto.getNoticeFiles());
         Notice notice = NoticeDetailMapper.INSTANCE.dtoToNotice(
                 NoticeDetailResDto.builder()
-                        .title(noticeCreateReqDto.getTitle())
-                        .content(noticeCreateReqDto.getContent())
+                        .title(noticeReqDto.getTitle())
+                        .content(noticeReqDto.getContent())
                         .createDate(curDate)
                         .modifyDate(curDate)
                         .build());
@@ -86,6 +87,47 @@ public class NoticeServiceImpl implements NoticeService {
         }
 
         return noticeRepository.save(notice) != null;
+    }
+
+    @Override
+    public boolean updateNotice(long id, NoticeReqDto noticeReqDto) {
+        Optional<Notice> oNotice = noticeRepository.findById(id);
+        List<NoticeFile> fileList = new ArrayList<>();
+        List<MultipartFile> newFileList = new ArrayList<>();
+
+        if(!CollectionUtils.isEmpty(noticeReqDto.getNoticeFiles())) {
+            for(MultipartFile multipartFile : noticeReqDto.getNoticeFiles()) {
+                String fileName = multipartFile
+                        .getOriginalFilename()
+                        .split("\\.")[0];
+
+                NoticeFile noticeFile = noticeFileRepository.findByName(fileName);
+
+                if (noticeFile != null) {
+                    fileList.add(noticeFile);
+                } else {
+                    newFileList.add(multipartFile);
+                }
+            }
+        }
+
+        fileList.addAll(noticeFileHandler.parseFileInfo(newFileList));
+
+        if(oNotice.isPresent()) {
+            Notice notice = oNotice.get();
+
+            notice.setTitle(noticeReqDto.getTitle());
+            notice.setContent(noticeReqDto.getContent());
+            notice.getNoticeFiles().clear();
+
+            for (NoticeFile noticeFile : fileList) {
+                notice.addFile(noticeFile);
+            }
+
+            return noticeRepository.save(notice) != null;
+        }
+
+        return false;
     }
 
 }

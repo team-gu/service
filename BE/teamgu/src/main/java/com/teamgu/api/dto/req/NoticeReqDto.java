@@ -10,7 +10,7 @@ import java.util.List;
 @Data //Data 어노테이션을 통해 아래 어노테이션 추가됨
 // @Getter, @Setter, @ToString, @RequiredArgsConstructor, @EqualsAndHashCode
 @ApiModel(description = "공지사항 요청 요청 모델")
-public class NoticeCreateReqDto {
+public class NoticeReqDto {
     @ApiModelProperty(name = "유저의 id값", example = "")
     private Long userId;
 

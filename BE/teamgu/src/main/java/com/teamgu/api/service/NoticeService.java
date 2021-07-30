@@ -1,6 +1,6 @@
 package com.teamgu.api.service;
 
-import com.teamgu.api.dto.req.NoticeCreateReqDto;
+import com.teamgu.api.dto.req.NoticeReqDto;
 import com.teamgu.api.dto.res.NoticeDetailResDto;
 import com.teamgu.api.dto.res.NoticeListResDto;
 import org.springframework.data.domain.Page;
@@ -13,5 +13,7 @@ public interface NoticeService {
 
     boolean deleteNotice(long id);
 
-    boolean createNotice(NoticeCreateReqDto noticeCreateReqDto);
+    boolean createNotice(NoticeReqDto noticeReqDto);
+
+    boolean updateNotice(long id, NoticeReqDto noticeReqDto);
 }

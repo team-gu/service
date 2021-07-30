@@ -23,6 +23,10 @@ public class NoticeFileHandler {
     @Autowired
     DateTimeUtil dateTimeUtil;
 
+//    public List<NoticeFile> updateFileInfo(List<MultipartFile> multipartFiles) {
+//        List<NoticeFile> fileList = new ArrayList<>();
+//    }
+
     public List<NoticeFile> parseFileInfo(List<MultipartFile> multipartFiles) {
         List<NoticeFile> fileList = new ArrayList<>();
 
