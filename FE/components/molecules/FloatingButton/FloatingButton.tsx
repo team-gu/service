@@ -43,6 +43,7 @@ const Wrapper = styled(motion.div)<{ isRtc: boolean }>`
     border-radius: 80px;
 
     box-shadow: 0 6px 12px 0 rgba(4, 4, 161, 0.1);
+    background-color: white;
 
     :hover {
       opacity: 0.8;
