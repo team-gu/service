@@ -30,7 +30,7 @@ const TimerContainer = styled.div`
   font-size: 11px;
 `;
 
-export default function FloatingTimer(): ReactElement {
+export default function FloatingCounter(): ReactElement {
   const [count, setCount] = useState(0);
 
   const useInterval = (callback: any, delay: number) => {

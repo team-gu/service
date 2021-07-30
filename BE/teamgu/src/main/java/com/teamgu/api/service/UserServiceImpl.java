@@ -170,7 +170,7 @@ public class UserServiceImpl implements UserService {
 
 		User user = getUserByEmail(userInfoReq.getEmail()).get();
 		user.setStudentNumber(userInfoReq.getStudentNumber());
-		user.setWishPosition(userInfoReq.getWishPosition());
+		user.setWishPositionCode(userInfoReq.getWishPosition());
 		System.out.println(userInfoReq.getStudentNumber().substring(1, 2)+"기");
 		// 학번 입력 받아서 project
 		int stageCode = codeDetailRepositorySupport.finStageCode(userInfoReq.getStudentNumber().substring(1, 2) + "기");
@@ -279,7 +279,7 @@ public class UserServiceImpl implements UserService {
 		}
 		userInfoRes.setSkill(skillName);
 
-		String position = codeDetailRepositorySupport.findPositionName(user.getWishPosition());
+		String position = codeDetailRepositorySupport.findPositionName(user.getWishPositionCode());
 		userInfoRes.setWishPosition(position);
 
 		userInfoRes.setIntroduce(user.getIntroduce());
