@@ -175,11 +175,11 @@ export default function VideoChat(): ReactElement {
   useEffect(() => {
     if (!session) return;
 
-    let mySession = session;
+    const mySession = session;
 
     // 어떤 새로운 스트림이 도착하면
     mySession.on('streamCreated', (event: any) => {
-      let sub = mySession.subscribe(event.stream, ''); // targetElement(second param) ignored.
+      const sub = mySession.subscribe(event.stream, ''); // targetElement(second param) ignored.
       let subs = subscribers;
       subs.push(sub);
       setSubscribers([...subs]);
@@ -328,7 +328,6 @@ export default function VideoChat(): ReactElement {
   };
 
   const handleClickChat = () => {
-    console.log('채팅');
     setChatShow(!chatShow);
   };
 
