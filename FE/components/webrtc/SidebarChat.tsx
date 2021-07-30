@@ -2,7 +2,7 @@ import { ReactElement, useState } from 'react';
 import styled from 'styled-components';
 import { useAuthState } from '@store';
 import { DateTime } from 'luxon';
-import SessionChatRoom from './SessionChatRoom';
+import SidebarChatRoom from './SidebarChatRoom';
 import { Chat } from './types/chat-type';
 import { Session, SignalEvent } from 'openvidu-browser';
 import { useEffect } from 'react';
@@ -118,7 +118,7 @@ export default function SidebarChat({
 
       {isShow && (
         <SidebarContent>
-          <SessionChatRoom
+          <SidebarChatRoom
             messageList={messageList}
             setMessageList={setMessageList}
             session={session}

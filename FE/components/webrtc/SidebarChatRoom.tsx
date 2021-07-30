@@ -5,7 +5,7 @@ import { ChatInput, ChatBubble } from '@molecules';
 import { Session } from 'openvidu-browser';
 import { Chat } from './types/chat-type';
 
-interface SessionChatRoomProps {
+interface SidebarChatRoomProps {
   session: Session;
   messageList: Chat[];
   setMessageList: any; // TODO: 추후 타입 정의
@@ -31,12 +31,12 @@ const Wrapper = styled.div`
   }
 `;
 
-export default function SessionChatRoom({
+export default function SidebarChatRoom({
   session,
   messageList,
   setMessageList,
   handleClickSend,
-}: SessionChatRoomProps): ReactElement {
+}: SidebarChatRoomProps): ReactElement {
   const chatBoxRef: any = useRef<HTMLInputElement>(null);
 
   const handleScrollToEnd = () => {
