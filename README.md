@@ -20,6 +20,14 @@
 	</a>
 </div>
 
+## 📝 Code Review
+
+- [스크롤 이벤트에 반응하는 네브바 구성 #14](https://github.com/team-gu/service/pull/14)
+- [화상채팅 툴바 구현 #38](https://github.com/team-gu/service/pull/38)
+- [공지사항 목록 및 세부사항 조회 완성 #52](https://github.com/team-gu/service/pull/52)
+- [SecurityConfig 파일 복원 및 매핑 오류 수정 #56](https://github.com/team-gu/service/pull/56)
+- [로그인과 로그아웃을 구현했습니다 #70](https://github.com/team-gu/service/pull/70)
+
 ## 🚀 Feature
 
 WIP
