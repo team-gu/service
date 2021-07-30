@@ -8,7 +8,7 @@ import { useAppDispatch, setLogin } from '@store';
 
 const Wrapper = styled.div`
   width: 100%;
-  height: 100%;
+  height: calc(100vh - 250px);
   ${({ theme: { flexCol } }) => flexCol()};
 
   .input {
