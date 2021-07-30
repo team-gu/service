@@ -357,7 +357,7 @@ export default function VideoChat(): ReactElement {
     <Wrapper>
       {session !== undefined && (
         <>
-          <SidebarChat isShow={chatShow}>
+          <SidebarChat isShow={chatShow} session={session}>
             <SessionWrapper>
               <SessionContainer number={subscribers.length + 1}>
                 {publisher !== undefined && (

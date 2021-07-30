@@ -1,11 +1,16 @@
-import { CHAT_DUMMY_DATA } from '@utils/constants';
 import { ReactElement, useState } from 'react';
 import styled from 'styled-components';
-import { ChatRoom } from '@organisms';
+import { useAuthState } from '@store';
+import { DateTime } from 'luxon';
+import SessionChatRoom from './SessionChatRoom';
+import { Chat } from './types/chat-type';
+import { Session, SignalEvent } from 'openvidu-browser';
+import { useEffect } from 'react';
 
 interface SidebarChatProps {
   isShow: boolean;
   children: ReactElement;
+  session: Session;
 }
 
 const Wrapper = styled.div`
@@ -48,9 +53,58 @@ const SidebarContent = styled.div`
 
 export default function SidebarChat({
   isShow,
+  session,
   children,
 }: SidebarChatProps): ReactElement {
-  const [chatData, setChatData] = useState(CHAT_DUMMY_DATA);
+  const { user } = useAuthState();
+  const [messageList, setMessageList] = useState<Chat[]>([]);
+
+  useEffect(() => {
+    if (!session) return;
+
+    let mySession = session;
+
+    mySession.on('signal:chat', (event: SignalEvent) => {
+      if (!event.data) return;
+
+      console.log(mySession);
+      console.log(event);
+
+      const data = JSON.parse(event.data);
+      messageList.push({
+        nickname: data.nickname,
+        message: data.message,
+        profileSrc: '',
+        createAt: DateTime.now(),
+        connectionId: event.from?.connectionId,
+      });
+
+      setMessageList([...messageList]);
+    });
+  }, [session]);
+
+  const getNickname = () => {
+    return user.name ? user.name : 'teamgu-1';
+  };
+
+  // type을 맞추기 위해 억지로 Promise를 만듦
+  const handleClickSend = (msg: string) => {
+    return new Promise<void>((resolve, reject) => {
+      const mySession = session;
+      const payload = {
+        isMe: true,
+        message: msg,
+        nickname: getNickname(),
+      };
+
+      mySession.signal({
+        data: JSON.stringify(payload),
+        type: 'chat',
+      });
+
+      resolve();
+    });
+  };
 
   return (
     <>
@@ -64,7 +118,12 @@ export default function SidebarChat({
 
       {isShow && (
         <SidebarContent>
-          <ChatRoom chatData={chatData} setChatData={setChatData} />
+          <SessionChatRoom
+            messageList={messageList}
+            setMessageList={setMessageList}
+            session={session}
+            handleClickSend={handleClickSend}
+          />
         </SidebarContent>
       )}
     </>
