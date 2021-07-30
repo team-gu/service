@@ -6,8 +6,13 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
-@Mapper(uses = NoticeFileMapper.class) //Notice안에 있는 NoticeFile도 매퍼로 처리해야함
+
+/**
+ * Notice Entity와 NoticeDto를 매핑해주는 Mapper
+ */
+@Mapper(uses = NoticeFileMapper.class) //Notice안에 있는 NoticeFile도 Mapper로 처리하기 위함
 public interface NoticeDetailMapper {
+
     NoticeDetailMapper INSTANCE = Mappers.getMapper(NoticeDetailMapper.class);
 
     @Mapping(source = "createDate", target = "createDate", dateFormat = "yyyy.MM.dd")
@@ -19,5 +24,4 @@ public interface NoticeDetailMapper {
     @Mapping(source = "createDate", target = "createDate", qualifiedByName = "stringToDate")
     @Mapping(source = "modifyDate", target = "modifyDate", qualifiedByName = "stringToDate")
     Notice dtoToNotice(NoticeDetailResDto noticeDetailResDto);
-
 }

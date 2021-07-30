@@ -15,6 +15,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
+/**
+ * 첨부파일 I/O 핸들러 클래스
+ */
 public class NoticeFileHandler {
 
     @Autowired
@@ -23,10 +26,12 @@ public class NoticeFileHandler {
     @Autowired
     DateTimeUtil dateTimeUtil;
 
-//    public List<NoticeFile> updateFileInfo(List<MultipartFile> multipartFiles) {
-//        List<NoticeFile> fileList = new ArrayList<>();
-//    }
-
+    /**
+     * MD5, 날짜를 기반으로 MultiPartFile을 File로 전환 및 저장하는 함수
+     *
+     * @param multipartFiles
+     * @return
+     */
     public List<NoticeFile> parseFileInfo(List<MultipartFile> multipartFiles) {
         List<NoticeFile> fileList = new ArrayList<>();
 
@@ -57,7 +62,7 @@ public class NoticeFileHandler {
                     String md5Name = new MD5GenUtil(originalName).toString();
 
                     //여기서 NoticeFileResDto를 만들고
-                    //걔네 하나하나를 NoticeFile Entity로 변환 (Mapper를 통해)
+                    //각각의 NoticeFileResDto를 Mapper를 통해 NoticeFile Entity로 변환
                     NoticeFile noticeFile = NoticeFileMapper.INSTANCE.dtoToNoticeFile(
                             NoticeFileResDto.builder()
                                     .originalName(originalName)

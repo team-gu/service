@@ -11,9 +11,13 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-@Mapper //NoticeFile Mapper
+@Mapper
+/**
+ * NoticeFile와 NoticeFileResDto를 매핑해주는 Mapper
+ */
 public interface NoticeFileMapper {
-    NoticeFileMapper INSTANCE = Mappers.getMapper(NoticeFileMapper.class); //추후에 사용하게 될 것 같아 추가해놓음
+
+    NoticeFileMapper INSTANCE = Mappers.getMapper(NoticeFileMapper.class);
 
     //Date -> String 컬럼 변환
     @Mapping(source = "registDate", target = "registDate", dateFormat = "yyyy.MM.dd")
