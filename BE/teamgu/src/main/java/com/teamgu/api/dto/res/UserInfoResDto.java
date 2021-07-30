@@ -3,7 +3,6 @@ package com.teamgu.api.dto.res;
 import java.util.List;
 
 import com.teamgu.database.entity.UserAward;
-import com.teamgu.database.entity.UserProject;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -20,8 +19,8 @@ public class UserInfoResDto {
 	String password;
 	@ApiModelProperty(name = "studentNumber", example = "0546419")
 	String studentNumber;
-	@ApiModelProperty(name = "wishPosition", example = "101")
-	String wishPosition;
+	@ApiModelProperty(name = "wishPositionCode", example = "101")
+	String wishPositionCode;
 	@ApiModelProperty(name = "wishTrack")
 	List<String> wishTrack;
 	@ApiModelProperty(name = "introduce", example = "안녕하세요! 할말이 없어요!")
@@ -29,7 +28,7 @@ public class UserInfoResDto {
 	@ApiModelProperty(name = "skill")
 	List<String> skill;
 	@ApiModelProperty(name = "project")
-	List<UserProject> projects;
+	List<UserProjectDto> projects;
 	@ApiModelProperty(name = "awards")
 	List<UserAward> awards;
 	

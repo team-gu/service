@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import com.teamgu.api.dto.req.AwardReqDto;
 import com.teamgu.api.dto.req.LoginReqDto;
@@ -21,6 +22,7 @@ import com.teamgu.api.dto.req.UserInfoReqDto;
 import com.teamgu.api.dto.res.LoginResDto;
 import com.teamgu.api.dto.res.TokenResDto;
 import com.teamgu.api.dto.res.UserInfoResDto;
+import com.teamgu.api.dto.res.UserProjectDto;
 import com.teamgu.common.auth.JwtUserDetailsService;
 import com.teamgu.common.util.JwtTokenUtil;
 import com.teamgu.database.entity.Mapping;
@@ -37,6 +39,7 @@ import com.teamgu.database.repository.ProjectDetailRepositorySuport;
 import com.teamgu.database.repository.ProjectRepository;
 import com.teamgu.database.repository.ProjectRepositorySuport;
 import com.teamgu.database.repository.SkillRepository;
+import com.teamgu.database.repository.UserQueryRepository;
 import com.teamgu.database.repository.UserRepository;
 import com.teamgu.database.repository.WishTrackRepository;
 
@@ -60,6 +63,9 @@ public class UserServiceImpl implements UserService {
 	ProjectRepository projectRepository;
 	@Autowired
 	AwardRepository awardRepository;
+	
+	@Autowired
+	UserQueryRepository userQueryRepository;
 
 	@Autowired
 	ProjectDetailRepository projectDetailRepository;
@@ -120,9 +126,8 @@ public class UserServiceImpl implements UserService {
 		LoginResDto loginRes = new LoginResDto();
 		loginRes.setStatusCode(200);
 		loginRes.setMessage("Success");
-		loginRes.setRefreshToken(refreshToken);
 		loginRes.setAccessToken(accessToken);
-		loginRes.setUserInfo(user);
+		loginRes.setUserInfo(getUserDetailInfo(user.getEmail()));
 		return loginRes;
 	}
 
@@ -269,6 +274,7 @@ public class UserServiceImpl implements UserService {
 	public UserInfoResDto getUserDetailInfo(String email) {
 		User user = userRepository.findByEmail(email).get();
 		UserInfoResDto userInfoRes = new UserInfoResDto();
+		userInfoRes.setEmail(email);
 		userInfoRes.setPassword(user.getPassword());
 		userInfoRes.setStudentNumber(user.getStudentNumber());
 
@@ -280,12 +286,26 @@ public class UserServiceImpl implements UserService {
 		userInfoRes.setSkill(skillName);
 
 		String position = codeDetailRepositorySupport.findPositionName(user.getWishPositionCode());
-		userInfoRes.setWishPosition(position);
-
+		userInfoRes.setWishPositionCode(position);
 		userInfoRes.setIntroduce(user.getIntroduce());
-		userInfoRes.setProjects(user.getUserProject());
-		userInfoRes.setAwards(user.getUserAward());
+
+		List<UserProject> projects = userQueryRepository.selectUserProjectByEmail(email);
+		List<UserProjectDto> userProjects = new ArrayList<UserProjectDto>();
+		for(UserProject project : projects) {
+			UserProjectDto userProjectDto = new UserProjectDto();
+			userProjectDto.setIntroduce(project.getIntroduce());
+			userProjectDto.setName(project.getName());
+			userProjectDto.setPosition(codeDetailRepositorySupport.findPositionName(project.getPositionCode()));
+			userProjectDto.setUrl(project.getUrl());
+			userProjects.add(userProjectDto);
+		}
+		userInfoRes.setProjects(userProjects);
+
+		//userInfoRes.setProjects(user.getUserProject());
+		List<UserAward> awards = userQueryRepository.selectUserAwardByEmail(email);
+		userInfoRes.setAwards(awards);
 		return userInfoRes;
+		
 	}
 
 }
