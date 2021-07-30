@@ -27,6 +27,7 @@
       "@routes": ["routes/"],
       "@store": ["store"],
       "@styles/*": ["styles/*"],
+      "@types/*": ["types/*"],
       "@utils/*": ["utils/*"],
       "@context/*": ["context/*"],
       "@parse/*": ["test/*"]

@@ -7,3 +7,13 @@ export interface Chat {
   createAt: DateTime;
   connectionId: string | undefined;
 }
+
+export interface ChatNormal {
+  id: string;
+  userName: string;
+  profileSrc: string;
+  // TODO: 추후 타입 정의
+  time: any;
+  message: string;
+  isMe: boolean;
+}
