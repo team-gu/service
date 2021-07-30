@@ -1,11 +1,11 @@
-import { ReactElement, useState } from 'react';
+import { ReactElement, useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { useAuthState } from '@store';
 import { DateTime } from 'luxon';
-import SidebarChatRoom from './SidebarChatRoom';
-import { Chat } from './types/chat-type';
 import { Session, SignalEvent } from 'openvidu-browser';
-import { useEffect } from 'react';
+
+import { useAuthState } from '@store';
+import { ChatRoom } from '@organisms';
+import { Chat } from '@types/chat-type';
 
 interface SidebarChatProps {
   isShow: boolean;
@@ -118,7 +118,8 @@ export default function SidebarChat({
 
       {isShow && (
         <SidebarContent>
-          <SidebarChatRoom
+          <ChatRoom
+            isRtc
             messageList={messageList}
             setMessageList={setMessageList}
             session={session}
