@@ -1,4 +1,4 @@
-import { ReactElement, useRef, useEffect } from 'react';
+import { ReactElement, useRef, useEffect, MouseEventHandler } from 'react';
 import styled from 'styled-components';
 import { DateTime } from 'luxon';
 
@@ -17,12 +17,15 @@ interface ChatRoomProps {
   // TODO: 추후 타입 정의
   setChatData: any;
 }
+
 const Wrapper = styled.div`
-  width: 100%;
-  height: 100%;
+  padding: 0 20px;
+  width: calc(100% - 40px);
+  height: calc(100% - 60px);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+
   .chat-container {
     overflow-y: scroll;
     overflow-x: none;
