@@ -10,7 +10,10 @@ import java.util.List;
 @Getter
 @Setter
 @ApiModel
-public class PageReqDto { //Pageable 커스텀 클래스
+/**
+ * Swagger에서 사용된 Pageable 클래스와 매핑되는 커스텀 DTO
+ */
+public class PageReqDto {
     @ApiModelProperty(value = "페이지 번호(0 ... N)")
     private Integer page;
 

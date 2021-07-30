@@ -12,6 +12,9 @@ import java.util.List;
 @Setter
 @Builder
 @ApiModel("NoticeDetailResponse")
+/**
+ * 공지사항의 세부 내용을 담기 위한 DTO 클래스
+ */
 public class NoticeDetailResDto {
     @ApiModelProperty(name = "공지사항 생성일", example = "")
     String createDate;

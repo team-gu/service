@@ -10,7 +10,12 @@ import lombok.Setter;
 @Setter
 @Builder
 @ApiModel("NoticeFileResponse")
+/**
+ * NoticeFile 엔티티에 대응되는 DTO
+ * File관련 I/O 조작에 사용된다
+ */
 public class NoticeFileResDto {
+
     @ApiModelProperty(name = "파일 원본명", example = "")
     String originalName;
 
