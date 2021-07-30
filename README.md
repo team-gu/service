@@ -35,6 +35,10 @@
 - [SecurityConfig 파일 복원 및 매핑 오류 수정 #56](https://github.com/team-gu/service/pull/56)
 - [로그인과 로그아웃을 구현했습니다 #70](https://github.com/team-gu/service/pull/70)
 
+## 🪄 Code Reusability
+- [Storybook](https://team-gu.github.io/service/develop/")과 [components 폴더](https://github.com/team-gu/service/tree/develop/FE/components)를 확인해보시면 모든 컴포넌트는 Atomic Design Pattern 을 따르고 있습니다.
+- [styled-components theme provider](https://github.com/team-gu/service/blob/develop/FE/styles/theme.ts)를 사용하여 자주 사용하는 CSS 코드를 재사용 하고 있습니다.
+
 ## 🚀 Feature
 
 WIP
