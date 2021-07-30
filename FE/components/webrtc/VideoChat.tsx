@@ -8,14 +8,15 @@ import {
   VideoRoomConfigModal,
   UserVideoComponent,
   VideoChatToolbar,
+  FloatingCounter,
+  FloatingChatButton,
+  SidebarChat,
 } from '../webrtc';
 import { useAuthState } from '@store';
 
 var OpenViduBrowser: any;
 
 const Wrapper = styled.div`
-  ${({ theme: { flexCol } }) => flexCol()}
-
   .session-title {
     margin-bottom: 20px;
   }
@@ -26,10 +27,44 @@ const SessionWrapper = styled.div`
   width: 100%;
 `;
 
-const SessionContainer = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
+const SessionContainer = styled.div<{ number: number }>`
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+
+  .flexItem {
+    align-self: stretch;
+  }
+
+  ${({ number }) => {
+    if (number > 8) {
+      return `
+        .flexItem {
+          flex: 0 0 240px;
+        }
+      `;
+    } else if (number > 4) {
+      return `
+        .flexItem {
+          flex: 0 0 360px;
+        }
+      `;
+    } else if (number > 2) {
+      return `
+        .flexItem {
+          flex: 0 0 480px;
+        }
+      `;
+    } else {
+      return `
+        .flexItem {
+          flex: 0 0 640px;
+        }
+      `;
+    }
+  }};
 `;
 
 interface UserDevice {
@@ -37,7 +72,7 @@ interface UserDevice {
   cam: string;
 }
 
-const OPENVIDU_SERVER_URL = 'https://3.38.39.72';
+const OPENVIDU_SERVER_URL = 'https://teamgu.xyz';
 // const OPENVIDU_SERVER_URL = 'https://localhost:4443';
 const OPENVIDU_SERVER_SECRET = 'MY_SECRET';
 
@@ -56,6 +91,7 @@ export default function VideoChat(): ReactElement {
 
   const [micOn, setMicOn] = useState(false);
   const [camOn, setCamOn] = useState(false);
+  const [chatShow, setChatShow] = useState(false);
 
   const { name } = useAuthState();
   const myUserName = name ? name : 'MeetInSsafy';
@@ -66,19 +102,17 @@ export default function VideoChat(): ReactElement {
   useEffect(() => {
     // componentDidMount
     window.addEventListener('beforeunload', onbeforeunload);
-
-    // componentWillUnmount
-    return () => {
-      window.removeEventListener('beforeunload', onbeforeunload);
-    };
-  });
-
-  // Dynamic module import
-  useEffect(() => {
+    // Dynamic module import
     importOpenVidu().then((ob) => {
       OpenViduBrowser = ob;
       setOV(new OpenViduBrowser.OpenVidu());
     });
+
+    // componentWillUnmount
+    return () => {
+      window.removeEventListener('beforeunload', onbeforeunload);
+      clear();
+    };
   }, []);
 
   const importOpenVidu = () => {
@@ -105,6 +139,20 @@ export default function VideoChat(): ReactElement {
       subs.splice(index, 1);
       setSubscribers([...subs]);
     }
+  };
+
+  const clear = () => {
+    setOV(new OpenViduBrowser.OpenVidu());
+    setSession(undefined);
+    setPublisher(undefined);
+    setSubscribers([]);
+    setUserDevice({ mic: '', cam: '' });
+    setMicOn(false);
+    setCamOn(false);
+  };
+
+  const updateSubscribers = () => {
+    setSubscribers((subs) => subs.slice());
   };
 
   const handlerConfigModalCloseBtn = () => {
@@ -151,6 +199,11 @@ export default function VideoChat(): ReactElement {
       console.warn(exception);
     });
 
+    // 스트림 속성이 변경되면
+    mySession.on('streamPropertyChanged', () => {
+      updateSubscribers();
+    });
+
     getToken()
       .then((token: string) => {
         mySession.connect(token, { clientData: myUserName }).then(() => {
@@ -164,7 +217,7 @@ export default function VideoChat(): ReactElement {
             videoSource: camIsNone ? undefined : userDevice.cam,
             publishAudio: micIsNone ? false : true,
             publishVideo: camIsNone ? false : true,
-            resolution: '640x320',
+            resolution: '640x480',
             frameRate: 30,
             mirror: true,
           });
@@ -262,8 +315,25 @@ export default function VideoChat(): ReactElement {
 
   const handleClickExit = () => {
     leaveSession();
-    setOV(new OpenViduBrowser.OpenVidu());
+    clear();
     setIsConfigModalShow(true);
+  };
+
+  const handleClickScreenShare = () => {
+    alert('화면 공유');
+  };
+
+  const handleClickGame = () => {
+    alert('TMI 게임');
+  };
+
+  const handleClickGroupAdd = () => {
+    alert('초대');
+  };
+
+  const handleClickChat = () => {
+    console.log('채팅');
+    setChatShow(!chatShow);
   };
 
   const createToken = (sessionId: string) => {
@@ -292,29 +362,36 @@ export default function VideoChat(): ReactElement {
     <Wrapper>
       {session !== undefined && (
         <>
-          <SessionWrapper>
-            <SessionContainer>
-              {publisher !== undefined && (
-                <div>
-                  <UserVideoComponent streamManager={publisher} />
-                </div>
-              )}
-              {subscribers.map((sub, i) => (
-                <div key={i}>
-                  <UserVideoComponent streamManager={sub} />
-                </div>
-              ))}
-            </SessionContainer>
-            <VideoChatToolbar
-              micOn={micOn}
-              camOn={camOn}
-              handleClickVideoOff={handleClickVideoOff}
-              handleClickVideoOn={handleClickVideoOn}
-              handleClickAudioOff={handleClickAudioOff}
-              handleClickAudioOn={handleClickAudioOn}
-              handleClickExit={handleClickExit}
-            />
-          </SessionWrapper>
+          <SidebarChat isShow={chatShow}>
+            <SessionWrapper>
+              <SessionContainer number={subscribers.length + 1}>
+                {publisher !== undefined && (
+                  <div className="flexItem">
+                    <UserVideoComponent streamManager={publisher} />
+                  </div>
+                )}
+                {subscribers.map((sub, i) => (
+                  <div key={i} className="flexItem">
+                    <UserVideoComponent streamManager={sub} />
+                  </div>
+                ))}
+              </SessionContainer>
+              <VideoChatToolbar
+                micOn={micOn}
+                camOn={camOn}
+                handleClickVideoOff={handleClickVideoOff}
+                handleClickVideoOn={handleClickVideoOn}
+                handleClickAudioOff={handleClickAudioOff}
+                handleClickAudioOn={handleClickAudioOn}
+                handleClickExit={handleClickExit}
+                handleClickScreenShare={handleClickScreenShare}
+                handleClickGame={handleClickGame}
+                handleClickGroupAdd={handleClickGroupAdd}
+              />
+              <FloatingCounter />
+              <FloatingChatButton handleClick={handleClickChat} />
+            </SessionWrapper>
+          </SidebarChat>
         </>
       )}
 

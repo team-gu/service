@@ -2,13 +2,12 @@ import { ReactElement, useState, MouseEventHandler } from 'react';
 import styled from 'styled-components';
 import { Icon } from '@atoms';
 
-const Wrapper = styled.div`
-  ${({ theme: { flexCol } }) => flexCol()}
-`;
-
 const ToolbarBackground = styled.div`
-  position: absolute;
-  top: 80px;
+  position: fixed;
+  bottom: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+
   width: 550px;
   height: 30px;
   text-align: center;
@@ -20,16 +19,23 @@ const ToolbarBackground = styled.div`
 `;
 
 const ToolbarContainer = styled.div`
-  position: absolute;
-  top: 80px;
+  position: fixed;
+  bottom: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+
   width: 550px;
   height: 30px;
   text-align: center;
   padding: 10px 0;
 
   i {
-    margin: 0 10px;
+    margin: 0 20px;
     font-size: 32px;
+    opacity: 1;
+    :hover {
+      opacity: 0.75;
+    }
     cursor: pointer;
   }
 `;
@@ -41,6 +47,9 @@ interface VideoChatToolbarProps {
   handleClickVideoOn: MouseEventHandler<HTMLSpanElement>;
   handleClickAudioOff: MouseEventHandler<HTMLSpanElement>;
   handleClickAudioOn: MouseEventHandler<HTMLSpanElement>;
+  handleClickScreenShare: MouseEventHandler<HTMLSpanElement>;
+  handleClickGame: MouseEventHandler<HTMLSpanElement>;
+  handleClickGroupAdd: MouseEventHandler<HTMLSpanElement>;
   handleClickExit: MouseEventHandler<HTMLSpanElement>;
 }
 
@@ -51,10 +60,13 @@ export default function VideoChatToolbar({
   handleClickVideoOn,
   handleClickAudioOff,
   handleClickAudioOn,
+  handleClickScreenShare,
+  handleClickGame,
+  handleClickGroupAdd,
   handleClickExit,
 }: VideoChatToolbarProps): ReactElement {
   return (
-    <Wrapper>
+    <>
       <ToolbarBackground />
       <ToolbarContainer>
         {camOn ? (
@@ -66,6 +78,7 @@ export default function VideoChatToolbar({
             <Icon iconName="videocam_off" />
           </span>
         )}
+
         {micOn ? (
           <span onClick={handleClickAudioOff}>
             <Icon iconName="mic" />
@@ -76,12 +89,22 @@ export default function VideoChatToolbar({
           </span>
         )}
 
-        <Icon iconName="screen_share" />
-        <Icon iconName="extension" />
+        <span onClick={handleClickScreenShare}>
+          <Icon iconName="screen_share" />
+        </span>
+
+        <span onClick={handleClickGame}>
+          <Icon iconName="extension" />
+        </span>
+
+        <span onClick={handleClickGroupAdd}>
+          <Icon iconName="group_add" />
+        </span>
+
         <span onClick={handleClickExit}>
           <Icon iconName="logout" />
         </span>
       </ToolbarContainer>
-    </Wrapper>
+    </>
   );
 }

@@ -1,10 +1,11 @@
-import { ReactElement } from 'react';
+import { ReactElement, MouseEventHandler } from 'react';
 import styled from 'styled-components';
 
 interface IconProps {
   iconName: string;
   size?: string;
   color?: string;
+  func?: MouseEventHandler<HTMLSpanElement>;
 }
 
 const Wrapper = styled.i<{ size: string; color: string }>`
@@ -18,6 +19,7 @@ export default function Icon({
   iconName,
   size = '24px',
   color = 'black',
+  func = () => {},
 }: IconProps): ReactElement {
   return (
     <Wrapper
@@ -25,6 +27,7 @@ export default function Icon({
       aria-hidden="true"
       size={size}
       color={color}
+      onClick={func}
     >
       {iconName}
     </Wrapper>

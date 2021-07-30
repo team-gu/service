@@ -1,10 +1,22 @@
 import { StreamManager } from 'openvidu-browser';
 import { ReactElement, useEffect, useRef } from 'react';
-import Image from 'next/image';
+import { ProfileImage } from '@molecules';
+import styled from 'styled-components';
 
 interface OpenViduVideoComponentProps {
   streamManager: StreamManager;
 }
+
+const Wrapper = styled.div`
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  video {
+    min-width: 100%;
+  }
+`;
 
 export default function UserVideoComponent({
   streamManager,
@@ -19,13 +31,12 @@ export default function UserVideoComponent({
   });
 
   return (
-    <>
-      {streamManager.stream.videoActive && (
+    <Wrapper>
+      {streamManager.stream.videoActive ? (
         <video autoPlay={true} ref={videoRef} />
+      ) : (
+        <ProfileImage src={'/profile.png'} size={230} />
       )}
-      {!streamManager.stream.videoActive && (
-        <Image src={'/profile.png'} alt="profile" width={'320px'} height={'240px'} objectFit='contain' />
-      )}
-    </>
+    </Wrapper>
   );
 }

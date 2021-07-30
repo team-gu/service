@@ -2614,6 +2614,11 @@
   resolved "https://registry.yarnpkg.com/@types/json5/-/json5-0.0.29.tgz#ee28707ae94e11d2b827bcbe5270bcea7f3e71ee"
   integrity sha1-7ihweulOEdK4J7y+UnC86n8+ce4=
 
+"@types/luxon@^1.27.1":
+  version "1.27.1"
+  resolved "https://registry.yarnpkg.com/@types/luxon/-/luxon-1.27.1.tgz#aceeb2d5be8fccf541237e184e37ecff5faa9096"
+  integrity sha512-cPiXpOvPFDr2edMnOXlz3UBDApwUfR+cpizvxCy0n3vp9bz/qe8BWzHPIEFcy+ogUOyjKuCISgyq77ELZPmkkg==
+
 "@types/markdown-to-jsx@^6.11.3":
   version "6.11.3"
   resolved "https://registry.yarnpkg.com/@types/markdown-to-jsx/-/markdown-to-jsx-6.11.3.tgz#cdd1619308fecbc8be7e6a26f3751260249b020e"
@@ -8322,6 +8327,11 @@ lru-cache@^6.0.0:
   dependencies:
     yallist "^4.0.0"
 
+luxon@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/luxon/-/luxon-2.0.1.tgz#b41ca2f1f5ad8099c18603ae6c36a7794039daf0"
+  integrity sha512-8Eawf81c9ZlQj62W3eq4mp+C7SAIAnmaS7ZuEAiX503YMcn+0C1JnMQRtfaQj6B5qTZLgHv0F4H5WabBCvi1fw==
+
 lz-string@^1.4.4:
   version "1.4.4"
   resolved "https://registry.yarnpkg.com/lz-string/-/lz-string-1.4.4.tgz#c0d8eaf36059f705796e1e344811cf4c498d3a26"
@@ -9099,10 +9109,10 @@ open@^7.0.2, open@^7.0.3:
     is-docker "^2.0.0"
     is-wsl "^2.1.1"
 
-openvidu-browser@2.18.0:
-  version "2.18.0"
-  resolved "https://registry.yarnpkg.com/openvidu-browser/-/openvidu-browser-2.18.0.tgz#594eae4471123c37bc384d5cb025de1d683ea639"
-  integrity sha512-a9HPAG8p2vG9XGThPUbZWPI5sO1OFmrxKQdCZM3RLmasXQa2Lwj7X1Aicsznb7RtDBg/lD8NdNwAQjm4ZDt2Nw==
+openvidu-browser@2.19.0:
+  version "2.19.0"
+  resolved "https://registry.yarnpkg.com/openvidu-browser/-/openvidu-browser-2.19.0.tgz#fb988251180534d23de473622f938acdb00642f9"
+  integrity sha512-Viqe42+dfQUjHMomPz7Or39yJAUlqSwMy8xkz7a5HAhca7Szo8/89aA97Y1uFRowfu/BS8zgYFY0c6PnKGoAnA==
   dependencies:
     freeice "2.2.2"
     hark "1.2.3"

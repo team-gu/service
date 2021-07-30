@@ -47,7 +47,7 @@ jobs:
           publish_dir: ./FE/storybook-static
           keep_files: true
           destination_dir: ${{ env.BRANCH_NAME }}
-          commit_message: https://meet-in-ssafy.github.io/service/${{ env.BRANCH_NAME }}
+          commit_message: https://team-gu.github.io/service/${{ env.BRANCH_NAME }}
 
       - name: Deploy to Github Pages(master)
         uses: peaceiris/actions-gh-pages@v3
@@ -56,4 +56,4 @@ jobs:
           github_token: ${{ secrets.GH_TOKEN }}
           publish_dir: ./FE/storybook-static
           keep_files: true
-          commit_message: https://meet-in-ssafy.github.io/service/
+          commit_message: https://team-gu.github.io/service/

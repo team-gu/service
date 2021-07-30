@@ -5,13 +5,5 @@ import { useAppDispatch, setUserInfo } from '@store';
 export default function User(): ReactElement {
   const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    if (dispatch) {
-      (async () => {
-        await dispatch(setUserInfo());
-      })();
-    }
-  }, [dispatch]);
-
   return <></>;
 }

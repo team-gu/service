@@ -3,7 +3,7 @@ import Image from 'next/image';
 import styled from 'styled-components';
 
 interface ProfileImageProps {
-  src: string;
+  src?: string;
   size?: number;
   isActive?: boolean;
 }
