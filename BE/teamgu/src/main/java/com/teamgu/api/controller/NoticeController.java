@@ -24,14 +24,18 @@ public class NoticeController {
 
     @GetMapping //공지사항 목록 가져오기
     @ApiOperation(value = "공지사항 목록 가져오기", notes = "공지사항 목록에 대한 pagination 정보를 반환")
-    public ResponseEntity<? extends BasicResponse> getNoticeList(Pageable pageable) {
+    public ResponseEntity<? extends BasicResponse> getNoticeList(
+            Pageable pageable
+    ) {
+
         return ResponseEntity.ok(new CommonResponse<Page<NoticeListResDto>>(noticeService.getNoticeList(pageable)));
     }
 
     @GetMapping("/{id}") //특정 공지사항의 id를 기반으로 세부정보 조회, 공지사항 목록에서 선택하게끔 되는 로직이기에 null을 리턴할 수 없다 => 즉 ok status만 리턴
     @ApiOperation(value = "공지사항 세부내용 가져오기", notes = "선택한 공지사항에 대해 세부 정보를 반환")
     public ResponseEntity<? extends BasicResponse> getNoticeDetail(
-            @PathVariable @ApiParam(value = "공지사항의 id", required = true) long id) {
+            @PathVariable @ApiParam(value = "공지사항의 id", required = true) long id
+    ) {
 
         NoticeDetailResDto oNoticeDetail = noticeService.getNoticeDetail(id);
 
@@ -41,13 +45,13 @@ public class NoticeController {
         }
 
         return ResponseEntity.ok(new CommonResponse<NoticeDetailResDto>(oNoticeDetail));
-
     }
 
     @DeleteMapping("/{id}") //특정 공지사항 id 기반으로 삭제
     @ApiOperation(value = "공지사항 삭제하기", notes = "특정 공지사항 지우고 성공 여부 리턴")
     public ResponseEntity<? extends BasicResponse> deleteNotice(
-            @PathVariable @ApiParam(value = "공지사항의 id", required = true) long id) {
+            @PathVariable @ApiParam(value = "공지사항의 id", required = true) long id
+    ) {
 
         if (!noticeService.deleteNotice(id)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -55,13 +59,13 @@ public class NoticeController {
         }
 
         return ResponseEntity.noContent().build(); //제대로 삭제되었으면 그냥 빈 객체 리턴
-
     }
 
     @PostMapping //공지사항 등록
     @ApiOperation(value = "공지사항 등록하기", notes = "NoticeReqDto 형태로 입력이 들어와 성공 여부 리턴")
     public ResponseEntity<? extends BasicResponse> createNotice(
-            @ApiParam(value = "공지사항 VO", required = true) NoticeReqDto noticeReqDto) {
+            @ApiParam(value = "공지사항 VO", required = true) NoticeReqDto noticeReqDto
+    ) {
 
         if (!noticeService.createNotice(noticeReqDto)) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
