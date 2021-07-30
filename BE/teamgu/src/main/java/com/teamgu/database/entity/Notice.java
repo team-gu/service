@@ -32,6 +32,12 @@ public class Notice extends BaseEntity{
     )
     private List<NoticeFile> noticeFiles = new ArrayList<>();
 
+    /**
+     * Notice 엔티티에 NoticeFile들 추가해주는 함수
+     * Notice와 NoticeFile 양방향 간의 의존성 주입
+     *
+     * @param noticeFile
+     */
     public void addFile(NoticeFile noticeFile) {
         if(this.noticeFiles == null) noticeFiles = new ArrayList<>();
 
