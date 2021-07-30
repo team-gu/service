@@ -1,5 +1,6 @@
-import { createSlice, PayloadAction, Dispatch } from '@reduxjs/toolkit';
+import { createSlice, Dispatch } from '@reduxjs/toolkit';
 import { postLoginApi, getUserInfo } from '@repository/baseRepository';
+import { AppDispatch } from '@store';
 import { NextRouter } from 'next/router';
 import { saveItem, removeItem } from '@utils/storage';
 import { setLoading } from '@store';
@@ -72,7 +73,7 @@ export const { setUser } = authReducer.actions;
 export default authReducer.reducer;
 
 export const setLogin =
-  (param: object, router: NextRouter) => async (dispatch: Dispatch) => {
+  (param: object, router: NextRouter) => async (dispatch: AppDispatch) => {
     dispatch(setLoading({ isLoading: true }));
     try {
       const { data } = await postLoginApi(param);
@@ -89,7 +90,7 @@ export const setLogin =
     }
   };
 
-export const setUserInfo = () => async (dispatch: Dispatch) => {
+export const setUserInfo = () => async (dispatch: AppDispatch) => {
   dispatch(setLoading({ isLoading: true }));
   try {
     const {
@@ -104,7 +105,7 @@ export const setUserInfo = () => async (dispatch: Dispatch) => {
   }
 };
 
-export const setLogout = () => (dispatch: Dispatch) => {
+export const setLogout = () => (dispatch: AppDispatch) => {
   dispatch(setUser(initialState));
   removeItem('accessToken');
   removeItem('refreshToken');
