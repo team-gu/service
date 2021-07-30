@@ -10,11 +10,14 @@ import java.security.NoSuchAlgorithmException;
 
 @Component
 @NoArgsConstructor
-//MD5 체크섬으로 변환하기 위한 클래스
+/**
+ * MD5 알고리즘을 이용하여 파일명 암호화 클래스
+ */
 public class MD5GenUtil {
+
     private String result;
 
-    public MD5GenUtil(String input) throws UnsupportedEncodingException, NoSuchAlgorithmException {
+    public MD5GenUtil(String input) throws NoSuchAlgorithmException {
         MessageDigest mdMD5 = MessageDigest.getInstance("MD5");
         mdMD5.update(input.getBytes(StandardCharsets.UTF_8));
         byte[] md5Hash = mdMD5.digest();
