@@ -1,14 +1,12 @@
 package com.teamgu.database.entity;
 
-import java.sql.Date;
+import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.OnDelete;
@@ -21,21 +19,18 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ChatRoom extends BaseEntity{
-
-//	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-//	@Column(name = "chatRoomId")
-//	int id;
-	
 	@Column(length = 45)
 	String title;
 	
 	Date createdDate;
 	
-	@OneToMany(mappedBy = "chatRoom", cascade = {CascadeType.ALL})
+	//채팅방이 사라지면 해당 채팅방의 채팅내역도 사라져야 한다
+	@OneToMany(mappedBy = "chatRoom", cascade = {CascadeType.ALL}, orphanRemoval=true)
 	@OnDelete(action = OnDeleteAction.CASCADE)
-	private List<Chat> chat;
+	private List<Chat> chat = new ArrayList<>();	
 	
-	@OneToMany(mappedBy = "chatRoom", cascade = {CascadeType.ALL})
+	//채팅방이 사라지면 해당 채팅방에 속해있는 유저 목록도 사라져야 한다
+	@OneToMany(mappedBy = "chatRoom", cascade = {CascadeType.ALL}, orphanRemoval=true)
 	@OnDelete(action = OnDeleteAction.CASCADE)
-	private List<UserChat> userChat;
+	private List<UserChat> userChat = new ArrayList<>();
 }

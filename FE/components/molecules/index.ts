@@ -2,7 +2,7 @@ import Button from './Button';
 import ChatBubble from './ChatBubble';
 import ChatInput from './ChatInput';
 import Checkbox from './Checkbox';
-import FloatButton from './FloatButton';
+import FloatingButton from './FloatingButton';
 import Label from './Label';
 import ProfileContainer from './ProfileContainer';
 import ProfileImage from './ProfileImage';
@@ -15,7 +15,7 @@ export {
   ChatBubble,
   ChatInput,
   Checkbox,
-  FloatButton,
+  FloatingButton,
   Label,
   ProfileContainer,
   ProfileImage,

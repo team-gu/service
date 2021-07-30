@@ -1,6 +1,12 @@
 import { Story } from '@storybook/react';
 import styled from 'styled-components';
 
+import {
+  FloatingChatButton,
+  FloatingCounter,
+  VideoChatToolbar,
+} from '../webrtc';
+
 export default {
   title: 'webrtc/Video Chat Layout',
 };
@@ -59,24 +65,29 @@ const Wrapper = styled.div<{ number: number }>`
   }};
 `;
 
-const Template: Story = ({arr}) => (
-  <Wrapper number={arr.length}>
-    {arr.map((item, index) =>
-      item % 2 == 0 ? (
-        <div key={index} className="item">
-          <div className="profile">{item}</div>
-        </div>
-      ) : (
-        <div key={index} className="item">
-          <div className="video">{item}</div>
-        </div>
-      ),
-    )}
-  </Wrapper>
+const Template: Story = ({ arr }) => (
+  <>
+    <Wrapper number={arr.length}>
+      {arr.map((item, index) =>
+        item % 2 == 0 ? (
+          <div key={index} className="item">
+            <div className="profile">{item}</div>
+          </div>
+        ) : (
+          <div key={index} className="item">
+            <div className="video">{item}</div>
+          </div>
+        ),
+      )}
+    </Wrapper>
+    <FloatingChatButton />
+    <FloatingCounter />
+    <VideoChatToolbar />
+  </>
 );
 
 export const videoChatLayout = Template.bind({});
 
 videoChatLayout.args = {
-  arr: [1,2,2,2,1,2,1,2]
-}
+  arr: [1, 2, 2, 2, 1, 2, 1, 2],
+};

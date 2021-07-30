@@ -8,15 +8,15 @@ import {
   VideoRoomConfigModal,
   UserVideoComponent,
   VideoChatToolbar,
+  FloatingCounter,
+  FloatingChatButton,
+  SidebarChat,
 } from '../webrtc';
 import { useAuthState } from '@store';
-import FloatingCounter from './FloatingCounter';
 
 var OpenViduBrowser: any;
 
 const Wrapper = styled.div`
-  ${({ theme: { flexCol } }) => flexCol()}
-
   .session-title {
     margin-bottom: 20px;
   }
@@ -91,6 +91,7 @@ export default function VideoChat(): ReactElement {
 
   const [micOn, setMicOn] = useState(false);
   const [camOn, setCamOn] = useState(false);
+  const [chatShow, setChatShow] = useState(false);
 
   const { name } = useAuthState();
   const myUserName = name ? name : 'MeetInSsafy';
@@ -145,10 +146,10 @@ export default function VideoChat(): ReactElement {
     setSession(undefined);
     setPublisher(undefined);
     setSubscribers([]);
-    setUserDevice({mic:'',cam:''});
+    setUserDevice({ mic: '', cam: '' });
     setMicOn(false);
     setCamOn(false);
-	}
+  };
 
   const updateSubscribers = () => {
     setSubscribers((subs) => subs.slice());
@@ -318,6 +319,23 @@ export default function VideoChat(): ReactElement {
     setIsConfigModalShow(true);
   };
 
+  const handleClickScreenShare = () => {
+    alert('화면 공유');
+  };
+
+  const handleClickGame = () => {
+    alert('TMI 게임');
+  };
+
+  const handleClickGroupAdd = () => {
+    alert('초대');
+  };
+
+  const handleClickChat = () => {
+    console.log('채팅');
+    setChatShow(!chatShow);
+  };
+
   const createToken = (sessionId: string) => {
     return new Promise<string>((resolve, reject) => {
       let data = {};
@@ -344,30 +362,36 @@ export default function VideoChat(): ReactElement {
     <Wrapper>
       {session !== undefined && (
         <>
-          <SessionWrapper>
-            <SessionContainer number={subscribers.length + 1}>
-              {publisher !== undefined && (
-                <div className="flexItem">
-                  <UserVideoComponent streamManager={publisher} />
-                </div>
-              )}
-              {subscribers.map((sub, i) => (
-                <div key={i} className="flexItem">
-                  <UserVideoComponent streamManager={sub} />
-                </div>
-              ))}
-            </SessionContainer>
-            <VideoChatToolbar
-              micOn={micOn}
-              camOn={camOn}
-              handleClickVideoOff={handleClickVideoOff}
-              handleClickVideoOn={handleClickVideoOn}
-              handleClickAudioOff={handleClickAudioOff}
-              handleClickAudioOn={handleClickAudioOn}
-              handleClickExit={handleClickExit}
-            />
-            <FloatingCounter />
-          </SessionWrapper>
+          <SidebarChat isShow={chatShow}>
+            <SessionWrapper>
+              <SessionContainer number={subscribers.length + 1}>
+                {publisher !== undefined && (
+                  <div className="flexItem">
+                    <UserVideoComponent streamManager={publisher} />
+                  </div>
+                )}
+                {subscribers.map((sub, i) => (
+                  <div key={i} className="flexItem">
+                    <UserVideoComponent streamManager={sub} />
+                  </div>
+                ))}
+              </SessionContainer>
+              <VideoChatToolbar
+                micOn={micOn}
+                camOn={camOn}
+                handleClickVideoOff={handleClickVideoOff}
+                handleClickVideoOn={handleClickVideoOn}
+                handleClickAudioOff={handleClickAudioOff}
+                handleClickAudioOn={handleClickAudioOn}
+                handleClickExit={handleClickExit}
+                handleClickScreenShare={handleClickScreenShare}
+                handleClickGame={handleClickGame}
+                handleClickGroupAdd={handleClickGroupAdd}
+              />
+              <FloatingCounter />
+              <FloatingChatButton handleClick={handleClickChat} />
+            </SessionWrapper>
+          </SidebarChat>
         </>
       )}
 
