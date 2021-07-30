@@ -35,6 +35,11 @@
 - [SecurityConfig 파일 복원 및 매핑 오류 수정 #56](https://github.com/team-gu/service/pull/56)
 - [로그인과 로그아웃을 구현했습니다 #70](https://github.com/team-gu/service/pull/70)
 
+## Code Reusability
+[Storybook](https://team-gu.github.io/service/develop/")을 확인해보시면 모든 컴포넌트는 Atomic Design Pattern 을 따르고 있스비다.
+
+
+
 ## 🚀 Feature
 
 WIP
