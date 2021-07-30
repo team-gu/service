@@ -1,6 +1,7 @@
 import { ReactElement } from 'react';
 import styled from 'styled-components';
-import { ProfileImage } from '@molecules';
+
+import { ProfileImage, ChatBubbleSelect } from '@molecules';
 import { Text } from '@atoms';
 
 interface ChatBubbleProps {
@@ -75,7 +76,12 @@ export default function ChatBubble({
           <Text text={time} fontSetting="n12m" />
         </div>
         <div className="chat-message">
-          <Text text={message} fontSetting="n16m" isLineBreak />
+          {/* TODO: funcAccept, funcDecline 정의 */}
+          {!isMe && message === 'request' ? (
+            <ChatBubbleSelect funcAccept={() => {}} funcDecline={() => {}} />
+          ) : (
+            <Text text={message} fontSetting="n16m" isLineBreak />
+          )}
         </div>
       </div>
     </Wrapper>
