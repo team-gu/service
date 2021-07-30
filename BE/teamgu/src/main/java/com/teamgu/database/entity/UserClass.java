@@ -13,17 +13,13 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class UserClass extends BaseEntity{
-	
-//	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-//	int id;
-	
+public class UserClass extends BaseEntity{	
 	@ManyToOne
 	@JoinColumn(name = "userId")
 	User user;
 	
 	@ManyToOne
 	@JoinColumn(name = "classId")
-	StdClass classInfo;
+	StdClass stdClass;
 
 }

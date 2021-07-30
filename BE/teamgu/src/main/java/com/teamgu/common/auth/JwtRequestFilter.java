@@ -31,11 +31,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
 		// 1. Request Header 에서 토큰 꺼내기 
         String jwt = resolveToken(request);
-
+       
         // 2. validateToken 으로 토큰 유효성 검사
         // 정상 토큰이면 해당 토큰으로 Authentication 을 가져와서 SecurityContext 에 저장
         if (StringUtils.hasText(jwt) && jwtTokenUtil.validateToken(jwt)) {
-            Authentication authentication = jwtTokenUtil.getAuthentication(jwt);
+        	Authentication authentication = jwtTokenUtil.getAuthentication(jwt);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 

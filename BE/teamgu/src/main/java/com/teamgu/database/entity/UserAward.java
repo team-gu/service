@@ -1,6 +1,7 @@
 package com.teamgu.database.entity;
 
-import java.sql.Date;
+
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,6 +11,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,8 +21,6 @@ import lombok.Setter;
 @Setter
 public class UserAward extends BaseEntity{
 	
-//	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-//	int id;
 	@Column(length = 45)
 	String name;
 	@Column(length = 45)
@@ -30,5 +31,6 @@ public class UserAward extends BaseEntity{
 	
 	@ManyToOne
 	@JoinColumn(name = "userId")
+	@JsonIgnore
 	User user;
 }
