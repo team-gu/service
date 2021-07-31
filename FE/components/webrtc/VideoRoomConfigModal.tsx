@@ -122,8 +122,8 @@ export default function VideoRoomConfigModal({
   const [micSelected, setMicSelected] = useState<string>('');
   const [localCamStream, setLocalCamStream] = useState<Publisher>();
 
-  const [camOn, setCamOn] = useState(true);
-  const [micOn, setMicOn] = useState(true);
+  const [camOn, setCamOn] = useState(false);
+  const [micOn, setMicOn] = useState(false);
 
   useEffect(() => {
     (async function init() {

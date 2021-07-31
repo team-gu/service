@@ -1,10 +1,5 @@
 import { ReactElement, useState, useEffect } from 'react';
-import {
-  OpenVidu,
-  Session,
-  Subscriber,
-  Publisher,
-} from 'openvidu-browser';
+import { OpenVidu, Session, Subscriber, Publisher } from 'openvidu-browser';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
 import axios from 'axios';
@@ -42,7 +37,6 @@ const SessionContainer = styled.div<{ number: number }>`
 
   .flexItem {
     align-self: stretch;
-    border: solid 1px gainsboro;
   }
 
   ${({ number }) => {
@@ -133,22 +127,6 @@ export default function VideoChat(): ReactElement {
     leaveSession();
   };
 
-  const updateSubscriber = (connectionId: string, prop: string, newValue: any) => {
-    const subs = subscribers;
-
-    subs.map((sub) => {
-      if (sub.stream.connection.connectionId === connectionId) {
-        if (prop === 'audioActive')  {
-          sub.stream.audioActive = newValue;
-        } else if (prop === 'videoActive') {
-          sub.stream.videoActive = newValue;
-        }
-      }
-    });
-
-    setSubscribers([...subs]);
-  }
-
   const deleteSubscriber = (streamManager: Subscriber) => {
     let subs = subscribers;
     let index = subscribers.indexOf(streamManager, 0);
@@ -189,9 +167,6 @@ export default function VideoChat(): ReactElement {
     setMicOn(micState);
     setCamOn(camState);
 
-    console.log(micState);
-    console.log(camState);
-
     setIsConfigModalShow(false);
     setSession(OV?.initSession());
   };
@@ -221,13 +196,17 @@ export default function VideoChat(): ReactElement {
     });
 
     // 스트림 속성이 변경되면
-    mySession.on('streamPropertyChanged', (event: any) => {
-      const prop = event.changedProperty;
-      const newValue = event.newValue;
-      const connectionId = event.stream.connection.connectionId;
-      // updateSubscriber(connectionId, prop, newValue);
+    mySession.on('streamPropertyChanged', () => {
+      const subs = subscribers;
+      setSubscribers([...subs]);
+    });
 
-      setSubscribers([...subscribers]);
+    mySession.on('publisherStartSpeaking', (event: any) => {
+      console.log('User ' + event.connection.connectionId + ' start speaking');
+    });
+
+    mySession.on('publisherStopSpeaking', (event: any) => {
+      console.log('User ' + event.connection.connectionId + ' stop speaking');
     });
 
     getToken()
@@ -323,7 +302,7 @@ export default function VideoChat(): ReactElement {
   };
 
   const handleClickAudioOff = () => {
-    publisher?.publishAudio(false); 
+    publisher?.publishAudio(false);
     setMicOn(false);
   };
 
