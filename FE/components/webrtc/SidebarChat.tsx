@@ -1,28 +1,36 @@
-import { ReactElement } from 'react';
+import { ReactElement, useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { DateTime } from 'luxon';
+import { Session, SignalEvent } from 'openvidu-browser';
+
+import { useAuthState } from '@store';
+import { ChatRoom } from '@organisms';
+import { Chat } from '@types/chat-type';
 
 interface SidebarChatProps {
   isShow: boolean;
   children: ReactElement;
+  session: Session;
 }
 
 const Wrapper = styled.div`
   display: flex;
   overflow: hidden;
-`;
+  min-height: 80vh;
+  align-items: center;
 
-const RightSidebarSpace = styled.div`
-  transition: width 0.3s;
-  width: 0;
+  .right-sidebar-space {
+    transition: width 0.3s;
+    width: 0;
 
-  &.open {
-    width: 300px;
-  }
+    &.open {
+      width: 420px;
+    }
 
-  .sidebar {
-    transition: transform 0.3s;
-    width: 300px;
-    height: 500px;
+    .sidebar {
+      transition: transform 0.3s;
+      width: 420px;
+    }
   }
 `;
 
@@ -30,67 +38,93 @@ const SidebarContent = styled.div`
   position: fixed;
   bottom: 120px;
   right: 30px;
-  width: 280px;
+  width: 400px;
 
-  display: flex;
-  align-items: flex-end;
+  border-radius: 10px;
+  box-shadow: 0 12px 20px 0 rgb(0 0 0 / 15%);
+  background-color: white;
+  z-index: 2;
 
-  .item {
-    overflow: auto;
-    max-height: 65vh;
+  > div {
+    height: calc(100vh - 180px);
+    padding-bottom: 20px;
   }
 `;
 
 export default function SidebarChat({
   isShow,
+  session,
   children,
 }: SidebarChatProps): ReactElement {
+  const { user } = useAuthState();
+  const [messageList, setMessageList] = useState<Chat[]>([]);
+
+  useEffect(() => {
+    if (!session) return;
+
+    let mySession = session;
+
+    mySession.on('signal:chat', (event: SignalEvent) => {
+      if (!event.data) return;
+
+      console.log(mySession);
+      console.log(event);
+
+      const data = JSON.parse(event.data);
+      messageList.push({
+        nickname: data.nickname,
+        message: data.message,
+        profileSrc: '',
+        createAt: DateTime.now(),
+        connectionId: event.from?.connectionId,
+      });
+
+      setMessageList([...messageList]);
+    });
+  }, [session]);
+
+  const getNickname = () => {
+    return user.name ? user.name : 'teamgu-1';
+  };
+
+  // type을 맞추기 위해 억지로 Promise를 만듦
+  const handleClickSend = (msg: string) => {
+    return new Promise<void>((resolve, reject) => {
+      const mySession = session;
+      const payload = {
+        isMe: true,
+        message: msg,
+        nickname: getNickname(),
+      };
+
+      mySession.signal({
+        data: JSON.stringify(payload),
+        type: 'chat',
+      });
+
+      resolve();
+    });
+  };
+
   return (
     <>
       <Wrapper>
         {children}
 
-        <RightSidebarSpace className={isShow ? 'open' : 'closed'}>
+        <div className={'right-sidebar-space' + (isShow ? ' open' : ' closed')}>
           <div className={'sidebar' + (isShow ? ' open' : ' closed')}></div>
-        </RightSidebarSpace>
+        </div>
       </Wrapper>
+
       {isShow && (
         <SidebarContent>
-          <div className="item">
-            <h3>Main content</h3>
-            <br />
-            <p>
-              Nam accumsan eleifend metus at imperdiet. Mauris pellentesque
-              ipsum nisi, et fringilla leo blandit sed. In tempor, leo sit amet
-              fringilla imperdiet, ipsum enim sagittis sem, non molestie nisi
-              purus consequat sapien. Proin at velit id elit tincidunt iaculis
-              ac ac libero. Vivamus vitae tincidunt ex. Duis sit amet lacinia
-              massa. Quisque lobortis tincidunt metus ut commodo. Sed euismod
-              quam gravida condimentum commodo.
-            </p>
-
-            <br />
-            <p>
-              Vivamus tincidunt risus ut sapien tincidunt, ac fermentum libero
-              dapibus. Duis accumsan enim ac magna tempor, vestibulum euismod
-              nisl pharetra. Ut dictum lacus eu venenatis vestibulum. Vestibulum
-              euismod at arcu ac blandit. Curabitur eu imperdiet magna. Duis
-              bibendum efficitur diam, eget placerat nunc imperdiet eget. Morbi
-              porta at leo sed porta. Nullam eleifend eleifend quam eget dictum.
-            </p>
-            <br />
-            <p>
-              Sed nulla erat, lacinia sit amet dui at, cursus blandit neque. In
-              ultricies, dui a laoreet dignissim, risus mi cursus risus, at
-              luctus sem arcu non tortor. In hac habitasse platea dictumst.
-              Etiam ut vulputate augue. Aenean efficitur commodo ipsum, in
-              aliquet arcu blandit non. Praesent sed tempus dui, non eleifend
-              nisi. Proin non finibus diam, quis finibus ante. Fusce aliquam
-              faucibus mauris, id consequat velit ultricies at. Aliquam neque
-              erat, fermentum non aliquam id, mattis nec justo. Nullam eget
-              suscipit lectus.
-            </p>
-          </div>
+          <ChatRoom
+            isRtc
+            messageList={messageList}
+            setMessageList={setMessageList}
+            session={session}
+            handleClickSend={handleClickSend}
+          />
         </SidebarContent>
       )}
     </>

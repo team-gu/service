@@ -17,6 +17,7 @@ import { useAuthState } from '@store';
 var OpenViduBrowser: any;
 
 const Wrapper = styled.div`
+  margin: 30px 10px;
   .session-title {
     margin-bottom: 20px;
   }
@@ -36,6 +37,7 @@ const SessionContainer = styled.div<{ number: number }>`
 
   .flexItem {
     align-self: stretch;
+    border: solid 1px gainsboro;
   }
 
   ${({ number }) => {
@@ -48,19 +50,13 @@ const SessionContainer = styled.div<{ number: number }>`
     } else if (number > 4) {
       return `
         .flexItem {
-          flex: 0 0 360px;
-        }
-      `;
-    } else if (number > 2) {
-      return `
-        .flexItem {
-          flex: 0 0 480px;
+          flex: 0 1 480px;
         }
       `;
     } else {
       return `
         .flexItem {
-          flex: 0 0 640px;
+          flex: 0 1 600px;
         }
       `;
     }
@@ -73,7 +69,6 @@ interface UserDevice {
 }
 
 const OPENVIDU_SERVER_URL = 'https://teamgu.xyz';
-// const OPENVIDU_SERVER_URL = 'https://localhost:4443';
 const OPENVIDU_SERVER_SECRET = 'MY_SECRET';
 
 export default function VideoChat(): ReactElement {
@@ -93,7 +88,8 @@ export default function VideoChat(): ReactElement {
   const [camOn, setCamOn] = useState(false);
   const [chatShow, setChatShow] = useState(false);
 
-  const { name } = useAuthState();
+  const { user } = useAuthState();
+  const name = user.name;
   const myUserName = name ? name : 'MeetInSsafy';
   const mySessionId = `session_of_${myUserName}`;
   const sessionTitle = `[${myUserName}]님의 세션`;
@@ -179,11 +175,11 @@ export default function VideoChat(): ReactElement {
   useEffect(() => {
     if (!session) return;
 
-    let mySession = session;
+    const mySession = session;
 
     // 어떤 새로운 스트림이 도착하면
     mySession.on('streamCreated', (event: any) => {
-      let sub = mySession.subscribe(event.stream, ''); // targetElement(second param) ignored.
+      const sub = mySession.subscribe(event.stream, ''); // targetElement(second param) ignored.
       let subs = subscribers;
       subs.push(sub);
       setSubscribers([...subs]);
@@ -332,7 +328,6 @@ export default function VideoChat(): ReactElement {
   };
 
   const handleClickChat = () => {
-    console.log('채팅');
     setChatShow(!chatShow);
   };
 
@@ -362,7 +357,7 @@ export default function VideoChat(): ReactElement {
     <Wrapper>
       {session !== undefined && (
         <>
-          <SidebarChat isShow={chatShow}>
+          <SidebarChat isShow={chatShow} session={session}>
             <SessionWrapper>
               <SessionContainer number={subscribers.length + 1}>
                 {publisher !== undefined && (
