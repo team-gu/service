@@ -5,7 +5,7 @@ import org.springframework.stereotype.Repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.teamgu.database.entity.QUserAward;
-import com.teamgu.database.entity.UserAward;
+import com.teamgu.database.entity.UserInfoAward;
 @Repository
 public class AwardRepositorySuport {
 	@Autowired
@@ -13,7 +13,7 @@ public class AwardRepositorySuport {
 	
 	QUserAward qAward = QUserAward.userAward;
 
-	public void modAwards(UserAward award, String email) {
+	public void modAwards(UserInfoAward award, String email) {
 		jpaQueryFactory.update(qAward)
 		.where(qAward.name.eq(award.getName()))
 		.set(qAward.introduce, award.getIntroduce())

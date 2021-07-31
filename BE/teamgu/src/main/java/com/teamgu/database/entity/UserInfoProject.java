@@ -15,7 +15,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class UserProject extends BaseEntity {
+public class UserInfoProject extends BaseEntity {
 
 	@NotNull
 	@Column(length = 45)

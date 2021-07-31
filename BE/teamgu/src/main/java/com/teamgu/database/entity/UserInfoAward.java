@@ -19,7 +19,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class UserAward extends BaseEntity{
+public class UserInfoAward extends BaseEntity{
 	
 	@Column(length = 45)
 	String name;

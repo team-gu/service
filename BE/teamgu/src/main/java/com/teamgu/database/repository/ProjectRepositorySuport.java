@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.teamgu.database.entity.QUserProject;
-import com.teamgu.database.entity.UserProject;
+import com.teamgu.database.entity.UserInfoProject;
 
 @Repository
 public class ProjectRepositorySuport {
@@ -16,7 +16,7 @@ public class ProjectRepositorySuport {
 	QUserProject qProject = QUserProject.userProject;
 	
 	@Transactional
-	public void modProjects(UserProject project, String email) {
+	public void modProjects(UserInfoProject project, String email) {
 		jpaQueryFactory.update(qProject)
 		.where(qProject.name.eq(project.getName()))
 		.set(qProject.introduce, project.getIntroduce())

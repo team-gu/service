@@ -26,8 +26,8 @@ import com.teamgu.common.util.JwtTokenUtil;
 import com.teamgu.database.entity.Mapping;
 import com.teamgu.database.entity.Skill;
 import com.teamgu.database.entity.User;
-import com.teamgu.database.entity.UserAward;
-import com.teamgu.database.entity.UserProject;
+import com.teamgu.database.entity.UserInfoAward;
+import com.teamgu.database.entity.UserInfoProject;
 import com.teamgu.database.entity.WishTrack;
 import com.teamgu.database.repository.AwardRepository;
 import com.teamgu.database.repository.AwardRepositorySuport;
@@ -210,7 +210,7 @@ public class UserServiceImpl implements UserService {
 	 */
 	@Override
 	public void setProjectInfo(List<ProjectReqDto> projectInfoReq) {
-		UserProject userProject = new UserProject();
+		UserInfoProject userProject = new UserInfoProject();
 		for (ProjectReqDto project : projectInfoReq) {
 			userProject.setIntroduce(project.getIntroduce());
 			userProject.setName(project.getName());
@@ -235,7 +235,7 @@ public class UserServiceImpl implements UserService {
 	 */
 	@Override
 	public void setAwardInfo(List<AwardReqDto> awardReqDto) {
-		UserAward userAward = new UserAward();
+		UserInfoAward userAward = new UserInfoAward();
 		for (AwardReqDto award : awardReqDto) {
 			userAward.setAgency(award.getAgency());
 			userAward.setIntroduce(award.getIntroduce());

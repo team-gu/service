@@ -2,8 +2,8 @@ package com.teamgu.api.dto.res;
 
 import java.util.List;
 
-import com.teamgu.database.entity.UserAward;
-import com.teamgu.database.entity.UserProject;
+import com.teamgu.database.entity.UserInfoAward;
+import com.teamgu.database.entity.UserInfoProject;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -29,8 +29,8 @@ public class UserInfoResDto {
 	@ApiModelProperty(name = "skill")
 	List<String> skill;
 	@ApiModelProperty(name = "project")
-	List<UserProject> projects;
+	List<UserInfoProject> projects;
 	@ApiModelProperty(name = "awards")
-	List<UserAward> awards;
+	List<UserInfoAward> awards;
 	
 }
