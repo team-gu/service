@@ -22,7 +22,12 @@ interface VideoRoomConfigModalProps {
   OV: OpenVidu;
   sessionTitle: string;
   handlerClose: MouseEventHandler;
-  handlerJoin: (micSelected: string, camSelected: string) => void;
+  handlerJoin: (
+    micSelected: string,
+    camSelected: string,
+    micState: boolean,
+    camState: boolean,
+  ) => void;
 }
 
 const SessionTitle = styled.span`
@@ -117,6 +122,9 @@ export default function VideoRoomConfigModal({
   const [micSelected, setMicSelected] = useState<string>('');
   const [localCamStream, setLocalCamStream] = useState<Publisher>();
 
+  const [camOn, setCamOn] = useState(true);
+  const [micOn, setMicOn] = useState(true);
+
   useEffect(() => {
     (async function init() {
       loggerUtil = new LoggerUtil();
@@ -177,6 +185,14 @@ export default function VideoRoomConfigModal({
     setLocalCamStream(stream);
   };
 
+  const handlecamOnChanged = () => {
+    setCamOn(!camOn);
+  };
+
+  const handleMicOnChanged = () => {
+    setMicOn(!micOn);
+  };
+
   return (
     <ModalWrapper modalName="videoConfigModal">
       <GridContainer>
@@ -207,7 +223,16 @@ export default function VideoRoomConfigModal({
                 readOnly={true}
               />
             </div>
-            <Icon iconName="mic" color="gray" />
+
+            <div>
+              <Icon iconName="mic" color="gray" />
+              <input
+                type="checkbox"
+                checked={micOn}
+                onChange={handleMicOnChanged}
+              />
+            </div>
+
             <Label text="Microphone">
               <select value={micSelected} onChange={handleMicrophoneChange}>
                 {microphones?.map((mic, i) => (
@@ -217,7 +242,16 @@ export default function VideoRoomConfigModal({
                 ))}
               </select>
             </Label>
-            <Icon iconName="videocam" color="gray" />
+
+            <div>
+              <Icon iconName="videocam" color="gray" />
+              <input
+                type="checkbox"
+                checked={camOn}
+                onChange={handlecamOnChanged}
+              />
+            </div>
+
             <Label text="Camera">
               <select value={camSelected} onChange={handleCameraChange}>
                 {cameras?.map((cam, i) => (
@@ -232,7 +266,7 @@ export default function VideoRoomConfigModal({
         <div className="modal-footer">
           <Button
             title="JOIN"
-            func={() => handlerJoin(micSelected, camSelected)}
+            func={() => handlerJoin(micSelected, camSelected, micOn, camOn)}
           />
         </div>
       </GridContainer>
