@@ -1,5 +1,10 @@
 import { ReactElement, useState, useEffect } from 'react';
-import { OpenVidu, Session, Subscriber, Publisher } from 'openvidu-browser';
+import {
+  OpenVidu,
+  Session,
+  Subscriber,
+  Publisher,
+} from 'openvidu-browser';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
 import axios from 'axios';
@@ -128,6 +133,22 @@ export default function VideoChat(): ReactElement {
     leaveSession();
   };
 
+  const updateSubscriber = (connectionId: string, prop: string, newValue: any) => {
+    const subs = subscribers;
+
+    subs.map((sub) => {
+      if (sub.stream.connection.connectionId === connectionId) {
+        if (prop === 'audioActive')  {
+          sub.stream.audioActive = newValue;
+        } else if (prop === 'videoActive') {
+          sub.stream.videoActive = newValue;
+        }
+      }
+    });
+
+    setSubscribers([...subs]);
+  }
+
   const deleteSubscriber = (streamManager: Subscriber) => {
     let subs = subscribers;
     let index = subscribers.indexOf(streamManager, 0);
@@ -147,10 +168,6 @@ export default function VideoChat(): ReactElement {
     setCamOn(false);
   };
 
-  const updateSubscribers = () => {
-    setSubscribers((subs) => subs.slice());
-  };
-
   const handlerConfigModalCloseBtn = () => {
     setPublisher(undefined);
     setIsConfigModalShow(false);
@@ -158,14 +175,22 @@ export default function VideoChat(): ReactElement {
     router.back();
   };
 
-  const handlerJoinBtn = (micSelected: string, camSelected: string) => {
+  const handlerJoinBtn = (
+    micSelected: string,
+    camSelected: string,
+    micState: boolean,
+    camState: boolean,
+  ) => {
     setUserDevice({
       mic: micSelected,
       cam: camSelected,
     });
 
-    setMicOn(micSelected !== '');
-    setCamOn(camSelected !== '');
+    setMicOn(micState);
+    setCamOn(camState);
+
+    console.log(micState);
+    console.log(camState);
 
     setIsConfigModalShow(false);
     setSession(OV?.initSession());
@@ -196,8 +221,13 @@ export default function VideoChat(): ReactElement {
     });
 
     // 스트림 속성이 변경되면
-    mySession.on('streamPropertyChanged', () => {
-      updateSubscribers();
+    mySession.on('streamPropertyChanged', (event: any) => {
+      const prop = event.changedProperty;
+      const newValue = event.newValue;
+      const connectionId = event.stream.connection.connectionId;
+      // updateSubscriber(connectionId, prop, newValue);
+
+      setSubscribers([...subscribers]);
     });
 
     getToken()
@@ -205,14 +235,11 @@ export default function VideoChat(): ReactElement {
         mySession.connect(token, { clientData: myUserName }).then(() => {
           if (!OV) return;
 
-          const micIsNone = !userDevice.mic || userDevice.mic === '';
-          const camIsNone = !userDevice.cam || userDevice.cam === '';
-
           let publisher = OV.initPublisher('', {
-            audioSource: micIsNone ? undefined : userDevice.mic,
-            videoSource: camIsNone ? undefined : userDevice.cam,
-            publishAudio: micIsNone ? false : true,
-            publishVideo: camIsNone ? false : true,
+            audioSource: userDevice.mic,
+            videoSource: userDevice.cam,
+            publishAudio: micOn,
+            publishVideo: camOn,
             resolution: '640x480',
             frameRate: 30,
             mirror: true,
@@ -237,11 +264,7 @@ export default function VideoChat(): ReactElement {
     if (mySession) {
       mySession.disconnect();
     }
-
-    setOV(undefined);
-    setSession(undefined);
-    setSubscribers([]);
-    setPublisher(undefined);
+    clear();
   };
 
   const getToken = () => {
@@ -300,7 +323,7 @@ export default function VideoChat(): ReactElement {
   };
 
   const handleClickAudioOff = () => {
-    publisher?.publishAudio(false);
+    publisher?.publishAudio(false); 
     setMicOn(false);
   };
 
