@@ -18,6 +18,7 @@ const Icons = styled.div`
 
   i {
     padding-left: 10px;
+    curosr: pointer;
   }
 `;
 
@@ -37,6 +38,9 @@ const Manifesto = styled.div`
     width: 80%;
     & + * {
       margin-top: 1em;
+    }
+    .track {
+      width: 30%;
     }
   }
 `;
@@ -100,7 +104,7 @@ export default function UserDetail(): ReactElement {
         <Manifesto>
           <p>지역 기수 반 이름</p>
           <div>
-            <p style={{ width: '30%' }}>트랙</p>
+            <p className="track">트랙</p>
             <p>희망포지션</p>
           </div>
           <p>
