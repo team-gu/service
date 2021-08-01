@@ -9,7 +9,7 @@ export interface Chat {
 }
 
 export interface ChatNormal {
-  id: string;
+  id: number;
   userName: string;
   profileSrc: string;
   // TODO: 추후 타입 정의

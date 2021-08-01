@@ -2,86 +2,87 @@ export const MODALS: { ALERT_MODAL: string } = {
   ALERT_MODAL: 'alertModal',
 };
 
-export const VIDEO_CHAT_PATH_PREFIX = '/rtc'
+export const VIDEO_CHAT_PATH_PREFIX = '/rtc';
 
 export const CHAT_DUMMY_DATA = [
   {
-    id: '0',
+    key: 0,
+    id: 111,
     userName: '김싸피',
     profileSrc: '/profile.png',
     time: '2021-07-28T17:41:27.699+09:00',
     message: 'asdfsd',
-    isMe: false,
   },
   {
-    id: '1',
+    key: 1,
+    id: 222,
     userName: 'Me',
     profileSrc: '/profile.png',
     time: '2021-07-28T17:41:27.699+09:00',
     message: 'asdfsd',
-    isMe: true,
   },
   {
-    id: '2',
+    key: 2,
+    id: 111,
     userName: '김싸피',
     profileSrc: '/profile.png',
     time: '2021-07-28T17:41:27.699+09:00',
     message: 'asdfsd',
-    isMe: false,
   },
   {
-    id: '3',
+    key: 3,
+    id: 111,
     userName: '김싸피',
     profileSrc: '/profile.png',
     time: '2021-07-28T17:41:27.699+09:00',
     message: 'asdfsd',
-    isMe: false,
   },
   {
-    id: '4',
+    key: 4,
+    id: 111,
     userName: '김싸피',
     profileSrc: '/profile.png',
     time: '2021-07-28T17:41:27.699+09:00',
     message: 'asdfsd',
-    isMe: false,
   },
   {
-    id: '5',
+    key: 5,
+    id: 222,
     userName: 'Me',
     profileSrc: '/profile.png',
     time: '2021-07-28T17:41:27.699+09:00',
     message: 'asdfsd',
-    isMe: true,
   },
   {
-    id: '6',
+    key: 6,
+    id: 111,
     userName: '김싸피',
     profileSrc: '/profile.png',
     time: '2021-07-28T17:41:27.699+09:00',
     message: 'asdfsd',
-    isMe: false,
   },
   {
-    id: '7',
+    key: 7,
+    id: 111,
     userName: '김싸피',
     profileSrc: '/profile.png',
     time: '2021-07-28T17:41:27.699+09:00',
     message:
       'asdfsdasdfsdasdfsdasdfsdasdfsdasdfsdasdfsdasdfsdasdfsdasdfsdasdfsdasdfsdasdfsdasdfsdasdfsdasdfsd',
-    isMe: false,
   },
   {
-    id: '8',
+    key: 8,
+    id: 111,
     userName: '김싸피',
     profileSrc: '/profile.png',
     time: '2021-07-28T17:41:27.699+09:00',
     message: 'request',
-    isMe: false,
   },
 ];
 
 export const USER_DUMMY_DATA = [
   {
+    id: 0,
     name: '공지사항',
     content: '팀빌딩을 위해서 ...',
     isActive: false,
@@ -89,6 +90,7 @@ export const USER_DUMMY_DATA = [
     alertNumber: 10,
   },
   {
+    id: 111,
     name: '김싸피',
     content: 'ㅎㅇㅎㅇ',
     isActive: true,
