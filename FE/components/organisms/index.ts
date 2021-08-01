@@ -5,6 +5,7 @@ import Footer from './Footer';
 import Layout from './Layout';
 import LineBackground from './LineBackground';
 import LoginComponent from './LoginComponent';
+import ModalWrapper from './Modal/ModalWrapper';
 import RegisterComponent from './RegisterComponent';
 
 export {
@@ -15,5 +16,6 @@ export {
   Layout,
   LineBackground,
   LoginComponent,
+  ModalWrapper,
   RegisterComponent,
 };
