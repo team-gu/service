@@ -10,11 +10,12 @@ import org.springframework.stereotype.Service;
 import com.teamgu.api.dto.UserChatRoomDto;
 import com.teamgu.api.dto.res.ChatMessageResDto;
 import com.teamgu.api.dto.res.ChatRoomResDto;
+import com.teamgu.database.entity.Chat;
 import com.teamgu.database.entity.UserChatRoom;
+import com.teamgu.database.repository.ChatRepository;
+import com.teamgu.database.repository.ChatRepositorySupport;
 import com.teamgu.database.repository.ChatRoomRepository;
 import com.teamgu.database.repository.UserChatRoomRepository;
-import com.teamgu.database.repository.UserChatRoomRepositorySupport;
-import com.teamgu.mapper.ChatRoomMapper;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -26,6 +27,12 @@ public class ChatServiceImpl implements ChatService{
 	
 	@Autowired
 	UserChatRoomRepository userChatRoomRepository;
+	
+	@Autowired
+	ChatRepository chatRepository;
+	
+	@Autowired
+	ChatRepositorySupport chatRepositorySupport;
 	
 	/**
 	 * 특정 유저의 채팅 목록을 가져온다
@@ -51,11 +58,25 @@ public class ChatServiceImpl implements ChatService{
 		log.info("반환하는 chatRoomResDtoList 갯수 : "+chatRoomResDtoList.size());
 		return chatRoomResDtoList;
 	}
-
+	
+	/**
+	 * 채팅방 메시지 목록을 가져온다
+	 */
 	@Override
 	public List<ChatMessageResDto> getChatMessageList(long chatRoomId) {
-		// TODO Auto-generated method stub
-		return null;
+		List<ChatMessageResDto> chatMessageResDtoList = new ArrayList<ChatMessageResDto>();
+		for(Chat chat:chatRepositorySupport.findByReceiveRoomId(chatRoomId)) {			
+			ChatMessageResDto chatMessageResDto = ChatMessageResDto.builder()
+													.message(chat.getMessage())
+													.sender_id(chat.getUser().getId())
+													.sender_name(chat.getUser().getName())
+													.create_date_time(chat.getSendDateTime())
+													.unread_user_count(0)
+													.build();
+			chatMessageResDtoList.add(chatMessageResDto);
+		}
+		log.info("반환하는 chatMessageResDtoList 갯수 : "+chatMessageResDtoList.size());
+		return chatMessageResDtoList;
 	}
 
 }

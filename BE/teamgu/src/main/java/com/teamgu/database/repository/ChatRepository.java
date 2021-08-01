@@ -11,5 +11,5 @@ import com.teamgu.database.entity.Chat;
  *
  */
 public interface ChatRepository extends JpaRepository<Chat, Long> {
-//	List<Chat> findByReceiveRoomId(long receive_room_id);
+	
 }
