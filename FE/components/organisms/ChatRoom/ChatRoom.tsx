@@ -6,16 +6,18 @@ import { Session } from 'openvidu-browser';
 import { ChatInput, ChatBubble } from '@molecules';
 
 import { Chat, ChatNormal } from '@types/chat-type';
+import { useAuthState } from '@store';
 
 interface ChatRoomProps {
   isRtc?: boolean;
+  isConnectStomp?: boolean;
   session?: Session | undefined;
   messageList: Chat[] & ChatNormal[] & any;
   setMessageList: any; // TODO: 추후 타입 정의
   handleClickSend: (msg: string) => Promise<void>;
 }
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<{ disabled: boolean }>`
   padding: 0 20px;
   width: calc(100% - 40px);
   height: calc(100% - 60px);
@@ -32,15 +34,21 @@ const Wrapper = styled.div`
       width: 0;
     }
   }
+
+  ${({ disabled }) => disabled && 'pointer-events: none; opacity: 0.3;'}
 `;
 
 export default function Chatroom({
   isRtc = false,
+  isConnectStomp = true,
   session,
   messageList,
   setMessageList,
   handleClickSend,
 }: ChatRoomProps): ReactElement {
+  const {
+    user: { id },
+  } = useAuthState();
   const chatBoxRef: any = useRef<HTMLInputElement>(null);
 
   const handleScrollToEnd = () => {
@@ -77,7 +85,7 @@ export default function Chatroom({
   };
 
   return (
-    <Wrapper>
+    <Wrapper disabled={!isConnectStomp}>
       <div className="chat-container" ref={chatBoxRef}>
         {isRtc
           ? messageList?.map(
@@ -100,7 +108,13 @@ export default function Chatroom({
               ),
             )
           : messageList?.map(
-              ({ id, userName, profileSrc, time, message, isMe }: ChatNormal) => (
+              ({
+                id: curId,
+                userName,
+                profileSrc,
+                time,
+                message,
+              }: ChatNormal) => (
                 <ChatBubble
                   key={id}
                   userName={userName}
@@ -112,14 +126,12 @@ export default function Chatroom({
                       : DateTime.fromISO(time).toRelative()
                   }
                   message={message}
-                  isMe={isMe}
+                  isMe={curId === id}
                 />
               ),
             )}
       </div>
-      <ChatInput
-        func={sendMessage}
-      />
+      <ChatInput func={sendMessage} />
     </Wrapper>
   );
 }
