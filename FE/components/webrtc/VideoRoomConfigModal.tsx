@@ -23,8 +23,8 @@ interface VideoRoomConfigModalProps {
   sessionTitle: string;
   handlerClose: MouseEventHandler;
   handlerJoin: (
-    micSelected: string,
-    camSelected: string,
+    micSelected: string | undefined,
+    camSelected: string | undefined,
     micState: boolean,
     camState: boolean,
   ) => void;
@@ -118,8 +118,8 @@ export default function VideoRoomConfigModal({
 }: VideoRoomConfigModalProps): ReactElement {
   const [cameras, setCameras] = useState<IDevice[]>([]);
   const [microphones, setMicrophones] = useState<IDevice[]>([]);
-  const [camSelected, setCamSelected] = useState<string>('');
-  const [micSelected, setMicSelected] = useState<string>('');
+  const [camSelected, setCamSelected] = useState<string>();
+  const [micSelected, setMicSelected] = useState<string>();
   const [localCamStream, setLocalCamStream] = useState<Publisher>();
 
   const [camOn, setCamOn] = useState(true);
@@ -131,13 +131,23 @@ export default function VideoRoomConfigModal({
       util = new Util();
       devicesUtil = new DevicesUtil(OV, loggerUtil, util);
 
-      // To get user's permission of video and audio
-      await OV.initPublisherAsync('', {
-        resolution: '320x240',
-      });
+      try {
+        // To get user's permission of video and audio
+        await OV.initPublisherAsync('', {
+          resolution: '320x240',
+        });
 
-      // After permit, get devices
-      await devicesUtil.initDevices();
+        // After permit, get devices
+        await devicesUtil.initDevices();
+      } catch (e) {
+        console.error(e.message);
+        if (e.name === 'DEVICE_ACCESS_DENIED') {
+          alert('장치에 접근할 수 없습니다.');
+          setCamOn(false);
+          setMicOn(false);
+        }
+      }
+
       setMicrophones([...devicesUtil.getMicrophones()]);
       setCameras([...devicesUtil.getCameras()]);
 
@@ -155,11 +165,12 @@ export default function VideoRoomConfigModal({
     setMicSelected(event.target.value);
   };
 
+  // TODO: 카메라가 필요없는 None을 선택해도 On-Air 불빛이 꺼지지 않는다.
   // Publish every time the camera changes
   useEffect(() => {
-    // TODO: 카메라가 필요없는 None을 선택해도 On-Air 불빛이 꺼지지 않는다.
-
-    if (camSelected || camSelected === '') publishUserCameraStream();
+    if (camSelected) {
+      publishUserCameraStream();
+    }
   }, [camSelected]);
 
   const publishUserCameraStream = () => {
@@ -176,17 +187,21 @@ export default function VideoRoomConfigModal({
   };
 
   const handleCamOnChanged = () => {
-    localCamStream?.publishVideo(!camOn);
-    setCamOn(!camOn);
+    if (camSelected) {
+      localCamStream?.publishVideo(!camOn);
+      setCamOn(!camOn);
+    }
   };
 
   const handleMicOnChanged = () => {
-    setMicOn(!micOn);
+    if (micSelected) {
+      setMicOn(!micOn);
+    }
   };
 
   const handleClickJoin = () => {
     handlerJoin(micSelected, camSelected, micOn, camOn);
-  }
+  };
 
   return (
     <ModalWrapper modalName="videoConfigModal">
