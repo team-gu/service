@@ -185,13 +185,17 @@ export default function VideoRoomConfigModal({
     setLocalCamStream(stream);
   };
 
-  const handlecamOnChanged = () => {
+  const handleCamOnChanged = () => {
     setCamOn(!camOn);
   };
 
   const handleMicOnChanged = () => {
     setMicOn(!micOn);
   };
+
+  const handleClickJoin = () => {
+    handlerJoin(micSelected, camSelected, micOn, camOn);
+  }
 
   return (
     <ModalWrapper modalName="videoConfigModal">
@@ -248,7 +252,7 @@ export default function VideoRoomConfigModal({
               <input
                 type="checkbox"
                 checked={camOn}
-                onChange={handlecamOnChanged}
+                onChange={handleCamOnChanged}
               />
             </div>
 
@@ -266,7 +270,7 @@ export default function VideoRoomConfigModal({
         <div className="modal-footer">
           <Button
             title="JOIN"
-            func={() => handlerJoin(micSelected, camSelected, micOn, camOn)}
+            func={handleClickJoin}
           />
         </div>
       </GridContainer>
