@@ -10,6 +10,6 @@ import org.mapstruct.factory.Mappers;
 public interface NoticeListMapper {
     NoticeListMapper INSTANCE = Mappers.getMapper(NoticeListMapper.class);
 
-    @Mapping(source = "createDate", target = "date", dateFormat = "yyyy.mm.dd")
+    @Mapping(source = "createDate", target = "date", dateFormat = "yyyy.MM.dd")
     NoticeListResDto noticeToDto(Notice notice);
 }

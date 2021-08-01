@@ -31,7 +31,7 @@ profileContainer.args = {
   src: '/profile.png',
   name: '싸피',
   content: '안녕하세요',
-  time: '11:22 PM',
+  time: '2021-07-28T17:41:27.699+09:00',
   isActive: true,
   alertNumber: 100,
 };

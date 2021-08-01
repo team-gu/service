@@ -59,6 +59,7 @@ const GridContainer = styled.div`
     grid-area: config;
     width: 320px;
     height: 240px;
+    display: flex;
   }
 
   .modal-footer {
@@ -195,14 +196,17 @@ export default function VideoRoomConfigModal({
         <div className="video-config">
           <IconsAndInputs>
             <Icon iconName="account_circle" color="gray" />
-            <Label text="Nickname">
+            <div>
+              <Label text="Nickname">
+                <></>
+              </Label>
               <Input
                 type="text"
                 value="meet-in-ssafy"
                 width="230px"
                 readOnly={true}
               />
-            </Label>
+            </div>
             <Icon iconName="mic" color="gray" />
             <Label text="Microphone">
               <select value={micSelected} onChange={handleMicrophoneChange}>

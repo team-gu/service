@@ -16,6 +16,10 @@ const Wrapper = styled.div`
   video {
     min-width: 100%;
   }
+
+  .image-margin-30 > div {
+    margin: 30px;
+  }
 `;
 
 export default function UserVideoComponent({
@@ -35,7 +39,9 @@ export default function UserVideoComponent({
       {streamManager.stream.videoActive ? (
         <video autoPlay={true} ref={videoRef} />
       ) : (
-        <ProfileImage src={'/profile.png'} size={230} />
+        <div className="image-margin-30">
+          <ProfileImage src={'/profile.png'} size={230} />
+        </div>
       )}
     </Wrapper>
   );

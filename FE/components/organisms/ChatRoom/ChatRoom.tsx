@@ -1,28 +1,28 @@
-import { ReactElement, useRef, useEffect } from 'react';
+import { ReactElement, useRef, useEffect, MouseEventHandler } from 'react';
 import styled from 'styled-components';
 import { DateTime } from 'luxon';
+import { Session } from 'openvidu-browser';
 
 import { ChatInput, ChatBubble } from '@molecules';
 
+import { Chat, ChatNormal } from '@types/chat-type';
+
 interface ChatRoomProps {
-  chatData: Array<{
-    id: string;
-    userName: string;
-    profileSrc: string;
-    // TODO: 추후 타입 정의
-    time: any;
-    message: string;
-    isMe: boolean;
-  }>;
-  // TODO: 추후 타입 정의
-  setChatData: any;
+  isRtc?: boolean;
+  session?: Session | undefined;
+  messageList: Chat[] & ChatNormal[] & any;
+  setMessageList: any; // TODO: 추후 타입 정의
+  handleClickSend: (msg: string) => Promise<void>;
 }
+
 const Wrapper = styled.div`
-  width: 100%;
-  height: 100%;
+  padding: 0 20px;
+  width: calc(100% - 40px);
+  height: calc(100% - 60px);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+
   .chat-container {
     overflow-y: scroll;
     overflow-x: none;
@@ -35,8 +35,11 @@ const Wrapper = styled.div`
 `;
 
 export default function Chatroom({
-  chatData,
-  setChatData,
+  isRtc = false,
+  session,
+  messageList,
+  setMessageList,
+  handleClickSend,
 }: ChatRoomProps): ReactElement {
   const chatBoxRef: any = useRef<HTMLInputElement>(null);
 
@@ -55,47 +58,67 @@ export default function Chatroom({
   // TODO: DateTime.fromISO(time).toRelative()를 위해 60초마다 리렌더링이 일어나도록 강제.. 근데 좋은 코드인지는 모르겠음 추후 리펙토링
   useEffect(() => {
     const interval = setInterval(() => {
-      setChatData([...chatData]);
+      setMessageList([...messageList]);
     }, 60000);
 
     return () => clearInterval(interval);
   });
 
+  useEffect(() => {
+    if (isRtc) {
+      const mySession = session;
+      mySession.on('signal:chat', handleScrollToEnd);
+    }
+  }, [session]);
+
+  // type 때문에 억지로 Promise 반환
+  const sendMessage = (msg: string) => {
+    return handleClickSend(msg).then(handleScrollToEnd);
+  };
+
   return (
     <Wrapper>
       <div className="chat-container" ref={chatBoxRef}>
-        {chatData?.map(({ id, userName, profileSrc, time, message, isMe }) => (
-          <ChatBubble
-            key={id}
-            userName={userName}
-            profileSrc={profileSrc}
-            time={
-              Number(DateTime.now()) - Number(DateTime.fromISO(time)) < 60000
-                ? 'just now'
-                : DateTime.fromISO(time).toRelative()
-            }
-            message={message}
-            isMe={isMe}
-          />
-        ))}
+        {isRtc
+          ? messageList?.map(
+              (
+                { nickname, profileSrc, createAt, message, connectionId }: Chat,
+                index: number,
+              ) => (
+                <ChatBubble
+                  key={index}
+                  userName={nickname}
+                  profileSrc={profileSrc ? profileSrc : '/profile.png'}
+                  time={
+                    DateTime.now().diff(createAt).toMillis() < 60000
+                      ? 'just now'
+                      : createAt.toRelative()
+                  }
+                  message={message}
+                  isMe={connectionId === session.connection.connectionId}
+                />
+              ),
+            )
+          : messageList?.map(
+              ({ id, userName, profileSrc, time, message, isMe }: ChatNormal) => (
+                <ChatBubble
+                  key={id}
+                  userName={userName}
+                  profileSrc={profileSrc}
+                  time={
+                    Number(DateTime.now()) - Number(DateTime.fromISO(time)) <
+                    60000
+                      ? 'just now'
+                      : DateTime.fromISO(time).toRelative()
+                  }
+                  message={message}
+                  isMe={isMe}
+                />
+              ),
+            )}
       </div>
-      {/* TODO: 채팅 로직 확정되면 반영 */}
       <ChatInput
-        func={async (data: string) => {
-          await setChatData([
-            ...chatData,
-            {
-              id: `${chatData.length}`,
-              userName: 'me',
-              profileSrc: '/profile.png',
-              time: DateTime.now().toString(),
-              message: data,
-              isMe: true,
-            },
-          ]);
-
-          handleScrollToEnd();
-        }}
+        func={sendMessage}
       />
     </Wrapper>
   );

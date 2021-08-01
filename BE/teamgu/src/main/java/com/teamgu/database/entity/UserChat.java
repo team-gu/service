@@ -7,8 +7,11 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+
+import com.teamgu.database.entity.pk.UserChatPK;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -16,8 +19,8 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class UserChat implements Serializable {
-	
+@IdClass(UserChatPK.class)
+public class UserChat{	
 	@Id
 	@ManyToOne
 	@JoinColumn(name = "userId")

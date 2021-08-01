@@ -9,6 +9,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,10 +25,11 @@ public class UserProject extends BaseEntity {
 	int positionCode;
 	@Column(length = 1000)
 	String introduce;
-	@Column(length = 45)
+	@Column(length = 200)
 	String url;
 	
 	@ManyToOne
 	@JoinColumn(name = "userId")
+	@JsonIgnore
 	User user;
 }
