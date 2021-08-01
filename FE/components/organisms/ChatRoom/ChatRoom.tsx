@@ -127,6 +127,7 @@ export default function Chatroom({
                   }
                   message={message}
                   isMe={curId === id}
+                  func={sendMessage}
                 />
               ),
             )}
