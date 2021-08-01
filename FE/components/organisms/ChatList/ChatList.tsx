@@ -1,11 +1,12 @@
-import { ReactElement, MouseEventHandler } from 'react';
+import { ReactElement, useState, useEffect } from 'react';
 import styled from 'styled-components';
 
+import { getChatLists } from '@repository/chatRepository';
 import { ProfileContainer } from '@molecules';
 import { USER_DUMMY_DATA } from '@utils/constants';
 
 interface ChatListProps {
-  func: MouseEventHandler<HTMLSpanElement>;
+  func: (id: number) => Promise<void>;
 }
 
 const Wrapper = styled.div`
@@ -14,16 +15,30 @@ const Wrapper = styled.div`
 `;
 
 export default function ChatList({ func }: ChatListProps): ReactElement {
+  const [userList, setUserList] = useState(USER_DUMMY_DATA);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const { data } = await getChatLists();
+
+        setUserList(data);
+      } catch (error) {
+        console.error(error);
+      }
+    })();
+  }, []);
+
   return (
     <Wrapper>
-      {USER_DUMMY_DATA.map(({ name, content, isActive, time, alertNumber }) => (
+      {userList.map(({ id, name, content, isActive, time, alertNumber }) => (
         <ProfileContainer
           name={name}
           content={content}
           isActive={isActive}
           time={time}
           alertNumber={alertNumber}
-          func={func}
+          func={() => func(id)}
         />
       ))}
     </Wrapper>
