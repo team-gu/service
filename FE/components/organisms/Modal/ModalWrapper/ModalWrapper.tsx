@@ -59,8 +59,7 @@ export default function ModalWrapper({
   return (
     <>
       <Background />
-      {/* TODO: onClick 상태?? 빨간줄 해결 */}
-      <Wrapper tabIndex={-1} onClick={handleCloseModal}>
+      <Wrapper tabIndex={-1} onClick={() => handleCloseModal}>
         <Content tabIndex={0}>{children}</Content>
       </Wrapper>
     </>

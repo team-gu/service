@@ -8,6 +8,7 @@ import Layout from './Layout';
 import UserDetail from './UserDetail';
 import LineBackground from './LineBackground';
 import LoginComponent from './LoginComponent';
+import ModalWrapper from './Modal/ModalWrapper';
 import RegisterComponent from './RegisterComponent';
 
 export {
@@ -21,5 +22,6 @@ export {
   UserDetail,
   LineBackground,
   LoginComponent,
+  ModalWrapper,
   RegisterComponent,
 };
