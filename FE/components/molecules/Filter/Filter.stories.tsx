@@ -10,35 +10,52 @@ export default {
 const Template: Story = ({ props }) => {
   const [contents, setContents] = useState(props);
 
-  const handleData = (data: string) => {
-    setContents(
-      contents.reduce(
-        (
-          acc: Content[],
-          cur: Content,
-        ) => {
-          if (cur.title === data) {
-            return [...acc, { ...cur, checked: !cur.checked }];
-          }
+  console.log(contents);
+  const handleData = (keyOne: string, keyTwo: string) => {
+    const contentsTemp = { ...contents };
+    console.log(keyOne, keyTwo);
+    contentsTemp[keyOne][keyTwo] = !contentsTemp[keyOne][keyTwo];
 
-          return [...acc, cur];
-        },
-        [],
-      ),
-    );
+    setContents(contentsTemp);
   };
 
-  return <Filter contents={contents} func={handleData} />;
+  return (
+    <>
+      {Object.keys(props).map((each) => (
+        <Filter title={each} contents={contents[each]} func={handleData} />
+      ))}
+    </>
+  );
 };
 
 export const filter = Template.bind({});
 
 filter.args = {
-  props: [
-    { title: '서울', checked: false },
-    { title: '대전', checked: false },
-    { title: '광주', checked: false },
-    { title: '구미', checked: false },
-    { title: '불경', checked: false },
-  ],
+  props: {
+    지역: {
+      서울: false,
+      대전: false,
+      광주: false,
+      구미: false,
+      불경: false,
+    },
+    역할: {
+      프론트: false,
+      백엔드: false,
+      임베디드: false,
+    },
+    트랙: {
+      기술: false,
+      디자인: false,
+      IoT: false,
+    },
+    스킬: {
+      javascript: false,
+      spring: false,
+    },
+    '전공/비전공': {
+      전공: false,
+      비전공: false,
+    },
+  },
 };
