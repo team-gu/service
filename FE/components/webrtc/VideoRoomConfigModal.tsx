@@ -122,8 +122,8 @@ export default function VideoRoomConfigModal({
   const [micSelected, setMicSelected] = useState<string>('');
   const [localCamStream, setLocalCamStream] = useState<Publisher>();
 
-  const [camOn, setCamOn] = useState(false);
-  const [micOn, setMicOn] = useState(false);
+  const [camOn, setCamOn] = useState(true);
+  const [micOn, setMicOn] = useState(true);
 
   useEffect(() => {
     (async function init() {
@@ -163,21 +163,11 @@ export default function VideoRoomConfigModal({
   }, [camSelected]);
 
   const publishUserCameraStream = () => {
-    const micIsNone = !micSelected || micSelected === '';
-    const camIsNone = !camSelected || camSelected === '';
-
-    if (camIsNone && localCamStream) {
-      localCamStream.publishVideo(false);
-      // TODO: 타입 에러 localCamStream
-      setLocalCamStream({ ...localCamStream });
-      return;
-    }
-
     const stream = OV.initPublisher('', {
-      audioSource: micIsNone ? undefined : micSelected,
-      videoSource: camIsNone ? undefined : camSelected,
+      audioSource: micSelected,
+      videoSource: camSelected,
       publishAudio: false,
-      publishVideo: camIsNone ? false : true,
+      publishVideo: camOn,
       resolution: '320x240',
       frameRate: 30,
       mirror: true,
@@ -186,6 +176,7 @@ export default function VideoRoomConfigModal({
   };
 
   const handleCamOnChanged = () => {
+    localCamStream?.publishVideo(!camOn);
     setCamOn(!camOn);
   };
 
@@ -208,7 +199,7 @@ export default function VideoRoomConfigModal({
         </CloseBtn>
 
         <div className="self-video">
-          {localCamStream !== undefined && (
+          {localCamStream && (
             <OpenViduVideoComponent streamManager={localCamStream} />
           )}
         </div>
@@ -228,14 +219,11 @@ export default function VideoRoomConfigModal({
               />
             </div>
 
-            <div>
-              <Icon iconName="mic" color="gray" />
-              <input
-                type="checkbox"
-                checked={micOn}
-                onChange={handleMicOnChanged}
-              />
-            </div>
+            {micOn ? (
+              <Icon iconName="mic" color="gray" func={handleMicOnChanged} />
+            ) : (
+              <Icon iconName="mic_off" color="gray" func={handleMicOnChanged} />
+            )}
 
             <Label text="Microphone">
               <select value={micSelected} onChange={handleMicrophoneChange}>
@@ -247,14 +235,19 @@ export default function VideoRoomConfigModal({
               </select>
             </Label>
 
-            <div>
-              <Icon iconName="videocam" color="gray" />
-              <input
-                type="checkbox"
-                checked={camOn}
-                onChange={handleCamOnChanged}
+            {camOn ? (
+              <Icon
+                iconName="videocam"
+                color="gray"
+                func={handleCamOnChanged}
               />
-            </div>
+            ) : (
+              <Icon
+                iconName="videocam_off"
+                color="gray"
+                func={handleCamOnChanged}
+              />
+            )}
 
             <Label text="Camera">
               <select value={camSelected} onChange={handleCameraChange}>
@@ -268,10 +261,7 @@ export default function VideoRoomConfigModal({
           </IconsAndInputs>
         </div>
         <div className="modal-footer">
-          <Button
-            title="JOIN"
-            func={handleClickJoin}
-          />
+          <Button title="JOIN" func={handleClickJoin} />
         </div>
       </GridContainer>
     </ModalWrapper>
