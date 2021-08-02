@@ -43,7 +43,7 @@ const Wrapper = styled.div`
   }
 `;
 
-export default function SearchUserBar(): ReactElement {
+export default function UserSearchBar(): ReactElement {
   const handleChanged = ({ target }: ChangeEvent<HTMLInputElement>) => {
     console.log(target.value);
   };

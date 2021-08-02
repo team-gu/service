@@ -11,7 +11,7 @@ import ProfileImage from './ProfileImage';
 import Spinner from './Spinner';
 import Tag from './Tag';
 import Title from './Title';
-import SearchUserBar from './SearchUserBar';
+import UserSearchBar from './UserSearchBar';
 
 export {
   Button,
@@ -27,5 +27,5 @@ export {
   Spinner,
   Tag,
   Title,
-  SearchUserBar,
+  UserSearchBar,
 };
