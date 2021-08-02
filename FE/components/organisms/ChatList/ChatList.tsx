@@ -17,17 +17,17 @@ const Wrapper = styled.div`
 export default function ChatList({ func }: ChatListProps): ReactElement {
   const [userList, setUserList] = useState(USER_DUMMY_DATA);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const { data } = await getChatLists();
+  // useEffect(() => {
+  //   (async () => {
+  //     try {
+  //       const { data } = await getChatLists();
 
-        setUserList(data);
-      } catch (error) {
-        console.error(error);
-      }
-    })();
-  }, []);
+  //       setUserList(data);
+  //     } catch (error) {
+  //       console.error(error);
+  //     }
+  //   })();
+  // }, []);
 
   return (
     <Wrapper>
