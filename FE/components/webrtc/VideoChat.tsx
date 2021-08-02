@@ -37,7 +37,6 @@ const SessionContainer = styled.div<{ number: number }>`
 
   .flexItem {
     align-self: stretch;
-    border: solid 1px gainsboro;
   }
 
   ${({ number }) => {
@@ -64,8 +63,8 @@ const SessionContainer = styled.div<{ number: number }>`
 `;
 
 interface UserDevice {
-  mic: string;
-  cam: string;
+  mic: string | undefined;
+  cam: string | undefined;
 }
 
 const OPENVIDU_SERVER_URL = 'https://teamgu.xyz';
@@ -79,10 +78,7 @@ export default function VideoChat(): ReactElement {
   const [publisher, setPublisher] = useState<Publisher>();
   const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
   const [isConfigModalShow, setIsConfigModalShow] = useState<boolean>(true);
-  const [userDevice, setUserDevice] = useState<UserDevice>({
-    mic: '',
-    cam: '',
-  });
+  const [userDevice, setUserDevice] = useState<UserDevice>({ mic: undefined, cam: undefined });
 
   const [micOn, setMicOn] = useState(false);
   const [camOn, setCamOn] = useState(false);
@@ -147,10 +143,6 @@ export default function VideoChat(): ReactElement {
     setCamOn(false);
   };
 
-  const updateSubscribers = () => {
-    setSubscribers((subs) => subs.slice());
-  };
-
   const handlerConfigModalCloseBtn = () => {
     setPublisher(undefined);
     setIsConfigModalShow(false);
@@ -158,14 +150,22 @@ export default function VideoChat(): ReactElement {
     router.back();
   };
 
-  const handlerJoinBtn = (micSelected: string, camSelected: string) => {
+  const handlerJoinBtn = (
+    micSelected: string | undefined,
+    camSelected: string | undefined,
+    micState: boolean,
+    camState: boolean,
+  ) => {
+    if (micSelected && camSelected) {
+      
+    }
     setUserDevice({
       mic: micSelected,
       cam: camSelected,
     });
 
-    setMicOn(micSelected !== '');
-    setCamOn(camSelected !== '');
+    setMicOn(micState);
+    setCamOn(camState);
 
     setIsConfigModalShow(false);
     setSession(OV?.initSession());
@@ -197,7 +197,16 @@ export default function VideoChat(): ReactElement {
 
     // 스트림 속성이 변경되면
     mySession.on('streamPropertyChanged', () => {
-      updateSubscribers();
+      const subs = subscribers;
+      setSubscribers([...subs]);
+    });
+
+    mySession.on('publisherStartSpeaking', (event: any) => {
+      console.log('User ' + event.connection.connectionId + ' start speaking');
+    });
+
+    mySession.on('publisherStopSpeaking', (event: any) => {
+      console.log('User ' + event.connection.connectionId + ' stop speaking');
     });
 
     getToken()
@@ -205,14 +214,11 @@ export default function VideoChat(): ReactElement {
         mySession.connect(token, { clientData: myUserName }).then(() => {
           if (!OV) return;
 
-          const micIsNone = !userDevice.mic || userDevice.mic === '';
-          const camIsNone = !userDevice.cam || userDevice.cam === '';
-
           let publisher = OV.initPublisher('', {
-            audioSource: micIsNone ? undefined : userDevice.mic,
-            videoSource: camIsNone ? undefined : userDevice.cam,
-            publishAudio: micIsNone ? false : true,
-            publishVideo: camIsNone ? false : true,
+            audioSource: userDevice.mic ? userDevice.mic : false,
+            videoSource: userDevice.cam ? userDevice.cam : false,
+            publishAudio: micOn,
+            publishVideo: camOn,
             resolution: '640x480',
             frameRate: 30,
             mirror: true,
@@ -237,11 +243,7 @@ export default function VideoChat(): ReactElement {
     if (mySession) {
       mySession.disconnect();
     }
-
-    setOV(undefined);
-    setSession(undefined);
-    setSubscribers([]);
-    setPublisher(undefined);
+    clear();
   };
 
   const getToken = () => {
@@ -289,25 +291,19 @@ export default function VideoChat(): ReactElement {
     });
   };
 
-  const handleClickVideoOff = () => {
-    publisher?.publishVideo(false);
-    setCamOn(false);
-  };
+  const handleVideoStateChanged = () => {
+    if (userDevice.cam) {
+      publisher?.publishVideo(!camOn);
+      setCamOn(!camOn);
+    }    
+  }
 
-  const handleClickVideoOn = () => {
-    publisher?.publishVideo(true);
-    setCamOn(true);
-  };
-
-  const handleClickAudioOff = () => {
-    publisher?.publishAudio(false);
-    setMicOn(false);
-  };
-
-  const handleClickAudioOn = () => {
-    publisher?.publishAudio(true);
-    setMicOn(true);
-  };
+  const handleAudioStateChanged = () => {
+    if (userDevice.mic) {
+      publisher?.publishAudio(!micOn);
+      setMicOn(!micOn);
+    }
+  }
 
   const handleClickExit = () => {
     leaveSession();
@@ -374,10 +370,10 @@ export default function VideoChat(): ReactElement {
               <VideoChatToolbar
                 micOn={micOn}
                 camOn={camOn}
-                handleClickVideoOff={handleClickVideoOff}
-                handleClickVideoOn={handleClickVideoOn}
-                handleClickAudioOff={handleClickAudioOff}
-                handleClickAudioOn={handleClickAudioOn}
+                handleClickVideoOff={handleVideoStateChanged}
+                handleClickVideoOn={handleVideoStateChanged}
+                handleClickAudioOff={handleAudioStateChanged}
+                handleClickAudioOn={handleAudioStateChanged}
                 handleClickExit={handleClickExit}
                 handleClickScreenShare={handleClickScreenShare}
                 handleClickGame={handleClickGame}
