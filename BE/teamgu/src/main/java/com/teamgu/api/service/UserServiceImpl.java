@@ -279,6 +279,9 @@ public class UserServiceImpl implements UserService {
 		Long id = user.getId();
 		String studentNumber = user.getStudentNumber();
 		
+		//User Index Number
+		userInfoRes.setId(id);
+		
 		//User 이름
 		userInfoRes.setName(user.getName());
 		

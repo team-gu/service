@@ -13,6 +13,8 @@ import lombok.Setter;
 @Setter
 @ApiModel(description = "사용자 정보 응답 모델")
 public class UserInfoResDto {
+	@ApiModelProperty(name = "user index number")
+	Long id;
 	@ApiModelProperty(name = "user name")
 	String name;
 	@ApiModelProperty(name = "user profile image path", example =  " ~.jpg / ~.png")
