@@ -10,7 +10,7 @@ interface ProfileContainerProps {
   content: string;
   isActive: boolean;
   time: string;
-  alertNumber?: number;
+  alertNumber?: number | string;
   func?: MouseEventHandler<HTMLSpanElement>;
 }
 
