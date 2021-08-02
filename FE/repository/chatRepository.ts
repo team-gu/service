@@ -1,13 +1,13 @@
 import api from '@context/serverContext';
 
-export const getChatLists = async () =>
+export const getChatLists = async (param: string | number) =>
   await api({
-    url: `/chat`,
+    url: `/api/chat/${param}`,
     type: 'get',
   });
 
-export const getChatRoomMessages = async (param: string) =>
+export const getChatRoomMessages = async (param: string | number) =>
   await api({
-    url: `/chat/${param}`,
+    url: `/api/chat/room/${param}`,
     type: 'get',
   });
