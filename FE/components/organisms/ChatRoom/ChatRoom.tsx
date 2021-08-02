@@ -38,9 +38,9 @@ const Wrapper = styled.div<{ disabled: boolean }>`
   ${({ disabled }) => disabled && 'pointer-events: none; opacity: 0.3;'}
 `;
 
-export default function Chatroom({
+export default function ChatRoom({
   isRtc = false,
-  isConnectStomp = true,
+  isConnectStomp = false,
   session,
   messageList,
   setMessageList,
@@ -85,7 +85,7 @@ export default function Chatroom({
   };
 
   return (
-    <Wrapper disabled={!isConnectStomp}>
+    <Wrapper disabled={!isRtc && !isConnectStomp}>
       <div className="chat-container" ref={chatBoxRef}>
         {isRtc
           ? messageList?.map(
