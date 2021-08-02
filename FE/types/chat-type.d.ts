@@ -9,11 +9,8 @@ export interface Chat {
 }
 
 export interface ChatNormal {
-  id: number;
-  userName: string;
-  profileSrc: string;
-  // TODO: 추후 타입 정의
-  time: any;
-  message: string;
-  isMe: boolean;
+  create_date_time?: string;
+  message?: string;
+  sender_id?: string | number;
+  sender_name?: string | number;
 }
