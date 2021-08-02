@@ -3,10 +3,18 @@ import styled from 'styled-components';
 
 import { getChatLists } from '@repository/chatRepository';
 import { ProfileContainer } from '@molecules';
-import { USER_DUMMY_DATA } from '@utils/constants';
+import { useAuthState } from '@store';
 
 interface ChatListProps {
   func: (id: number) => Promise<void>;
+}
+
+interface UserList {
+  chat_room_id: number;
+  room_name: string;
+  message: string;
+  create_date_time: string;
+  unread_message_count: number | string;
 }
 
 const Wrapper = styled.div`
@@ -15,12 +23,18 @@ const Wrapper = styled.div`
 `;
 
 export default function ChatList({ func }: ChatListProps): ReactElement {
-  const [userList, setUserList] = useState(USER_DUMMY_DATA);
+  const {
+    user: { id },
+  } = useAuthState();
+
+  const [userList, setUserList] = useState([]);
 
   useEffect(() => {
     (async () => {
       try {
-        const { data } = await getChatLists();
+        const {
+          data: { data },
+        } = await getChatLists(id);
 
         setUserList(data);
       } catch (error) {
@@ -31,16 +45,24 @@ export default function ChatList({ func }: ChatListProps): ReactElement {
 
   return (
     <Wrapper>
-      {userList.map(({ id, name, content, isActive, time, alertNumber }) => (
-        <ProfileContainer
-          name={name}
-          content={content}
-          isActive={isActive}
-          time={time}
-          alertNumber={alertNumber}
-          func={() => func(id)}
-        />
-      ))}
+      {userList?.map(
+        ({
+          chat_room_id,
+          room_name,
+          message,
+          create_date_time,
+          unread_message_count,
+        }: UserList) => (
+          <ProfileContainer
+            name={room_name}
+            content={message === null ? '___' : message}
+            isActive={false}
+            time={create_date_time}
+            alertNumber={unread_message_count}
+            func={() => func(chat_room_id)}
+          />
+        ),
+      )}
     </Wrapper>
   );
 }

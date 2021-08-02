@@ -1,90 +1,86 @@
 import { useEffect, useState, useRef } from 'react';
 import SockJS from 'sockjs-client';
-import Stomp from '@stomp/stompjs';
-import { DateTime } from 'luxon';
+import Stomp from 'stompjs';
 
 import { useAuthState } from '@store';
 import { getChatRoomMessages } from '@repository/chatRepository';
-import { CHAT_DUMMY_DATA } from '@utils/constants';
+import { ChatNormal } from '@types/chat-type';
 
 interface useSockStompProps {
-  userId: number;
+  room_id: number;
 }
 
-interface Message {
-  type?: string;
-  key?: number;
-  id?: number;
-  userName?: string;
-  profileSrc?: string;
-  time?: string;
-  message?: string;
-}
+const URL = 'http://211.193.45.112:8080/stomp/chat';
 
-// TODO: stomp URL 확정되면 반영
-const URL = '';
-
-export default function useSockStomp({ userId }: useSockStompProps) {
+export default function useSockStomp({ room_id }: useSockStompProps) {
   // TODO: login response에 profileSrc가 추가되면 store에서 가져오도록 변경
   const {
-    user: { id, name },
+    user: { id },
   } = useAuthState();
-  const [messageList, setMessageList] = useState<Message[]>(CHAT_DUMMY_DATA);
-  const [isConnectStomp, setIsConnectStomp] = useState(false);
+  const [messageList, setMessageList] = useState<ChatNormal[]>([]);
+  const [isConnectStomp, setIsConnectStomp] = useState(true);
   // TODO: clientRef 타입 정의 해야함
   const clientRef = useRef();
 
   const handleSendMessage = (payload: string) => {
     const newMessage = {
-      type: 'MESSAGE',
-      id,
-      userName: name,
-      profileSrc: '/profile.png',
-      time: DateTime.now().toString(),
+      room_id,
+      sender_id: id,
       message: payload,
     };
 
-    clientRef.current?.send('/pub/chat', {}, JSON.stringify(newMessage));
+    clientRef.current?.send(
+      '/send/chat/message',
+      {},
+      JSON.stringify(newMessage),
+    );
   };
 
+  console.log(clientRef.current);
+
   useEffect(() => {
-    clientRef.current = Stomp.over(new SockJS(URL));
+    (async () => {
+      clientRef.current = await Stomp.over(new SockJS(URL));
 
-    clientRef.current?.connect(
-      {},
-      async () => {
-        const { data } = await getChatRoomMessages(userId);
+      clientRef.current?.connect(
+        { 'Access-Control-Allow-Origin': '*' },
+        async () => {
+          const {
+            data: { data },
+          } = await getChatRoomMessages(room_id);
 
-        await setMessageList(data);
-        await setIsConnectStomp(true);
+          await setMessageList(data);
+          await setIsConnectStomp(true);
 
-        clientRef.current?.subscribe(
-          `/sub/room/${userId}`,
-          ({ body }: { body: string }) => {
-            const { id, userName, profileSrc, time, message } =
-              JSON.parse(body);
+          clientRef.current?.subscribe(
+            `/receive/chat/room/${room_id}`,
+            ({ body }: { body: string }) => {
+              const { create_date_time, message, sender_id, sender_name } =
+                JSON.parse(body);
 
-            const chatData: Message = {
-              key: messageList.length,
-              id,
-              userName,
-              profileSrc,
-              time,
-              message,
-            };
+              const chatData: ChatNormal = {
+                create_date_time,
+                message,
+                sender_id,
+                sender_name,
+              };
 
-            setMessageList((prev: Message[]): Message[] => [...prev, chatData]);
-          },
-        );
-      },
-      (error: Error) => {
-        console.error(error);
-      },
-    );
+              setMessageList((prev: ChatNormal[]): ChatNormal[] => [
+                ...prev,
+                chatData,
+              ]);
+            },
+          );
+        },
+        (error: Error) => {
+          console.error(error);
+        },
+      );
+    })();
     return () => {
       clientRef.current?.disconnect();
     };
-  }, [userId]);
+  }, [room_id]);
 
   return {
     clientRef: clientRef.current,

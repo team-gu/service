@@ -1,11 +1,13 @@
-import { ReactElement, useState } from 'react';
+import { ReactElement, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 
 import { useAppDispatch, setChatOpen } from '@store';
+import useSockStomp from '@hooks/useSockStomp';
+
 import { ChatList, ChatRoom } from '@organisms';
 import { Text, Icon } from '@atoms';
-import useSockStomp from '@hooks/useSockStomp';
+
 
 const Wrapper = styled(motion.div)`
   position: fixed;
@@ -48,24 +50,21 @@ const CHAT_ROOM = 1;
 
 export default function ChatRoute(): ReactElement {
   const dispatch = useAppDispatch();
-  const [userId, setUserId] = useState(0);
+  const [room_id, setRoomId] = useState(0);
   const [route, setRoute] = useState(CHAT_LIST);
 
   const { handleSendMessage, messageList, setMessageList, isConnectStomp } =
     useSockStomp({
-      userId,
+      room_id,
     });
 
   const handleToChatRoom = async (id: number) => {
-    await setUserId(id);
+    await setRoomId(id);
     setRoute(CHAT_ROOM);
   };
 
-  const handleClickSend = (msg: string) => {
-    return new Promise<void>((resolve, reject) => {
-      handleSendMessage(msg);
-      resolve();
-    });
+  const handleClickSend = async (msg: string) => {
+    await handleSendMessage(msg);
   };
 
   return (
