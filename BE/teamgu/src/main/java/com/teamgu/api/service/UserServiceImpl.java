@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.CrossOrigin;
 
 import com.teamgu.api.dto.req.AwardReqDto;
 import com.teamgu.api.dto.req.LoginReqDto;
@@ -21,15 +20,17 @@ import com.teamgu.api.dto.req.TokenReqDto;
 import com.teamgu.api.dto.req.UserInfoReqDto;
 import com.teamgu.api.dto.res.LoginResDto;
 import com.teamgu.api.dto.res.TokenResDto;
+import com.teamgu.api.dto.res.UserClassResDto;
+import com.teamgu.api.dto.res.UserInfoAwardResDto;
 import com.teamgu.api.dto.res.UserInfoResDto;
-import com.teamgu.api.dto.res.UserProjectDto;
+import com.teamgu.api.dto.res.UserInfoProjectResDto;
 import com.teamgu.common.auth.JwtUserDetailsService;
 import com.teamgu.common.util.JwtTokenUtil;
 import com.teamgu.database.entity.Mapping;
 import com.teamgu.database.entity.Skill;
 import com.teamgu.database.entity.User;
-import com.teamgu.database.entity.UserAward;
-import com.teamgu.database.entity.UserProject;
+import com.teamgu.database.entity.UserInfoAward;
+import com.teamgu.database.entity.UserInfoProject;
 import com.teamgu.database.entity.WishTrack;
 import com.teamgu.database.repository.AwardRepository;
 import com.teamgu.database.repository.AwardRepositorySuport;
@@ -39,7 +40,7 @@ import com.teamgu.database.repository.ProjectDetailRepositorySuport;
 import com.teamgu.database.repository.ProjectRepository;
 import com.teamgu.database.repository.ProjectRepositorySuport;
 import com.teamgu.database.repository.SkillRepository;
-import com.teamgu.database.repository.UserQueryRepository;
+import com.teamgu.database.repository.UserRepositorySupport;
 import com.teamgu.database.repository.UserRepository;
 import com.teamgu.database.repository.WishTrackRepository;
 
@@ -65,7 +66,7 @@ public class UserServiceImpl implements UserService {
 	AwardRepository awardRepository;
 	
 	@Autowired
-	UserQueryRepository userQueryRepository;
+	UserRepositorySupport userRepositorySupport;
 
 	@Autowired
 	ProjectDetailRepository projectDetailRepository;
@@ -215,7 +216,7 @@ public class UserServiceImpl implements UserService {
 	 */
 	@Override
 	public void setProjectInfo(List<ProjectReqDto> projectInfoReq) {
-		UserProject userProject = new UserProject();
+		UserInfoProject userProject = new UserInfoProject();
 		for (ProjectReqDto project : projectInfoReq) {
 			userProject.setIntroduce(project.getIntroduce());
 			userProject.setName(project.getName());
@@ -240,7 +241,7 @@ public class UserServiceImpl implements UserService {
 	 */
 	@Override
 	public void setAwardInfo(List<AwardReqDto> awardReqDto) {
-		UserAward userAward = new UserAward();
+		UserInfoAward userAward = new UserInfoAward();
 		for (AwardReqDto award : awardReqDto) {
 			userAward.setAgency(award.getAgency());
 			userAward.setIntroduce(award.getIntroduce());
@@ -274,10 +275,25 @@ public class UserServiceImpl implements UserService {
 	public UserInfoResDto getUserDetailInfo(String email) {
 		User user = userRepository.findByEmail(email).get();
 		UserInfoResDto userInfoRes = new UserInfoResDto();
+		
+		Long id = user.getId();
+		String studentNumber = user.getStudentNumber();
+		
+		//User 이름
+		userInfoRes.setName(user.getName());
+		
+		String profileServerName = user.getProfileServerName();
+		String profileExtension = user.getProfileExtension();
+		String profilePath = profileExtension + "." + profileExtension; 
+		userInfoRes.setImg(profilePath);
+		
+		//User 이메일
 		userInfoRes.setEmail(email);
-		userInfoRes.setPassword(user.getPassword());
-		userInfoRes.setStudentNumber(user.getStudentNumber());
+		
+		//User 학번
+		userInfoRes.setStudentNumber(studentNumber);
 
+		// User 기술 스택 조회
 		List<Skill> skills = user.getSkills();
 		List<String> skillName = new ArrayList<>();
 		for (Skill sk : skills) {
@@ -285,25 +301,28 @@ public class UserServiceImpl implements UserService {
 		}
 		userInfoRes.setSkill(skillName);
 
+		// User Position 조회
 		String position = codeDetailRepositorySupport.findPositionName(user.getWishPositionCode());
 		userInfoRes.setWishPositionCode(position);
 		userInfoRes.setIntroduce(user.getIntroduce());
 
-		List<UserProject> projects = userQueryRepository.selectUserProjectByEmail(email);
-		List<UserProjectDto> userProjects = new ArrayList<UserProjectDto>();
-		for(UserProject project : projects) {
-			UserProjectDto userProjectDto = new UserProjectDto();
-			userProjectDto.setIntroduce(project.getIntroduce());
-			userProjectDto.setName(project.getName());
-			userProjectDto.setPosition(codeDetailRepositorySupport.findPositionName(project.getPositionCode()));
-			userProjectDto.setUrl(project.getUrl());
-			userProjects.add(userProjectDto);
-		}
-		userInfoRes.setProjects(userProjects);
+		// User 프로젝트 경력 조회
+		List<UserInfoProjectResDto> projects =userRepositorySupport.selectUserProjectByUserId(id);
+		userInfoRes.setProjects(projects);
 
-		//userInfoRes.setProjects(user.getUserProject());
-		List<UserAward> awards = userQueryRepository.selectUserAwardByEmail(email);
+		// User 수상 경력 조회
+		List<UserInfoAwardResDto> awards = userRepositorySupport.selectUserAwardByUserId(id);
 		userInfoRes.setAwards(awards);
+		
+		// User Wish Track 조회
+		List<String> tracks = userRepositorySupport.selectUserWishTrackByUserId(id);
+		userInfoRes.setWishTrack(tracks);
+		
+		// User Class 조회
+		int stage = studentNumber.charAt(1) - '0';
+		UserClassResDto userClass = userRepositorySupport.selectUserClassByUserId(id, stage);
+		userInfoRes.setUserClass(userClass);
+		
 		return userInfoRes;
 		
 	}
