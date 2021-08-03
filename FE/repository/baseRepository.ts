@@ -71,3 +71,38 @@ export const getUserListByNameContains = async (param: string) => {
   //   type: 'get',
   // });
 };
+
+export const getSkillList = async () => {
+
+  return new Promise<any>(resolve => {
+    const dummy = [
+      {
+        skill: 'React',
+        id: 1,
+      },
+      {
+        skill: 'IoT',
+        id: 2,
+      },
+      {
+        skill: 'Spring',
+        id: 3,
+      },
+      {
+        skill: 'WebRTC',
+        id: 4,
+      },
+      {
+        skill: 'MySQL',
+        id: 5,
+      },
+    ];
+
+    resolve(dummy);
+  })
+  // TODO: api 연결 백엔드 미완.
+  // return await api({
+  //   url: `/path/to/get-skill-list`,
+  //   type: 'get',
+  // });
+};
