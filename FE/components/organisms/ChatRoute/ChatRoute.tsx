@@ -61,14 +61,14 @@ export default function ChatRoute(): ReactElement {
   const wrapperRef: any = useRef<HTMLInputElement>(null);
 
   function handleClickOutside({ target }: ChangeEvent<HTMLInputElement>) {
-    if (!wrapperRef.current.contains(target)) {
+    if (!wrapperRef.current?.contains(target)) {
       dispatch(setChatOpen({ isChatOpen: false }));
     }
   }
 
   useEffect(() => {
-    document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
+    document.addEventListener('click', handleClickOutside, true);
+    return () => document.removeEventListener('click', handleClickOutside, true);
   }, []);
 
   const handleToChatRoom = async (id: number) => {
