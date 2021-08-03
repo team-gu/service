@@ -20,10 +20,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Data
+@Getter
+@Setter
 public class Chat extends BaseEntity{	
 	@Column(length = 60)
 	String message;
+	
 	
 	/**
 	 * type에 대한 정의
@@ -31,6 +33,7 @@ public class Chat extends BaseEntity{
 	 * {% INVITE_YES %}		요청을 보냈고 수락한 상태
 	 * {% INVITE_NO %}		요청을 보냈고 거절한 상태
 	 */
+	String type;
 
 	@ManyToOne
 	@JoinColumn(name = "senderId")
@@ -45,5 +48,5 @@ public class Chat extends BaseEntity{
 	LocalDateTime sendDateTime;
 
 	@OneToMany(mappedBy = "chat")
-	List<UserChatRoom> userChat = new ArrayList<>();
+	List<UserChatRoom> userChatRoom = new ArrayList<>();
 }

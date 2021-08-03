@@ -4,15 +4,20 @@ import java.time.LocalDateTime;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 /**
  * 특정 유저의 채팅 메세지 객체
  * 이 객체들이 모여 한 채팅방의 채팅 메세지 리스트를 구성한다
  * @author code
  *
  */
-@Getter
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 @ApiModel("ChatMessageResponse")
 public class ChatMessageResDto {
