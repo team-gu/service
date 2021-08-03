@@ -2,13 +2,20 @@ package com.teamgu.api.dto.res;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@Builder
 @ApiModel("NoticeFileResponse")
-public class NoticeFileResDto extends BaseResDto {
+/**
+ * NoticeFile 엔티티에 대응되는 DTO
+ * File관련 I/O 조작에 사용된다
+ */
+public class NoticeFileResDto {
+
     @ApiModelProperty(name = "파일 원본명", example = "")
     String originalName;
 
@@ -19,5 +26,5 @@ public class NoticeFileResDto extends BaseResDto {
     String extension;
 
     @ApiModelProperty(name = "파일 등록일", example = "")
-    String date;
+    String registDate;
 }

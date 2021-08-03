@@ -17,6 +17,10 @@ spring:
     hikari:
       username: root
       password: teamgupassword
+  servlet:
+    multipart:
+      maxFileSize: 30MB
+      maxRequestSize: 30MB
 jwt:
   issuer: teamgu
   secret: h2lsdmVybmluZS10ZWNoLXNwlmauZy1ib290LWp3dC10dXRvcmlhbC1zZWNyZXQtc2lsdmVybmluZS10ZWNoLXNwcmluZy1ib290LWp3dC10dXRvcmlhbC1zZWNyZXQK

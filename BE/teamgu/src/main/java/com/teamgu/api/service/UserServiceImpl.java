@@ -1,6 +1,5 @@
 package com.teamgu.api.service;
 
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -12,31 +11,31 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.teamgu.api.dto.req.AwardReqDto;
 import com.teamgu.api.dto.req.LoginReqDto;
 import com.teamgu.api.dto.req.PasswordReqDto;
-import com.teamgu.api.dto.req.ProjectReqDto;
 import com.teamgu.api.dto.req.TokenReqDto;
 import com.teamgu.api.dto.req.UserInfoReqDto;
 import com.teamgu.api.dto.res.LoginResDto;
 import com.teamgu.api.dto.res.TokenResDto;
+import com.teamgu.api.dto.res.UserClassResDto;
+import com.teamgu.api.dto.res.UserInfoAwardResDto;
 import com.teamgu.api.dto.res.UserInfoResDto;
+import com.teamgu.api.dto.res.UserInfoProjectResDto;
 import com.teamgu.common.auth.JwtUserDetailsService;
 import com.teamgu.common.util.JwtTokenUtil;
 import com.teamgu.database.entity.Mapping;
 import com.teamgu.database.entity.Skill;
 import com.teamgu.database.entity.User;
-import com.teamgu.database.entity.UserAward;
-import com.teamgu.database.entity.UserProject;
+import com.teamgu.database.entity.UserInfoAward;
+import com.teamgu.database.entity.UserInfoProject;
 import com.teamgu.database.entity.WishTrack;
-import com.teamgu.database.repository.AwardRepository;
-import com.teamgu.database.repository.AwardRepositorySuport;
+import com.teamgu.database.repository.UserInfoAwardRepository;
 import com.teamgu.database.repository.CodeDetailRepositorySupport;
 import com.teamgu.database.repository.ProjectDetailRepository;
 import com.teamgu.database.repository.ProjectDetailRepositorySuport;
-import com.teamgu.database.repository.ProjectRepository;
-import com.teamgu.database.repository.ProjectRepositorySuport;
+import com.teamgu.database.repository.UserInfoProjectRepository;
 import com.teamgu.database.repository.SkillRepository;
+import com.teamgu.database.repository.UserRepositorySupport;
 import com.teamgu.database.repository.UserRepository;
 import com.teamgu.database.repository.WishTrackRepository;
 
@@ -51,15 +50,18 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	UserRepository userRepository;
-	
+
 	@Autowired
 	WishTrackRepository wishTrackRepository;
 	@Autowired
 	SkillRepository skillRepository;
 	@Autowired
-	ProjectRepository projectRepository;
+	UserInfoProjectRepository projectRepository;
 	@Autowired
-	AwardRepository awardRepository;
+	UserInfoAwardRepository awardRepository;
+
+	@Autowired
+	UserRepositorySupport userRepositorySupport;
 
 	@Autowired
 	ProjectDetailRepository projectDetailRepository;
@@ -67,23 +69,32 @@ public class UserServiceImpl implements UserService {
 	ProjectDetailRepositorySuport projectDetailRepositorySuport;
 	@Autowired
 	CodeDetailRepositorySupport codeDetailRepositorySupport;
-	@Autowired
-	ProjectRepositorySuport projectRepositorySuport;
-	@Autowired
-	AwardRepositorySuport awardRepositorySuport;
 
 	@Autowired
 	JwtUserDetailsService userDetailsService;
-	
+
 	Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
-	
+
+	// email을 통한 User Entity 조회
 	@Override
 	public Optional<User> getUserByEmail(String email) {
 		logger.info(email);
 		Optional<User> user = userRepository.findByEmail(email);
-		if(user.isPresent()) {//Optional의 null 체크(값ㅇ ㅣ있는 경우)
-			logger.info(user.get().getEmail());			
-		}else {//없는 경우
+		if (user.isPresent()) {// Optional의 null 체크(값ㅇ ㅣ있는 경우)
+			logger.info(user.get().getEmail());
+		} else {// 없는 경우
+			logger.info("user가 비었습니다.");
+		}
+		return user;
+	}
+
+	// id를 통한 User Entity 조회
+	@Override
+	public Optional<User> getUserById(Long id) {
+		Optional<User> user = userRepository.findById(id);
+		if (user.isPresent()) {// Optional의 null 체크(값ㅇ ㅣ있는 경우)
+			logger.info(user.get().getEmail());
+		} else {// 없는 경우
 			logger.info("user가 비었습니다.");
 		}
 		return user;
@@ -120,9 +131,8 @@ public class UserServiceImpl implements UserService {
 		LoginResDto loginRes = new LoginResDto();
 		loginRes.setStatusCode(200);
 		loginRes.setMessage("Success");
-		loginRes.setRefreshToken(refreshToken);
 		loginRes.setAccessToken(accessToken);
-		loginRes.setUserInfo(user);
+		loginRes.setUserInfo(getUserDetailInfo(user.getEmail()));
 		return loginRes;
 	}
 
@@ -171,10 +181,10 @@ public class UserServiceImpl implements UserService {
 		User user = getUserByEmail(userInfoReq.getEmail()).get();
 		user.setStudentNumber(userInfoReq.getStudentNumber());
 		user.setWishPositionCode(userInfoReq.getWishPosition());
-		System.out.println(userInfoReq.getStudentNumber().substring(1, 2)+"기");
+		System.out.println(userInfoReq.getStudentNumber().substring(1, 2) + "기");
 		// 학번 입력 받아서 project
 		int stageCode = codeDetailRepositorySupport.finStageCode(userInfoReq.getStudentNumber().substring(1, 2) + "기");
-		
+
 		int projegtCode = projectDetailRepositorySuport.findProjectCode();
 
 		// 선호 트랙 저장
@@ -200,56 +210,8 @@ public class UserServiceImpl implements UserService {
 			skill.setSkillCode(code);
 			skillRepository.save(skill);
 		}
-		
 
 		userRepository.save(user);
-	}
-
-	/**
-	 * 프로젝트 데이터 입력, 수정 함수
-	 */
-	@Override
-	public void setProjectInfo(List<ProjectReqDto> projectInfoReq) {
-		UserProject userProject = new UserProject();
-		for (ProjectReqDto project : projectInfoReq) {
-			userProject.setIntroduce(project.getIntroduce());
-			userProject.setName(project.getName());
-			userProject.setPositionCode(codeDetailRepositorySupport.findPositionCode(project.getPosition()));
-			userProject.setUrl(project.getUrl());
-			System.out.println(project.getEmail());
-			User user = getUserByEmail(project.getEmail()).get();
-			userProject.setUser(user);
-			System.out.println(projectRepository.findByName(project.getName()));
-			System.out.println(projectRepository.findByName(project.getName()).isPresent());
-			// 입력
-			if (!projectRepository.findByName(project.getName()).isPresent()) {
-				projectRepository.save(userProject);
-			} else { // 수정
-				projectRepositorySuport.modProjects(userProject, user.getEmail());
-			}
-		}
-	}
-
-	/**
-	 * 수상내역 데이터 입력, 수정 함수
-	 */
-	@Override
-	public void setAwardInfo(List<AwardReqDto> awardReqDto) {
-		UserAward userAward = new UserAward();
-		for (AwardReqDto award : awardReqDto) {
-			userAward.setAgency(award.getAgency());
-			userAward.setIntroduce(award.getIntroduce());
-			userAward.setName(award.getName());
-			userAward.setDate(award.getDate());
-			User user = getUserByEmail(award.getEmail()).get();
-			userAward.setUser(user);
-			// 입력
-			if (!awardRepository.findByName(award.getName()).isPresent()) {
-				awardRepository.save(userAward);
-			} else { // 수정
-				awardRepositorySuport.modAwards(userAward, user.getEmail());
-			}
-		}
 	}
 
 	/**
@@ -269,23 +231,189 @@ public class UserServiceImpl implements UserService {
 	public UserInfoResDto getUserDetailInfo(String email) {
 		User user = userRepository.findByEmail(email).get();
 		UserInfoResDto userInfoRes = new UserInfoResDto();
-		userInfoRes.setPassword(user.getPassword());
-		userInfoRes.setStudentNumber(user.getStudentNumber());
 
-		List<Skill> skills = user.getSkills();
-		List<String> skillName = new ArrayList<>();
-		for (Skill sk : skills) {
-			skillName.add(codeDetailRepositorySupport.findSkillName(sk.getSkillCode()));
+		Long id = user.getId();
+		String studentNumber = user.getStudentNumber();
+
+		// User Index Number
+		userInfoRes.setId(id);
+
+		// User 이름
+		userInfoRes.setName(user.getName());
+
+		String profileServerName = user.getProfileServerName();
+		String profileExtension = user.getProfileExtension();
+		String profilePath = profileServerName + "." + profileExtension;
+		short userRole = user.getRole();
+		userInfoRes.setImg(profilePath);
+
+		// User Role
+		userInfoRes.setRole(userRole);
+
+		// User 이메일
+		userInfoRes.setEmail(email);
+
+		// 교육생일 경우만 조회
+		if (userRole == 1) {
+			
+			// User 전공
+			userInfoRes.setMajor(user.getMajor());
+
+			// User 학번
+			userInfoRes.setStudentNumber(studentNumber);
+
+			// User 기술 스택 조회
+			List<Skill> skills = user.getSkills();
+			List<String> skillName = new ArrayList<>();
+			for (Skill sk : skills) {
+				skillName.add(codeDetailRepositorySupport.findSkillName(sk.getSkillCode()));
+			}
+			userInfoRes.setSkills(skillName);
+
+			// User Position 조회
+			String position = codeDetailRepositorySupport.findPositionName(user.getWishPositionCode());
+			userInfoRes.setWishPositionCode(position);
+			userInfoRes.setIntroduce(user.getIntroduce());
+
+			// User 프로젝트 경력 조회
+			List<UserInfoProjectResDto> projects = userRepositorySupport.selectUserProjectByUserId(id);
+			userInfoRes.setProjects(projects);
+
+			// User 수상 경력 조회
+			List<UserInfoAwardResDto> awards = userRepositorySupport.selectUserAwardByUserId(id);
+			userInfoRes.setAwards(awards);
+
+			// User Wish Track 조회
+			List<String> tracks = userRepositorySupport.selectUserWishTrackByUserId(id);
+			userInfoRes.setWishTrack(tracks);
+
+			// User Class 조회
+			int stage = studentNumber.charAt(1) - '0';
+			UserClassResDto userClass = userRepositorySupport.selectUserClassByUserId(id, stage);
+			userInfoRes.setUserClass(userClass);
+
 		}
-		userInfoRes.setSkill(skillName);
 
-		String position = codeDetailRepositorySupport.findPositionName(user.getWishPositionCode());
-		userInfoRes.setWishPosition(position);
-
-		userInfoRes.setIntroduce(user.getIntroduce());
-		userInfoRes.setProjects(user.getUserProject());
-		userInfoRes.setAwards(user.getUserAward());
 		return userInfoRes;
+
+	}
+
+//	/**
+//	 * 프로젝트 데이터 입력, 수정 함수
+//	 */
+//	@Override
+//	public void setProjectInfo(List<ProjectReqDto> projectInfoReq) {
+//		UserInfoProject userProject = new UserInfoProject();
+//		for (ProjectReqDto project : projectInfoReq) {
+//			userProject.setIntroduce(project.getIntroduce());
+//			userProject.setName(project.getName());
+//			userProject.setPositionCode(codeDetailRepositorySupport.findPositionCode(project.getPosition()));
+//			userProject.setUrl(project.getUrl());
+//			System.out.println(project.getEmail());
+//			User user = getUserByEmail(project.getEmail()).get();
+//			userProject.setUser(user);
+//			System.out.println(projectRepository.findByName(project.getName()));
+//			System.out.println(projectRepository.findByName(project.getName()).isPresent());
+//			// 입력
+//			if (!projectRepository.findByName(project.getName()).isPresent()) {
+//				projectRepository.save(userProject);
+//			} else { // 수정
+//				projectRepositorySuport.modProjects(userProject, user.getEmail());
+//			}
+//		}
+//	}
+
+	/*
+	 * User Info Project 입력
+	 */
+
+	@Override
+	public Long insertUserInfoProject(UserInfoProjectResDto userInfoProjectResDto) {
+		User user = getUserById(userInfoProjectResDto.getUserId()).get();
+		UserInfoProject userProject = new UserInfoProject();
+		userProject.setIntroduce(userInfoProjectResDto.getIntroduce());
+		userProject.setName(userInfoProjectResDto.getName());
+		userProject.setPositionCode(codeDetailRepositorySupport.findPositionCode(userInfoProjectResDto.getPosition()));
+		userProject.setUrl(userInfoProjectResDto.getUrl());
+		userProject.setUser(user);
+		projectRepository.save(userProject);
+		return 1L;
+	}
+
+	/*
+	 * User Info Project 수정
+	 */
+	@Override
+	public Long updateUserInfoProject(UserInfoProjectResDto userInfoProjectResDto) {
+
+		int positionCode = codeDetailRepositorySupport.findPositionCode(userInfoProjectResDto.getPosition());
+
+		return userRepositorySupport.updateUserInfoProject(userInfoProjectResDto, positionCode);
+	}
+
+	/*
+	 * User Info Project 삭제
+	 */
+	@Override
+	public Long deleteUserInfoProject(Long id) {
+		// TODO Auto-generated method stub
+		return userRepositorySupport.deleteUserInfoProject(id);
+	}
+
+//	/**
+//	 * 수상내역 데이터 입력, 수정 함수
+//	 */
+//	@Override
+//	public void setAwardInfo(List<AwardReqDto> awardReqDto) {
+//		UserInfoAward userAward = new UserInfoAward();
+//		for (AwardReqDto award : awardReqDto) {
+//			userAward.setAgency(award.getAgency());
+//			userAward.setIntroduce(award.getIntroduce());
+//			userAward.setName(award.getName());
+//			userAward.setDate(award.getDate());
+//			User user = getUserByEmail(award.getEmail()).get();
+//			userAward.setUser(user);
+//			// 입력
+//			if (!awardRepository.findByName(award.getName()).isPresent()) {
+//				awardRepository.save(userAward);
+//			} else { // 수정
+//				awardRepositorySuport.modAwards(userAward, user.getEmail());
+//			}
+//		}
+//	}
+
+	/*
+	 * User Info Award 입력
+	 */
+	@Override
+	public Long insertUserInfoAward(UserInfoAwardResDto userInfoAwardResDto) {
+		UserInfoAward userAward = new UserInfoAward();
+		User user = getUserById(userInfoAwardResDto.getUserId()).get();
+		userAward.setAgency(userInfoAwardResDto.getAgency());
+		userAward.setDate(userInfoAwardResDto.getDate());
+		userAward.setIntroduce(userInfoAwardResDto.getIntroduce());
+		userAward.setName(userInfoAwardResDto.getName());
+		userAward.setUser(user);
+		awardRepository.save(userAward);
+		return 1L;
+	}
+
+	/*
+	 * User Info Award 수정
+	 */
+	@Override
+	public Long updateUserInfoAward(UserInfoAwardResDto userInfoAwardResDto) {
+		// TODO Auto-generated method stub
+		return userRepositorySupport.updateUserInfoAward(userInfoAwardResDto);
+	}
+
+	/*
+	 * User Info Award 삭제
+	 */
+	@Override
+	public Long deleteUserInfoAward(Long id) {
+		// TODO Auto-generated method stub
+		return userRepositorySupport.deleteUserInfoAward(id);
 	}
 
 }

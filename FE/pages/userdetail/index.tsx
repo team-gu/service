@@ -1,9 +1,10 @@
 import { ReactElement } from 'react';
+import { UserDetail } from '@organisms';
 
-export default function UserDetail(): ReactElement {
+export default function UserDetailPage(): ReactElement {
   return (
     <>
-      <h1>This is template UserDetail</h1>
+      <UserDetail />
     </>
   );
 }

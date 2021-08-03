@@ -8,7 +8,11 @@ import lombok.Getter;
 @Getter
 @Builder
 @ApiModel("NoticeListResponse")
-public class NoticeListResDto extends BaseResDto { //초기 공지사항 리스트를 보내줄때 필요한 최소한의 정보만 리턴
+/**
+ * 공지사항 목록 응답시 사용되는 DTO
+ * 목적에 맞게 최소 필요 정보만 보낸다
+ */
+public class NoticeListResDto {
     @ApiModelProperty(name = "공지사항 번호", example = "")
     long id;
 
