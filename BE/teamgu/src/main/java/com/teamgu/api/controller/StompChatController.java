@@ -41,8 +41,13 @@ public class StompChatController {
 	public void message(@RequestBody ChatReqDto message) {
 		log.info("in message...");
 		Chat chatres = chatService.saveChat(message);
+		log.info("chatRES test");
+		log.info(chatres.getId());
+		log.info(chatres.getUser().getName());
+		log.info(chatres.getMessage());
+		log.info(chatres.getSendDateTime());
 		if (chatres!=null) {
-			ChatMessageResDto chatMessageResDto = new ChatMessageResDto(chatres.getUser().getId(), 
+			ChatMessageResDto chatMessageResDto = new ChatMessageResDto(message.getSender_id(), 
 					chatres.getUser().getName(),
 					chatres.getMessage(), 
 					chatres.getSendDateTime(), 
