@@ -9,6 +9,8 @@ import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.ManyToOne;
 
+import com.teamgu.database.entity.pk.QuizPK;
+
 import lombok.Getter;
 import lombok.Setter;
 
