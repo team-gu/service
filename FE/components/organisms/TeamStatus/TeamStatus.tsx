@@ -104,6 +104,7 @@ export default function TeamStatus({ teams }: TeamStatusProps): ReactElement {
             <SimpleSelect
               options={sortByOptions}
               onChange={handleSortByChange}
+              placeholder={'Sort by...'}
             />
           </div>
           <div>
