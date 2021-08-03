@@ -20,7 +20,10 @@ import com.teamgu.api.dto.req.TokenReqDto;
 import com.teamgu.api.dto.req.UserInfoReqDto;
 import com.teamgu.api.dto.res.LoginResDto;
 import com.teamgu.api.dto.res.TokenResDto;
+import com.teamgu.api.dto.res.UserClassResDto;
+import com.teamgu.api.dto.res.UserInfoAwardResDto;
 import com.teamgu.api.dto.res.UserInfoResDto;
+import com.teamgu.api.dto.res.UserInfoProjectResDto;
 import com.teamgu.common.auth.JwtUserDetailsService;
 import com.teamgu.common.util.JwtTokenUtil;
 import com.teamgu.database.entity.Mapping;
@@ -37,6 +40,7 @@ import com.teamgu.database.repository.ProjectDetailRepositorySuport;
 import com.teamgu.database.repository.ProjectRepository;
 import com.teamgu.database.repository.ProjectRepositorySuport;
 import com.teamgu.database.repository.SkillRepository;
+import com.teamgu.database.repository.UserRepositorySupport;
 import com.teamgu.database.repository.UserRepository;
 import com.teamgu.database.repository.WishTrackRepository;
 
@@ -60,6 +64,9 @@ public class UserServiceImpl implements UserService {
 	ProjectRepository projectRepository;
 	@Autowired
 	AwardRepository awardRepository;
+	
+	@Autowired
+	UserRepositorySupport userRepositorySupport;
 
 	@Autowired
 	ProjectDetailRepository projectDetailRepository;
@@ -120,9 +127,8 @@ public class UserServiceImpl implements UserService {
 		LoginResDto loginRes = new LoginResDto();
 		loginRes.setStatusCode(200);
 		loginRes.setMessage("Success");
-		loginRes.setRefreshToken(refreshToken);
 		loginRes.setAccessToken(accessToken);
-		loginRes.setUserInfo(user);
+		loginRes.setUserInfo(getUserDetailInfo(user.getEmail()));
 		return loginRes;
 	}
 
@@ -269,9 +275,28 @@ public class UserServiceImpl implements UserService {
 	public UserInfoResDto getUserDetailInfo(String email) {
 		User user = userRepository.findByEmail(email).get();
 		UserInfoResDto userInfoRes = new UserInfoResDto();
-		userInfoRes.setPassword(user.getPassword());
-		userInfoRes.setStudentNumber(user.getStudentNumber());
+		
+		Long id = user.getId();
+		String studentNumber = user.getStudentNumber();
+		
+		//User Index Number
+		userInfoRes.setId(id);
+		
+		//User 이름
+		userInfoRes.setName(user.getName());
+		
+		String profileServerName = user.getProfileServerName();
+		String profileExtension = user.getProfileExtension();
+		String profilePath = profileExtension + "." + profileExtension; 
+		userInfoRes.setImg(profilePath);
+		
+		//User 이메일
+		userInfoRes.setEmail(email);
+		
+		//User 학번
+		userInfoRes.setStudentNumber(studentNumber);
 
+		// User 기술 스택 조회
 		List<Skill> skills = user.getSkills();
 		List<String> skillName = new ArrayList<>();
 		for (Skill sk : skills) {
@@ -279,13 +304,30 @@ public class UserServiceImpl implements UserService {
 		}
 		userInfoRes.setSkill(skillName);
 
+		// User Position 조회
 		String position = codeDetailRepositorySupport.findPositionName(user.getWishPositionCode());
-		userInfoRes.setWishPosition(position);
-
+		userInfoRes.setWishPositionCode(position);
 		userInfoRes.setIntroduce(user.getIntroduce());
-		userInfoRes.setProjects(user.getUserProject());
-		userInfoRes.setAwards(user.getUserAward());
+
+		// User 프로젝트 경력 조회
+		List<UserInfoProjectResDto> projects =userRepositorySupport.selectUserProjectByUserId(id);
+		userInfoRes.setProjects(projects);
+
+		// User 수상 경력 조회
+		List<UserInfoAwardResDto> awards = userRepositorySupport.selectUserAwardByUserId(id);
+		userInfoRes.setAwards(awards);
+		
+		// User Wish Track 조회
+		List<String> tracks = userRepositorySupport.selectUserWishTrackByUserId(id);
+		userInfoRes.setWishTrack(tracks);
+		
+		// User Class 조회
+		int stage = studentNumber.charAt(1) - '0';
+		UserClassResDto userClass = userRepositorySupport.selectUserClassByUserId(id, stage);
+		userInfoRes.setUserClass(userClass);
+		
 		return userInfoRes;
+		
 	}
 
 }

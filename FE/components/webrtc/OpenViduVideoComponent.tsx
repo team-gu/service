@@ -12,13 +12,34 @@ const Wrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
 
   video {
     min-width: 100%;
   }
+
+  .alt-image {
+    margin: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: -1px;
+    right: 0;
+    background-color: white;
+    box-shadow: 0px 0px 10px 1px rgb(0 0 255 / 20%);
+
+    > div {
+      margin: auto;
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+    }
+  }
 `;
 
-export default function UserVideoComponent({
+export default function OpenViduVideoComponent({
   streamManager,
 }: OpenViduVideoComponentProps): ReactElement {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -32,10 +53,11 @@ export default function UserVideoComponent({
 
   return (
     <Wrapper>
-      {streamManager.stream.videoActive ? (
-        <video autoPlay={true} ref={videoRef} />
-      ) : (
-        <ProfileImage src={'/profile.png'} size={230} />
+      <video autoPlay={true} ref={videoRef} />
+      {!streamManager.stream.videoActive && (
+        <div className="alt-image">
+          <ProfileImage src={'/profile.png'} size={230} />
+        </div>
       )}
     </Wrapper>
   );

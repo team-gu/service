@@ -1,7 +1,9 @@
 import Button from './Button';
 import ChatBubble from './ChatBubble';
+import ChatBubbleSelect from './ChatBubbleSelect';
 import ChatInput from './ChatInput';
 import Checkbox from './Checkbox';
+import Filter from './Filter';
 import FloatingButton from './FloatingButton';
 import Label from './Label';
 import ProfileContainer from './ProfileContainer';
@@ -13,8 +15,10 @@ import Title from './Title';
 export {
   Button,
   ChatBubble,
+  ChatBubbleSelect,
   ChatInput,
   Checkbox,
+  Filter,
   FloatingButton,
   Label,
   ProfileContainer,

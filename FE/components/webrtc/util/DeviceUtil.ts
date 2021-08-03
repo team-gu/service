@@ -24,13 +24,13 @@ export class DevicesUtil {
     this.resetDevicesArray();
     if (this.hasAudioDeviceAvailable()) {
       this.initAudioDevices();
-      const defaultMic = this.microphones.find((device) => device.device === 'default');
-      this.micSelected = defaultMic ? defaultMic : this.microphones[0];
+      // const defaultMic = this.microphones.find((device) => device.device === 'default');
+      this.micSelected = this.microphones[0];
     }
     if (this.hasVideoDeviceAvailable()) {
       this.initVideoDevices();
-      const defaultCam = this.cameras.find((device) => device.type === CameraType.FRONT);
-      this.camSelected = defaultCam ? defaultCam : this.cameras[0]
+      // const defaultCam = this.cameras.find((device) => device.type === CameraType.FRONT);
+      this.camSelected = this.cameras[0]
     }
   }
   private async initOpenViduDevices() {
@@ -104,8 +104,8 @@ export class DevicesUtil {
   }
 
   private resetDevicesArray() {
-    this.cameras = [{ label: 'None', device: '', type: undefined }];
-    this.microphones = [{ label: 'None', device: '', type: undefined }];
+    this.cameras = [];
+    this.microphones = [];
   }
 
 

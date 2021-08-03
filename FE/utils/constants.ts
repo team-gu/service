@@ -2,6 +2,8 @@ export const MODALS: { ALERT_MODAL: string } = {
   ALERT_MODAL: 'alertModal',
 };
 
+export const VIDEO_CHAT_PATH_PREFIX = '/rtc'
+
 export const CHAT_DUMMY_DATA = [
   {
     id: '0',
@@ -68,6 +70,14 @@ export const CHAT_DUMMY_DATA = [
       'asdfsdasdfsdasdfsdasdfsdasdfsdasdfsdasdfsdasdfsdasdfsdasdfsdasdfsdasdfsdasdfsdasdfsdasdfsdasdfsd',
     isMe: false,
   },
+  {
+    id: '8',
+    userName: '김싸피',
+    profileSrc: '/profile.png',
+    time: '2021-07-28T17:41:27.699+09:00',
+    message: 'request',
+    isMe: false,
+  },
 ];
 
 export const USER_DUMMY_DATA = [
@@ -83,6 +93,6 @@ export const USER_DUMMY_DATA = [
     content: 'ㅎㅇㅎㅇ',
     isActive: true,
     time: '2021-07-28T17:41:27.699+09:00',
-    alertNumber:2,
+    alertNumber: 2,
   },
 ];

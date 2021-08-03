@@ -1,14 +1,15 @@
 import { ReactElement, SyntheticEvent, useRef } from 'react';
 import { useRouter } from 'next/router';
-
 import styled from 'styled-components';
-import { Button } from '@molecules';
-import { Input } from '@atoms';
 import { useAppDispatch, setLogin } from '@store';
+import { Input } from '@atoms';
+import { Button } from '@molecules';
+import { ModalWrapper } from '@organisms';
 
 const Wrapper = styled.div`
-  width: 100%;
-  height: 100%;
+  width: 250px;
+  height: 150px;
+  display: flex;
   ${({ theme: { flexCol } }) => flexCol()};
 
   .input {
@@ -44,16 +45,18 @@ export default function LoginComponent(): ReactElement {
   };
 
   return (
-    <Wrapper>
-      <form onSubmit={handleLogin}>
-        <Input ref={emailRef} placeHolder="이메일 입력" />
-        <Input
-          type="password"
-          ref={passwordRef}
-          placeHolder="비밀번호 입력"
-        ></Input>
-        <Button title="로그인" type="submit" />
-      </form>
-    </Wrapper>
+    <ModalWrapper modalName="login">
+      <Wrapper>
+        <form onSubmit={handleLogin}>
+          <Input ref={emailRef} placeHolder="이메일 입력" />
+          <Input
+            type="password"
+            ref={passwordRef}
+            placeHolder="비밀번호 입력"
+          />
+          <Button title="로그인" type="submit" />
+        </form>
+      </Wrapper>
+    </ModalWrapper>
   );
 }

@@ -42,9 +42,6 @@ const Wrapper = styled.nav<{ isShowByScroll: Boolean }>`
       list-style: none;
       margin-left: 10px;
       letter-spacing: 2px;
-      &:hover {
-        color: red;
-      }
 
       a {
         position: relative;
@@ -52,6 +49,10 @@ const Wrapper = styled.nav<{ isShowByScroll: Boolean }>`
         text-decoration: none;
         font-weight: 500;
         transition: 0.5s;
+
+        &:hover {
+          color: red;
+        }
       }
     }
   }

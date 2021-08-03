@@ -1,6 +1,8 @@
 import { ReactElement, useState } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
+import { DateTime } from 'luxon';
+
 import { useAppDispatch, setChatOpen } from '@store';
 import { ChatList, ChatRoom } from '@organisms';
 import { Text, Icon } from '@atoms';
@@ -48,7 +50,25 @@ const CHAT_ROOM = 1;
 export default function ChatRoute(): ReactElement {
   const dispatch = useAppDispatch();
   const [route, setRoute] = useState(CHAT_LIST);
-  const [chatData, setChatData] = useState(CHAT_DUMMY_DATA);
+  const [messageList, setMessageList] = useState(CHAT_DUMMY_DATA);
+
+  const handleClickSend = (msg: string) => {
+    return new Promise<void>((resolve, reject) => {
+      setMessageList([
+        ...messageList,
+        {
+          id: `${messageList.length}`,
+          userName: 'me',
+          profileSrc: '/profile.png',
+          time: DateTime.now().toString(),
+          message: msg,
+          isMe: true,
+        },
+      ]);
+
+      resolve();
+    });
+  };
 
   return (
     <Wrapper
@@ -75,7 +95,11 @@ export default function ChatRoute(): ReactElement {
         {
           [CHAT_LIST]: <ChatList func={() => setRoute(CHAT_ROOM)} />,
           [CHAT_ROOM]: (
-            <ChatRoom chatData={chatData} setChatData={setChatData} />
+            <ChatRoom
+              messageList={messageList}
+              setMessageList={setMessageList}
+              handleClickSend={handleClickSend}
+            />
           ),
         }[route]
       }

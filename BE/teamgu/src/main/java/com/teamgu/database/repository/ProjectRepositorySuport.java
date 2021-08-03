@@ -6,14 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.teamgu.database.entity.QUserProject;
+import com.teamgu.database.entity.QUserInfoProject;
 import com.teamgu.database.entity.UserInfoProject;
 
 @Repository
 public class ProjectRepositorySuport {
 	@Autowired
 	private JPAQueryFactory jpaQueryFactory;
-	QUserProject qProject = QUserProject.userProject;
+	QUserInfoProject qProject = QUserInfoProject.userInfoProject;
 	
 	@Transactional
 	public void modProjects(UserInfoProject project, String email) {

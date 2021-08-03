@@ -17,6 +17,7 @@ import { useAuthState } from '@store';
 var OpenViduBrowser: any;
 
 const Wrapper = styled.div`
+  margin: 30px 10px;
   .session-title {
     margin-bottom: 20px;
   }
@@ -48,19 +49,13 @@ const SessionContainer = styled.div<{ number: number }>`
     } else if (number > 4) {
       return `
         .flexItem {
-          flex: 0 0 360px;
-        }
-      `;
-    } else if (number > 2) {
-      return `
-        .flexItem {
-          flex: 0 0 480px;
+          flex: 0 1 480px;
         }
       `;
     } else {
       return `
         .flexItem {
-          flex: 0 0 640px;
+          flex: 0 1 600px;
         }
       `;
     }
@@ -68,12 +63,11 @@ const SessionContainer = styled.div<{ number: number }>`
 `;
 
 interface UserDevice {
-  mic: string;
-  cam: string;
+  mic: string | undefined;
+  cam: string | undefined;
 }
 
 const OPENVIDU_SERVER_URL = 'https://teamgu.xyz';
-// const OPENVIDU_SERVER_URL = 'https://localhost:4443';
 const OPENVIDU_SERVER_SECRET = 'MY_SECRET';
 
 export default function VideoChat(): ReactElement {
@@ -84,16 +78,14 @@ export default function VideoChat(): ReactElement {
   const [publisher, setPublisher] = useState<Publisher>();
   const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
   const [isConfigModalShow, setIsConfigModalShow] = useState<boolean>(true);
-  const [userDevice, setUserDevice] = useState<UserDevice>({
-    mic: '',
-    cam: '',
-  });
+  const [userDevice, setUserDevice] = useState<UserDevice>({ mic: undefined, cam: undefined });
 
   const [micOn, setMicOn] = useState(false);
   const [camOn, setCamOn] = useState(false);
   const [chatShow, setChatShow] = useState(false);
 
-  const { name } = useAuthState();
+  const { user } = useAuthState();
+  const name = user.name;
   const myUserName = name ? name : 'MeetInSsafy';
   const mySessionId = `session_of_${myUserName}`;
   const sessionTitle = `[${myUserName}]님의 세션`;
@@ -151,10 +143,6 @@ export default function VideoChat(): ReactElement {
     setCamOn(false);
   };
 
-  const updateSubscribers = () => {
-    setSubscribers((subs) => subs.slice());
-  };
-
   const handlerConfigModalCloseBtn = () => {
     setPublisher(undefined);
     setIsConfigModalShow(false);
@@ -162,14 +150,22 @@ export default function VideoChat(): ReactElement {
     router.back();
   };
 
-  const handlerJoinBtn = (micSelected: string, camSelected: string) => {
+  const handlerJoinBtn = (
+    micSelected: string | undefined,
+    camSelected: string | undefined,
+    micState: boolean,
+    camState: boolean,
+  ) => {
+    if (micSelected && camSelected) {
+      
+    }
     setUserDevice({
       mic: micSelected,
       cam: camSelected,
     });
 
-    setMicOn(micSelected !== '');
-    setCamOn(camSelected !== '');
+    setMicOn(micState);
+    setCamOn(camState);
 
     setIsConfigModalShow(false);
     setSession(OV?.initSession());
@@ -179,11 +175,11 @@ export default function VideoChat(): ReactElement {
   useEffect(() => {
     if (!session) return;
 
-    let mySession = session;
+    const mySession = session;
 
     // 어떤 새로운 스트림이 도착하면
     mySession.on('streamCreated', (event: any) => {
-      let sub = mySession.subscribe(event.stream, ''); // targetElement(second param) ignored.
+      const sub = mySession.subscribe(event.stream, ''); // targetElement(second param) ignored.
       let subs = subscribers;
       subs.push(sub);
       setSubscribers([...subs]);
@@ -201,7 +197,16 @@ export default function VideoChat(): ReactElement {
 
     // 스트림 속성이 변경되면
     mySession.on('streamPropertyChanged', () => {
-      updateSubscribers();
+      const subs = subscribers;
+      setSubscribers([...subs]);
+    });
+
+    mySession.on('publisherStartSpeaking', (event: any) => {
+      console.log('User ' + event.connection.connectionId + ' start speaking');
+    });
+
+    mySession.on('publisherStopSpeaking', (event: any) => {
+      console.log('User ' + event.connection.connectionId + ' stop speaking');
     });
 
     getToken()
@@ -209,14 +214,11 @@ export default function VideoChat(): ReactElement {
         mySession.connect(token, { clientData: myUserName }).then(() => {
           if (!OV) return;
 
-          const micIsNone = !userDevice.mic || userDevice.mic === '';
-          const camIsNone = !userDevice.cam || userDevice.cam === '';
-
           let publisher = OV.initPublisher('', {
-            audioSource: micIsNone ? undefined : userDevice.mic,
-            videoSource: camIsNone ? undefined : userDevice.cam,
-            publishAudio: micIsNone ? false : true,
-            publishVideo: camIsNone ? false : true,
+            audioSource: userDevice.mic ? userDevice.mic : false,
+            videoSource: userDevice.cam ? userDevice.cam : false,
+            publishAudio: micOn,
+            publishVideo: camOn,
             resolution: '640x480',
             frameRate: 30,
             mirror: true,
@@ -241,11 +243,7 @@ export default function VideoChat(): ReactElement {
     if (mySession) {
       mySession.disconnect();
     }
-
-    setOV(undefined);
-    setSession(undefined);
-    setSubscribers([]);
-    setPublisher(undefined);
+    clear();
   };
 
   const getToken = () => {
@@ -293,25 +291,19 @@ export default function VideoChat(): ReactElement {
     });
   };
 
-  const handleClickVideoOff = () => {
-    publisher?.publishVideo(false);
-    setCamOn(false);
-  };
+  const handleVideoStateChanged = () => {
+    if (userDevice.cam) {
+      publisher?.publishVideo(!camOn);
+      setCamOn(!camOn);
+    }    
+  }
 
-  const handleClickVideoOn = () => {
-    publisher?.publishVideo(true);
-    setCamOn(true);
-  };
-
-  const handleClickAudioOff = () => {
-    publisher?.publishAudio(false);
-    setMicOn(false);
-  };
-
-  const handleClickAudioOn = () => {
-    publisher?.publishAudio(true);
-    setMicOn(true);
-  };
+  const handleAudioStateChanged = () => {
+    if (userDevice.mic) {
+      publisher?.publishAudio(!micOn);
+      setMicOn(!micOn);
+    }
+  }
 
   const handleClickExit = () => {
     leaveSession();
@@ -332,7 +324,6 @@ export default function VideoChat(): ReactElement {
   };
 
   const handleClickChat = () => {
-    console.log('채팅');
     setChatShow(!chatShow);
   };
 
@@ -362,7 +353,7 @@ export default function VideoChat(): ReactElement {
     <Wrapper>
       {session !== undefined && (
         <>
-          <SidebarChat isShow={chatShow}>
+          <SidebarChat isShow={chatShow} session={session}>
             <SessionWrapper>
               <SessionContainer number={subscribers.length + 1}>
                 {publisher !== undefined && (
@@ -379,10 +370,10 @@ export default function VideoChat(): ReactElement {
               <VideoChatToolbar
                 micOn={micOn}
                 camOn={camOn}
-                handleClickVideoOff={handleClickVideoOff}
-                handleClickVideoOn={handleClickVideoOn}
-                handleClickAudioOff={handleClickAudioOff}
-                handleClickAudioOn={handleClickAudioOn}
+                handleClickVideoOff={handleVideoStateChanged}
+                handleClickVideoOn={handleVideoStateChanged}
+                handleClickAudioOff={handleAudioStateChanged}
+                handleClickAudioOn={handleAudioStateChanged}
                 handleClickExit={handleClickExit}
                 handleClickScreenShare={handleClickScreenShare}
                 handleClickGame={handleClickGame}
