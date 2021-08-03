@@ -16,6 +16,7 @@ const Wrapper = styled(motion.div)`
 
   width: 400px;
   height: 600px;
+  max-height: 70%;
 
   border-radius: 10px;
   box-shadow: 0 12px 20px 0 rgba(0, 0, 0, 0.15);
