@@ -82,7 +82,7 @@ const Wrapper = styled.div`
       width: 100%;
       height: 50px;
       padding: 5px;
-      border: solid 1px #EEEEEE;
+      border: solid 1px #eeeeee;
     }
   }
 

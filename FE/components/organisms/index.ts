@@ -12,6 +12,7 @@ import ModalWrapper from './Modal/ModalWrapper';
 import RegisterComponent from './RegisterComponent';
 import TeamStatusCard from './TeamStatusCard';
 import TeamStatus from './TeamStatus';
+import TeamCreateModal from './TeamCreateModal';
 
 export {
   ChatList,
@@ -28,4 +29,5 @@ export {
   RegisterComponent,
   TeamStatusCard,
   TeamStatus,
+  TeamCreateModal,
 };

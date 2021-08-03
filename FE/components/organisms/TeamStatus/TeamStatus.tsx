@@ -8,7 +8,7 @@ import {
   Button,
   SimpleSelect,
 } from '@molecules';
-import { TeamStatusCard } from '@organisms';
+import { TeamStatusCard, TeamCreateModal } from '@organisms';
 import { getTeams } from '@repository/baseRepository';
 import { FILTER_IN_TEAMPAGE } from '@utils/constants';
 
@@ -57,7 +57,7 @@ const sortByOptions: OptionsType<OptionTypeBase> = [
 
 export default function TeamStatus(): ReactElement {
   const [filterContents, setFilterContents] = useState(FILTER_IN_TEAMPAGE);
-  const [showCreateTeamModal, setShowCreateTeamModal] = useState(false);
+  const [showTeamCreateModal, setShowTeamCreateModal] = useState(false);
   const [sortby, setSortby] = useState('');
   const [teams, setTeams] = useState<object[]>([]);
 
@@ -68,13 +68,13 @@ export default function TeamStatus(): ReactElement {
   }, []);
 
   const handleFilter = (filterTitle: string, eachTitle: string) => {
-    const cont = { ...filterContents };
-    cont[filterTitle][eachTitle] = !cont[filterTitle][eachTitle];
-    setFilterContents(cont);
+    const content = { ...filterContents };
+    content[filterTitle][eachTitle] = !content[filterTitle][eachTitle];
+    setFilterContents(content);
   };
 
-  const handleClickCreateTeamBtn = () => {
-    setShowCreateTeamModal(true);
+  const handleChangeCreateTeamModal = () => {
+    setShowTeamCreateModal(!showTeamCreateModal);
   };
 
   const handleChangeUserSelect = (selectedUser: object) => {
@@ -89,7 +89,7 @@ export default function TeamStatus(): ReactElement {
   return (
     <Wrapper>
       <div className="filter-container">
-        {Object.keys(filterContents).map((each, index) => (
+        {Object.keys(FILTER_IN_TEAMPAGE).map((each, index) => (
           <Filter
             title={each}
             contents={filterContents[each]}
@@ -113,7 +113,7 @@ export default function TeamStatus(): ReactElement {
           <div>
             <Button
               title="팀 만들기"
-              func={handleClickCreateTeamBtn}
+              func={handleChangeCreateTeamModal}
               width="90px"
             />
           </div>
@@ -122,7 +122,9 @@ export default function TeamStatus(): ReactElement {
           <TeamStatusCard team={item} key={index} />
         ))}
       </div>
-      {showCreateTeamModal && <div>MODAL</div>}
+      {showTeamCreateModal && (
+        <TeamCreateModal handleClickClose={handleChangeCreateTeamModal} />
+      )}
     </Wrapper>
   );
 }
