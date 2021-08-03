@@ -63,7 +63,6 @@ export const setLogin =
       // TODO: 리프레시 토큰 사용이 후순위로 밀려서 후에 이 부분에 대한 수정과 사용이 필요합니다.
       // saveItem('refreshToken', data.refreshToken);
       dispatch(setUser(data.userInfo));
-      console.log(data.userInfo);
       data.userInfo.introduce === ''
         ? router.push('/userdetail')
         : router.push('/humanpool');
