@@ -12,6 +12,7 @@ import Spinner from './Spinner';
 import Tag from './Tag';
 import Title from './Title';
 import UserSearchBar from './UserSearchBar';
+import SimpleSelect from './SimpleSelect';
 
 export {
   Button,
@@ -28,4 +29,5 @@ export {
   Tag,
   Title,
   UserSearchBar,
+  SimpleSelect,
 };
