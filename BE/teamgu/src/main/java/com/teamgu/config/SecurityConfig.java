@@ -80,8 +80,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/configuration/security",
                         "/swagger-ui/**",
                         "/webjars/**",
-                        "/swagger/**",
-                        "/stomp/**"
+                        "/swagger/**"
+//                        "/stomp/**" //채팅 연결시에도 토큰값 필요하다
                        )
                 .permitAll()
                 // 다른 모든 요청은 인증을 한다.
