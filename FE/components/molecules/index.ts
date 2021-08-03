@@ -11,7 +11,6 @@ import ProfileImage from './ProfileImage';
 import Spinner from './Spinner';
 import Tag from './Tag';
 import Title from './Title';
-import UserSearchBar from './UserSearchBar';
 import SimpleSelect from './SimpleSelect';
 
 export {
@@ -28,6 +27,5 @@ export {
   Spinner,
   Tag,
   Title,
-  UserSearchBar,
   SimpleSelect,
 };
