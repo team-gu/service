@@ -114,6 +114,7 @@ export default function TeamStatusCard({ team }: any): ReactElement {
         <div className="skills-container">
           <Text text="기술" color="gray" />
           <div className="skills">
+            {/* TODO: 타입 수정 */}
             {team.skills.map((item, index) => (
               <Tag text={item} key={index} />
             ))}

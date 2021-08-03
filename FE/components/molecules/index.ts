@@ -12,6 +12,8 @@ import Spinner from './Spinner';
 import Tag from './Tag';
 import Title from './Title';
 import SimpleSelect from './SimpleSelect';
+import UserSelectAutoComplete from './UserSelectAutoComplete';
+import SkillSelectAutoComplete from './SkillSelectAutoComplete';
 
 export {
   Button,
@@ -28,4 +30,6 @@ export {
   Tag,
   Title,
   SimpleSelect,
+  UserSelectAutoComplete,
+  SkillSelectAutoComplete,
 };
