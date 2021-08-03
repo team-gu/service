@@ -10,6 +10,8 @@ import LineBackground from './LineBackground';
 import LoginComponent from './LoginComponent';
 import ModalWrapper from './Modal/ModalWrapper';
 import RegisterComponent from './RegisterComponent';
+import TeamStatusCard from './TeamStatusCard';
+import TeamStatus from './TeamStatus';
 
 export {
   ChatList,
@@ -24,4 +26,6 @@ export {
   LoginComponent,
   ModalWrapper,
   RegisterComponent,
+  TeamStatusCard,
+  TeamStatus,
 };
