@@ -1,4 +1,4 @@
-import { ReactElement, useState, useEffect } from 'react';
+import { ReactElement, useState, useEffect, useRef, ChangeEvent } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 
@@ -7,7 +7,6 @@ import useSockStomp from '@hooks/useSockStomp';
 
 import { ChatList, ChatRoom } from '@organisms';
 import { Text, Icon } from '@atoms';
-
 
 const Wrapper = styled(motion.div)`
   position: fixed;
@@ -59,6 +58,19 @@ export default function ChatRoute(): ReactElement {
       room_id,
     });
 
+  const wrapperRef: any = useRef<HTMLInputElement>(null);
+
+  function handleClickOutside({ target }: ChangeEvent<HTMLInputElement>) {
+    if (!wrapperRef.current.contains(target)) {
+      dispatch(setChatOpen({ isChatOpen: false }));
+    }
+  }
+
+  useEffect(() => {
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, []);
+
   const handleToChatRoom = async (id: number) => {
     await setRoomId(id);
     setRoute(CHAT_ROOM);
@@ -80,6 +92,7 @@ export default function ChatRoute(): ReactElement {
           opacity: 1,
         },
       }}
+      ref={wrapperRef}
     >
       <div className="header">
         <Text text="채팅 목록" fontSetting="n16b" color="white" />
