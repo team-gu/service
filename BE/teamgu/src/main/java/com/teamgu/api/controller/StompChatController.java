@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import com.teamgu.api.dto.req.ChatReqDto;
 import com.teamgu.api.dto.res.ChatMessageResDto;
 import com.teamgu.api.service.ChatServiceImpl;
+import com.teamgu.api.service.UserServiceImpl;
 import com.teamgu.database.entity.Chat;
+import com.teamgu.database.entity.User;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -24,6 +26,8 @@ public class StompChatController {
 	@Autowired
 	ChatServiceImpl chatService;
 	
+	@Autowired
+	UserServiceImpl userService;
 	
 	private final SimpMessagingTemplate template;
 	@MessageMapping(value="/chat/enter")//참여
@@ -42,13 +46,14 @@ public class StompChatController {
 		log.info("in message...");
 		Chat chatres = chatService.saveChat(message);
 		log.info("chatRES test");
-		log.info(chatres.getId());
-		log.info(chatres.getUser().getName());
+		log.info(message.getSender_id());
+		User sender = userService.getUserById(message.getSender_id()).get();		
+		log.info(sender.getName()); // 사용자의 이름을 가져옴
 		log.info(chatres.getMessage());
 		log.info(chatres.getSendDateTime());
 		if (chatres!=null) {
 			ChatMessageResDto chatMessageResDto = new ChatMessageResDto(message.getSender_id(), 
-					chatres.getUser().getName(),
+					sender.getName(),
 					chatres.getMessage(), 
 					chatres.getSendDateTime(), 
 					0);
