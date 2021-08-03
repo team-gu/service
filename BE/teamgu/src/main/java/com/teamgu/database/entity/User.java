@@ -38,6 +38,8 @@ public class User extends BaseEntity{
 	@Column(length = 1000)
 	String introduce;
 	
+	short major; // 전공 여부, 0 : Default, 1: 전공자, 2: 비전공자
+	
 	int wishPositionCode;
 	
 	/**
