@@ -1,5 +1,10 @@
 /* eslint-disable react/display-name */
-import { ReactElement, ChangeEvent, forwardRef } from 'react';
+import {
+  ReactElement,
+  ChangeEvent,
+  forwardRef,
+  KeyboardEventHandler,
+} from 'react';
 import styled from 'styled-components';
 
 interface InputProps {
@@ -8,7 +13,8 @@ interface InputProps {
   // TODO: any 처리
   func?: (() => ChangeEvent<HTMLInputElement>) | any;
   funcBlur?: (() => void) | any;
-  onKeyPress?: any;
+  onKeyPress?: KeyboardEventHandler<HTMLInputElement> | undefined;
+  onKeyDown?: KeyboardEventHandler<HTMLInputElement> | undefined;
   width?: string;
   height?: string;
   name?: string;
@@ -57,6 +63,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       func,
       funcBlur,
       onKeyPress = () => {},
+      onKeyDown = () => {},
       width = '200px',
       height = '20px',
       name,
@@ -87,6 +94,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           maxLength={maxLength}
           readOnly={readOnly}
           value={value}
+          onKeyDown={onKeyDown}
         />
         {error?.split('/')[0] !== '' && <div>{error?.split('/')[0]}</div>}
       </Wrapper>
