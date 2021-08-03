@@ -1,4 +1,4 @@
-import { ReactElement, useState } from 'react';
+import { ReactElement, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { OptionsType, OptionTypeBase } from 'react-select';
 
@@ -9,6 +9,7 @@ import {
   SimpleSelect,
 } from '@molecules';
 import { TeamStatusCard } from '@organisms';
+import { getTeams } from '@repository/baseRepository';
 import { FILTER_IN_TEAMPAGE } from '@utils/constants';
 
 const Wrapper = styled.div`
@@ -39,11 +40,6 @@ const Wrapper = styled.div`
   }
 `;
 
-// TODO: 타입 이게 맞나?
-interface TeamStatusProps {
-  teams: object[];
-}
-
 const sortByOptions: OptionsType<OptionTypeBase> = [
   {
     label: '날짜',
@@ -59,10 +55,17 @@ const sortByOptions: OptionsType<OptionTypeBase> = [
   },
 ];
 
-export default function TeamStatus({ teams }: TeamStatusProps): ReactElement {
+export default function TeamStatus(): ReactElement {
   const [filterContents, setFilterContents] = useState(FILTER_IN_TEAMPAGE);
   const [showCreateTeamModal, setShowCreateTeamModal] = useState(false);
   const [sortby, setSortby] = useState('');
+  const [teams, setTeams] = useState<object[]>([]);
+
+  useEffect(() => {
+    getTeams().then((data) => {
+      setTeams(data);
+    });
+  }, []);
 
   const handleFilter = (filterTitle: string, eachTitle: string) => {
     const cont = { ...filterContents };
@@ -76,12 +79,12 @@ export default function TeamStatus({ teams }: TeamStatusProps): ReactElement {
 
   const handleChangeUserSelect = (selectedUser: object) => {
     console.log(selectedUser);
-  }
+  };
 
   const handleSortByChange = (newValue: string) => {
     console.log(newValue);
     setSortby(newValue);
-  }
+  };
 
   return (
     <Wrapper>
