@@ -87,12 +87,12 @@ public class User extends BaseEntity{
 	@OneToMany(mappedBy = "user", cascade = {CascadeType.ALL})
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	@JsonIgnore
-	private List<UserAward> userAward = new ArrayList<>();
+	private List<UserInfoAward> userAward = new ArrayList<>();
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	@JsonIgnore
-	private List<UserProject> userProject = new ArrayList<>();
+	private List<UserInfoProject> userProject = new ArrayList<>();
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	@OnDelete(action = OnDeleteAction.CASCADE)

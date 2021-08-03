@@ -1,5 +1,8 @@
 package com.teamgu.database.entity;
 
+
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -7,7 +10,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -17,16 +19,15 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class UserProject extends BaseEntity {
-
-	@NotNull
+public class UserInfoAward extends BaseEntity{
+	
 	@Column(length = 45)
 	String name;
-	int positionCode;
+	@Column(length = 45)
+	String agency;
+	Date date;
 	@Column(length = 1000)
 	String introduce;
-	@Column(length = 200)
-	String url;
 	
 	@ManyToOne
 	@JoinColumn(name = "userId")

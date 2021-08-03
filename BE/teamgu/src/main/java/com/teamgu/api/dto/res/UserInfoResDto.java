@@ -2,7 +2,7 @@ package com.teamgu.api.dto.res;
 
 import java.util.List;
 
-import com.teamgu.database.entity.UserAward;
+import com.teamgu.database.entity.UserInfoAward;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -13,10 +13,14 @@ import lombok.Setter;
 @Setter
 @ApiModel(description = "사용자 정보 응답 모델")
 public class UserInfoResDto {
+	@ApiModelProperty(name = "user index number")
+	Long id;
+	@ApiModelProperty(name = "user name")
+	String name;
+	@ApiModelProperty(name = "user profile image path", example =  " ~.jpg / ~.png")
+	String img;
 	@ApiModelProperty(name = "user email", example = "idea@naver.com")
 	String email;
-	@ApiModelProperty(name = "password", example = "새로운 비밀번호")
-	String password;
 	@ApiModelProperty(name = "studentNumber", example = "0546419")
 	String studentNumber;
 	@ApiModelProperty(name = "wishPositionCode", example = "101")
@@ -28,8 +32,10 @@ public class UserInfoResDto {
 	@ApiModelProperty(name = "skill")
 	List<String> skill;
 	@ApiModelProperty(name = "project")
-	List<UserProjectDto> projects;
+	List<UserInfoProjectResDto> projects;
 	@ApiModelProperty(name = "awards")
-	List<UserAward> awards;
-	
+	List<UserInfoAwardResDto> awards;
+	@ApiModelProperty(name = "userClass", example = "name = 2반, regionName = 서울")
+	UserClassResDto userClass;
+
 }

@@ -2,8 +2,8 @@ package com.teamgu.api.dto.req;
 
 import java.util.List;
 
-import com.teamgu.database.entity.UserAward;
-import com.teamgu.database.entity.UserProject;
+import com.teamgu.database.entity.UserInfoAward;
+import com.teamgu.database.entity.UserInfoProject;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
