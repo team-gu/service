@@ -3,11 +3,11 @@ import {
   MouseEventHandler,
   useState,
   ChangeEvent,
-  ChangeEventHandler,
+  FocusEventHandler,
 } from 'react';
 import styled from 'styled-components';
 import { ModalWrapper } from '@organisms';
-import { Icon, Input, Text } from '@atoms';
+import { Icon, Input, Text, Textarea } from '@atoms';
 import {
   Button,
   Label,
@@ -22,6 +22,7 @@ import { createTeam } from '@repository/baseRepository';
 import { useRouter } from 'next/router';
 import { OptionTypeBase, OptionsType } from 'react-select';
 import { Team, SkillOption, MemberOption } from '@utils/type';
+import { useRef } from 'react';
 
 const Wrapper = styled.div`
   display: grid;
@@ -92,7 +93,7 @@ const Wrapper = styled.div`
 
     textarea {
       width: 100%;
-      height: 50px;
+      height: 60px;
       border: solid 1px #eeeeee;
       padding: 10px;
       font-size: 14px;
@@ -213,6 +214,9 @@ export default function TeamManageModal({
   const [teamSkills, setTeamSkills] = useState(defaultValue?.skills || []);
   const [teamMembers, setTeamMembers] = useState(defaultValue?.members || []);
 
+  const teamNameInputRef = useRef<HTMLInputElement>(null);
+  const teamDescriptionRef = useRef<HTMLTextAreaElement>(null);
+
   const handleChangeTeamName = ({ target }: ChangeEvent<HTMLInputElement>) => {
     setTeamName(target.value);
   };
@@ -229,7 +233,9 @@ export default function TeamManageModal({
     setTeamTrack(selectedTrack);
   };
 
-  const handleChangeSkillSelect = (selectedSkills: OptionsType<SkillOption>) => {
+  const handleChangeSkillSelect = (
+    selectedSkills: OptionsType<SkillOption>,
+  ) => {
     setTeamSkills(selectedSkills.slice());
   };
 
@@ -241,11 +247,10 @@ export default function TeamManageModal({
     setTeamMembers(teamMembers.filter((v, i) => i !== index));
   };
 
-  const handleChangeDescription: ChangeEventHandler<HTMLTextAreaElement> = (
-    event,
-  ) => {
-    console.log(event.currentTarget.value);
-    setTeamDescription(event.currentTarget.value);
+  const handleChangeDescription: FocusEventHandler = () => {
+    if (teamDescriptionRef.current) {
+      setTeamDescription(teamDescriptionRef.current.value);
+    }
   };
 
   const handleSubmit = () => {
@@ -298,7 +303,8 @@ export default function TeamManageModal({
               width="100%"
               height="40px"
               func={handleChangeTeamName}
-              value={defaultValue ? defaultValue.name : undefined}
+              refValue={defaultValue ? defaultValue.name : undefined}
+              ref={teamNameInputRef}
             />
           </Label>
         </div>
@@ -335,11 +341,11 @@ export default function TeamManageModal({
 
         <div className="team-description-container">
           <Label text="팀 소개">
-            <textarea
-              onChange={() => {}}
+            <Textarea
               onBlur={handleChangeDescription}
-              value={defaultValue ? defaultValue.description : ''}
-            ></textarea>
+              refValue={defaultValue ? defaultValue.description : ''}
+              ref={teamDescriptionRef}
+            ></Textarea>
           </Label>
         </div>
 
