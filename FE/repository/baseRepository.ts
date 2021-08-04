@@ -73,28 +73,67 @@ export const getUserListByNameContains = async (param: string) => {
 };
 
 export const getSkillList = async () => {
-
-  return new Promise<Skill[]>(resolve => {
+  return new Promise<Skill[]>((resolve) => {
     const dummy: Skill[] = [
       {
         name: 'React',
         id: 1,
+        backgroundColor: '#61DAFB',
+        color: '#000',
       },
       {
         name: 'Spring',
         id: 2,
+        backgroundColor: '#6DB43D',
+        color: '#000',
       },
       {
         name: 'MySQL',
         id: 3,
+        backgroundColor: '#005C84',
+        color: '#000',
       },
       {
         name: 'WebRTC',
         id: 4,
+        backgroundColor: '#AC2523',
+        color: '#000',
       },
       {
         name: 'JPA',
         id: 5,
+        backgroundColor: '#010101',
+        color: '#fff',
+      },
+      {
+        name: 'HTML',
+        id: 6,
+        backgroundColor: '#E44D26',
+        color: '#000',
+      },
+      {
+        name: 'CSS',
+        id: 7,
+        backgroundColor: '#0B74B8',
+        color: '#000',
+      },
+      {
+        name: 'JavaScript',
+        id: 8,
+        backgroundColor: '#DAB92C',
+        color: '#000',
+      },
+      {
+        name: 'Vue',
+        id: 9,
+        backgroundColor: '#00C180',
+        color: '#000',
+      },
+      {
+        name: 'Java',
+        id: 10,
+        backgroundColor: '#E05141',
+        color: '#000',
       },
     ];
 
@@ -108,8 +147,7 @@ export const getSkillList = async () => {
 };
 
 export const getTeams = async () => {
-
-  return new Promise<Team[]>(resolve => {
+  return new Promise<Team[]>((resolve) => {
     const dummy = [
       {
         name: '팀구 1',
@@ -191,16 +229,16 @@ export const getTeams = async () => {
     ];
 
     resolve(dummy);
-  })
+  });
   // TODO: api 연결 백엔드 미완.
   // return await api({
   //   url: `/path/to/get-teams`,
   //   type: 'get',
   // });
-}
+};
 
 export const createTeam = async (param: object) => {
-  console.log("팀 생성 API 호출: ");
+  console.log('팀 생성 API 호출: ');
   console.log(param);
 
   // TODO: api 연결 백엔드 미완.
@@ -209,4 +247,4 @@ export const createTeam = async (param: object) => {
   //   type: 'post',
   //   param,
   // });
-}
+};
