@@ -5,7 +5,7 @@ interface TextareaProps {
   rows?: number;
   cols?: number;
   placeholder?: string;
-  onBlur: FocusEventHandler;
+  onBlur?: FocusEventHandler;
 }
 
 const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
