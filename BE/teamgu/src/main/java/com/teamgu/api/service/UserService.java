@@ -20,9 +20,6 @@ import com.teamgu.database.entity.User;
  * 사용자 관련 비즈니스 로직
  */
 public interface UserService {
-	Optional<User> getUserByEmail(String email);
-
-	Optional<User> getUserById(Long id);
 
 	boolean save(User user);
 
@@ -32,11 +29,19 @@ public interface UserService {
 
 	TokenResDto reissue(TokenReqDto tokenReq);
 
-	void setUserDetailInfo(UserInfoReqDto userInfoReq);
-
 	void setPassward(PasswordReqDto passwordReq);
 
+	// Email을 이용한 User Entity 조회
+	Optional<User> getUserByEmail(String email);
+
+	// Id를 이용한 User Entity 조회
+	Optional<User> getUserById(Long id);
+
+	// User 상세 정보 조회
 	UserInfoResDto getUserDetailInfo(String email);
+
+	// 교육생의 개인 세부 이력 수정
+	void updateUserDetailInfo(UserInfoReqDto userInfoReq);
 
 	// 교육생의 개인 프로젝트 이력을 입력
 	Long insertUserInfoProject(UserInfoProjectResDto userInfoProjectResDto);

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.teamgu.api.dto.req.UserInfoReqDto;
 import com.teamgu.api.dto.res.UserInfoAwardResDto;
 import com.teamgu.api.dto.res.UserInfoProjectResDto;
 import com.teamgu.api.dto.res.UserInfoResDto;
@@ -33,14 +34,6 @@ public class UserController {
 	@Autowired
 	UserServiceImpl userService;
 
-//	@PostMapping("/userInfo")
-//	@ApiOperation(value = "사용자 상세정보 입력/ 수정", notes = "사용자 상세정보를 입력, 수정한다.")
-//	public ResponseEntity<BaseResDto> setUserDetailInfo(
-//			@RequestBody @ApiParam(value = "마이페이지 정보", required = true) UserInfoReqDto userInfoReq) {
-//		userService.setUserDetailInfo(userInfoReq);
-//		return ResponseEntity.ok(new BaseResDto(200, "Success"));
-//	}
-
 //	@PostMapping("/password")
 //	@ApiOperation(value = "비밀번호 변경", notes = "비밀번호를 변경한다.")
 //	public ResponseEntity<BaseResDto> setPassword(
@@ -49,22 +42,24 @@ public class UserController {
 //		return ResponseEntity.ok(new BaseResDto(200, "Success"));
 //	}
 
-	@GetMapping("/userInfo")
 	@ApiOperation(value = "사용자 상세정보 조회", notes = "마이페이지에서 사용자 상세정보를 조회한다.")
+	@GetMapping("/userInfo")
 	public ResponseEntity<UserInfoResDto> getUserDetailInfo(
 			@RequestParam @ApiParam(value = "이메일", required = true) String email) {
 		return ResponseEntity.ok(userService.getUserDetailInfo(email));
 	}
 
-	@ApiOperation(value = "유저 프로젝트 입력", response = String.class)
+	@ApiOperation(value = "사용자 상세정보 입력/ 수정", notes = "사용자 상세정보를 입력, 수정한다.")
+	@PutMapping("/userInfo")
+	public ResponseEntity<String> updateUserDetailInfo(
+			@RequestBody @ApiParam(value = "마이페이지 정보", required = true) UserInfoReqDto userInfoReq) {
+		userService.updateUserDetailInfo(userInfoReq);
+		return new ResponseEntity<String>("SUCCESS", HttpStatus.OK);
+	}
+
+	@ApiOperation(value = "유저 프로젝트 입력", notes = "사용자 프로젝트를 입력",  response = String.class)
 	@PostMapping("/project")
 	public ResponseEntity<String> insertUserInfoProject(@RequestBody UserInfoProjectResDto userInfoProjectResDto) {
-
-		System.out.println(userInfoProjectResDto.getId());
-		System.out.println(userInfoProjectResDto.getName());
-		System.out.println(userInfoProjectResDto.getPosition());
-		System.out.println(userInfoProjectResDto.getUrl());
-		System.out.println(userInfoProjectResDto.getIntroduce());
 
 		if (userService.insertUserInfoProject(userInfoProjectResDto) == 1) {
 			return new ResponseEntity<String>("SUCCESS", HttpStatus.OK);
@@ -73,7 +68,7 @@ public class UserController {
 		return new ResponseEntity<String>("FAIL", HttpStatus.BAD_REQUEST);
 	}
 
-	@ApiOperation(value = "유저 프로젝트 수정", response = String.class)
+	@ApiOperation(value = "유저 프로젝트 수정", notes = "사용자 프로젝트를 수정한다",  response = String.class)
 	@PutMapping("/project")
 	public ResponseEntity<String> updateUserInfoProject(@RequestBody UserInfoProjectResDto userInfoProjectResDto) {
 
@@ -84,7 +79,7 @@ public class UserController {
 		return new ResponseEntity<String>("FAIL", HttpStatus.BAD_REQUEST);
 	}
 
-	@ApiOperation(value = "유저 프로젝트 삭제", response = String.class)
+ 	@ApiOperation(value = "유저 프로젝트 삭제", notes = "사용자 프로젝트를 삭제한다.",  response = String.class)
 	@DeleteMapping("/project/{id}")
 	public ResponseEntity<String> deleteUserInfoProject(@PathVariable Long id) {
 
@@ -95,7 +90,7 @@ public class UserController {
 		return new ResponseEntity<String>("FAIL", HttpStatus.BAD_REQUEST);
 	}
 
-	@ApiOperation(value = "유저 수상내역 입력", response = String.class)
+	@ApiOperation(value = "유저 수상내역 입력", notes = "사용자 수상 이력을 입력한다", response = String.class)
 	@PostMapping("/award")
 	public ResponseEntity<String> insertUserInfoAward(@RequestBody UserInfoAwardResDto userInfoAwardResDto) {
 
@@ -106,7 +101,7 @@ public class UserController {
 		return new ResponseEntity<String>("FAIL", HttpStatus.BAD_REQUEST);
 	}
 
-	@ApiOperation(value = "유저 수상내역 수정", response = String.class)
+	@ApiOperation(value = "유저 수상내역 수정", notes = "사용자 수상 이력을 수정한다.", response = String.class)
 	@PutMapping("/award")
 	public ResponseEntity<String> updateUserInfoAward(@RequestBody UserInfoAwardResDto userInfoAwardResDto) {
 
@@ -117,7 +112,7 @@ public class UserController {
 		return new ResponseEntity<String>("FAIL", HttpStatus.BAD_REQUEST);
 	}
 
-	@ApiOperation(value = "유저 수상내역 삭제", response = String.class)
+	@ApiOperation(value = "유저 수상내역 삭제", notes = "사용자 수상 이력을 삭제한다.", response = String.class)
 	@DeleteMapping("/award/{id}")
 	public ResponseEntity<String> deleteUserInfoAward(@PathVariable Long id) {
 

@@ -7,7 +7,9 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.teamgu.api.dto.req.UserInfoReqDto;
 import com.teamgu.api.dto.res.UserClassResDto;
 import com.teamgu.api.dto.res.UserInfoAwardResDto;
 import com.teamgu.api.dto.res.UserInfoProjectResDto;
@@ -27,6 +29,10 @@ public class UserRepositorySupport {
 
 	@Autowired
 	private JPAQueryFactory jpaQueryFactory;
+
+	@Autowired
+	private CodeDetailRepositorySupport codeDetailRepositorySupport;
+
 	QUser qUser = QUser.user;
 	QSkill qSkill = QSkill.skill;
 	QWishTrack qWishTrack = QWishTrack.wishTrack;
@@ -38,12 +44,40 @@ public class UserRepositorySupport {
 	QUserInfoAward qUserInfoAward = QUserInfoAward.userInfoAward;
 	QUserInfoProject qUserInfoProject = QUserInfoProject.userInfoProject;
 
-	// User 기술 스택 조회
-	public List<Integer> selectUserSkillByEmail(String email) {
-		return jpaQueryFactory.select(qSkill.skillCode).from(qSkill).leftJoin(qSkill.user, qUser)
-				.where(qUser.email.eq(email)).fetch();
+	// User Detail Info 수정
+	@Transactional
+	public Long updateUserDetailInfo(UserInfoReqDto userInfoReqDto) {
+
+		int positionCode = codeDetailRepositorySupport.findPositionCode(userInfoReqDto.getWishPosition());
+
+		return jpaQueryFactory.update(qUser).where(qUser.id.eq(userInfoReqDto.getId()))
+				.set(qUser.introduce, userInfoReqDto.getIntroduce()).set(qUser.wishPositionCode, positionCode)
+				.execute();
+
 	}
 
+	// User 기술 스택 조회
+	public List<String> selectUserSkillByUserId(Long userId) {
+		return jpaQueryFactory
+				.select(qCodeDetail.Name)
+				.from(qSkill)
+				.join(qCodeDetail)
+				.on(qCodeDetail.codeDetail.eq(qSkill.skillCode))
+				.where(qSkill.user.id.eq(userId)
+						.and(qCodeDetail.code.code.eq("SK")))
+				.fetch();
+	}
+	
+	// User 기술 스택 삭제
+	@Transactional
+	public Long deleteUserSkill(Long userId, int skillCode ) {
+		return jpaQueryFactory
+				.delete(qSkill)
+				.where(qSkill.user.id.eq(userId)
+						.and(qSkill.skillCode.eq(skillCode)))
+				.execute();
+	}
+	
 	// User 수상 경력 조회
 	public List<UserInfoAwardResDto> selectUserAwardByUserId(Long userId) {
 		return jpaQueryFactory
@@ -131,6 +165,22 @@ public class UserRepositorySupport {
 				.join(qCodeDetail).on(qMapping.trackCode.eq(qCodeDetail.codeDetail))
 				.where(qWishTrack.user.id.eq(userId).and(qCodeDetail.code.code.eq("TR"))).fetch();
 	}
+	
+	// User Wish Track 삭제
+	@Transactional
+	public Long deleteUserWishTrack(Long userId, int trackCode) {
+		JPAQuery<Long> mappingId = 
+				jpaQueryFactory
+				.select(qMapping.id)
+				.from(qMapping)
+				.where(qMapping.trackCode.eq(trackCode));
+
+		return jpaQueryFactory
+				.delete(qWishTrack)
+				.where(qWishTrack.user.id.eq(userId)
+						.and(qWishTrack.mapping.id.eq(mappingId)))
+				.execute();
+	}
 
 	// User Class 조회
 	public UserClassResDto selectUserClassByUserId(Long userId, int stage) {
@@ -143,4 +193,5 @@ public class UserRepositorySupport {
 		return userClassDto;
 
 	}
+
 }
