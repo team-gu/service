@@ -31,13 +31,17 @@ import com.teamgu.database.entity.UserInfoProject;
 import com.teamgu.database.entity.WishTrack;
 import com.teamgu.database.repository.UserInfoAwardRepository;
 import com.teamgu.database.repository.CodeDetailRepositorySupport;
+import com.teamgu.database.repository.MappingRepository;
+import com.teamgu.database.repository.MappingRepositorySupport;
 import com.teamgu.database.repository.ProjectDetailRepository;
 import com.teamgu.database.repository.ProjectDetailRepositorySuport;
 import com.teamgu.database.repository.UserInfoProjectRepository;
-import com.teamgu.database.repository.SkillRepository;
+import com.teamgu.database.repository.UserSkillRepository;
+import com.teamgu.database.repository.UserSkillRepositorySupport;
 import com.teamgu.database.repository.UserRepositorySupport;
 import com.teamgu.database.repository.UserRepository;
 import com.teamgu.database.repository.WishTrackRepository;
+import com.teamgu.database.repository.WishTrackRepositorySupport;
 
 @Service("userService")
 public class UserServiceImpl implements UserService {
@@ -54,14 +58,26 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	WishTrackRepository wishTrackRepository;
 	@Autowired
-	SkillRepository skillRepository;
+	UserSkillRepository skillRepository;
 	@Autowired
 	UserInfoProjectRepository projectRepository;
 	@Autowired
 	UserInfoAwardRepository awardRepository;
 
 	@Autowired
+	MappingRepository mappingRepository;
+	
+	@Autowired
+	MappingRepositorySupport mappingRepositorySupport;
+	
+	@Autowired
 	UserRepositorySupport userRepositorySupport;
+	
+	@Autowired
+	UserSkillRepositorySupport userSkillRepositorySupport;
+	
+	@Autowired
+	WishTrackRepositorySupport wishTrackRepositorySupport;
 
 	@Autowired
 	ProjectDetailRepository projectDetailRepository;
@@ -176,42 +192,131 @@ public class UserServiceImpl implements UserService {
 	 * 마이페이지 데이터 입력, 수정 함수
 	 */
 	@Override
-	public void setUserDetailInfo(UserInfoReqDto userInfoReq) {
+	public void updateUserDetailInfo(UserInfoReqDto userInfoReqDto) {
 
-		User user = getUserByEmail(userInfoReq.getEmail()).get();
-		user.setStudentNumber(userInfoReq.getStudentNumber());
-		user.setWishPositionCode(userInfoReq.getWishPosition());
-		System.out.println(userInfoReq.getStudentNumber().substring(1, 2) + "기");
-		// 학번 입력 받아서 project
-		int stageCode = codeDetailRepositorySupport.finStageCode(userInfoReq.getStudentNumber().substring(1, 2) + "기");
+		Long userId = userInfoReqDto.getId();			
+		User user = getUserById(userId).get();
 
-		int projegtCode = projectDetailRepositorySuport.findProjectCode();
+		// Wish Position, Introduce 수정
+		//userRepositorySupport.updateUserDetailInfo(userInfoReqDto);
+		
+		/*
+		 * Wish Track 수정
+		 */
+		// 수정할 WishTrack
+		List<String> updateWishTracks = userInfoReqDto.getWishTracks();
+		// 기존 WishTrack
+		List<String> originWishTracks = userRepositorySupport.selectUserWishTrackByUserId(userId);
 
-		// 선호 트랙 저장
-		List<String> wishTracks = userInfoReq.getWishTrack();
-		WishTrack wishTrack = new WishTrack();
-		for (String name : wishTracks) {
-			wishTrack.setUser(user);
-			// string to int
-			int code = codeDetailRepositorySupport.findTtrackCode(name);
-			wishTrack.setMapping(
-					Mapping.builder().stageCode(stageCode).projectCode(projegtCode).trackCode(code).build());
-			wishTrackRepository.save(wishTrack);
+		int updateWishTracksSize = updateWishTracks.size();
+		int originWishTracksSize = originWishTracks.size();
+		
+		boolean updateWishTracksCheck[] = new boolean[updateWishTracksSize];
+		boolean originWishTracksCheck[] = new boolean[originWishTracksSize];
+		
+		// 추가, 삭제 체크
+		for(int i = 0; i<updateWishTracksSize; i++) {
+			for(int j = 0; j<originWishTracksSize; j++) {
+				if(updateWishTracks.get(i).equals(originWishTracks.get(j))) {
+					updateWishTracksCheck[i] = true;
+					originWishTracksCheck[j] = true;
+				}
+			}
 		}
-
-		user.setIntroduce(userInfoReq.getIntroduce());
-
-		// 기술 스택 저장
-		List<String> skills = userInfoReq.getSkill();
-		Skill skill = new Skill();
-		for (String name : skills) {
-			int code = codeDetailRepositorySupport.findSkillCode(name);
-			skill.setUser(user);
-			skill.setSkillCode(code);
-			skillRepository.save(skill);
+		
+		// updateWishTracksCheck가 false 이면 추가된 Track
+		for(int i = 0; i<updateWishTracksSize; i++) {
+			if(updateWishTracksCheck[i]) continue;
+			int trackCode = codeDetailRepositorySupport.findTtrackCode(updateWishTracks.get(i));
+			WishTrack wishTrack = new WishTrack();
+			Mapping mapping = mappingRepositorySupport.selectMapping(trackCode);
+			//Mapping mapping = mappingRepository.findByTrackCode(trackCode).get();
+			wishTrackRepositorySupport.insertWishTrack(userId, mapping.getId());
+			//wishTrackRepository.save(wishTrack);
+			
 		}
-
-		userRepository.save(user);
+		
+		// originWishTracksCheck가 false이면 삭제된 Track
+		for(int i = 0; i<originWishTracksSize; i++) {
+			if(originWishTracksCheck[i]) continue;
+			int trackCode = codeDetailRepositorySupport.findTtrackCode(originWishTracks.get(i));
+			userRepositorySupport.deleteUserWishTrack(userId, trackCode);
+		}
+		
+		/*
+		 * Skill 수정
+		 */
+		// 업데이트 Skills
+		List<String> updateSkills = userInfoReqDto.getSkills();
+		// 기존 Skills
+		List<String> originSkills = userRepositorySupport.selectUserSkillByUserId(userInfoReqDto.getId());
+				
+		int updateSkillsSize = updateSkills.size();
+		int originSkillsSize = originSkills.size();
+		
+		boolean updateSkillsCheck[] = new boolean[updateSkillsSize];
+		boolean originSkillsCheck[] = new boolean[originSkillsSize];
+		
+		// 추가, 삭제 체크
+		for(int i = 0; i<updateSkillsSize; i++) {
+			for(int j = 0; j<originSkillsSize; j++) {
+				if(updateSkills.get(i).equals(originSkills.get(j))) {
+					updateSkillsCheck[i] = true;
+					originSkillsCheck[j] = true;
+				}
+			}
+		}
+		
+		// updateSkillsCheck가 false 이면 추가된 Skill
+		for(int i = 0; i<updateSkillsSize; i++) {
+			if(updateSkillsCheck[i]) continue;
+			int skillCode = codeDetailRepositorySupport.findSkillCode(updateSkills.get(i));
+			userSkillRepositorySupport.insertSkiil(userId, skillCode);
+			//skillRepository.save(skill);
+		}
+		
+		// originSkillsCheck가 false 이면 삭제된 Skill
+		for(int i = 0; i<originSkillsSize; i++) {
+			if(originSkillsCheck[i]) continue;
+			int skillCode = codeDetailRepositorySupport.findSkillCode(originSkills.get(i));
+			userRepositorySupport.deleteUserSkill(userId, skillCode);
+		}
+		
+		
+//		User user = getUserByEmail(userInfoReq.getEmail()).get();
+//		user.setStudentNumber(userInfoReq.getStudentNumber());
+//		user.setWishPositionCode(userInfoReq.getWishPosition());
+//		System.out.println(userInfoReq.getStudentNumber().substring(1, 2) + "기");
+//		// 학번 입력 받아서 project
+//		int stageCode = codeDetailRepositorySupport.finStageCode(userInfoReq.getStudentNumber().substring(1, 2) + "기");
+//
+//		int projegtCode = projectDetailRepositorySuport.findProjectCode();
+//
+//		// 선호 트랙 저장
+//		List<String> wishTracks = userInfoReq.getWishTrack();
+//		WishTrack wishTrack = new WishTrack();
+//		for (String name : wishTracks) {
+//			wishTrack.setUser(user);
+//			// string to int
+//			int code = codeDetailRepositorySupport.findTtrackCode(name);
+//			wishTrack.setMapping(
+//					Mapping.builder().stageCode(stageCode).projectCode(projegtCode).trackCode(code).build());
+//			wishTrackRepository.save(wishTrack);
+//		}
+//
+//		user.setIntroduce(userInfoReq.getIntroduce());
+//
+//		// 기술 스택 저장
+//		List<String> skills = userInfoReq.getSkill();
+//		Skill skill = new Skill();
+//		for (String name : skills) {
+//			int code = codeDetailRepositorySupport.findSkillCode(name);
+//			skill.setUser(user);
+//			skill.setSkillCode(code);
+//			skillRepository.save(skill);
+//		}
+//
+//		userRepository.save(user);
 	}
 
 	/**
@@ -263,16 +368,14 @@ public class UserServiceImpl implements UserService {
 			userInfoRes.setStudentNumber(studentNumber);
 
 			// User 기술 스택 조회
-			List<Skill> skills = user.getSkills();
-			List<String> skillName = new ArrayList<>();
-			for (Skill sk : skills) {
-				skillName.add(codeDetailRepositorySupport.findSkillName(sk.getSkillCode()));
-			}
-			userInfoRes.setSkills(skillName);
+			List<String> skills = userRepositorySupport.selectUserSkillByUserId(id);
+			userInfoRes.setSkills(skills);
 
 			// User Position 조회
 			String position = codeDetailRepositorySupport.findPositionName(user.getWishPositionCode());
 			userInfoRes.setWishPositionCode(position);
+			
+			// User Introduce 조회
 			userInfoRes.setIntroduce(user.getIntroduce());
 
 			// User 프로젝트 경력 조회

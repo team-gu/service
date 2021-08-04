@@ -1,6 +1,7 @@
 /* eslint-disable react/display-name */
 import {
   ReactElement,
+  useEffect,
   ChangeEvent,
   forwardRef,
   KeyboardEventHandler,
@@ -22,6 +23,7 @@ interface InputProps {
   error?: string;
   readOnly?: boolean;
   value?: string;
+  refValue?: string;
 }
 
 const Wrapper = styled.div<{
@@ -71,10 +73,21 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       error,
       readOnly = false,
       value,
+      refValue = '',
     }: InputProps,
     ref,
   ): ReactElement => {
     // TODO: 추후 any 제거
+
+    // TODO: current에 대한 타입 지정
+    useEffect(() => {
+      if (ref && refValue) {
+        if (ref.current) {
+          ref.current.value = refValue;
+        }
+      }
+    }, []);
+
     return (
       <Wrapper
         className="input"
