@@ -73,8 +73,7 @@ export const getUserListByNameContains = async (param: string) => {
 };
 
 export const getSkillList = async () => {
-
-  return new Promise<Skill[]>(resolve => {
+  return new Promise<Skill[]>((resolve) => {
     const dummy: Skill[] = [
       {
         name: 'React',
@@ -107,9 +106,17 @@ export const getSkillList = async () => {
   // });
 };
 
-export const getTeams = async () => {
+export const getTeams = async (
+  sortBy: string,
+  sortAsc: boolean,
+  containsUserId?: number,
+) => {
+  console.log('팀 가져오는 API 호출');
+  console.log('정렬 기준 :', sortBy);
+  console.log('오름차순 :', sortAsc);
+  console.log('포함하는 사용자 아이디 :', containsUserId);
 
-  return new Promise<Team[]>(resolve => {
+  return new Promise<Team[]>((resolve) => {
     const dummy = [
       {
         name: '팀구 1',
@@ -191,16 +198,16 @@ export const getTeams = async () => {
     ];
 
     resolve(dummy);
-  })
+  });
   // TODO: api 연결 백엔드 미완.
   // return await api({
   //   url: `/path/to/get-teams`,
   //   type: 'get',
   // });
-}
+};
 
 export const createTeam = async (param: object) => {
-  console.log("팀 생성 API 호출: ");
+  console.log('팀 생성 API 호출: ');
   console.log(param);
 
   // TODO: api 연결 백엔드 미완.
@@ -209,4 +216,4 @@ export const createTeam = async (param: object) => {
   //   type: 'post',
   //   param,
   // });
-}
+};
