@@ -154,9 +154,9 @@ public class UserRepositorySupport {
 
 	// User Project 삭제
 	@Transactional
-	public Long deleteUserInfoProject(Long id) {
+	public void deleteUserInfoProject(Long id) {
 
-		return jpaQueryFactory.delete(qUserInfoProject).where(qUserInfoProject.id.eq(id)).execute();
+		jpaQueryFactory.delete(qUserInfoProject).where(qUserInfoProject.id.eq(id)).execute();
 	}
 
 	// User Wish Track 조회
@@ -168,14 +168,14 @@ public class UserRepositorySupport {
 	
 	// User Wish Track 삭제
 	@Transactional
-	public Long deleteUserWishTrack(Long userId, int trackCode) {
+	public void deleteUserWishTrack(Long userId, int trackCode) {
 		JPAQuery<Long> mappingId = 
 				jpaQueryFactory
 				.select(qMapping.id)
 				.from(qMapping)
 				.where(qMapping.trackCode.eq(trackCode));
 
-		return jpaQueryFactory
+		jpaQueryFactory
 				.delete(qWishTrack)
 				.where(qWishTrack.user.id.eq(userId)
 						.and(qWishTrack.mapping.id.eq(mappingId)))
