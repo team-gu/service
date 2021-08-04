@@ -1,29 +1,23 @@
 import { ReactElement } from 'react';
-import { OptionTypeBase } from 'react-select';
 import AsyncSelect from 'react-select/async';
 import { getUserListByNameContains } from '@repository/baseRepository';
-
-interface UserOptionType extends OptionTypeBase {
-  label: string;
-  value: string;
-  id: number;
-}
+import { MemberOption } from '@utils/type';
 
 const promiseOptions = (inputValue: string) =>
-  new Promise<UserOptionType[]>((resolve) => {
+  new Promise<MemberOption[]>((resolve) => {
     getUserListByNameContains(inputValue).then((data) => {
       resolve(data);
     });
   });
 
 interface UserSelectAutoCompleteProps {
-  handleChangeUserSelect: (newValue: object) => void;
+  handleChangeUserSelect: (newValue: MemberOption) => void;
 }
 
 export default function UserSelectAutoComplete({
   handleChangeUserSelect,
 }: UserSelectAutoCompleteProps): ReactElement {
-  const handleSelectChange = (newValue: UserOptionType | null) => {
+  const handleSelectChange = (newValue: MemberOption | null) => {
     if (newValue) {
       handleChangeUserSelect(newValue);
     }
@@ -35,7 +29,7 @@ export default function UserSelectAutoComplete({
         cacheOptions
         loadOptions={promiseOptions}
         defaultOptions
-        onChange={(item) => handleSelectChange(item)}
+        onChange={handleSelectChange}
       />
     </>
   );
