@@ -1,5 +1,5 @@
 import api from '@context/serverContext';
-import { Skill, Team, Member, MemberOption } from '@utils/type';
+import { Skill, Team, MemberOption } from '@utils/type';
 
 export const postLoginApi = async (param: object) =>
   await api({

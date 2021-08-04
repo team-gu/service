@@ -12,7 +12,8 @@ import {
 import { TeamStatusCard, TeamManageModal } from '@organisms';
 import { getTeams } from '@repository/baseRepository';
 import { FILTER_IN_TEAMPAGE } from '@utils/constants';
-import { Team } from '@utils/type';
+import { MemberOption, Team } from '@utils/type';
+import { useUiState, useAppDispatch, setLoading } from '@store';
 
 const Wrapper = styled.div`
   display: grid;
@@ -63,7 +64,7 @@ const Wrapper = styled.div`
 
 const sortByOptions: OptionsType<OptionTypeBase> = [
   {
-    label: '날짜',
+    label: '생성날짜',
     value: 'createAt',
   },
   {
@@ -86,6 +87,9 @@ export default function TeamStatus(): ReactElement {
   const [sortAsc, setSortAsc] = useState(true);
   const [containsUserId, setContainsUserId] = useState<number>();
 
+  const dispatch = useAppDispatch();
+  const { isLoading } = useUiState();
+
   // when initial render
   useEffect(() => {
     renderTeams(sortBy, sortAsc, containsUserId);
@@ -94,16 +98,22 @@ export default function TeamStatus(): ReactElement {
   // when change sortBy or sortAsc
   useEffect(() => {
     renderTeams(sortBy, sortAsc, containsUserId);
-  }, [sortBy, sortAsc]);
+  }, [sortBy, sortAsc, containsUserId]);
 
   const renderTeams = (
     by: string,
     asc: boolean,
     userid: number | undefined,
   ) => {
-    getTeams(by, asc, userid).then((data) => {
-      setTeams(data);
-    });
+    dispatch(setLoading({ isLoading: true }));
+
+    // TODO: API 연결되면 setTimeout 삭제
+    setTimeout(() => {
+      getTeams(by, asc, userid).then((data) => {
+        setTeams(data);
+        dispatch(setLoading({ isLoading: false }));
+      });
+    }, 1000);
   };
 
   const handleFilter = (filterTitle: string, eachTitle: string) => {
@@ -120,8 +130,14 @@ export default function TeamStatus(): ReactElement {
     setSelectedTeaminfo(undefined);
   };
 
-  const handleChangeUserSelect = (selectedUser: object) => {
-    console.log(selectedUser);
+  const handleChangeUserSelect = (
+    selectedUser: MemberOption | null,
+  ) => {
+    if (selectedUser) {
+      setContainsUserId(selectedUser.id);
+    } else {
+      setContainsUserId(undefined);
+    }
   };
 
   const handleSortByChange = (newValue: string) => {
