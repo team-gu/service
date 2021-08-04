@@ -24,7 +24,9 @@ public class Mapping extends BaseEntity {
 	
 	@OneToMany(mappedBy="mapping")
 	private List<Team> teams = new ArrayList<>();
-	
+
+	public Mapping() {
+	}
 
 	@Builder
     public Mapping(int stageCode, int projectCode, int trackCode){

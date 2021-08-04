@@ -11,18 +11,26 @@ import lombok.Setter;
 @Setter
 @ApiModel(description = "사용자 정보 요청 모델")
 public class UserInfoReqDto {
+	
+	@ApiModelProperty(name = "user index", example = "1")
+	Long id;
+	
 	@ApiModelProperty(name = "user email", example = "idea@naver.com")
 	String email;
 
 	@ApiModelProperty(name = "studentNumber", example = "0546419")
 	String studentNumber;
-	@ApiModelProperty(name = "wishPosition", example = "101")
-	int wishPosition;
+	
+	@ApiModelProperty(name = "wishPosition", example = "Front")
+	String wishPosition;
+	
 	@ApiModelProperty(name = "wishTrack")
-	List<String> wishTrack;
+	List<String> wishTracks;
+	
 	@ApiModelProperty(name = "introduce", example = "안녕하세요! 할말이 없어요!")
 	String introduce;
+	
 	@ApiModelProperty(name = "skill")
-	List<String> skill;
+	List<String> skills;
 	
 }
