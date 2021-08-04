@@ -93,7 +93,7 @@ export default function TeamStatusCard({
   const { user } = useAuthState();
 
   // TODO: 현재 사용자가 현재 이 팀의 리더인지?
-  const currentUserIsLeader = Math.round(Math.random() * 10) % 2 === 1;
+  const currentUserIsLeader = true;
 
   return (
     <Wrapper isComplete={team.isCompleted}>
