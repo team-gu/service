@@ -6,16 +6,18 @@ import { Session } from 'openvidu-browser';
 import { ChatInput, ChatBubble } from '@molecules';
 
 import { Chat, ChatNormal } from '@types/chat-type';
+import { useAuthState } from '@store';
 
 interface ChatRoomProps {
   isRtc?: boolean;
+  isConnectStomp?: boolean;
   session?: Session | undefined;
   messageList: Chat[] & ChatNormal[] & any;
   setMessageList: any; // TODO: 추후 타입 정의
   handleClickSend: (msg: string) => Promise<void>;
 }
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<{ disabled: boolean }>`
   padding: 0 20px;
   width: calc(100% - 40px);
   height: calc(100% - 60px);
@@ -32,15 +34,22 @@ const Wrapper = styled.div`
       width: 0;
     }
   }
+
+  ${({ disabled }) => disabled && 'pointer-events: none; opacity: 0.3;'}
 `;
 
-export default function Chatroom({
+export default function ChatRoom({
   isRtc = false,
+  isConnectStomp = false,
   session,
   messageList,
   setMessageList,
   handleClickSend,
 }: ChatRoomProps): ReactElement {
+  const {
+    user: { id },
+  } = useAuthState();
+
   const chatBoxRef: any = useRef<HTMLInputElement>(null);
 
   const handleScrollToEnd = () => {
@@ -51,10 +60,6 @@ export default function Chatroom({
     });
   };
 
-  useEffect(() => {
-    handleScrollToEnd();
-  }, []);
-
   // TODO: DateTime.fromISO(time).toRelative()를 위해 60초마다 리렌더링이 일어나도록 강제.. 근데 좋은 코드인지는 모르겠음 추후 리펙토링
   useEffect(() => {
     const interval = setInterval(() => {
@@ -62,7 +67,11 @@ export default function Chatroom({
     }, 60000);
 
     return () => clearInterval(interval);
-  });
+  }, []);
+
+  useEffect(() => {
+    handleScrollToEnd();
+  }, [messageList]);
 
   useEffect(() => {
     if (isRtc) {
@@ -72,12 +81,13 @@ export default function Chatroom({
   }, [session]);
 
   // type 때문에 억지로 Promise 반환
-  const sendMessage = (msg: string) => {
-    return handleClickSend(msg).then(handleScrollToEnd);
+  const sendMessage = async (msg: string) => {
+    await handleClickSend(msg);
+    handleScrollToEnd();
   };
 
   return (
-    <Wrapper>
+    <Wrapper disabled={!isRtc && !isConnectStomp}>
       <div className="chat-container" ref={chatBoxRef}>
         {isRtc
           ? messageList?.map(
@@ -100,26 +110,34 @@ export default function Chatroom({
               ),
             )
           : messageList?.map(
-              ({ id, userName, profileSrc, time, message, isMe }: ChatNormal) => (
+              (
+                {
+                  create_date_time,
+                  message,
+                  sender_id,
+                  sender_name,
+                }: ChatNormal,
+                index: number,
+              ) => (
                 <ChatBubble
-                  key={id}
-                  userName={userName}
-                  profileSrc={profileSrc}
+                  key={index}
+                  userName={sender_name}
+                  profileSrc="/profile.png"
                   time={
-                    Number(DateTime.now()) - Number(DateTime.fromISO(time)) <
+                    Number(DateTime.now()) -
+                      Number(DateTime.fromISO(create_date_time)) <
                     60000
                       ? 'just now'
-                      : DateTime.fromISO(time).toRelative()
+                      : DateTime.fromISO(create_date_time).toRelative()
                   }
                   message={message}
-                  isMe={isMe}
+                  isMe={sender_id === id}
+                  func={sendMessage}
                 />
               ),
             )}
       </div>
-      <ChatInput
-        func={sendMessage}
-      />
+      <ChatInput func={sendMessage} />
     </Wrapper>
   );
 }
