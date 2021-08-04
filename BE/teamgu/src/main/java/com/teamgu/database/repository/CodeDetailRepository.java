@@ -7,6 +7,6 @@ import com.teamgu.database.entity.CodeDetail;
 
 
 @Repository
-public interface CodeDetailRepository extends JpaRepository<CodeDetail, Long>  {
+public interface CodeDetailRepository extends JpaRepository<CodeDetail, Long>, CodeDetailRepositoryCustom {
 
 }
