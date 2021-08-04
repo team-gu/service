@@ -5,7 +5,14 @@ import java.io.Serializable;
 import com.teamgu.database.entity.ChatRoom;
 import com.teamgu.database.entity.User;
 
-public class UserChatPK implements Serializable {
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class UserChatRoomPK implements Serializable {
 	User user;
 	ChatRoom chatRoom;
 }

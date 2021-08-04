@@ -11,6 +11,8 @@ interface ChatBubbleProps {
   time: string | any;
   message: string;
   isMe?: boolean;
+  // TODO: 추후 타입 정의
+  func?: any;
 }
 
 const Wrapper = styled.div<{ isMe: boolean }>`
@@ -66,6 +68,7 @@ export default function ChatBubble({
   time,
   message,
   isMe = false,
+  func,
 }: ChatBubbleProps): ReactElement {
   return (
     <Wrapper isMe={isMe}>
@@ -76,9 +79,32 @@ export default function ChatBubble({
           <Text text={time} fontSetting="n12m" />
         </div>
         <div className="chat-message">
-          {/* TODO: funcAccept, funcDecline 정의 */}
-          {!isMe && message === 'request' ? (
-            <ChatBubbleSelect funcAccept={() => {}} funcDecline={() => {}} />
+          {message.includes('{%') && message.includes('%}') ? (
+            {
+              '{% request_none %}': isMe ? (
+                <ChatBubbleSelect
+                  userName={userName}
+                  funcAccept={() => func('{% request_yes %}')}
+                  funcDecline={() => func('{% request_no %}')}
+                />
+              ) : (
+                <Text
+                  text="상대방에게 초대를 보냈습니다 선택을 기다리고 있습니다"
+                  fontSetting="n16m"
+                  isLineBreak
+                />
+              ),
+              '{% request_yes %}': isMe ? (
+                <Text text={`${userName} 팀의 초대를 수락했습니다`} fontSetting="n16m" isLineBreak />
+              ) : (
+                <Text text='상대방이 팀 초대를 수락하였습니다' fontSetting="n16m" isLineBreak />
+              ),
+              '{% request_no %}': isMe ? (
+                <Text text={`${userName} 팀의 초대를 거절했습니다`} fontSetting="n16m" isLineBreak />
+              ) : (
+                <Text text='상대방이 팀 초대를 거절했습니다' fontSetting="n16m" isLineBreak />
+              ),
+            }[message]
           ) : (
             <Text text={message} fontSetting="n16m" isLineBreak />
           )}

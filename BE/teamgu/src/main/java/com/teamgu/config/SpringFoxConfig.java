@@ -52,7 +52,7 @@ public class SpringFoxConfig {
     }
     private ApiInfo apiInfo() {
 		return new ApiInfoBuilder()
-				.title("temagu")
+				.title("TEAMGU")
 				.description("API")
 				.version("1.0")
 				.build();
