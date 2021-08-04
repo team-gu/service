@@ -86,7 +86,7 @@ public class JwtAuthController {
 				return ResponseEntity.ok(userService.login(loginReq, user));
 			}	
 		}
-		return ResponseEntity.status(404).body(new LoginResDto(404,"Invalid account",null,null,null)); 
+		return ResponseEntity.status(404).body(new LoginResDto(404,"Invalid account",null,null)); 
 	}
 	
 	@GetMapping("/reissue")

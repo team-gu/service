@@ -5,12 +5,16 @@ import static com.google.common.collect.Lists.newArrayList;
 
 import java.util.List;
 
+import com.fasterxml.classmate.TypeResolver;
+import com.teamgu.api.dto.req.PageReqDto;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import org.springframework.data.domain.Pageable;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.schema.AlternateTypeRules;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.ApiKey;
 import springfox.documentation.service.AuthorizationScope;
@@ -28,7 +32,14 @@ public class SpringFoxConfig {
 	
     @Bean
     public Docket api() {
+        TypeResolver typeResolver = new TypeResolver();
         return new Docket(DocumentationType.SWAGGER_2)
+                .alternateTypeRules( //Pageable 클래스를 커스텀 클래스인 PageReqDto로 타입 매핑 룰 설정
+                        AlternateTypeRules.newRule(
+                                typeResolver.resolve(Pageable.class),
+                                typeResolver.resolve(PageReqDto.class)
+                        )
+                )
         		.useDefaultResponseMessages(false)
         		.apiInfo(apiInfo())
                 .select()
@@ -41,7 +52,7 @@ public class SpringFoxConfig {
     }
     private ApiInfo apiInfo() {
 		return new ApiInfoBuilder()
-				.title("temagu")
+				.title("TEAMGU")
 				.description("API")
 				.version("1.0")
 				.build();

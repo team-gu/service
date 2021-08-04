@@ -5,10 +5,10 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.teamgu.database.entity.UserProject;
+import com.teamgu.database.entity.UserInfoProject;
 
 @Repository
-public interface ProjectRepository extends JpaRepository<UserProject, Long>  {
+public interface UserInfoProjectRepository extends JpaRepository<UserInfoProject, Long>  {
 
-	Optional<UserProject> findByName(String name);
+	Optional<UserInfoProject> findByName(String name);
 }

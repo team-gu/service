@@ -11,15 +11,16 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-@Mapper //NoticeFile Mapper
+@Mapper
+/**
+ * NoticeFile와 NoticeFileResDto를 매핑해주는 Mapper
+ */
 public interface NoticeFileMapper {
-    NoticeDetailMapper INSTANCE = Mappers.getMapper(NoticeDetailMapper.class); //추후에 사용하게 될 것 같아 추가해놓음
+
+    NoticeFileMapper INSTANCE = Mappers.getMapper(NoticeFileMapper.class);
 
     //Date -> String 컬럼 변환
-    //매핑 무시 조건 추가
-    @Mapping(target = "message", ignore = true)
-    @Mapping(target = "statusCode", ignore = true)
-    @Mapping(source = "registDate", target = "date", dateFormat = "yyyy.mm.dd")
+    @Mapping(source = "registDate", target = "registDate", dateFormat = "yyyy.MM.dd")
     NoticeFileResDto noticeFileToDto(NoticeFile noticeFile);
 
     //String -> Date로 변환
@@ -27,13 +28,13 @@ public interface NoticeFileMapper {
     //매핑 무시 조건 추가
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "notice", ignore = true)
-    @Mapping(source = "date", target = "registDate", qualifiedByName = "stringToDate")
+    @Mapping(source = "registDate", target = "registDate", qualifiedByName = "stringToDate")
     NoticeFile dtoToNoticeFile(NoticeFileResDto noticeFileResDto);
 
     @Named("stringToDate")
     static Date asDate(String date) {
         try {
-            return date != null ? new SimpleDateFormat(" yyyy.mm.dd")
+            return date != null ? new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
                     .parse(date) : null;
         } catch (ParseException e) {
             throw new RuntimeException(e);

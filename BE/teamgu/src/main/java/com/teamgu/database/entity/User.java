@@ -1,16 +1,13 @@
 package com.teamgu.database.entity;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -40,6 +37,8 @@ public class User extends BaseEntity{
 	String studentNumber;
 	@Column(length = 1000)
 	String introduce;
+	
+	short major; // 전공 여부, 0 : Default, 1: 전공자, 2: 비전공자
 	
 	int wishPositionCode;
 	
@@ -87,12 +86,12 @@ public class User extends BaseEntity{
 	@OneToMany(mappedBy = "user", cascade = {CascadeType.ALL})
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	@JsonIgnore
-	private List<UserAward> userAward = new ArrayList<>();
+	private List<UserInfoAward> userAward = new ArrayList<>();
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	@JsonIgnore
-	private List<UserProject> userProject = new ArrayList<>();
+	private List<UserInfoProject> userProject = new ArrayList<>();
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	@OnDelete(action = OnDeleteAction.CASCADE)
@@ -100,11 +99,13 @@ public class User extends BaseEntity{
 	private List<UserClass> userClass = new ArrayList<>();
 
 	@OneToMany(mappedBy = "user")
+	@JsonIgnore
 	private List<Chat> chats = new ArrayList<>();
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	@OnDelete(action = OnDeleteAction.CASCADE)
-	private List<UserChat> userChat;
+	@JsonIgnore
+	private List<UserChatRoom> userChatRoom = new ArrayList<>();
 	
 	
 	/**

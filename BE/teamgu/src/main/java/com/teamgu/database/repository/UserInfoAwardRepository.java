@@ -5,11 +5,11 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.teamgu.database.entity.UserAward;
+import com.teamgu.database.entity.UserInfoAward;
 
 @Repository
-public interface AwardRepository extends JpaRepository<UserAward, Long> {
+public interface UserInfoAwardRepository extends JpaRepository<UserInfoAward, Long> {
 
-	Optional<UserAward> findByName(String name);
+	Optional<UserInfoAward> findByName(String name);
 
 }

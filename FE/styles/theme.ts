@@ -13,7 +13,7 @@ const theme: DefaultTheme = {
     gray: '#EEEEEE',
     daangn: '#E49143',
     microBlue: '#F3F8FF',
-    lightBlue: '#E1EDFF'
+    lightBlue: '#E1EDFF',
   },
   layout: {
     pageMaxWidth: '1440px',
@@ -51,6 +51,11 @@ const theme: DefaultTheme = {
     `,
     n18b: css`
       font-weight: ${fontWeight.bold};
+      font-size: 18px;
+      line-height: 26px;
+    `,
+    n18m: css`
+      font-weight: ${fontWeight.medium};
       font-size: 18px;
       line-height: 26px;
     `,

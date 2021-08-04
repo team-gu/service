@@ -30,6 +30,7 @@ declare module 'styled-components' {
       n26b: FlattenSimpleInterpolation;
       n20m: FlattenSimpleInterpolation;
       n18b: FlattenSimpleInterpolation;
+      n18m: FlattenSimpleInterpolation;
       n16b: FlattenSimpleInterpolation;
       n16m: FlattenSimpleInterpolation;
       n16r: FlattenSimpleInterpolation;
