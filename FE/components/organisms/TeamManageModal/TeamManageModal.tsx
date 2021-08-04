@@ -7,7 +7,7 @@ import {
 } from 'react';
 import styled from 'styled-components';
 import { ModalWrapper } from '@organisms';
-import { Icon, Input, Text, Textarea } from '@atoms';
+import { Icon, Input, Text } from '@atoms';
 import {
   Button,
   Label,

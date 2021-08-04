@@ -2,6 +2,8 @@ import { ReactElement } from 'react';
 import styled from 'styled-components';
 import { Text } from '@atoms';
 import { Tag, ProfileImage, Button } from '@molecules';
+import { useAuthState } from '@store';
+import { Team } from '@utils/type';
 
 const Wrapper = styled.div<{ isComplete: boolean }>`
   position: relative;
@@ -20,7 +22,9 @@ const Wrapper = styled.div<{ isComplete: boolean }>`
     opacity: 0.5;
   }
 
-  ${({ isComplete }) => isComplete && `
+  ${({ isComplete }) =>
+    isComplete &&
+    `
     .completed-team-overlay {
       display: block;
     }
@@ -30,6 +34,7 @@ const Wrapper = styled.div<{ isComplete: boolean }>`
     position: absolute;
     right: 15px;
     bottom: 15px;
+    z-index: 11;
   }
 
   .grid-container {
@@ -76,22 +81,29 @@ const Wrapper = styled.div<{ isComplete: boolean }>`
   }
 `;
 
-// TODO: team type
-export default function TeamStatusCard({ team }: any): ReactElement {
-  const handleClickManageTeam = () => {
-    console.log('팀 관리 클릭');
-  };
-  const getUserIsLeader = () => {
-    return false;
-  };
+interface TeamStatusCard {
+  team: Team;
+  onClickTeamManage: (team: Team) => void;
+}
 
-  // TODO: 팀 조회에 대한 API가 생기면 수정 필요
+export default function TeamStatusCard({
+  team,
+  onClickTeamManage,
+}: TeamStatusCard): ReactElement {
+  const { user } = useAuthState();
+
+  // TODO: 현재 사용자가 현재 이 팀의 리더인지?
+  const currentUserIsLeader = Math.round(Math.random() * 10) % 2 === 1;
 
   return (
     <Wrapper isComplete={team.isCompleted}>
-      {getUserIsLeader() && (
+      {currentUserIsLeader && (
         <div className="team-manage-button">
-          <Button title="관리" width="60px" func={handleClickManageTeam} />
+          <Button
+            title="관리"
+            width="60px"
+            func={() => onClickTeamManage(team)}
+          />
         </div>
       )}
 
@@ -99,8 +111,8 @@ export default function TeamStatusCard({ team }: any): ReactElement {
         <div className="profiles-container">
           <Text text="팀 구성" color="gray" />
           <div className="profiles">
-            {team.members.map((item, index) => (
-              <div className="profile" key={index}>
+            {team.members.map((item) => (
+              <div className="profile" key={item.id}>
                 <ProfileImage size={80} src={item.profileSrc} />
                 {item.leader ? (
                   <Text text={item.name + '(팀장)'} />
@@ -111,15 +123,16 @@ export default function TeamStatusCard({ team }: any): ReactElement {
             ))}
           </div>
         </div>
+
         <div className="skills-container">
           <Text text="기술" color="gray" />
           <div className="skills">
-            {/* TODO: 타입 수정 */}
-            {team.skills.map((item, index) => (
-              <Tag text={item} key={index} />
+            {team.skills.map((item) => (
+              <Tag text={item.name} key={item.id} />
             ))}
           </div>
         </div>
+
         <div className="description-container">
           <div className="track">
             <Text text="트랙" color="gray" />
@@ -131,6 +144,7 @@ export default function TeamStatusCard({ team }: any): ReactElement {
           </div>
         </div>
       </div>
+
       <div className="completed-team-overlay"></div>
     </Wrapper>
   );

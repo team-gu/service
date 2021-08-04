@@ -8,9 +8,7 @@ export default {
 };
 
 const Template: Story = () => (
-  <SkillSelectAutoComplete
-    handleChangeSkillSelect={(value) => console.log(value)}
-  />
+  <SkillSelectAutoComplete onChangeSkills={(value) => console.log(value)} />
 );
 
 export const skillSelectAutoComplete = Template.bind({});

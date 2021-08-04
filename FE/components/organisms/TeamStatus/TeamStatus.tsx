@@ -8,9 +8,10 @@ import {
   Button,
   SimpleSelect,
 } from '@molecules';
-import { TeamStatusCard, TeamCreateModal } from '@organisms';
+import { TeamStatusCard, TeamManageModal } from '@organisms';
 import { getTeams } from '@repository/baseRepository';
 import { FILTER_IN_TEAMPAGE } from '@utils/constants';
+import { Team } from '@utils/type';
 
 const Wrapper = styled.div`
   display: grid;
@@ -57,9 +58,10 @@ const sortByOptions: OptionsType<OptionTypeBase> = [
 
 export default function TeamStatus(): ReactElement {
   const [filterContents, setFilterContents] = useState(FILTER_IN_TEAMPAGE);
-  const [showTeamCreateModal, setShowTeamCreateModal] = useState(false);
+  const [showTeamManageModal, setShowTeamManageModal] = useState(false);
+  const [teamInfo, setTeaminfo] = useState<Team>();
   const [sortby, setSortby] = useState('');
-  const [teams, setTeams] = useState<object[]>([]);
+  const [teams, setTeams] = useState<Team[]>([]);
 
   useEffect(() => {
     getTeams().then((data) => {
@@ -73,8 +75,11 @@ export default function TeamStatus(): ReactElement {
     setFilterContents(content);
   };
 
-  const handleChangeCreateTeamModal = () => {
-    setShowTeamCreateModal(!showTeamCreateModal);
+  const handleOpenManageTeamModal = () => {
+    setShowTeamManageModal(true);
+  }
+  const handleCloseManageTeamModal = () => {
+    setShowTeamManageModal(false);
   };
 
   const handleChangeUserSelect = (selectedUser: object) => {
@@ -84,6 +89,11 @@ export default function TeamStatus(): ReactElement {
   const handleSortByChange = (newValue: string) => {
     console.log(newValue);
     setSortby(newValue);
+  };
+
+  const handleTeamManageModal = (team: Team) => {
+    setTeaminfo(team);
+    setShowTeamManageModal(true);
   };
 
   return (
@@ -113,17 +123,27 @@ export default function TeamStatus(): ReactElement {
           <div>
             <Button
               title="팀 만들기"
-              func={handleChangeCreateTeamModal}
+              func={handleOpenManageTeamModal}
               width="90px"
             />
           </div>
         </div>
         {teams.map((item, index) => (
-          <TeamStatusCard team={item} key={index} />
+          <TeamStatusCard
+            key={index}
+            team={item}
+            onClickTeamManage={handleTeamManageModal}
+          />
         ))}
       </div>
-      {showTeamCreateModal && (
-        <TeamCreateModal handleClickClose={handleChangeCreateTeamModal} />
+      {showTeamManageModal && (
+        <TeamManageModal handleClickClose={handleCloseManageTeamModal} />
+      )}
+      {showTeamManageModal && teamInfo && (
+        <TeamManageModal
+          handleClickClose={handleCloseManageTeamModal}
+          defaultValue={teamInfo}
+        />
       )}
     </Wrapper>
   );
