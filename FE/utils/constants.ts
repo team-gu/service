@@ -35,6 +35,10 @@ export const FILTER_IN_TEAMPAGE: any = {
   },
 };
 
+export const SSAFY_REGION = ['서울', '대전', '구미', '광주'];
+export const SSAFY_CLASS = ['미정', '1', '2', '3', '4', '5', '6'];
+export const SSAFY_TRACK = ['웹 기술', '웹 디자인', '웹 IoT'];
+
 export const VIDEO_CHAT_PATH_PREFIX = '/rtc';
 
 export const CHAT_DUMMY_DATA = [
