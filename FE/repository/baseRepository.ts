@@ -1,4 +1,5 @@
 import api from '@context/serverContext';
+import { Skill, Team, Member } from '@utils/type';
 
 export const postLoginApi = async (param: object) =>
   await api({
@@ -27,27 +28,26 @@ export const getCheckIdDuplicate = async (param: string) =>
   });
 
 export const getUserListByNameContains = async (param: string) => {
-  // TODO: 타입 정의
-  return new Promise<any>((resolve) => {
+  return new Promise<Member[]>((resolve) => {
     const dummy = [
-      {
-        name: '장민호',
-        email: 'minho9301@naver.com',
-        id: 1,
-      },
       {
         name: '이용재',
         email: 'lee@naver.com',
-        id: 2,
+        id: 1,
       },
       {
         name: '장동균',
-        email: 'jang@naver.com',
-        id: 3,
+        email: 'jang@gmail.com',
+        id: 2,
       },
       {
         name: '장민호',
-        email: 'minhoho@gmail.com',
+        email: 'minho9301@naver.com',
+        id: 3,
+      },
+      {
+        name: '강승현',
+        email: 'kangkang@gmail.com',
         id: 4,
       },
     ];
@@ -74,26 +74,26 @@ export const getUserListByNameContains = async (param: string) => {
 
 export const getSkillList = async () => {
 
-  return new Promise<any>(resolve => {
-    const dummy = [
+  return new Promise<Skill[]>(resolve => {
+    const dummy: Skill[] = [
       {
-        skill: 'React',
+        name: 'React',
         id: 1,
       },
       {
-        skill: 'IoT',
+        name: 'Spring',
         id: 2,
       },
       {
-        skill: 'Spring',
+        name: 'MySQL',
         id: 3,
       },
       {
-        skill: 'WebRTC',
+        name: 'WebRTC',
         id: 4,
       },
       {
-        skill: 'MySQL',
+        name: 'JPA',
         id: 5,
       },
     ];
@@ -109,56 +109,81 @@ export const getSkillList = async () => {
 
 export const getTeams = async () => {
 
-  return new Promise<object[]>(resolve => {
+  return new Promise<Team[]>(resolve => {
     const dummy = [
       {
+        name: '팀구 1',
+        region: '서울',
+        class: '2',
         members: [
           {
             profileSrc: '/profile.png',
             name: '이용재',
             leader: true,
-          },
-          {
-            profileSrc: '/profile.png',
-            name: '장동균',
-            leader: false,
+            id: 1,
+            email: 'lee@naver.com',
           },
           {
             profileSrc: '/profile.png',
             name: '장민호',
             leader: false,
+            id: 3,
+            email: 'minho9301@naver.com',
           },
         ],
-        skills: ['React', 'Spring', 'MySQL'],
+        skills: [
+          {
+            id: 1,
+            name: 'React',
+          },
+          {
+            id: 2,
+            name: 'Spring',
+          },
+          {
+            id: 3,
+            name: 'MySQL',
+          },
+        ],
         track: '웹기술',
         description:
           '저희 팀의 목표는 1등입니다. 자신있는 벡엔드 개발자 DM주세요. 다들 화이팅입니다 👏👏👏',
         isCompleted: false,
       },
       {
+        name: '팀구 2',
+        region: '서울',
+        class: '2',
         members: [
           {
             profileSrc: '/profile.png',
             name: '강승현',
             leader: true,
+            id: 4,
+            email: 'kangkang@naver.com',
           },
           {
             profileSrc: '/profile.png',
-            name: '안석현',
+            name: '장동균',
             leader: false,
-          },
-          {
-            profileSrc: '/profile.png',
-            name: '이동길',
-            leader: false,
-          },
-          {
-            profileSrc: '/profile.png',
-            name: '현선미',
-            leader: false,
+            id: 2,
+            email: 'jang@gmail.com',
           },
         ],
-        skills: ['Spring', 'STOMP', 'JPA'],
+        skills: [
+          {
+            id: 2,
+            name: 'Spring',
+          },
+          {
+            id: 4,
+            name: 'WebRTC',
+          },
+          {
+            id: 5,
+            name: 'JPA',
+          },
+        ],
         track: '웹기술',
         description: '🔥🔥월화수목금금금🔥🔥 보내실 프론트엔드 구합니다. ',
         isCompleted: true,
@@ -171,5 +196,17 @@ export const getTeams = async () => {
   // return await api({
   //   url: `/path/to/get-teams`,
   //   type: 'get',
+  // });
+}
+
+export const createTeam = async (param: object) => {
+  console.log("팀 생성 API 호출: ");
+  console.log(param);
+
+  // TODO: api 연결 백엔드 미완.
+  // return await api({
+  //   url: `/path/to/create-team`,
+  //   type: 'post',
+  //   param,
   // });
 }

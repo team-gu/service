@@ -8,7 +8,9 @@ export default {
 };
 
 const Template: Story = () => (
-  <UserSelectAutoComplete handleChangeUserSelect={(value) => console.log(value)}/>
+  <UserSelectAutoComplete
+    handleChangeUserSelect={(value) => console.log(value)}
+  />
 );
 
 export const userSelectAutoComplete = Template.bind({});

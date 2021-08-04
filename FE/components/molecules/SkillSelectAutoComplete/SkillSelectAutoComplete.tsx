@@ -1,22 +1,37 @@
 import { ReactElement, useState, useEffect } from 'react';
-import Select from 'react-select';
+import Select, { OptionsType } from 'react-select';
 import { getSkillList } from '@repository/baseRepository';
+import { Skill, SkillOption } from '@utils/type';
 
 interface SkillSelectAutoCompleteProps {
-  handleChangeSkillSelect: (newValue: object) => void;
+  onChangeSkills: (newValue: OptionsType<SkillOption>) => void;
+  value?: Skill[] | null;
 }
 
 export default function SkillSelectAutoComplete({
-  handleChangeSkillSelect,
+  onChangeSkills,
+  value,
 }: SkillSelectAutoCompleteProps): ReactElement {
-  const [skillOptions, setSkillOptions] = useState([]);
+  const [skillOptions, setSkillOptions] = useState<Skill[]>([]);
+  const ops: OptionsType<SkillOption> | undefined = value?.map((s) => {
+    return {
+      id: s.id,
+      name: s.name,
+      label: s.name,
+      value: s.id,
+    };
+  });
 
   const loadSkills = async () => {
     const skillList = await getSkillList();
-    const options = skillList.map((sk) => {
-      return { label: sk.skill, value: sk.skill, id: sk.id };
+    return skillList.map((s) => {
+      return {
+        id: s.id,
+        name: s.name,
+        label: s.name,
+        value: s.id,
+      };
     });
-    return options;
   };
 
   useEffect(() => {
@@ -29,7 +44,8 @@ export default function SkillSelectAutoComplete({
     <Select
       isMulti
       options={skillOptions}
-      onChange={(item) => handleChangeSkillSelect(item)}
+      onChange={onChangeSkills}
+      defaultValue={ops}
     />
   );
 }

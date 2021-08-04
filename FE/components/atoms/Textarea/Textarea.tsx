@@ -1,4 +1,10 @@
-import { ReactElement, useEffect, forwardRef, ReactNode } from 'react';
+import {
+  ReactElement,
+  useEffect,
+  forwardRef,
+  ReactNode,
+  FocusEventHandler,
+} from 'react';
 
 interface TextareaProps {
   children?: ReactNode;
@@ -6,6 +12,7 @@ interface TextareaProps {
   cols?: number;
   placeholder?: string;
   refValue?: string;
+  onBlur: FocusEventHandler;
 }
 
 const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(

@@ -8,9 +8,10 @@ import {
   Button,
   SimpleSelect,
 } from '@molecules';
-import { TeamStatusCard } from '@organisms';
+import { TeamStatusCard, TeamManageModal } from '@organisms';
 import { getTeams } from '@repository/baseRepository';
 import { FILTER_IN_TEAMPAGE } from '@utils/constants';
+import { Team } from '@utils/type';
 
 const Wrapper = styled.div`
   display: grid;
@@ -57,9 +58,10 @@ const sortByOptions: OptionsType<OptionTypeBase> = [
 
 export default function TeamStatus(): ReactElement {
   const [filterContents, setFilterContents] = useState(FILTER_IN_TEAMPAGE);
-  const [showCreateTeamModal, setShowCreateTeamModal] = useState(false);
+  const [showTeamManageModal, setShowTeamManageModal] = useState(false);
+  const [teamInfo, setTeaminfo] = useState<Team>();
   const [sortby, setSortby] = useState('');
-  const [teams, setTeams] = useState<object[]>([]);
+  const [teams, setTeams] = useState<Team[]>([]);
 
   useEffect(() => {
     getTeams().then((data) => {
@@ -68,13 +70,17 @@ export default function TeamStatus(): ReactElement {
   }, []);
 
   const handleFilter = (filterTitle: string, eachTitle: string) => {
-    const cont = { ...filterContents };
-    cont[filterTitle][eachTitle] = !cont[filterTitle][eachTitle];
-    setFilterContents(cont);
+    const content = { ...filterContents };
+    content[filterTitle][eachTitle] = !content[filterTitle][eachTitle];
+    setFilterContents(content);
   };
 
-  const handleClickCreateTeamBtn = () => {
-    setShowCreateTeamModal(true);
+  const handleOpenManageTeamModal = () => {
+    setShowTeamManageModal(true);
+  }
+  const handleCloseManageTeamModal = () => {
+    setShowTeamManageModal(false);
+    setTeaminfo(undefined);
   };
 
   const handleChangeUserSelect = (selectedUser: object) => {
@@ -86,10 +92,15 @@ export default function TeamStatus(): ReactElement {
     setSortby(newValue);
   };
 
+  const handleTeamManageModal = (team: Team) => {
+    setTeaminfo(team);
+    setShowTeamManageModal(true);
+  };
+
   return (
     <Wrapper>
       <div className="filter-container">
-        {Object.keys(filterContents).map((each, index) => (
+        {Object.keys(FILTER_IN_TEAMPAGE).map((each, index) => (
           <Filter
             title={each}
             contents={filterContents[each]}
@@ -113,16 +124,28 @@ export default function TeamStatus(): ReactElement {
           <div>
             <Button
               title="팀 만들기"
-              func={handleClickCreateTeamBtn}
+              func={handleOpenManageTeamModal}
               width="90px"
             />
           </div>
         </div>
         {teams.map((item, index) => (
-          <TeamStatusCard team={item} key={index} />
+          <TeamStatusCard
+            key={index}
+            team={item}
+            onClickTeamManage={handleTeamManageModal}
+          />
         ))}
       </div>
-      {showCreateTeamModal && <div>MODAL</div>}
+      {showTeamManageModal && (
+        <TeamManageModal handleClickClose={handleCloseManageTeamModal} />
+      )}
+      {showTeamManageModal && teamInfo && (
+        <TeamManageModal
+          handleClickClose={handleCloseManageTeamModal}
+          defaultValue={teamInfo}
+        />
+      )}
     </Wrapper>
   );
 }
