@@ -80,6 +80,7 @@ export default function TeamStatus(): ReactElement {
   }
   const handleCloseManageTeamModal = () => {
     setShowTeamManageModal(false);
+    setTeaminfo(undefined);
   };
 
   const handleChangeUserSelect = (selectedUser: object) => {
