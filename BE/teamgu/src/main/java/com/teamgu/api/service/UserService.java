@@ -44,25 +44,25 @@ public interface UserService {
 	void updateUserDetailInfo(UserInfoReqDto userInfoReq);
 
 	// 교육생의 개인 프로젝트 이력을 입력
-	Long insertUserInfoProject(UserInfoProjectResDto userInfoProjectResDto);
+	List<UserInfoProjectResDto> insertUserInfoProject(UserInfoProjectResDto userInfoProjectResDto);
 
 	// 교육생의 개인 프로젝트 이력을 수정
-	Long updateUserInfoProject(UserInfoProjectResDto userInfoProjectResDto);
+	List<UserInfoProjectResDto> updateUserInfoProject(UserInfoProjectResDto userInfoProjectResDto);
 
 	// 교육생의 개인 프로젝트 이력을 삭제
-	Long deleteUserInfoProject(Long id);
+	void deleteUserInfoProject(Long id);
 
 	// 교육생의 개인 수상내역 이력을 입력
-	Long insertUserInfoAward(UserInfoAwardResDto userInfoAwardResDto);
+	List<UserInfoAwardResDto> insertUserInfoAward(UserInfoAwardResDto userInfoAwardResDto);
 
 	// void setProjectInfo(List<ProjectReqDto> projectInfoReq);
 
 	// 교육생의 개인 수상내역 이력을 수정
-	Long updateUserInfoAward(UserInfoAwardResDto userInfoAwardResDto);
+	List<UserInfoAwardResDto>  updateUserInfoAward(UserInfoAwardResDto userInfoAwardResDto);
 
 	// void setAwardInfo(List<AwardReqDto> awardReqDto);
 
 	// 교육생의 개인 프로젝트 이력을 삭제
-	Long deleteUserInfoAward(Long id);
+	void deleteUserInfoAward(Long id);
 
 }

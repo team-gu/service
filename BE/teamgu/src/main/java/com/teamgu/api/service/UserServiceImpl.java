@@ -243,6 +243,7 @@ public class UserServiceImpl implements UserService {
 			userRepositorySupport.deleteUserWishTrack(userId, trackCode);
 		}
 		
+		
 		/*
 		 * Skill 수정
 		 */
@@ -431,7 +432,7 @@ public class UserServiceImpl implements UserService {
 	 */
 
 	@Override
-	public Long insertUserInfoProject(UserInfoProjectResDto userInfoProjectResDto) {
+	public List<UserInfoProjectResDto> insertUserInfoProject(UserInfoProjectResDto userInfoProjectResDto) {
 		User user = getUserById(userInfoProjectResDto.getUserId()).get();
 		UserInfoProject userProject = new UserInfoProject();
 		userProject.setIntroduce(userInfoProjectResDto.getIntroduce());
@@ -440,27 +441,27 @@ public class UserServiceImpl implements UserService {
 		userProject.setUrl(userInfoProjectResDto.getUrl());
 		userProject.setUser(user);
 		projectRepository.save(userProject);
-		return 1L;
+		return userRepositorySupport.selectUserProjectByUserId(userInfoProjectResDto.getUserId());
 	}
 
 	/*
 	 * User Info Project 수정
 	 */
 	@Override
-	public Long updateUserInfoProject(UserInfoProjectResDto userInfoProjectResDto) {
+	public List<UserInfoProjectResDto> updateUserInfoProject(UserInfoProjectResDto userInfoProjectResDto) {
 
 		int positionCode = codeDetailRepositorySupport.findPositionCode(userInfoProjectResDto.getPosition());
-
-		return userRepositorySupport.updateUserInfoProject(userInfoProjectResDto, positionCode);
+		userRepositorySupport.updateUserInfoProject(userInfoProjectResDto, positionCode);
+		return userRepositorySupport.selectUserProjectByUserId(userInfoProjectResDto.getUserId());
 	}
 
 	/*
 	 * User Info Project 삭제
 	 */
 	@Override
-	public Long deleteUserInfoProject(Long id) {
+	public void deleteUserInfoProject(Long id) {
 		// TODO Auto-generated method stub
-		return userRepositorySupport.deleteUserInfoProject(id);
+		userRepositorySupport.deleteUserInfoProject(id);
 	}
 
 //	/**
@@ -489,7 +490,7 @@ public class UserServiceImpl implements UserService {
 	 * User Info Award 입력
 	 */
 	@Override
-	public Long insertUserInfoAward(UserInfoAwardResDto userInfoAwardResDto) {
+	public List<UserInfoAwardResDto> insertUserInfoAward(UserInfoAwardResDto userInfoAwardResDto) {
 		UserInfoAward userAward = new UserInfoAward();
 		User user = getUserById(userInfoAwardResDto.getUserId()).get();
 		userAward.setAgency(userInfoAwardResDto.getAgency());
@@ -498,25 +499,26 @@ public class UserServiceImpl implements UserService {
 		userAward.setName(userInfoAwardResDto.getName());
 		userAward.setUser(user);
 		awardRepository.save(userAward);
-		return 1L;
+		return userRepositorySupport.selectUserAwardByUserId(userInfoAwardResDto.getUserId());
 	}
 
 	/*
 	 * User Info Award 수정
 	 */
 	@Override
-	public Long updateUserInfoAward(UserInfoAwardResDto userInfoAwardResDto) {
+	public List<UserInfoAwardResDto> updateUserInfoAward(UserInfoAwardResDto userInfoAwardResDto) {
 		// TODO Auto-generated method stub
-		return userRepositorySupport.updateUserInfoAward(userInfoAwardResDto);
+		userRepositorySupport.updateUserInfoAward(userInfoAwardResDto);
+		return userRepositorySupport.selectUserAwardByUserId(userInfoAwardResDto.getUserId());
 	}
 
 	/*
 	 * User Info Award 삭제
 	 */
 	@Override
-	public Long deleteUserInfoAward(Long id) {
+	public void deleteUserInfoAward(Long id) {
 		// TODO Auto-generated method stub
-		return userRepositorySupport.deleteUserInfoAward(id);
+		userRepositorySupport.deleteUserInfoAward(id);
 	}
 
 }

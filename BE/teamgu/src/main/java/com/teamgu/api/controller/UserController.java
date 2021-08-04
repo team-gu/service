@@ -1,5 +1,6 @@
 package com.teamgu.api.controller;
 
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -57,70 +58,57 @@ public class UserController {
 		return new ResponseEntity<String>("SUCCESS", HttpStatus.OK);
 	}
 
-	@ApiOperation(value = "유저 프로젝트 입력", notes = "사용자 프로젝트를 입력",  response = String.class)
+	@ApiOperation(value = "유저 프로젝트 입력", notes = "사용자 프로젝트를 입력", response = String.class)
 	@PostMapping("/project")
-	public ResponseEntity<String> insertUserInfoProject(@RequestBody UserInfoProjectResDto userInfoProjectResDto) {
+	public ResponseEntity<List<UserInfoProjectResDto>> insertUserInfoProject(
+			@RequestBody UserInfoProjectResDto userInfoProjectResDto) {
 
-		if (userService.insertUserInfoProject(userInfoProjectResDto) == 1) {
-			return new ResponseEntity<String>("SUCCESS", HttpStatus.OK);
-		}
-
-		return new ResponseEntity<String>("FAIL", HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<List<UserInfoProjectResDto>>(userService.insertUserInfoProject(userInfoProjectResDto),
+				HttpStatus.OK);
 	}
 
-	@ApiOperation(value = "유저 프로젝트 수정", notes = "사용자 프로젝트를 수정한다",  response = String.class)
+	@ApiOperation(value = "유저 프로젝트 수정", notes = "사용자 프로젝트를 수정한다", response = String.class)
 	@PutMapping("/project")
-	public ResponseEntity<String> updateUserInfoProject(@RequestBody UserInfoProjectResDto userInfoProjectResDto) {
+	public ResponseEntity<List<UserInfoProjectResDto>> updateUserInfoProject(
+			@RequestBody UserInfoProjectResDto userInfoProjectResDto) {
 
-		if (userService.updateUserInfoProject(userInfoProjectResDto) == 1) {
-			return new ResponseEntity<String>("SUCCESS", HttpStatus.OK);
-		}
+		return new ResponseEntity<List<UserInfoProjectResDto>>(userService.updateUserInfoProject(userInfoProjectResDto),
+				HttpStatus.OK);
 
-		return new ResponseEntity<String>("FAIL", HttpStatus.BAD_REQUEST);
 	}
 
- 	@ApiOperation(value = "유저 프로젝트 삭제", notes = "사용자 프로젝트를 삭제한다.",  response = String.class)
+	@ApiOperation(value = "유저 프로젝트 삭제", notes = "사용자 프로젝트를 삭제한다.", response = String.class)
 	@DeleteMapping("/project/{id}")
 	public ResponseEntity<String> deleteUserInfoProject(@PathVariable Long id) {
 
-		if (userService.deleteUserInfoProject(id) == 1) {
-			return new ResponseEntity<String>("SUCCESS", HttpStatus.OK);
-		}
-
-		return new ResponseEntity<String>("FAIL", HttpStatus.BAD_REQUEST);
+		userService.deleteUserInfoProject(id);
+		return new ResponseEntity<String>("SUCCESS", HttpStatus.OK);
 	}
 
 	@ApiOperation(value = "유저 수상내역 입력", notes = "사용자 수상 이력을 입력한다", response = String.class)
 	@PostMapping("/award")
-	public ResponseEntity<String> insertUserInfoAward(@RequestBody UserInfoAwardResDto userInfoAwardResDto) {
+	public ResponseEntity<List<UserInfoAwardResDto>> insertUserInfoAward(
+			@RequestBody UserInfoAwardResDto userInfoAwardResDto) {
 
-		if (userService.insertUserInfoAward(userInfoAwardResDto) == 1) {
-			return new ResponseEntity<String>("SUCCESS", HttpStatus.OK);
-		}
-
-		return new ResponseEntity<String>("FAIL", HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<List<UserInfoAwardResDto>>(userService.insertUserInfoAward(userInfoAwardResDto),
+				HttpStatus.OK);
 	}
 
 	@ApiOperation(value = "유저 수상내역 수정", notes = "사용자 수상 이력을 수정한다.", response = String.class)
 	@PutMapping("/award")
-	public ResponseEntity<String> updateUserInfoAward(@RequestBody UserInfoAwardResDto userInfoAwardResDto) {
+	public ResponseEntity<List<UserInfoAwardResDto>> updateUserInfoAward(
+			@RequestBody UserInfoAwardResDto userInfoAwardResDto) {
 
-		if (userService.updateUserInfoAward(userInfoAwardResDto) == 1) {
-			return new ResponseEntity<String>("SUCCESS", HttpStatus.OK);
-		}
-
-		return new ResponseEntity<String>("FAIL", HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<List<UserInfoAwardResDto>>(userService.updateUserInfoAward(userInfoAwardResDto),
+				HttpStatus.OK);
 	}
 
 	@ApiOperation(value = "유저 수상내역 삭제", notes = "사용자 수상 이력을 삭제한다.", response = String.class)
 	@DeleteMapping("/award/{id}")
 	public ResponseEntity<String> deleteUserInfoAward(@PathVariable Long id) {
 
-		if (userService.deleteUserInfoAward(id) == 1) {
-			return new ResponseEntity<String>("SUCCESS", HttpStatus.OK);
-		}
-
-		return new ResponseEntity<String>("FAIL", HttpStatus.BAD_REQUEST);
+		userService.deleteUserInfoAward(id);
+		return new ResponseEntity<String>("SUCCESS", HttpStatus.OK);
 	}
 
 }
