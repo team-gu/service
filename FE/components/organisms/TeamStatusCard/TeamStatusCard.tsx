@@ -1,7 +1,7 @@
 import { ReactElement } from 'react';
 import styled from 'styled-components';
 import { Text, Icon } from '@atoms';
-import { Tag, ProfileImage, Button } from '@molecules';
+import { Tag, ProfileImage } from '@molecules';
 import { useAuthState } from '@store';
 import { Team } from '@utils/type';
 
@@ -97,9 +97,7 @@ export default function TeamStatusCard({
   onClickTeamManage,
 }: TeamStatusCard): ReactElement {
   const { user } = useAuthState();
-
-  // TODO: 현재 사용자가 현재 이 팀의 리더인지?
-  const currentUserIsLeader = true;
+  const currentUserIsLeader = user.id === team.leaderId;
 
   return (
     <Wrapper isComplete={team.completeYN !== 0}>
@@ -114,7 +112,7 @@ export default function TeamStatusCard({
           <div className="profiles">
             {team.teamMembers.map((item) => (
               <div className="profile" key={item.id}>
-                <ProfileImage size={80} src={item.profileSrc} />
+                <ProfileImage size={80} src={item.img ? item.img : undefined} />
                 {item.id === team.leaderId ? (
                   <Text text={item.name + '(팀장)'} />
                 ) : (
