@@ -1,4 +1,5 @@
 import { OptionsType, OptionTypeBase } from 'react-select';
+import { DateTime } from 'luxon';
 
 export interface Member {
   id: number;
@@ -33,4 +34,10 @@ export interface MemberOption extends OptionTypeBase, Member {}
 export interface Project {
   name: string;
   id: number;
+  stage: string;
+  category: string;
+  track: string[];
+  activateDate: DateTime;
+  startDate: DateTime;
+  endDate: DateTime;
 }
