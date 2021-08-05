@@ -1,9 +1,9 @@
-import { ReactElement, SyntheticEvent, useEffect, useRef } from 'react';
+import { ReactElement, SyntheticEvent, useRef } from 'react';
 import { Input } from '@atoms';
 import { Button } from '@molecules';
 import { ModalWrapper } from '@organisms';
-import { postProject, updateProject } from '@repository/projects';
-import { useAuthState } from '@store';
+import { postProject, updateProject } from '@repository/userprofile';
+import { useAuthState, useAppDispatch, setProjects } from '@store';
 import styled from 'styled-components';
 
 interface ProjectType {
@@ -48,6 +48,7 @@ export default function ProjectModal({
   setShowProjectModal,
 }: any): ReactElement {
   const { user } = useAuthState();
+  const dispatch = useAppDispatch();
 
   const nameRef = useRef<HTMLInputElement>(null);
   const positionRef = useRef<HTMLInputElement>(null);
@@ -65,10 +66,14 @@ export default function ProjectModal({
         url: urlRef.current && urlRef.current.value,
         introduce: introduceRef.current && introduceRef.current.value,
       };
-      projectModalData.id ? await updateProject(data) : await postProject(data);
+      const res = projectModalData.id
+        ? await updateProject(data)
+        : await postProject(data);
+      dispatch(setProjects(res.data));
       setShowProjectModal(false);
     } catch (e) {
       console.log(e);
+      setShowProjectModal(false);
     }
   };
 
