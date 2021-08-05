@@ -190,14 +190,20 @@ export const getTeams = async (
           {
             id: 1,
             name: 'React',
+            backgroundColor: '#61DAFB',
+            color: '#000',
           },
           {
             id: 2,
             name: 'Spring',
+            backgroundColor: '#6DB43D',
+            color: '#000',
           },
           {
             id: 3,
             name: 'MySQL',
+            backgroundColor: '#005C84',
+            color: '#000',
           },
         ],
         track: '웹기술',
