@@ -4,7 +4,7 @@ import { Story } from '@storybook/react';
 import TeamManageModal from './TeamManageModal';
 import { Button } from '@molecules';
 import { Team } from '@utils/type';
-import { getTeams } from '@repository/baseRepository';
+import { getTeams } from '@repository/teamRepository';
 
 export default {
   title: 'Organisms/Team Manage Modal',

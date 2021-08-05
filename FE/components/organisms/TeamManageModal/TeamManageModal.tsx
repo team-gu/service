@@ -19,7 +19,7 @@ import {
 } from '@molecules';
 import { SSAFY_TRACK } from '@utils/constants';
 import { useAuthState } from '@store';
-import { createTeam } from '@repository/baseRepository';
+import { createTeam, deleteTeam } from '@repository/teamRepository';
 import { OptionTypeBase, OptionsType } from 'react-select';
 import { Team, SkillOption, Member, MemberOption } from '@utils/type';
 import { useRef } from 'react';

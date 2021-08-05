@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Story } from '@storybook/react';
 import TeamStatusCard from './TeamStatusCard';
 import { Team } from '@utils/type';
-import { getTeams } from '@repository/baseRepository';
+import { getTeams } from '@repository/teamRepository';
 
 export default {
   title: 'Organisms/Team Status Card',
