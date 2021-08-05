@@ -5,6 +5,7 @@ import Modal from './Modal';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import Layout from './Layout';
+import LookupLayout from './LookupLayout';
 import UserDetail from './UserDetail';
 import LineBackground from './LineBackground';
 import LoginComponent from './LoginComponent';
@@ -22,6 +23,7 @@ export {
   Navbar,
   Footer,
   Layout,
+  LookupLayout,
   UserDetail,
   LineBackground,
   LoginComponent,

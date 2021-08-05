@@ -1,11 +1,12 @@
 import { ReactElement } from 'react';
 import styled from 'styled-components';
 
-interface CheckboxProps {
+interface RadioButtonProps {
   children: ReactElement;
   // TODO: 타입 정의
   func: any;
   defaultChecked?: boolean;
+  name?: string;
 }
 
 const Wrapper = styled.div`
@@ -17,14 +18,20 @@ const Wrapper = styled.div`
   }
 `;
 
-export default function Checkbox({
+export default function RadioButton({
   children,
   func,
   defaultChecked = false,
-}: CheckboxProps): ReactElement {
+  name,
+}: RadioButtonProps): ReactElement {
   return (
     <Wrapper>
-      <input type="checkbox" onClick={func} defaultChecked={defaultChecked} />
+      <input
+        type="radio"
+        onClick={func}
+        defaultChecked={defaultChecked}
+        name={name}
+      />
       {children}
     </Wrapper>
   );
