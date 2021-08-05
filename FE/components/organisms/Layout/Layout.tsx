@@ -12,9 +12,12 @@ interface LayoutProps {
   children: React.ReactNode;
 }
 
-const Wrapper = styled(motion.div)`
+const Wrapper = styled(motion.div)<{ path: string }>`
   min-height: calc(100vh - 150px);
   margin-top: 100px;
+
+  ${({ theme: { flexRow }, path }) =>
+    path !== '/' && flexRow('center', 'flex-start')}
 `;
 
 export default function Layout({ children }: LayoutProps) {
@@ -58,6 +61,7 @@ export default function Layout({ children }: LayoutProps) {
                 opacity: 1,
               },
             }}
+            path={router.route}
           >
             {children}
             {isChatOpen && <ChatRoute />}
