@@ -11,11 +11,11 @@ const promiseOptions = (inputValue: string) =>
   });
 
 const customStyles = {
-  control: (base) => ({
+  control: (base: any) => ({
     ...base,
     height: 45,
   }),
-  singleValue: (provided) => {
+  singleValue: (provided: any) => {
     const height = '35px';
     const lineHeight = '35px';
 

@@ -104,7 +104,9 @@ export default function Navbar(): ReactElement {
                 <a>인력풀</a>
               </Link>
             </li>
-            <li>팀구성현황</li>
+            <li>
+              <Link href="team">팀구성현황</Link>
+            </li>
             <li
               onClick={() => {
                 dispatch(setLogout());
