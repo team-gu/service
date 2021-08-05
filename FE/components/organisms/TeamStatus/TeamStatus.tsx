@@ -10,7 +10,7 @@ import {
 } from '@molecules';
 
 import { TeamStatusCard, TeamManageModal, LookupLayout } from '@organisms';
-import { getTeams } from '@repository/baseRepository';
+import { getTeams } from '@repository/teamRepository';
 import { FILTER_TITLE } from '@utils/constants';
 import { MemberOption, Team } from '@utils/type';
 import { useAuthState, useAppDispatch, setLoading } from '@store';
