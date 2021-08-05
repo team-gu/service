@@ -20,9 +20,8 @@ import {
 import { SSAFY_TRACK } from '@utils/constants';
 import { useAuthState } from '@store';
 import { createTeam } from '@repository/baseRepository';
-import { useRouter } from 'next/router';
 import { OptionTypeBase, OptionsType } from 'react-select';
-import { Team, SkillOption, MemberOption } from '@utils/type';
+import { Team, SkillOption, Member, MemberOption } from '@utils/type';
 import { useRef } from 'react';
 
 const Wrapper = styled.div`
@@ -113,7 +112,6 @@ const Wrapper = styled.div`
   }
 
   .team-leader-container {
-
     input {
       padding-left: 15px;
       box-sizing: border-box;
@@ -122,7 +120,6 @@ const Wrapper = styled.div`
   }
 
   .team-invite-container {
-
     .input {
       margin-bottom: 15px;
     }
@@ -201,15 +198,35 @@ export default function TeamManageModal({
   defaultValue,
   handleClickClose,
 }: TeamManageModalProps): ReactElement {
-  const router = useRouter();
   const { user } = useAuthState();
+  console.log(user);
+  const userToMember = () => {
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      img: user.img && !user.img.includes('null') ? user.img : '/profile.png',
+    };
+  };
+
+  const toMemberOptions = (members: Member[]) => {
+    return members.map((v) => ({
+      ...v,
+      label: v.name,
+      value: v.name,
+    }));
+  };
+
   const [teamName, setTeamName] = useState(defaultValue?.name || '');
   const [teamTrack, setTeamTrack] = useState(defaultValue?.trackName || '');
   const [teamDescription, setTeamDescription] = useState(
     defaultValue?.introduce || '',
   );
   const [teamSkills, setTeamSkills] = useState(defaultValue?.skills || []);
-  const [teamMembers, setTeamMembers] = useState(defaultValue?.teamMembers || []);
+  const [teamMembers, setTeamMembers] = useState(
+    defaultValue?.teamMembers || [userToMember()],
+  );
+  const [teamLeader, setTeamLeader] = useState(0);
   const [incorrectSelectUser, setIncorrectSelectUser] = useState(false);
 
   const teamNameInputRef = useRef<HTMLInputElement>(null);
@@ -258,11 +275,16 @@ export default function TeamManageModal({
     }
   };
 
+  const handleChangeTeamLeader = (newMember: Member) => {
+    setTeamLeader(newMember.id);
+  };
+
   const handleSubmit = () => {
     console.log(teamName);
     console.log(teamTrack);
     console.log(teamDescription);
     console.log(teamSkills);
+    console.log(teamLeader);
     console.log(teamMembers);
 
     createTeam({
@@ -271,6 +293,7 @@ export default function TeamManageModal({
       introduce: teamDescription,
       skills: teamSkills,
       teamMembers: teamMembers,
+      leaderId: teamLeader,
     });
 
     // TODO: 팀 등록 후 새로고침
@@ -344,11 +367,16 @@ export default function TeamManageModal({
 
         <div className="team-leader-container">
           <Label text="팀장">
-            <Input
-              value={user.name ? user.name + ' (나)' : '현재 사용자 이름'}
-              readOnly
-              width="100%"
-              height="40px"
+            <SimpleSelect
+              options={toMemberOptions(teamMembers)}
+              onChange={handleChangeTeamLeader}
+              value={
+                defaultValue
+                  ? toMemberOptions(teamMembers).find(
+                      (m) => m.id === defaultValue.leaderId,
+                    )
+                  : toMemberOptions(teamMembers)[0]
+              }
             />
           </Label>
         </div>
@@ -366,21 +394,31 @@ export default function TeamManageModal({
 
               <div className="profiles">
                 <div className="profile-and-name">
-                  <ProfileImage />
+                  <ProfileImage
+                    src={
+                      user.img && !user.img.includes('null')
+                        ? user.img
+                        : undefined
+                    }
+                  />
                   <div className="name-in-profile">
                     {user.name ? user.name + ' (나)' : '이름'}
                   </div>
                 </div>
-                {teamMembers.map((item, index) => (
-                  <div className="profile-and-name" key={item.id}>
-                    <ProfileImage />
-                    <div className="name-in-profile">{item.name}</div>
-                    <Icon
-                      iconName="remove_circle"
-                      func={() => handleDeleteMember(index)}
-                    />
-                  </div>
-                ))}
+                {defaultValue &&
+                  teamMembers.map(
+                    (item: Member, index) =>
+                      item.id !== defaultValue.leaderId && (
+                        <div className="profile-and-name" key={item.id}>
+                          <ProfileImage src={item.img ? item.img : undefined} />
+                          <div className="name-in-profile">{item.name}</div>
+                          <Icon
+                            iconName="remove_circle"
+                            func={() => handleDeleteMember(index)}
+                          />
+                        </div>
+                      ),
+                  )}
               </div>
             </div>
           </Label>

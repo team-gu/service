@@ -1,11 +1,11 @@
-import { OptionsType, OptionTypeBase } from 'react-select';
+import { OptionTypeBase } from 'react-select';
 import { DateTime } from 'luxon';
 
 export interface Member {
   id: number;
   name: string;
   email: string;
-  profileSrc: string;
+  img: string | null | undefined;
 }
 
 export interface Skill {

@@ -31,28 +31,28 @@ export const getUserListByNameContains = async (param: string) => {
   return new Promise<MemberOption[]>((resolve) => {
     const dummy = [
       {
-        profileSrc: '/profile.png',
+        img: '/profile.png',
         name: '이용재',
         leader: true,
         id: 1,
         email: 'lee@naver.com',
       },
       {
-        profileSrc: '/profile.png',
+        img: '/profile.png',
         name: '장동균',
         leader: false,
         id: 2,
         email: 'jang@gmail.com',
       },
       {
-        profileSrc: '/profile.png',
+        img: '/profile.png',
         name: '장민호',
         leader: false,
         id: 3,
         email: 'minho9301@naver.com',
       },
       {
-        profileSrc: '/profile.png',
+        img: '/profile.png',
         name: '강승현',
         leader: true,
         id: 4,
@@ -173,22 +173,20 @@ export const getTeams = async (
         completeYN: 0,
         nowNumber: 2,
         maxNumber: 3,
-        leaderId: 1,
+        leaderId: 19,
         trackName: '웹 기술',
         teamMembers: [
           {
-            id: 1,
-            name: '안석현',
-            img: 'default',
+            id: 19,
+            name: '장민호',
+            img: '/profile.png',
             email: 'naannaan@naver.com',
-            profileSrc: '/profile.png',
           },
           {
             id: 3,
             name: '박싸피',
             img: null,
             email: 'parkssafy@naver.com',
-            profileSrc: '/profile.png',
           },
         ],
         skills: [
@@ -225,14 +223,12 @@ export const getTeams = async (
             name: '김싸피',
             img: null,
             email: 'kimssafy@naver.com',
-            profileSrc: '/profile.png',
           },
           {
             id: 4,
             name: '강싸피',
             img: null,
             email: 'kangssafy@naver.com',
-            profileSrc: '/profile.png',
           },
         ],
         skills: [
@@ -255,7 +251,6 @@ export const getTeams = async (
         ],
       },
     ];
-
 
     resolve(dummy);
   });
