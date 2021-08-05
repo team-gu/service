@@ -203,6 +203,11 @@ const getSkills = (skills: string[]) => {
   });
 };
 
+const getDate = (date: Date) => {
+  return date
+    ? JSON.stringify(date).split('').slice(1, 11).join('')
+    : '????-??-??';
+};
 // TODO any에 대한 타입 수정이 필요합니다.
 export default function MyDetail({ changeEditMode }: any): ReactElement {
   const { user } = useAuthState();
@@ -267,7 +272,7 @@ export default function MyDetail({ changeEditMode }: any): ReactElement {
                 <p>{agency}</p>
                 <p>{name}</p>
               </div>
-              <div className="middle">{date}</div>
+              <div className="middle">{getDate(date)}</div>
               <div>{introduce}</div>
             </Award>
           ))
