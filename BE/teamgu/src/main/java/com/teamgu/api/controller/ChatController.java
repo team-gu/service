@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.teamgu.api.dto.req.ChatReqDto;
 import com.teamgu.api.dto.req.UserRoomCheckDto;
+import com.teamgu.api.dto.req.UserRoomInviteReqDto;
 import com.teamgu.api.dto.res.BasicResponse;
 import com.teamgu.api.dto.res.ChatMessageResDto;
 import com.teamgu.api.dto.res.ChatRoomResDto;
@@ -98,5 +99,15 @@ public class ChatController {
 			chatService.inviteUser(users.getUser_id2(), result);
 		}
 		return ResponseEntity.ok(new CommonResponse<Long>(result));		
+	}
+	
+	@PostMapping("/room/invite")
+	@ApiOperation(value = "이미 존재하는 채팅방에 특정 유저를 초대한다")
+	public ResponseEntity<? extends BasicResponse> inviteUser(@RequestBody UserRoomInviteReqDto userReqDto){
+		if(!chatService.inviteUser(userReqDto.getUser_id(), userReqDto.getRoom_id())) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR) 
+					.body(new ErrorResponse("채팅방 초대에 실패했습니다."));
+		}
+		return ResponseEntity.noContent().build();
 	}
 }
