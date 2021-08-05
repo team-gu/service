@@ -59,7 +59,8 @@ export default function TeamStatus(): ReactElement {
     })();
 
     setPayload({
-      project: projectCode[projectCode.length - 1],
+      project:
+        projectCode?.length > 1 ? projectCode[projectCode.length - 1] : 101,
       studentNumber,
     });
   }, []);
