@@ -52,10 +52,10 @@ public class UserController {
 
 	@ApiOperation(value = "사용자 상세정보 입력/ 수정", notes = "사용자 상세정보를 입력, 수정한다.")
 	@PutMapping("/userInfo")
-	public ResponseEntity<String> updateUserDetailInfo(
+	public ResponseEntity<UserInfoResDto> updateUserDetailInfo(
 			@RequestBody @ApiParam(value = "마이페이지 정보", required = true) UserInfoReqDto userInfoReq) {
 		userService.updateUserDetailInfo(userInfoReq);
-		return new ResponseEntity<String>("SUCCESS", HttpStatus.OK);
+		return ResponseEntity.ok(userService.getUserDetailInfo(userInfoReq.getEmail()));
 	}
 
 	@ApiOperation(value = "유저 프로젝트 입력", notes = "사용자 프로젝트를 입력", response = String.class)
