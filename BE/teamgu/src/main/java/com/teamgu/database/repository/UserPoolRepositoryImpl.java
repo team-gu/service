@@ -18,7 +18,7 @@ public class UserPoolRepositoryImpl implements UserPoolRepositoryCustom {
 
     private static short majorCode;
     private static int prjCode;
-    private static String name;
+    private static String name, sort;
     private static List<Integer> regList, posList, trkList, skList;
 
     @Autowired
@@ -38,10 +38,12 @@ public class UserPoolRepositoryImpl implements UserPoolRepositoryCustom {
 
         majorCode = userPoolReqDto.getIsMajor(); //얘네는 where에서 처리
         name = userPoolReqDto.getName();
+        sort = userPoolReqDto.getSort();
 
         String whereStmt = makeWhere();
+        String orderStmt = makeOrder();
 
-        return getList(whereStmt);
+        return getList(whereStmt, orderStmt);
     }
 
     @Override
@@ -124,7 +126,11 @@ public class UserPoolRepositoryImpl implements UserPoolRepositoryCustom {
         return sb.toString();
     }
 
-    private List<Object[]> getList(String whereStmt) {
+    private String makeOrder() {
+        return " order by u.name " + sort;
+    }
+
+    private List<Object[]> getList(String whereStmt, String orderStmt) {
         StringBuilder jpql = new StringBuilder();
         EntityManager em = emf.createEntityManager();
 
@@ -136,6 +142,7 @@ public class UserPoolRepositoryImpl implements UserPoolRepositoryCustom {
         jpql.append("left outer join mapping m on wt.mapping_id = m.id").append(" ");
         jpql.append("left join skill s on u.id = s.user_id").append(" ");
         jpql.append(whereStmt);
+        jpql.append(orderStmt);
         log.info(jpql);
 
         return em.createNativeQuery(jpql.toString()).getResultList();
