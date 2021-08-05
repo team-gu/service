@@ -23,6 +23,10 @@ spring:
     hikari:
       username: root
       password: teamgupassword
+      idle-timeout: 10000
+      max-lifetime: 420000
+      connection-timeout: 10000
+      validation-timeout: 10000
   servlet:
     multipart:
       maxFileSize: 30MB
