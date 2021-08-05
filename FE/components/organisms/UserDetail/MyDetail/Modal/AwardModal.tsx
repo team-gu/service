@@ -2,8 +2,8 @@ import { ReactElement, SyntheticEvent, useRef } from 'react';
 import { Input } from '@atoms';
 import { Button } from '@molecules';
 import { ModalWrapper } from '@organisms';
-import { postAward, updateAward } from '@repository/projects';
-import { useAuthState } from '@store';
+import { postAward, updateAward } from '@repository/userprofile';
+import { useAuthState, useAppDispatch, setAwards } from '@store';
 import styled from 'styled-components';
 
 interface AwardType {
@@ -48,6 +48,7 @@ export default function AwardModal({
   setShowAwardModal,
 }: any): ReactElement {
   const { user } = useAuthState();
+  const dispatch = useAppDispatch();
 
   const agencynRef = useRef<HTMLInputElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
@@ -65,10 +66,14 @@ export default function AwardModal({
         date: dateRef.current && dateRef.current.value,
         introduce: introduceRef.current && introduceRef.current.value,
       };
-      awardModalData.id ? await updateAward(data) : await postAward(data);
+      const res = awardModalData.id
+        ? await updateAward(data)
+        : await postAward(data);
+      dispatch(setAwards(res.data));
       setShowAwardModal(false);
     } catch (e) {
       console.log(e);
+      setShowAwardModal(false);
     }
   };
 
@@ -95,7 +100,7 @@ export default function AwardModal({
                 />
               </div>
               <div>
-                <Input width="30vw" height="50px" ref={dateRef} />
+                <Input type="date" width="30vw" height="50px" ref={dateRef} />
               </div>
               <div>
                 <Input width="30vw" height="50px" ref={introduceRef} />
@@ -124,12 +129,7 @@ export default function AwardModal({
                 />
               </div>
               <div>
-                <Input
-                  placeHolder={awardModalData.date}
-                  width="30vw"
-                  height="50px"
-                  ref={dateRef}
-                />
+                <Input type="date" width="30vw" height="50px" ref={dateRef} />
               </div>
               <div>
                 <Input

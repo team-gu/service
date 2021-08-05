@@ -28,6 +28,8 @@ declare module 'styled-components' {
     font: {
       n36m: FlattenSimpleInterpolation;
       n26b: FlattenSimpleInterpolation;
+      n24m: FlattenSimpleInterpolation;
+      n22m: FlattenSimpleInterpolation;
       n20m: FlattenSimpleInterpolation;
       n18b: FlattenSimpleInterpolation;
       n18m: FlattenSimpleInterpolation;

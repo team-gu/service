@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import lombok.extern.log4j.Log4j2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,7 @@ import com.teamgu.database.repository.WishTrackRepository;
 import com.teamgu.database.repository.WishTrackRepositorySupport;
 
 @Service("userService")
+@Log4j2
 public class UserServiceImpl implements UserService {
 
 	@Autowired
@@ -395,6 +397,10 @@ public class UserServiceImpl implements UserService {
 			int stage = studentNumber.charAt(1) - '0';
 			UserClassResDto userClass = userRepositorySupport.selectUserClassByUserId(id, stage);
 			userInfoRes.setUserClass(userClass);
+      
+      //User ProjectCodes 조회
+		  List<Integer> projectCodes = userRepositorySupport.selectUserProjectCodes(id);
+		  userInfoRes.setProjectCodes(projectCodes);
 
 		}
 

@@ -17,7 +17,7 @@ const Template: Story = () => {
   const [showUpdate, setShowUpdate] = useState(false);
 
   useEffect(() => {
-    getTeams().then((data) => {
+    getTeams('createAt', true).then((data) => {
       setDefaultValue(data[0]);
     });
   }, []);

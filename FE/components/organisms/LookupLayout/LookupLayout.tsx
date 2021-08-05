@@ -14,6 +14,23 @@ const Wrapper = styled.div`
   .filter-container {
   }
 
+  .sort-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    .sort-icon {
+      flex: 1;
+      transform-origin: center;
+      transition: all 0.3s ease-in;
+    }
+    .rotated {
+      transform: rotate(0.5turn);
+    }
+    .sort-select {
+      flex: 9;
+    }
+  }
+
   .team-status-header {
     display: grid;
     grid-template-columns: auto 150px 100px;

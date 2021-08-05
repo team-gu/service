@@ -23,6 +23,8 @@ import com.teamgu.database.entity.QUserClass;
 import com.teamgu.database.entity.QUserInfoAward;
 import com.teamgu.database.entity.QUserInfoProject;
 import com.teamgu.database.entity.QWishTrack;
+import com.teamgu.database.entity.QUserProjectDetail;
+import com.teamgu.database.entity.QProjectDetail;
 
 @Repository
 public class UserRepositorySupport {
@@ -43,7 +45,9 @@ public class UserRepositorySupport {
 	QStdClass qStdClass = QStdClass.stdClass;
 	QUserInfoAward qUserInfoAward = QUserInfoAward.userInfoAward;
 	QUserInfoProject qUserInfoProject = QUserInfoProject.userInfoProject;
-
+  QUserProjectDetail qUserProjectDetail = QUserProjectDetail.userProjectDetail;
+  QProjectDetail qProjectDetail = QProjectDetail.projectDetail;
+  
 	// User Detail Info 수정
 	@Transactional
 	public Long updateUserDetailInfo(UserInfoReqDto userInfoReqDto) {
@@ -194,4 +198,15 @@ public class UserRepositorySupport {
 
 	}
 
+  // User의 ProjectCode List조회
+  public List<Integer> selectUserProjectCodes(Long userId) {
+      return jpaQueryFactory
+              .select(Projections.constructor(Integer.class,
+                      qProjectDetail.projectCode))
+              .from(qUserProjectDetail)
+              .innerJoin(qUserProjectDetail.projectDetail, qProjectDetail)
+              .where(qUserProjectDetail.user.id.eq(userId))
+              .fetch();
+  }
+  
 }
