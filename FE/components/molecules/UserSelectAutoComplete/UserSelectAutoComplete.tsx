@@ -10,17 +10,28 @@ const promiseOptions = (inputValue: string) =>
     });
   });
 
+const customStyles = {
+  control: (base) => ({
+    ...base,
+    height: 45,
+  }),
+  singleValue: (provided) => {
+    const height = '35px';
+    const lineHeight = '35px';
+
+    return { ...provided, height, lineHeight };
+  },
+};
+
 interface UserSelectAutoCompleteProps {
-  handleChangeUserSelect: (newValue: MemberOption) => void;
+  handleChangeUserSelect: (newValue: MemberOption | null) => void;
 }
 
 export default function UserSelectAutoComplete({
   handleChangeUserSelect,
 }: UserSelectAutoCompleteProps): ReactElement {
   const handleSelectChange = (newValue: MemberOption | null) => {
-    if (newValue) {
-      handleChangeUserSelect(newValue);
-    }
+    handleChangeUserSelect(newValue);
   };
 
   return (
@@ -30,6 +41,8 @@ export default function UserSelectAutoComplete({
         loadOptions={promiseOptions}
         defaultOptions
         onChange={handleSelectChange}
+        isClearable
+        styles={customStyles}
       />
     </>
   );
