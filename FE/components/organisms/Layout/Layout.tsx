@@ -2,7 +2,7 @@ import { Navbar, Footer } from '@organisms';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/router';
-import { useUiState, useAppDispatch, setChatOpen } from '@store';
+import { useUiState, useAppDispatch, setChatOpen, useAuthState } from '@store';
 import { ChatRoute } from '@organisms';
 import { FloatingButton } from '@molecules';
 import { VIDEO_CHAT_PATH_PREFIX } from '@utils/constants';
@@ -20,13 +20,14 @@ export default function Layout({ children }: LayoutProps) {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { isChatOpen } = useUiState();
+  const {
+    user: { id },
+  } = useAuthState();
 
   return (
     <>
       {router.pathname.startsWith(VIDEO_CHAT_PATH_PREFIX) ? (
-        <>
-          {children}
-        </>
+        <>{children}</>
       ) : (
         <>
           <Navbar />
@@ -45,9 +46,11 @@ export default function Layout({ children }: LayoutProps) {
           >
             {children}
             {isChatOpen && <ChatRoute />}
-            <FloatingButton
-              func={() => dispatch(setChatOpen({ isChatOpen: true }))}
-            />
+            {id !== 0 && (
+              <FloatingButton
+                func={() => dispatch(setChatOpen({ isChatOpen: true }))}
+              />
+            )}
           </Wrapper>
           <Footer />
         </>

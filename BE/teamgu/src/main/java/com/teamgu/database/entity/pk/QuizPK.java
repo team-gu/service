@@ -1,10 +1,12 @@
-package com.teamgu.database.entity;
+package com.teamgu.database.entity.pk;
 
 import java.io.Serializable;
+
+import com.teamgu.database.entity.User;
 
 import lombok.Data;
 
 @Data
 public class QuizPK implements Serializable{
-	private Long user;
+	private User user;
 }

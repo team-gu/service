@@ -11,6 +11,8 @@ import com.teamgu.api.dto.req.TokenReqDto;
 import com.teamgu.api.dto.req.UserInfoReqDto;
 import com.teamgu.api.dto.res.LoginResDto;
 import com.teamgu.api.dto.res.TokenResDto;
+import com.teamgu.api.dto.res.UserInfoAwardResDto;
+import com.teamgu.api.dto.res.UserInfoProjectResDto;
 import com.teamgu.api.dto.res.UserInfoResDto;
 import com.teamgu.database.entity.User;
 
@@ -18,7 +20,6 @@ import com.teamgu.database.entity.User;
  * 사용자 관련 비즈니스 로직
  */
 public interface UserService {
-	Optional<User> getUserByEmail(String email);
 
 	boolean save(User user);
 
@@ -28,14 +29,40 @@ public interface UserService {
 
 	TokenResDto reissue(TokenReqDto tokenReq);
 
-	void setUserDetailInfo(UserInfoReqDto userInfoReq);
-
-	void setProjectInfo(List<ProjectReqDto> projectInfoReq);
-
-	void setAwardInfo(List<AwardReqDto> awardReqDto);
-	
 	void setPassward(PasswordReqDto passwordReq);
-	
+
+	// Email을 이용한 User Entity 조회
+	Optional<User> getUserByEmail(String email);
+
+	// Id를 이용한 User Entity 조회
+	Optional<User> getUserById(Long id);
+
+	// User 상세 정보 조회
 	UserInfoResDto getUserDetailInfo(String email);
-	 
+
+	// 교육생의 개인 세부 이력 수정
+	void updateUserDetailInfo(UserInfoReqDto userInfoReq);
+
+	// 교육생의 개인 프로젝트 이력을 입력
+	List<UserInfoProjectResDto> insertUserInfoProject(UserInfoProjectResDto userInfoProjectResDto);
+
+	// 교육생의 개인 프로젝트 이력을 수정
+	List<UserInfoProjectResDto> updateUserInfoProject(UserInfoProjectResDto userInfoProjectResDto);
+
+	// 교육생의 개인 프로젝트 이력을 삭제
+	void deleteUserInfoProject(Long id);
+
+	// 교육생의 개인 수상내역 이력을 입력
+	List<UserInfoAwardResDto> insertUserInfoAward(UserInfoAwardResDto userInfoAwardResDto);
+
+	// void setProjectInfo(List<ProjectReqDto> projectInfoReq);
+
+	// 교육생의 개인 수상내역 이력을 수정
+	List<UserInfoAwardResDto>  updateUserInfoAward(UserInfoAwardResDto userInfoAwardResDto);
+
+	// void setAwardInfo(List<AwardReqDto> awardReqDto);
+
+	// 교육생의 개인 프로젝트 이력을 삭제
+	void deleteUserInfoAward(Long id);
+
 }

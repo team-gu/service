@@ -66,7 +66,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         filter.setForceEncoding(true);
 
         http.addFilterBefore(filter,CsrfFilter.class)
-                .cors().disable()
+                .cors()
+                .and()
                 .csrf().disable()
                 .authorizeRequests()
                 .antMatchers(
@@ -79,7 +80,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/configuration/security",
                         "/swagger-ui/**",
                         "/webjars/**",
-                        "/swagger/**"
+                        "/swagger/**",
+                        "/api/chat/**",//sockjs jwt allowed
+                        "/receive/chat/**",
+                        "/stomp/**" 
                        )
                 .permitAll()
                 // 다른 모든 요청은 인증을 한다.
@@ -90,21 +94,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin().disable()
                 .headers().frameOptions().disable();
         		// 모든 요청에 토큰을 검증하는 필터를 추가한다.
-        		http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
-       
+        		http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);       
     }
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-
-        configuration.addAllowedOrigin("*");
-        configuration.addAllowedHeader("*");
-        configuration.addAllowedMethod("*");
-        configuration.setAllowCredentials(true);
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
-
 }

@@ -1,5 +1,11 @@
 /* eslint-disable react/display-name */
-import { ReactElement, ChangeEvent, forwardRef } from 'react';
+import {
+  ReactElement,
+  useEffect,
+  ChangeEvent,
+  forwardRef,
+  KeyboardEventHandler,
+} from 'react';
 import styled from 'styled-components';
 
 interface InputProps {
@@ -8,7 +14,8 @@ interface InputProps {
   // TODO: any 처리
   func?: (() => ChangeEvent<HTMLInputElement>) | any;
   funcBlur?: (() => void) | any;
-  onKeyPress?: any;
+  onKeyPress?: KeyboardEventHandler<HTMLInputElement> | undefined;
+  onKeyDown?: KeyboardEventHandler<HTMLInputElement> | undefined;
   width?: string;
   height?: string;
   name?: string;
@@ -16,6 +23,7 @@ interface InputProps {
   error?: string;
   readOnly?: boolean;
   value?: string;
+  refValue?: string;
 }
 
 const Wrapper = styled.div<{
@@ -57,6 +65,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       func,
       funcBlur,
       onKeyPress = () => {},
+      onKeyDown = () => {},
       width = '200px',
       height = '20px',
       name,
@@ -64,10 +73,21 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       error,
       readOnly = false,
       value,
+      refValue = '',
     }: InputProps,
     ref,
   ): ReactElement => {
     // TODO: 추후 any 제거
+
+    // TODO: current에 대한 타입 지정
+    useEffect(() => {
+      if (ref && refValue) {
+        if (ref.current) {
+          ref.current.value = refValue;
+        }
+      }
+    }, []);
+
     return (
       <Wrapper
         className="input"
@@ -87,6 +107,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           maxLength={maxLength}
           readOnly={readOnly}
           value={value}
+          onKeyDown={onKeyDown}
         />
         {error?.split('/')[0] !== '' && <div>{error?.split('/')[0]}</div>}
       </Wrapper>

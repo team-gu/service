@@ -6,55 +6,37 @@ import { saveItem, removeItem } from '@utils/storage';
 import { setLoading } from '@store';
 
 interface AuthState {
-  chat: string[];
-  conference: string[];
+  awards: object[];
   email: string;
-  fromuserFollows: string[];
   id: number;
+  img: string;
   introduce: string;
+  major: number;
   name: string;
-  notices: string[];
-  quizScores: number[];
-  quizs: string[];
+  projects: object[];
   role: number;
   skills: string[];
-  studentNumber: number;
-  teams: number[];
-  toUserFollows: string[];
-  userAward: string[];
-  userChat: string[];
-  userClass: number[];
-  userFile: string;
-  userProject: string[];
-  userTeams: string[];
-  wishPosition: number;
-  wishTracks: string[];
+  studentNumber: string;
+  userClass: number | null;
+  wishPositionCode: string;
+  wishTrack: string[];
 }
 
 const initialState: AuthState = {
-  chat: [],
-  conference: [],
+  awards: [],
   email: '',
-  fromuserFollows: [],
   id: 0,
+  img: '',
   introduce: '',
+  major: 0,
   name: '',
-  notices: [],
-  quizScores: [],
-  quizs: [],
+  projects: [],
   role: 0,
   skills: [],
-  studentNumber: 0,
-  teams: [],
-  toUserFollows: [],
-  userAward: [],
-  userChat: [],
-  userClass: [],
-  userFile: '',
-  userProject: [],
-  userTeams: [],
-  wishPosition: 0,
-  wishTracks: [],
+  studentNumber: '',
+  userClass: null,
+  wishPositionCode: '',
+  wishTrack: [],
 };
 
 const authReducer = createSlice({
@@ -78,9 +60,11 @@ export const setLogin =
     try {
       const { data } = await postLoginApi(param);
       saveItem('accessToken', data.accessToken);
-      saveItem('refreshToken', data.refreshToken);
+      // TODO: 리프레시 토큰 사용이 후순위로 밀려서 후에 이 부분에 대한 수정과 사용이 필요합니다.
+      // saveItem('refreshToken', data.refreshToken);
       dispatch(setUser(data.userInfo));
-      data.userInfo.name === '팀구'
+      console.log(data.userInfo);
+      data.userInfo.introduce === ''
         ? router.push('/userdetail')
         : router.push('/humanpool');
     } catch (error) {

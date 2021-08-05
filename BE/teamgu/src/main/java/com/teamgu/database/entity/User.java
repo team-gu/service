@@ -38,6 +38,8 @@ public class User extends BaseEntity{
 	@Column(length = 1000)
 	String introduce;
 	
+	short major; // 전공 여부, 0 : Default, 1: 전공자, 2: 비전공자
+	
 	int wishPositionCode;
 	
 	/**
@@ -97,11 +99,13 @@ public class User extends BaseEntity{
 	private List<UserClass> userClass = new ArrayList<>();
 
 	@OneToMany(mappedBy = "user")
+	@JsonIgnore
 	private List<Chat> chats = new ArrayList<>();
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	@OnDelete(action = OnDeleteAction.CASCADE)
-	private List<UserChat> userChat;
+	@JsonIgnore
+	private List<UserChatRoom> userChatRoom = new ArrayList<>();
 	
 	
 	/**

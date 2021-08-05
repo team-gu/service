@@ -5,6 +5,6 @@ import org.springframework.stereotype.Repository;
 
 import com.teamgu.database.entity.Skill;
 @Repository
-public interface SkillRepository extends JpaRepository<Skill, Long> {
+public interface UserSkillRepository extends JpaRepository<Skill, Long> {
 
 }

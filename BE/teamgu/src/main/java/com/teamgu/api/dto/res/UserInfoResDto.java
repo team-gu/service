@@ -23,6 +23,10 @@ public class UserInfoResDto {
 	String email;
 	@ApiModelProperty(name = "studentNumber", example = "0546419")
 	String studentNumber;
+	@ApiModelProperty(name = "studentMajor", example = "0 : default, 1 : 전공자, 2: 비전공자")
+	short major;
+	@ApiModelProperty(name = "role", example = "0:퇴소자, 1:교육생, 2:관리자, 3:총관리자")
+	short role;
 	@ApiModelProperty(name = "wishPositionCode", example = "101")
 	String wishPositionCode;
 	@ApiModelProperty(name = "wishTrack")
@@ -30,7 +34,7 @@ public class UserInfoResDto {
 	@ApiModelProperty(name = "introduce", example = "안녕하세요! 할말이 없어요!")
 	String introduce;
 	@ApiModelProperty(name = "skill")
-	List<String> skill;
+	List<String> skills;
 	@ApiModelProperty(name = "project")
 	List<UserInfoProjectResDto> projects;
 	@ApiModelProperty(name = "awards")
