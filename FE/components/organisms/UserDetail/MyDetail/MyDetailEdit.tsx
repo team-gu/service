@@ -218,6 +218,7 @@ const Project = styled.div`
     position: absolute;
     top: 0;
     right: 0;
+    font-size: 15px;
   }
 `;
 
@@ -252,6 +253,7 @@ const Award = styled.div`
     position: absolute;
     top: 0;
     right: 0;
+    font-size: 15px;
   }
 `;
 

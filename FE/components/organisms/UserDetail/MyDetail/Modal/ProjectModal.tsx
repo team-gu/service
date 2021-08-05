@@ -19,6 +19,30 @@ const Wrapper = styled.div`
   margin: 30px;
 `;
 
+const UpdateProject = styled.div`
+  div {
+    margin-bottom: 15px;
+
+    button {
+      width: 5vw;
+      height: 20px;
+      margin-left: 5px;
+    }
+  }
+`;
+
+const CreateProject = styled.div`
+  div {
+    margin-bottom: 15px;
+
+    button {
+      width: 5vw;
+      height: 20px;
+      margin-left: 5px;
+    }
+  }
+`;
+
 export default function ProjectModal({
   projectModalData,
   setShowProjectModal,
@@ -29,23 +53,6 @@ export default function ProjectModal({
   const positionRef = useRef<HTMLInputElement>(null);
   const urlRef = useRef<HTMLInputElement>(null);
   const introduceRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (projectModalData.id) {
-      if (nameRef.current) {
-        nameRef.current.value = projectModalData.name;
-      }
-      if (positionRef.current) {
-        positionRef.current.value = projectModalData.position;
-      }
-      if (urlRef.current) {
-        urlRef.current.value = projectModalData.url;
-      }
-      if (introduceRef.current) {
-        introduceRef.current.value = projectModalData.introduce;
-      }
-    }
-  }, []);
 
   const handleProject = async (e: SyntheticEvent) => {
     e.preventDefault();
@@ -70,43 +77,83 @@ export default function ProjectModal({
       <Wrapper>
         <form onSubmit={handleProject}>
           {projectModalData.id ? (
-            <>
-              <Input width="30vw" height="50px" ref={nameRef} />
-              <Input width="30vw" height="50px" ref={positionRef} />
-              <Input width="30vw" height="50px" ref={urlRef} />
-              <Input width="30vw" height="50px" ref={introduceRef} />
-              <Button title="수정" type="submit" />
-              <Button title="닫기" func={() => setShowProjectModal(false)} />
-            </>
+            <UpdateProject>
+              <div>
+                <Input
+                  width="30vw"
+                  height="50px"
+                  ref={nameRef}
+                  refValue={projectModalData.name}
+                />
+              </div>
+              <div>
+                <Input
+                  width="30vw"
+                  height="50px"
+                  ref={positionRef}
+                  refValue={projectModalData.position}
+                />
+              </div>
+              <div>
+                <Input
+                  width="30vw"
+                  height="50px"
+                  ref={urlRef}
+                  refValue={projectModalData.url}
+                />
+              </div>
+              <div>
+                <Input
+                  width="30vw"
+                  height="50px"
+                  ref={introduceRef}
+                  refValue={projectModalData.introduce}
+                />
+              </div>
+              <div>
+                <Button title="수정" type="submit" />
+                <Button title="닫기" func={() => setShowProjectModal(false)} />
+              </div>
+            </UpdateProject>
           ) : (
-            <>
-              <Input
-                placeHolder={projectModalData.name}
-                width="30vw"
-                height="50px"
-                ref={nameRef}
-              />
-              <Input
-                placeHolder={projectModalData.position}
-                width="30vw"
-                height="50px"
-                ref={positionRef}
-              />
-              <Input
-                placeHolder={projectModalData.url}
-                width="30vw"
-                height="50px"
-                ref={urlRef}
-              />
-              <Input
-                placeHolder={projectModalData.introduce}
-                width="30vw"
-                height="50px"
-                ref={introduceRef}
-              />
-              <Button title="생성" type="submit" />
-              <Button title="닫기" func={() => setShowProjectModal(false)} />
-            </>
+            <CreateProject>
+              <div>
+                <Input
+                  placeHolder={projectModalData.name}
+                  width="30vw"
+                  height="50px"
+                  ref={nameRef}
+                />
+              </div>
+              <div>
+                <Input
+                  placeHolder={projectModalData.position}
+                  width="30vw"
+                  height="50px"
+                  ref={positionRef}
+                />
+              </div>
+              <div>
+                <Input
+                  placeHolder={projectModalData.url}
+                  width="30vw"
+                  height="50px"
+                  ref={urlRef}
+                />
+              </div>
+              <div>
+                <Input
+                  placeHolder={projectModalData.introduce}
+                  width="30vw"
+                  height="50px"
+                  ref={introduceRef}
+                />
+              </div>
+              <div>
+                <Button title="생성" type="submit" />
+                <Button title="닫기" func={() => setShowProjectModal(false)} />
+              </div>
+            </CreateProject>
           )}
         </form>
       </Wrapper>
