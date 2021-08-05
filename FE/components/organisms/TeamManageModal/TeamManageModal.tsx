@@ -315,7 +315,9 @@ export default function TeamManageModal({
             <SimpleSelect
               options={trackOptions}
               onChange={handleChangeTrack}
-              value={defaultValue ? toOptionTypeBase(defaultValue.trackName) : null}
+              value={
+                defaultValue ? toOptionTypeBase(defaultValue.trackName) : null
+              }
             />
           </Label>
         </div>
@@ -343,7 +345,7 @@ export default function TeamManageModal({
         <div className="team-leader-container">
           <Label text="팀장">
             <Input
-              value={user.name ? user.name : '현재 사용자 이름'}
+              value={user.name ? user.name + ' (나)' : '현재 사용자 이름'}
               readOnly
               width="100%"
               height="40px"
@@ -366,7 +368,7 @@ export default function TeamManageModal({
                 <div className="profile-and-name">
                   <ProfileImage />
                   <div className="name-in-profile">
-                    {user.name ? user.name : '이름'}
+                    {user.name ? user.name + ' (나)' : '이름'}
                   </div>
                 </div>
                 {teamMembers.map((item, index) => (
