@@ -1,7 +1,6 @@
 package com.teamgu.database.repository;
 
 import com.teamgu.api.dto.req.UserPoolReqDto;
-import com.teamgu.database.entity.CodeDetail;
 import io.micrometer.core.instrument.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
@@ -9,7 +8,6 @@ import org.springframework.util.CollectionUtils;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
-import java.util.HashMap;
 import java.util.List;
 
 public class UserPoolRepositoryImpl implements UserPoolRepositoryCustom {
@@ -44,23 +42,6 @@ public class UserPoolRepositoryImpl implements UserPoolRepositoryCustom {
         String havingStmt = makeHaving();
 
         return getList(whereStmt, orderStmt, havingStmt);
-    }
-
-    @Override
-    public HashMap<String, String> getCodeDetail() {
-        HashMap<String, String> retHash = new HashMap<>();
-        List<CodeDetail> sklList = codeDetailRepository.getSklCodeDetail();
-        List<CodeDetail> trkList = codeDetailRepository.getTrkCodeDetail();
-
-        for (CodeDetail elem : sklList) {
-            retHash.put("SK" + elem.getCodeDetail(), elem.getName());
-        }
-
-        for (CodeDetail elem : trkList) {
-            retHash.put("TR" + elem.getCodeDetail(), elem.getName());
-        }
-
-        return retHash;
     }
 
     private String makeWhere() {
@@ -144,6 +125,7 @@ public class UserPoolRepositoryImpl implements UserPoolRepositoryCustom {
     private List<Object[]> getList(String whereStmt, String orderStmt, String havingStmt) {
         StringBuilder jpql = new StringBuilder();
         EntityManager em = emf.createEntityManager();
+        List<Object[]> res = null;
 
         jpql.append("select u.id as id, u.name as name, u.introduce, u.profile_server_name, u.profile_extension, group_concat(m.track_code) as wish_track, gs").append(" ");
         jpql.append("from project_detail pd").append(" ");
@@ -157,8 +139,10 @@ public class UserPoolRepositoryImpl implements UserPoolRepositoryCustom {
         jpql.append(havingStmt).append(" ");
         jpql.append(orderStmt);
         
-        List<Object[]> res = em.createNativeQuery(jpql.toString()).getResultList();
+        res = em.createNativeQuery(jpql.toString()).getResultList();
+
         em.close();
+
         return res;
     }
 }
