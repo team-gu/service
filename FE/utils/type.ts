@@ -11,6 +11,8 @@ export interface Member {
 export interface Skill {
   id: number;
   name: string;
+  backgroundColor: string;
+  color: string;
 }
 
 export interface Team {
@@ -29,6 +31,6 @@ export interface SkillOption extends OptionTypeBase, Skill {}
 export interface MemberOption extends OptionTypeBase, Member {}
 
 export interface Project {
-  name: string,
-  id: number,
+  name: string;
+  id: number;
 }

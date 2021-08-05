@@ -64,7 +64,7 @@ export const getUserListByNameContains = async (param: string) => {
       return {
         label: `${item.name} (${item.email})`,
         value: item.id,
-        ...item
+        ...item,
       };
     });
 
@@ -86,22 +86,62 @@ export const getSkillList = async () => {
       {
         name: 'React',
         id: 1,
+        backgroundColor: '#61DAFB',
+        color: '#000',
       },
       {
         name: 'Spring',
         id: 2,
+        backgroundColor: '#6DB43D',
+        color: '#000',
       },
       {
         name: 'MySQL',
         id: 3,
+        backgroundColor: '#005C84',
+        color: '#000',
       },
       {
         name: 'WebRTC',
         id: 4,
+        backgroundColor: '#AC2523',
+        color: '#000',
       },
       {
         name: 'JPA',
         id: 5,
+        backgroundColor: '#010101',
+        color: '#fff',
+      },
+      {
+        name: 'HTML',
+        id: 6,
+        backgroundColor: '#E44D26',
+        color: '#000',
+      },
+      {
+        name: 'CSS',
+        id: 7,
+        backgroundColor: '#0B74B8',
+        color: '#000',
+      },
+      {
+        name: 'JavaScript',
+        id: 8,
+        backgroundColor: '#DAB92C',
+        color: '#000',
+      },
+      {
+        name: 'Vue',
+        id: 9,
+        backgroundColor: '#00C180',
+        color: '#000',
+      },
+      {
+        name: 'Java',
+        id: 10,
+        backgroundColor: '#E05141',
+        color: '#000',
       },
     ];
 
@@ -150,14 +190,20 @@ export const getTeams = async (
           {
             id: 1,
             name: 'React',
+            backgroundColor: '#61DAFB',
+            color: '#000',
           },
           {
             id: 2,
             name: 'Spring',
+            backgroundColor: '#6DB43D',
+            color: '#000',
           },
           {
             id: 3,
             name: 'MySQL',
+            backgroundColor: '#005C84',
+            color: '#000',
           },
         ],
         track: '웹기술',
@@ -189,14 +235,20 @@ export const getTeams = async (
           {
             id: 2,
             name: 'Spring',
+            backgroundColor: '#6DB43D',
+            color: '#000',
           },
           {
             id: 4,
             name: 'WebRTC',
+            backgroundColor: '#AC2523',
+            color: '#000',
           },
           {
             id: 5,
             name: 'JPA',
+            backgroundColor: '#010101',
+            color: '#fff',
           },
         ],
         track: '웹기술',

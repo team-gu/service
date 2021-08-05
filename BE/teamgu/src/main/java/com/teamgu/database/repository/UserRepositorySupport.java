@@ -113,7 +113,7 @@ public class UserRepositorySupport {
 	public List<UserInfoProjectResDto> selectUserProjectByUserId(Long userId) {
 		return jpaQueryFactory
 				.select(Projections.constructor(UserInfoProjectResDto.class, qUserInfoProject.id, qUserInfoProject.name,
-						qUserInfoProject.introduce, qUserInfoProject.url, qCodeDetail.Name, qUserInfoProject.user.id))
+						qCodeDetail.Name, qUserInfoProject.url, qUserInfoProject.introduce, qUserInfoProject.user.id))
 				.from(qUserInfoProject).join(qCodeDetail).on(qUserInfoProject.positionCode.eq(qCodeDetail.codeDetail))
 				.where(qUserInfoProject.user.id.eq(userId).and(qCodeDetail.code.code.eq("PO"))).fetch();
 	}

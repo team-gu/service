@@ -42,6 +42,12 @@ const Wrapper = styled.div`
   }
   -ms-overflow-style: none;
   scrollbar-width: none;
+  ::-webkit-scrollbar-track-piece:start {
+    margin-top: 10px;
+  }
+  ::-webkit-scrollbar-track-piece:end {
+    margin-bottom: 10px;
+  }
 
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(8, auto);

@@ -4,34 +4,29 @@ import { Text } from '@atoms';
 
 interface TagProps {
   text: string;
+  backgroundColor?: string;
+  color?: string;
 }
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<{ backgroundColor: string }>`
   ${({ theme: { flexRow } }) => flexRow()}
   width: fit-content;
   height: 22px;
   padding: 0 10px;
   border-radius: 11px;
-  background-color: ${({
-    theme: {
-      colors: { microBlue },
-    },
-  }) => microBlue};
-  :hover {
-    background-color: ${({
-      theme: {
-        colors: { lightBlue },
-      },
-    }) => lightBlue};
-  }
+  background-color: ${({ backgroundColor }) => backgroundColor};
   user-select: none;
   cursor: pointer;
 `;
 
-export default function Tag({ text }: TagProps): ReactElement {
+export default function Tag({
+  text,
+  backgroundColor = '#E1EDFF',
+  color = '#3B67D4',
+}: TagProps): ReactElement {
   return (
-    <Wrapper>
-      <Text text={text} fontSetting="n12b" color="#3B67D4" />
+    <Wrapper backgroundColor={backgroundColor}>
+      <Text text={text} fontSetting="n12b" color={color} />
     </Wrapper>
   );
 }
