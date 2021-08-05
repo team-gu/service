@@ -124,7 +124,6 @@ export default function TeamStatusCard({
             ))}
           </div>
         </div>
-
         <div className="description-container">
           <div className="track">
             <Text text="트랙" color="gray" />
@@ -134,7 +133,12 @@ export default function TeamStatusCard({
             <Text text="기술" color="gray" />
             <div className="skills-tags">
               {team.skills.map((item) => (
-                <Tag text={item.name} key={item.id} />
+                <Tag
+                  text={item.name}
+                  key={item.id}
+                  backgroundColor={item.backgroundColor}
+                  color={item.color}
+                />
               ))}
             </div>
           </div>
@@ -156,7 +160,6 @@ export default function TeamStatusCard({
           <Icon iconName="settings" func={() => onClickTeamManage(team)} />
         </div>
       )}
-
     </Wrapper>
   );
 }
