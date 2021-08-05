@@ -30,7 +30,9 @@ public class ChatRoomResDto extends BaseResDto{
 	
 	@ApiModelProperty(name="화면에 표시되는 채팅방 이름")
 	String room_name;
-	
+
+//  마지막 채팅 메세지를 보낸 사람의 이름
+
 //	@ApiModelProperty(name="마지막 채팅 메세지") 
 //	String last_chat_message;
 	

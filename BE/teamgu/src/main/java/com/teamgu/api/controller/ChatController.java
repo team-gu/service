@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.teamgu.api.dto.req.ChatReqDto;
+import com.teamgu.api.dto.req.UserInviteTeamReqDto;
 import com.teamgu.api.dto.req.UserRoomCheckDto;
 import com.teamgu.api.dto.req.UserRoomInviteReqDto;
 import com.teamgu.api.dto.res.BasicResponse;
@@ -86,6 +87,31 @@ public class ChatController {
 					.body(new ErrorResponse("채팅 메세지 저장에 실패했습니다."));
 		}
 		return ResponseEntity.noContent().build();
+	}
+	
+	/**
+	 * 
+	 * @param users
+	 * @return
+	 */
+	@PostMapping("/message/team/invite")
+	@ApiOperation(value="특정 유저에게 팀원 초대 요청을 보낸다")
+	public ResponseEntity<? extends BasicResponse> sendTeamInviteMessage(@RequestBody UserInviteTeamReqDto userInviteTeamReqDto){
+		long result = chatService.roomCheck(userInviteTeamReqDto.getLeader_id(), userInviteTeamReqDto.getInvitee_id());
+		if(result==0) {//존재하지 않는 경우 방을 생성하고 방 번호를 반환한다.
+			result = chatService.createRoom("팀원 초대로 새로 생성된 방");
+			log.info(result+"방이 생성되었습니다");
+			chatService.inviteUser(userInviteTeamReqDto.getLeader_id(), result);
+			chatService.inviteUser(userInviteTeamReqDto.getInvitee_id(), result);
+			//여기서 해당 채팅방에 leader to invitee로 팀원 초대 메세지를 보낸다.
+			
+			//1. DB에 먼저 저장
+			
+			//2. Receive로 메세지 보내기
+			
+			//3. 팀으로 초대하기 위해선 팀 코드가 필요
+		}
+		return ResponseEntity.ok(new CommonResponse<Long>(result));	
 	}
 	
 	@PostMapping("/room/check")
