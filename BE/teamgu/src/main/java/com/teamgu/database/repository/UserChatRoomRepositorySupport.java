@@ -48,9 +48,10 @@ public class UserChatRoomRepositorySupport {
 				+ "GROUP BY ucrA.chat_room_id "
 				+ "HAVING COUNT(*) = 2";
 		List<Number> ucrList = em.createNativeQuery(jpql).getResultList();
-		log.info(ucrList.size());		
+		em.close();
+		log.debug(ucrList.size());		
 		for(int i =0; i<ucrList.size();i++) {
-			log.info("roomId : "+ucrList.get(i).toString());
+			log.debug("roomId : "+ucrList.get(i).toString());
 		}
 		
 		if(ucrList.size()==0) {
@@ -70,5 +71,6 @@ public class UserChatRoomRepositorySupport {
 			.setParameter(2, user_id)
 			.executeUpdate();
 		et.commit();
+		em.close();
 	}
 }
