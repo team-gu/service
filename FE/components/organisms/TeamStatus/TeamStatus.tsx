@@ -2,6 +2,7 @@ import { ReactElement, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { OptionsType, OptionTypeBase } from 'react-select';
 
+import { Icon } from '@atoms';
 import {
   Filter,
   UserSelectAutoComplete,
@@ -11,7 +12,8 @@ import {
 import { TeamStatusCard, TeamManageModal } from '@organisms';
 import { getTeams } from '@repository/baseRepository';
 import { FILTER_IN_TEAMPAGE } from '@utils/constants';
-import { Team } from '@utils/type';
+import { MemberOption, Team } from '@utils/type';
+import { useUiState, useAppDispatch, setLoading } from '@store';
 
 const Wrapper = styled.div`
   display: grid;
@@ -24,13 +26,32 @@ const Wrapper = styled.div`
 
   .team-status-header {
     display: grid;
-    grid-template-columns: auto 150px 100px;
+    grid-template-columns: auto 200px 100px;
     align-items: center;
     justify-items: center;
     gap: 10px;
 
     > div {
       width: 100%;
+    }
+
+    .sort-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      .sort-icon {
+        flex: 1;
+        transform-origin: center;
+        transition: all 0.3s ease-in;
+      }
+      .rotated {
+        transform: rotate(0.5turn);
+      }
+
+      .sort-select {
+        flex: 9;
+      }
     }
   }
 
@@ -43,7 +64,7 @@ const Wrapper = styled.div`
 
 const sortByOptions: OptionsType<OptionTypeBase> = [
   {
-    label: '날짜',
+    label: '생성날짜',
     value: 'createAt',
   },
   {
@@ -51,7 +72,7 @@ const sortByOptions: OptionsType<OptionTypeBase> = [
     value: 'numberOfMembers',
   },
   {
-    label: '기타',
+    label: '팀 이름',
     value: 'etc',
   },
 ];
@@ -59,15 +80,41 @@ const sortByOptions: OptionsType<OptionTypeBase> = [
 export default function TeamStatus(): ReactElement {
   const [filterContents, setFilterContents] = useState(FILTER_IN_TEAMPAGE);
   const [showTeamManageModal, setShowTeamManageModal] = useState(false);
-  const [teamInfo, setTeaminfo] = useState<Team>();
-  const [sortby, setSortby] = useState('');
+  const [selectedTeamInfo, setSelectedTeaminfo] = useState<Team>();
   const [teams, setTeams] = useState<Team[]>([]);
 
+  const [sortBy, setSortBy] = useState(sortByOptions[0].value);
+  const [sortAsc, setSortAsc] = useState(true);
+  const [containsUserId, setContainsUserId] = useState<number>();
+
+  const dispatch = useAppDispatch();
+  const { isLoading } = useUiState();
+
+  // when initial render
   useEffect(() => {
-    getTeams().then((data) => {
-      setTeams(data);
-    });
+    renderTeams(sortBy, sortAsc, containsUserId);
   }, []);
+
+  // when change sortBy or sortAsc
+  useEffect(() => {
+    renderTeams(sortBy, sortAsc, containsUserId);
+  }, [sortBy, sortAsc, containsUserId]);
+
+  const renderTeams = (
+    by: string,
+    asc: boolean,
+    userid: number | undefined,
+  ) => {
+    dispatch(setLoading({ isLoading: true }));
+
+    // TODO: API 연결되면 setTimeout 삭제
+    setTimeout(() => {
+      getTeams(by, asc, userid).then((data) => {
+        setTeams(data);
+        dispatch(setLoading({ isLoading: false }));
+      });
+    }, 1000);
+  };
 
   const handleFilter = (filterTitle: string, eachTitle: string) => {
     const content = { ...filterContents };
@@ -77,24 +124,33 @@ export default function TeamStatus(): ReactElement {
 
   const handleOpenManageTeamModal = () => {
     setShowTeamManageModal(true);
-  }
+  };
   const handleCloseManageTeamModal = () => {
     setShowTeamManageModal(false);
-    setTeaminfo(undefined);
+    setSelectedTeaminfo(undefined);
   };
 
-  const handleChangeUserSelect = (selectedUser: object) => {
-    console.log(selectedUser);
+  const handleChangeUserSelect = (
+    selectedUser: MemberOption | null,
+  ) => {
+    if (selectedUser) {
+      setContainsUserId(selectedUser.id);
+    } else {
+      setContainsUserId(undefined);
+    }
   };
 
   const handleSortByChange = (newValue: string) => {
-    console.log(newValue);
-    setSortby(newValue);
+    setSortBy(newValue);
   };
 
   const handleTeamManageModal = (team: Team) => {
-    setTeaminfo(team);
+    setSelectedTeaminfo(team);
     setShowTeamManageModal(true);
+  };
+
+  const handleClickSort = () => {
+    setSortAsc(!sortAsc);
   };
 
   return (
@@ -114,12 +170,19 @@ export default function TeamStatus(): ReactElement {
           <UserSelectAutoComplete
             handleChangeUserSelect={handleChangeUserSelect}
           />
-          <div>
-            <SimpleSelect
-              options={sortByOptions}
-              onChange={handleSortByChange}
-              placeholder={'Sort by...'}
-            />
+          <div className="sort-container">
+            <div className="sort-select">
+              <SimpleSelect
+                options={sortByOptions}
+                onChange={handleSortByChange}
+                placeholder={'Sort by...'}
+                value={sortByOptions[0]}
+              />
+            </div>
+
+            <span className={'sort-icon' + (sortAsc ? '' : ' rotated')}>
+              <Icon iconName="sort" func={handleClickSort} />
+            </span>
           </div>
           <div>
             <Button
@@ -140,10 +203,10 @@ export default function TeamStatus(): ReactElement {
       {showTeamManageModal && (
         <TeamManageModal handleClickClose={handleCloseManageTeamModal} />
       )}
-      {showTeamManageModal && teamInfo && (
+      {showTeamManageModal && selectedTeamInfo && (
         <TeamManageModal
           handleClickClose={handleCloseManageTeamModal}
-          defaultValue={teamInfo}
+          defaultValue={selectedTeamInfo}
         />
       )}
     </Wrapper>

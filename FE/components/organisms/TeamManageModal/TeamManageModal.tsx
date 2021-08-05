@@ -21,7 +21,7 @@ import { useAuthState } from '@store';
 import { createTeam } from '@repository/baseRepository';
 import { useRouter } from 'next/router';
 import { OptionTypeBase, OptionsType } from 'react-select';
-import { Team, SkillOption, MemberOption } from '@utils/type';
+import { Team, SkillOption, MemberOption, Member } from '@utils/type';
 import { useRef } from 'react';
 
 const Wrapper = styled.div`
@@ -41,6 +41,12 @@ const Wrapper = styled.div`
   }
   -ms-overflow-style: none;
   scrollbar-width: none;
+  ::-webkit-scrollbar-track-piece:start {
+    margin-top: 10px;
+  }
+  ::-webkit-scrollbar-track-piece:end {
+    margin-bottom: 10px;
+  }
 
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(8, auto);
@@ -179,6 +185,26 @@ const Wrapper = styled.div`
     padding-top: 20px;
     padding-bottom: 50px;
   }
+
+  .incorrect-select-shake {
+    animation: shake 0.2s ease-in-out 0s 2;
+    box-shadow: 0 0 0.5em red;
+  }
+
+  @keyframes shake {
+    0% {
+      margin-left: 0rem;
+    }
+    25% {
+      margin-left: 0.5rem;
+    }
+    75% {
+      margin-left: -0.5rem;
+    }
+    100% {
+      margin-left: 0rem;
+    }
+  }
 `;
 
 const regionOptions = SSAFY_REGION.map((item) => {
@@ -213,6 +239,7 @@ export default function TeamManageModal({
   );
   const [teamSkills, setTeamSkills] = useState(defaultValue?.skills || []);
   const [teamMembers, setTeamMembers] = useState(defaultValue?.members || []);
+  const [incorrectSelectUser, setIncorrectSelectUser] = useState(false);
 
   const teamNameInputRef = useRef<HTMLInputElement>(null);
   const teamDescriptionRef = useRef<HTMLTextAreaElement>(null);
@@ -239,8 +266,17 @@ export default function TeamManageModal({
     setTeamSkills(selectedSkills.slice());
   };
 
-  const handleChangeUser = (selectedMember: MemberOption) => {
-    setTeamMembers([...teamMembers, selectedMember]);
+  const handleChangeUser = (selectedMember: MemberOption | null) => {
+    if (selectedMember) {
+      if (!teamMembers.some((v) => v.id === selectedMember.id)) {
+        setTeamMembers([...teamMembers, { ...selectedMember }]);  
+      } else {
+        setIncorrectSelectUser(true);
+        setTimeout(() => {
+          setIncorrectSelectUser(false);
+        }, 1000)
+      }
+    }
   };
 
   const handleDeleteMember = (index: number) => {
@@ -374,9 +410,14 @@ export default function TeamManageModal({
         <div className="team-invite-container">
           <Label text="팀원 초대">
             <div>
-              <UserSelectAutoComplete
-                handleChangeUserSelect={handleChangeUser}
-              />
+              <div
+                className={incorrectSelectUser ? 'incorrect-select-shake' : ''}
+              >
+                <UserSelectAutoComplete
+                  handleChangeUserSelect={handleChangeUser}
+                />
+              </div>
+
               <div className="profiles">
                 <div className="profile-and-name">
                   <ProfileImage />
