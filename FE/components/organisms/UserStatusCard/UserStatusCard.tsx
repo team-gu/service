@@ -1,7 +1,7 @@
 import { ReactElement } from 'react';
 import styled from 'styled-components';
 
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/router';
 
 import { Text, Icon } from '@atoms';
 import { Tag, ProfileImage } from '@molecules';
@@ -49,7 +49,7 @@ const Wrapper = styled.div`
         grid-template-rows: auto auto;
 
         .items {
-          min-height: 22px;
+          min-height: 51px;
           margin-bottom: 20px;
 
           .items-tags {
@@ -72,10 +72,12 @@ interface UserStatusCard {
     trackList: string[];
     skillList: string[];
   };
+  filterContents: any;
 }
 
 export default function UserStatusCard({
   user: { name, introduce, trackList, skillList },
+  filterContents,
 }: UserStatusCard): ReactElement {
   const router = useRouter();
   return (
@@ -96,22 +98,28 @@ export default function UserStatusCard({
         </div>
         <div className="description-container">
           <div className="item-container">
-          <div className="items">
-            <Text text="트랙" color="gray" />
-            <div className="items-tags">
-              {trackList.map((each) => (
-                <Tag text={each} key={each} />
-              ))}
+            <div className="items">
+              <Text text="트랙" color="gray" />
+              <div className="items-tags">
+                {trackList.map((each, index) => (
+                  <Tag
+                    text={filterContents['트랙'][index]['codeName']}
+                    key={each}
+                  />
+                ))}
+              </div>
             </div>
-          </div>
-          <div className="items">
-            <Text text="기술" color="gray" />
-            <div className="items-tags">
-              {skillList.map((each) => (
-                <Tag text={each} key={each} />
-              ))}
+            <div className="items">
+              <Text text="기술" color="gray" />
+              <div className="items-tags">
+                {skillList.map((each, index) => (
+                  <Tag
+                    text={filterContents['스킬'][index]['codeName']}
+                    key={each}
+                  />
+                ))}
+              </div>
             </div>
-          </div>
           </div>
           <div className="description">
             <Text text="소개" color="gray" />

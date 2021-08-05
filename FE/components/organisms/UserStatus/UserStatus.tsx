@@ -1,4 +1,4 @@
-import { ReactElement, useState, useEffect } from 'react';
+import { ReactElement, useState, useEffect, useRef } from 'react';
 import { OptionsType, OptionTypeBase } from 'react-select';
 
 import { UserStatusCard, LookupLayout } from '@organisms';
@@ -10,8 +10,16 @@ import {
   postByFilteredUsers,
 } from '@repository/filterRepository';
 import { useAuthState } from '@store';
-import { FILTER_TITLE } from '@utils/constants';
+import { FILTER_TITLE, OPTIONS } from '@utils/constants';
 import { MemberOption } from '@utils/type';
+
+interface Users {
+  id: number;
+  introduce: string;
+  name: string;
+  skillList: string[];
+  trackList: string[];
+}
 
 const sortByOptions: OptionsType<OptionTypeBase> = [
   {
@@ -29,7 +37,7 @@ export default function UserStatus(): ReactElement {
 
   const [sortAsc, setSortAsc] = useState(true);
 
-  const [users, setUsers] = useState({});
+  const [users, setUsers] = useState([]);
   // TODO: Search contain
   const [containsUserId, setContainsUserId] = useState<number>();
 
@@ -60,7 +68,6 @@ export default function UserStatus(): ReactElement {
           const {
             data: { data },
           } = await postByFilteredUsers(payload);
-          console.log(payload);
 
           setUsers(data);
         } catch ({
@@ -69,7 +76,7 @@ export default function UserStatus(): ReactElement {
           },
         }) {
           if (errorMessage === '일치하는 유저가 없습니다') {
-            setUsers({});
+            setUsers([]);
           }
         }
       })();
@@ -108,8 +115,10 @@ export default function UserStatus(): ReactElement {
     }
   };
 
-  const handleSortByChange = (newValue: string) => {
-    console.log(newValue);
+  const handleSortByChange = ({ value }: { value: number }) => {
+    if (projectCode?.includes(value)) {
+      setPayload({ ...payload, project: value });
+    }
   };
 
   const handleClickSort = (sort: string) => {
@@ -120,11 +129,17 @@ export default function UserStatus(): ReactElement {
   return (
     <LookupLayout>
       <div className="filter-container">
+        <SimpleSelect
+          options={OPTIONS.slice(0, 1)} // projectCode?.length)}
+          onChange={handleSortByChange}
+          value={{ label: '공통', value: 101 }}
+        />
         {filterContents &&
           Object.keys(filterContents).map(
             (each, index) =>
               each !== '기수' &&
               each !== '프로젝트' &&
+              each !== '역할' &&
               (each !== '전공/비전공' ? (
                 <Filter
                   title={each}
@@ -142,8 +157,6 @@ export default function UserStatus(): ReactElement {
                 />
               )),
           )}
-        {/* TODO: 추후 백엔드 형태에 맞춰서 변경 */}
-        {/* <Filter title="프로젝트" contents={projectCode} func={handleFilter} /> */}
       </div>
       <div className="team-status-list-container">
         <div className="team-status-header">
@@ -168,8 +181,12 @@ export default function UserStatus(): ReactElement {
           </div>
         </div>
         {users &&
-          Object.keys(users).map((each, index) => (
-            <UserStatusCard key={index} user={users[each]} />
+          users.map((each: Users) => (
+            <UserStatusCard
+              key={each?.id}
+              user={each}
+              filterContents={filterContents}
+            />
           ))}
       </div>
     </LookupLayout>
