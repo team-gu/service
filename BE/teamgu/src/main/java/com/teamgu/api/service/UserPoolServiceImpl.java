@@ -24,7 +24,7 @@ public class UserPoolServiceImpl implements UserPoolService {
     @Override
     public HashMap<Long, UserPoolResDto> findUsersByFilter(UserPoolReqDto userPoolReqDto) {
         List<Object[]> list = userPoolRepository.findUsersByFilter(userPoolReqDto);
-        HashMap<String, String> codeHash = userPoolRepository.getCodeDetail();
+//        HashMap<String, String> codeHash = userPoolRepository.getCodeDetail();
         HashMap<Long, UserPoolResDto> retHash = new HashMap<>();
 
         for (Object[] elem : list) {
@@ -60,13 +60,14 @@ public class UserPoolServiceImpl implements UserPoolService {
             if (elem[5] != null) { //wish Track
                 String[] tracks = elem[5].toString().split(",");
                 for(String track : tracks) {
-                    retHash.get(id).getTrackList().add(codeHash.get("TR" + track));
+                    retHash.get(id).getTrackList().add(track);
                 }
             }
+
             if (elem[6] != null) { //스킬 코드
                 String[] skills = elem[6].toString().split(",");
                 for(String skill : skills) {
-                    retHash.get(id).getSkillList().add(codeHash.get("SK" + skill));
+                    retHash.get(id).getSkillList().add(skill);
                 }
             }
         }
