@@ -32,4 +32,7 @@ public class UserPoolReqDto {
 
     @ApiModelProperty(name = "정렬 방식", example = "")
     private String sort;
+
+    @ApiModelProperty(name = "검색하는 사람의 학번", example = "")
+    private String studentNumber;
 }
