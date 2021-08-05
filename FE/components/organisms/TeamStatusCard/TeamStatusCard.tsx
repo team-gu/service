@@ -102,7 +102,7 @@ export default function TeamStatusCard({
   const currentUserIsLeader = true;
 
   return (
-    <Wrapper isComplete={team.completeYN === 0}>
+    <Wrapper isComplete={team.completeYN !== 0}>
       <div className="grid-container">
         <div className="team-name-container">
           <Text text="팀 이름" color="gray" />
@@ -152,11 +152,6 @@ export default function TeamStatusCard({
       <div className="completed-team-overlay"></div>
       {currentUserIsLeader && (
         <div className="team-manage-button">
-          {/* <Button
-            title="관리"
-            width="60px"
-            func={() => onClickTeamManage(team)}
-          /> */}
           <Icon iconName="settings" func={() => onClickTeamManage(team)} />
         </div>
       )}
