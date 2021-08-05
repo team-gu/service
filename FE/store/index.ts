@@ -7,6 +7,8 @@ import modalReducer, {
 } from './modalSlice';
 import authReducer, {
   setUser,
+  setProjects,
+  setAwards,
   setLogin,
   setUserInfo,
   setLogout,
@@ -29,6 +31,8 @@ export {
   removeModal,
   setContent,
   setUser,
+  setProjects,
+  setAwards,
   setLogin,
   setUserInfo,
   setLogout,
