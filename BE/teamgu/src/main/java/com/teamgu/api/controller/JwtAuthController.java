@@ -52,11 +52,13 @@ public class JwtAuthController {
 		String password = dummyReq.getPassword();
 		String name = dummyReq.getName();
 		short role = dummyReq.getRole();
+		String studentNumber = dummyReq.getStudentNumber();
 		User user = User.builder()
 				.email(email)
 				.password(password)
 				.name(name)
 				.role(role)
+				.studentNumber(studentNumber)				
 				.build();
 		if(userService.save(user))
 			return ResponseEntity.ok(new BaseResDto(200,"Success"));
