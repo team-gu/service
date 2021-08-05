@@ -181,14 +181,14 @@ export const getTeams = async (
             name: '안석현',
             img: 'default',
             email: 'naannaan@naver.com',
-            profileSrc: 'profile.png',
+            profileSrc: '/profile.png',
           },
           {
             id: 3,
             name: '박싸피',
             img: null,
             email: 'parkssafy@naver.com',
-            profileSrc: 'profile.png',
+            profileSrc: '/profile.png',
           },
         ],
         skills: [
@@ -225,14 +225,14 @@ export const getTeams = async (
             name: '김싸피',
             img: null,
             email: 'kimssafy@naver.com',
-            profileSrc: 'profile.png',
+            profileSrc: '/profile.png',
           },
           {
             id: 4,
             name: '강싸피',
             img: null,
             email: 'kangssafy@naver.com',
-            profileSrc: 'profile.png',
+            profileSrc: '/profile.png',
           },
         ],
         skills: [
