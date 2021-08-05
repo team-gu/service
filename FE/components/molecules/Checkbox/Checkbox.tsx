@@ -5,6 +5,7 @@ interface CheckboxProps {
   children: ReactElement;
   // TODO: 타입 정의
   func: any;
+  defaultChecked?: boolean;
 }
 
 const Wrapper = styled.div`
@@ -19,10 +20,11 @@ const Wrapper = styled.div`
 export default function Checkbox({
   children,
   func,
+  defaultChecked = false,
 }: CheckboxProps): ReactElement {
   return (
     <Wrapper>
-      <input type="checkbox" onClick={func} />
+      <input type="checkbox" onClick={func} defaultChecked={defaultChecked} />
       {children}
     </Wrapper>
   );
