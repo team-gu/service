@@ -16,15 +16,15 @@ import lombok.Setter;
  */
 public class NoticeFileResDto {
 
-    @ApiModelProperty(name = "파일 원본명", example = "")
+    @ApiModelProperty(name = "파일 원본명")
     String originalName;
 
-    @ApiModelProperty(name = "암호화된 파일명", example = "")
+    @ApiModelProperty(name = "암호화된 파일명")
     String name;
 
-    @ApiModelProperty(name = "파일 화장자", example = "")
+    @ApiModelProperty(name = "파일 화장자")
     String extension;
 
-    @ApiModelProperty(name = "파일 등록일", example = "")
+    @ApiModelProperty(name = "파일 등록일")
     String registDate;
 }
