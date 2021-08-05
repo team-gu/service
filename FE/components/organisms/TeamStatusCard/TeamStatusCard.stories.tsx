@@ -12,7 +12,7 @@ export default {
 const Template: Story = () => {
   const [teams, setTeams] = useState<Team[]>([]);
   useEffect(() => {
-    getTeams().then((data) => {
+    getTeams('createAt', true).then((data) => {
       setTeams(data);
     });
   }, []);

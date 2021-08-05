@@ -102,7 +102,7 @@ export default function TeamStatusCard({
   const currentUserIsLeader = true;
 
   return (
-    <Wrapper isComplete={team.isCompleted}>
+    <Wrapper isComplete={team.completeYN === 0}>
       <div className="grid-container">
         <div className="team-name-container">
           <Text text="팀 이름" color="gray" />
@@ -112,10 +112,10 @@ export default function TeamStatusCard({
         <div className="profiles-container">
           <Text text="팀 구성" color="gray" />
           <div className="profiles">
-            {team.members.map((item) => (
+            {team.teamMembers.map((item) => (
               <div className="profile" key={item.id}>
                 <ProfileImage size={80} src={item.profileSrc} />
-                {item.leader ? (
+                {item.id === team.leaderId ? (
                   <Text text={item.name + '(팀장)'} />
                 ) : (
                   <Text text={item.name} />
@@ -127,7 +127,7 @@ export default function TeamStatusCard({
         <div className="description-container">
           <div className="track">
             <Text text="트랙" color="gray" />
-            <Text text={team.track} fontSetting="n20m" />
+            <Text text={team.trackName} fontSetting="n20m" />
           </div>
           <div className="skills">
             <Text text="기술" color="gray" />
@@ -144,7 +144,7 @@ export default function TeamStatusCard({
           </div>
           <div className="description">
             <Text text="소개" color="gray" />
-            <Text text={team.description} isLineBreak fontSetting="n18m" />
+            <Text text={team.introduce} isLineBreak fontSetting="n18m" />
           </div>
         </div>
       </div>

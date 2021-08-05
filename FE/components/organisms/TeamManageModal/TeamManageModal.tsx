@@ -17,12 +17,12 @@ import {
   UserSelectAutoComplete,
   SimpleSelect,
 } from '@molecules';
-import { SSAFY_CLASS, SSAFY_REGION, SSAFY_TRACK } from '@utils/constants';
+import { SSAFY_TRACK } from '@utils/constants';
 import { useAuthState } from '@store';
 import { createTeam } from '@repository/baseRepository';
 import { useRouter } from 'next/router';
 import { OptionTypeBase, OptionsType } from 'react-select';
-import { Team, SkillOption, MemberOption, Member } from '@utils/type';
+import { Team, SkillOption, MemberOption } from '@utils/type';
 import { useRef } from 'react';
 
 const Wrapper = styled.div`
@@ -49,11 +49,9 @@ const Wrapper = styled.div`
     margin-bottom: 10px;
   }
 
-  grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(8, auto);
 
   .modal-header {
-    grid-column: 1 / 4;
     text-align: center;
     padding-top: 40px;
     padding-bottom: 20px;
@@ -71,31 +69,17 @@ const Wrapper = styled.div`
   }
 
   .team-name-container {
-    grid-column: 1 / 4;
     input {
       padding-left: 10px;
       font-size: 15px;
     }
   }
 
-  .team-region-container {
-    margin-bottom: 20px;
-    > div {
-      margin-right: 15px;
-    }
-  }
-
-  .team-class-container {
-    > div {
-      margin-right: 15px;
-    }
-  }
-
   .team-track-container {
+    margin-bottom: 20px;
   }
 
   .team-description-container {
-    grid-column: 1 / 4;
     margin-bottom: 15px;
 
     textarea {
@@ -109,7 +93,6 @@ const Wrapper = styled.div`
   }
 
   .team-skills-container {
-    grid-column: 1 / 4;
     margin-bottom: 15px;
 
     .input {
@@ -130,7 +113,6 @@ const Wrapper = styled.div`
   }
 
   .team-leader-container {
-    grid-column: 1 / 4;
 
     input {
       padding-left: 15px;
@@ -140,7 +122,6 @@ const Wrapper = styled.div`
   }
 
   .team-invite-container {
-    grid-column: 1 / 4;
 
     .input {
       margin-bottom: 15px;
@@ -181,7 +162,6 @@ const Wrapper = styled.div`
   }
 
   .modal-footer {
-    grid-column: 1 / 4;
     text-align: center;
     padding-top: 20px;
     padding-bottom: 50px;
@@ -208,14 +188,6 @@ const Wrapper = styled.div`
   }
 `;
 
-const regionOptions = SSAFY_REGION.map((item) => {
-  return { label: item, value: item };
-});
-
-const classOptions = SSAFY_CLASS.map((item) => {
-  return { label: item, value: item };
-});
-
 const trackOptions = SSAFY_TRACK.map((item) => {
   return { label: item, value: item };
 });
@@ -232,14 +204,12 @@ export default function TeamManageModal({
   const router = useRouter();
   const { user } = useAuthState();
   const [teamName, setTeamName] = useState(defaultValue?.name || '');
-  const [teamRegion, setTeamRegion] = useState(defaultValue?.region || '');
-  const [teamClass, setTeamClass] = useState(defaultValue?.class || '');
-  const [teamTrack, setTeamTrack] = useState(defaultValue?.track || '');
+  const [teamTrack, setTeamTrack] = useState(defaultValue?.trackName || '');
   const [teamDescription, setTeamDescription] = useState(
-    defaultValue?.description || '',
+    defaultValue?.introduce || '',
   );
   const [teamSkills, setTeamSkills] = useState(defaultValue?.skills || []);
-  const [teamMembers, setTeamMembers] = useState(defaultValue?.members || []);
+  const [teamMembers, setTeamMembers] = useState(defaultValue?.teamMembers || []);
   const [incorrectSelectUser, setIncorrectSelectUser] = useState(false);
 
   const teamNameInputRef = useRef<HTMLInputElement>(null);
@@ -253,14 +223,6 @@ export default function TeamManageModal({
 
   const handleChangeTeamName = ({ target }: ChangeEvent<HTMLInputElement>) => {
     setTeamName(target.value);
-  };
-
-  const handleChangeRegion = (selectedRegion: any) => {
-    setTeamRegion(selectedRegion.value);
-  };
-
-  const handleChangeClass = (selectedClass: any) => {
-    setTeamClass(selectedClass.value);
   };
 
   const handleChangeTrack = (selectedTrack: any) => {
@@ -298,8 +260,6 @@ export default function TeamManageModal({
 
   const handleSubmit = () => {
     console.log(teamName);
-    console.log(teamRegion);
-    console.log(teamClass);
     console.log(teamTrack);
     console.log(teamDescription);
     console.log(teamSkills);
@@ -307,12 +267,10 @@ export default function TeamManageModal({
 
     createTeam({
       name: teamName,
-      region: teamRegion,
-      class: teamClass,
-      track: teamTrack,
-      description: teamDescription,
+      trackName: teamTrack,
+      introduce: teamDescription,
       skills: teamSkills,
-      members: teamMembers,
+      teamMembers: teamMembers,
     });
 
     // TODO: 팀 등록 후 새로고침
@@ -352,32 +310,12 @@ export default function TeamManageModal({
           </Label>
         </div>
 
-        <div className="team-region-container">
-          <Label text="지역">
-            <SimpleSelect
-              options={regionOptions}
-              onChange={handleChangeRegion}
-              value={
-                defaultValue ? toOptionTypeBase(defaultValue.region) : null
-              }
-            />
-          </Label>
-        </div>
-        <div className="team-class-container">
-          <Label text="반">
-            <SimpleSelect
-              options={classOptions}
-              onChange={handleChangeClass}
-              value={defaultValue ? toOptionTypeBase(defaultValue.class) : null}
-            />
-          </Label>
-        </div>
         <div className="team-track-container">
           <Label text="트랙">
             <SimpleSelect
               options={trackOptions}
               onChange={handleChangeTrack}
-              value={defaultValue ? toOptionTypeBase(defaultValue.track) : null}
+              value={defaultValue ? toOptionTypeBase(defaultValue.trackName) : null}
             />
           </Label>
         </div>
