@@ -66,7 +66,7 @@ export const setLogin =
       console.log(data.userInfo);
       data.userInfo.introduce === ''
         ? router.push('/userdetail')
-        : router.push('/humanpool');
+        : router.push('/team');
     } catch (error) {
       console.error(error);
     } finally {

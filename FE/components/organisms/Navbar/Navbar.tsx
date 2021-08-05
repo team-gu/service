@@ -100,7 +100,7 @@ export default function Navbar(): ReactElement {
               </Link>
             </li>
             <li>
-              <Link href="humanpool">
+              <Link href="team">
                 <a>인력풀</a>
               </Link>
             </li>
