@@ -15,7 +15,7 @@ interface ApiHeaders {
   'Access-Control-Allow-Headers': string;
 }
 
-export const SERVER_URL: string = 'http://i5a202.p.ssafy.io:8080';
+export const SERVER_URL: string = 'https://i5a202.p.ssafy.io:8080';
 
 const api = ({ url, type = 'get', param }: ApiParameter) => {
   const accessToken = loadItem('accessToken');
