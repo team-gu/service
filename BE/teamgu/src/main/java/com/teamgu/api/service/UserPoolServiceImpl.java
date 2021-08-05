@@ -38,30 +38,36 @@ public class UserPoolServiceImpl implements UserPoolService {
                         .trackList(new HashSet<>())
                         .skillList(new HashSet<>()).build();
 
-                if (ObjectUtils.isNotEmpty(elem[1])) {
+                if (ObjectUtils.isNotEmpty(elem[1])) { //이름
                     dto.setName(elem[1].toString());
                 }
 
-                if (ObjectUtils.isNotEmpty(elem[2])) {
+                if (ObjectUtils.isNotEmpty(elem[2])) { //소개
                     dto.setIntroduce(elem[2].toString());
                 }
 
-                if (ObjectUtils.isNotEmpty(elem[3])) {
+                if (ObjectUtils.isNotEmpty(elem[3])) { //프로필 파일 서버측 이름
                     dto.setFileName(elem[3].toString());
                 }
 
-                if (ObjectUtils.isNotEmpty(elem[4])) {
+                if (ObjectUtils.isNotEmpty(elem[4])) { //프로필 확장자
                     dto.setExtension(elem[4].toString());
                 }
 
                 retHash.put(id, dto);
             }
 
-            if (elem[5] != null) {
-                retHash.get(id).getTrackList().add(codeHash.get("TR" + elem[5]));
+            if (elem[5] != null) { //wish Track
+                String[] tracks = elem[5].toString().split(",");
+                for(String track : tracks) {
+                    retHash.get(id).getTrackList().add(codeHash.get("TR" + track));
+                }
             }
-            if (elem[6] != null) {
-                retHash.get(id).getSkillList().add(codeHash.get("SK" + elem[6]));
+            if (elem[6] != null) { //스킬 코드
+                String[] skills = elem[6].toString().split(",");
+                for(String skill : skills) {
+                    retHash.get(id).getSkillList().add(codeHash.get("SK" + skill));
+                }
             }
         }
 
