@@ -100,12 +100,14 @@ export default function Navbar(): ReactElement {
               </Link>
             </li>
             <li>
-              <Link href="team">
+              <Link href="humanpool">
                 <a>인력풀</a>
               </Link>
             </li>
             <li>
-              <Link href="team">팀구성현황</Link>
+              <Link href="team">
+                <a>팀구성현황</a>
+              </Link>
             </li>
             <li
               onClick={() => {
