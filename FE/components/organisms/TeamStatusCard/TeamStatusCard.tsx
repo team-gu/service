@@ -1,6 +1,6 @@
 import { ReactElement } from 'react';
 import styled from 'styled-components';
-import { Text } from '@atoms';
+import { Text, Icon } from '@atoms';
 import { Tag, ProfileImage, Button } from '@molecules';
 import { useAuthState } from '@store';
 import { Team } from '@utils/type';
@@ -8,7 +8,7 @@ import { Team } from '@utils/type';
 const Wrapper = styled.div<{ isComplete: boolean }>`
   position: relative;
   box-shadow: 0 12px 20px 0 rgba(0, 0, 0, 0.15);
-  padding: 20px 60px 20px 20px;
+  padding: 20px;
 
   .completed-team-overlay {
     display: none;
@@ -31,10 +31,12 @@ const Wrapper = styled.div<{ isComplete: boolean }>`
   `}
 
   .team-manage-button {
-    position: absolute;
-    right: 15px;
-    bottom: 15px;
-    z-index: 11;
+    display: flex;
+    justify-content: flex-end;
+
+    i {
+      cursor: pointer;
+    }
   }
 
   .grid-container {
@@ -42,9 +44,15 @@ const Wrapper = styled.div<{ isComplete: boolean }>`
     grid-template-columns: 1fr 1fr;
     grid-template-rows: auto auto;
 
-    .profiles-container {
+    .team-name-container {
       grid-column: 1 / 2;
       grid-row: 1 / 2;
+      margin-bottom: 20px;
+    }
+
+    .profiles-container {
+      grid-column: 1 / 2;
+      grid-row: 2 / 3;
 
       .profiles {
         padding: 0 15px 0 5px;
@@ -56,26 +64,24 @@ const Wrapper = styled.div<{ isComplete: boolean }>`
       }
     }
 
-    .skills-container {
-      grid-column: 1 / 2;
-      grid-row: 2 / 3;
-
-      .skills {
-        margin-top: 10px;
-        padding-left: 5px;
-        > div {
-          display: inline-block;
-          margin: 0 5px;
-        }
-      }
-    }
-
     .description-container {
       grid-column: 2 / 3;
       grid-row: 1 / 3;
 
-      .track {
+      .skills {
         margin-bottom: 20px;
+
+        .skills-tags {
+          margin-top: 10px;
+          > div {
+            display: inline-block;
+            margin: 0 5px;
+          }
+        }
+      }
+
+      .track {
+        margin-bottom: 10px;
       }
     }
   }
@@ -97,17 +103,12 @@ export default function TeamStatusCard({
 
   return (
     <Wrapper isComplete={team.isCompleted}>
-      {currentUserIsLeader && (
-        <div className="team-manage-button">
-          <Button
-            title="관리"
-            width="60px"
-            func={() => onClickTeamManage(team)}
-          />
-        </div>
-      )}
-
       <div className="grid-container">
+        <div className="team-name-container">
+          <Text text="팀 이름" color="gray" />
+          <Text text={team.name} fontSetting="n20m" />
+        </div>
+
         <div className="profiles-container">
           <Text text="팀 구성" color="gray" />
           <div className="profiles">
@@ -124,19 +125,18 @@ export default function TeamStatusCard({
           </div>
         </div>
 
-        <div className="skills-container">
-          <Text text="기술" color="gray" />
-          <div className="skills">
-            {team.skills.map((item) => (
-              <Tag text={item.name} key={item.id} />
-            ))}
-          </div>
-        </div>
-
         <div className="description-container">
           <div className="track">
             <Text text="트랙" color="gray" />
             <Text text={team.track} fontSetting="n20m" />
+          </div>
+          <div className="skills">
+            <Text text="기술" color="gray" />
+            <div className="skills-tags">
+              {team.skills.map((item) => (
+                <Tag text={item.name} key={item.id} />
+              ))}
+            </div>
           </div>
           <div className="description">
             <Text text="소개" color="gray" />
@@ -146,6 +146,17 @@ export default function TeamStatusCard({
       </div>
 
       <div className="completed-team-overlay"></div>
+      {currentUserIsLeader && (
+        <div className="team-manage-button">
+          {/* <Button
+            title="관리"
+            width="60px"
+            func={() => onClickTeamManage(team)}
+          /> */}
+          <Icon iconName="settings" func={() => onClickTeamManage(team)} />
+        </div>
+      )}
+
     </Wrapper>
   );
 }
