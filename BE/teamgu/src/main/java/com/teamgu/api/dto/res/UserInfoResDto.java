@@ -37,5 +37,6 @@ public class UserInfoResDto {
 	List<UserInfoAwardResDto> awards;
 	@ApiModelProperty(name = "userClass", example = "name = 2반, regionName = 서울")
 	UserClassResDto userClass;
-
+	@ApiModelProperty(name = "userProjectCodes", example = "[101, 102, 103]")
+	List<Integer> projectCodes;
 }
