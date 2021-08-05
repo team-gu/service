@@ -6,7 +6,7 @@ export const getEachFiltersCodeList = async () =>
     type: 'get',
   });
 
-export const postByFilteredUsers = async (param) =>
+export const postByFilteredUsers = async (param: any) =>
   await api({
     url: '/api/userPool/search',
     type: 'post',
