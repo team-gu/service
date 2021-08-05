@@ -124,7 +124,6 @@ export default function TeamStatusCard({
             ))}
           </div>
         </div>
-
         <div className="description-container">
           <div className="track">
             <Text text="트랙" color="gray" />
