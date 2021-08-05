@@ -6,25 +6,29 @@ export interface Member {
   name: string;
   email: string;
   profileSrc: string;
-  leader: boolean;
 }
 
 export interface Skill {
   id: number;
   name: string;
-  backgroundColor: string;
-  color: string;
+  backgroundColor?: string;
+  color?: string;
 }
 
 export interface Team {
+  id: number;
   name: string;
-  region: string;
-  class: string;
-  track: string;
-  description: string;
+  introduce: string;
+
+  completeYN: number;
+  nowNumber: number;
+  maxNumber: number;
+
+  leaderId: number;
+  trackName: string;
+
   skills: Skill[];
-  members: Member[];
-  isCompleted: boolean;
+  teamMembers: Member[];
 }
 
 export interface SkillOption extends OptionTypeBase, Skill {}
