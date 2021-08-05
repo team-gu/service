@@ -18,5 +18,5 @@ simpleSelect.args = {
     { value: 'strawberry', label: 'Strawberry' },
     { value: 'vanilla', label: 'Vanilla' },
   ],
-  onChange: (value: string) => console.log(value),
+  onChange: (v: any) => console.log(v),
 };

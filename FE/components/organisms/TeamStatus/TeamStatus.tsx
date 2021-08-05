@@ -140,8 +140,8 @@ export default function TeamStatus(): ReactElement {
     }
   };
 
-  const handleSortByChange = (newValue: string) => {
-    setSortBy(newValue);
+  const handleSortByChange = (newValue: any) => {
+    setSortBy(newValue.value);
   };
 
   const handleTeamManageModal = (team: Team) => {
