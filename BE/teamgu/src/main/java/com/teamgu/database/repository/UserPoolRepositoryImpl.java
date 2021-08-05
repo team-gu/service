@@ -91,6 +91,7 @@ public class UserPoolRepositoryImpl implements UserPoolRepositoryCustom {
                     sb.append(" or ");
                 }
                 sb.append("u.wish_position_code = " + elem);
+                idx++;
             }
             sb.append(")");
         }
@@ -103,6 +104,7 @@ public class UserPoolRepositoryImpl implements UserPoolRepositoryCustom {
                     sb.append(" or ");
                 }
                 sb.append("m.track_code = " + elem);
+                idx++;
             }
             sb.append(")");
         }
@@ -115,6 +117,7 @@ public class UserPoolRepositoryImpl implements UserPoolRepositoryCustom {
                     sb.append(" or ");
                 }
                 sb.append("s.skill_code = " + elem);
+                idx++;
             }
             sb.append(")");
         }
