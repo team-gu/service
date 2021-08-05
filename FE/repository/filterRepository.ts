@@ -5,3 +5,10 @@ export const getEachFiltersCodeList = async () =>
     url: '/api/codeDetail/user',
     type: 'get',
   });
+
+export const postByFilteredUsers = async (param: any) =>
+  await api({
+    url: '/api/userPool/search',
+    type: 'post',
+    param,
+  });

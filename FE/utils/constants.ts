@@ -9,14 +9,21 @@ export const PROJECT_CODE: any = {
   자율: 104,
 };
 
+export const OPTIONS: any = [
+  { label: '공통', value: 101 },
+  { label: '특화', value: 102 },
+  { label: '필드', value: 103 },
+  { label: '자율', value: 104 },
+];
+
 export const FILTER_TITLE: any = {
-  '스킬': 'skills',
-  '프로젝트': 'project',
-  '지역': 'region',
-  '역할': 'position',
-  '트랙': 'track',
+  스킬: 'skills',
+  프로젝트: 'project',
+  지역: 'region',
+  역할: 'position',
+  트랙: 'track',
   '전공/비전공': 'isMajor',
-}
+};
 
 export const SSAFY_REGION = ['서울', '대전', '구미', '광주'];
 export const SSAFY_CLASS = ['미정', '1', '2', '3', '4', '5', '6'];

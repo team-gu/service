@@ -1,9 +1,10 @@
 import { ReactElement } from 'react';
+import { UserStatus } from '@organisms';
 
 export default function HumanPool(): ReactElement {
   return (
     <>
-      <h1>This is template HumanPool</h1>
+      <UserStatus />
     </>
   );
 }
