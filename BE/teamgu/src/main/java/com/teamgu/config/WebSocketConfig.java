@@ -24,7 +24,11 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer{
 						"http://*:3000",
 						"http://*.*.*.*:3000",
 						"http://*:5500",
-						"http://*:8080")
+						"http://*:8080",
+						"https://*:80",
+						"https://*:8080",
+						"https://*:3000",
+						"https://*:5500")
 				.withSockJS(); //javascript에서 SockJS 생성자를 통해 연결
 	}
 	
