@@ -47,6 +47,7 @@ public class WishTrackRepositorySupport {
 				.executeUpdate();
 
 		et.commit();
+		em.close();
 
 	}
 
