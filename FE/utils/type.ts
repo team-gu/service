@@ -28,3 +28,7 @@ export interface SkillOption extends OptionTypeBase, Skill {}
 
 export interface MemberOption extends OptionTypeBase, Member {}
 
+export interface Project {
+  name: string,
+  id: number,
+}
