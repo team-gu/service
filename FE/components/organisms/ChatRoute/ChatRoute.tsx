@@ -42,6 +42,11 @@ const Wrapper = styled(motion.div)`
     i {
       cursor: pointer;
     }
+
+    div {
+      cursor: default;
+      user-select: none;
+    }
   }
 `;
 
@@ -68,7 +73,8 @@ export default function ChatRoute(): ReactElement {
 
   useEffect(() => {
     document.addEventListener('click', handleClickOutside, true);
-    return () => document.removeEventListener('click', handleClickOutside, true);
+    return () =>
+      document.removeEventListener('click', handleClickOutside, true);
   }, []);
 
   const handleToChatRoom = async (id: number) => {
@@ -95,7 +101,15 @@ export default function ChatRoute(): ReactElement {
       ref={wrapperRef}
     >
       <div className="header">
-        <Text text="채팅 목록" fontSetting="n16b" color="white" />
+        {route === CHAT_LIST ? (
+          <Text text="채팅 목록" fontSetting="n16b" color="white" />
+        ) : (
+          <Icon
+            iconName="arrow_back"
+            color="white"
+            func={() => setRoute(CHAT_LIST)}
+          />
+        )}
         <Icon
           iconName="close"
           color="white"
