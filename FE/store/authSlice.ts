@@ -73,17 +73,16 @@ export const setLogin =
     dispatch(setLoading({ isLoading: true }));
     try {
       const { data } = await postLoginApi(param);
-      console.log(data);
       saveItem('accessToken', data.accessToken);
       // TODO: 리프레시 토큰 사용이 후순위로 밀려서 후에 이 부분에 대한 수정과 사용이 필요합니다.
       // saveItem('refreshToken', data.refreshToken);
-      console.log(data.userInfo);
       dispatch(setUser(data.userInfo));
       data.userInfo.introduce === ''
         ? router.push('/userdetail')
         : router.push('/humanpool');
     } catch (error) {
       console.error(error);
+      return error.response;
     } finally {
       dispatch(setLoading({ isLoading: false }));
     }
