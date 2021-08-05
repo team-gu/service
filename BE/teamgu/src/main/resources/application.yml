@@ -1,3 +1,6 @@
+logging:
+  level:
+    root: debug
 server:
   ssl:
     key-alias: tomcat
@@ -27,6 +30,7 @@ spring:
       max-lifetime: 420000
       connection-timeout: 10000
       validation-timeout: 10000
+      maximum-pool-size: 30
   servlet:
     multipart:
       maxFileSize: 30MB

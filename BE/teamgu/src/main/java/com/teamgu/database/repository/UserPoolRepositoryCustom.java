@@ -2,7 +2,6 @@ package com.teamgu.database.repository;
 
 import com.teamgu.api.dto.req.UserPoolReqDto;
 
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -10,5 +9,4 @@ import java.util.List;
  */
 public interface UserPoolRepositoryCustom {
     List<Object[]> findUsersByFilter(UserPoolReqDto userPoolReqDto);
-    HashMap<String, String> getCodeDetail();
 }

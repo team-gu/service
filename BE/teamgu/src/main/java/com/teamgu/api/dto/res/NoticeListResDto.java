@@ -13,12 +13,12 @@ import lombok.Getter;
  * 목적에 맞게 최소 필요 정보만 보낸다
  */
 public class NoticeListResDto {
-    @ApiModelProperty(name = "공지사항 번호", example = "")
+    @ApiModelProperty(name = "공지사항 번호")
     long id;
 
-    @ApiModelProperty(name = "공지사항 제목", example = "")
+    @ApiModelProperty(name = "공지사항 제목")
     String title;
 
-    @ApiModelProperty(name = "공지사항 생성일", example = "")
+    @ApiModelProperty(name = "공지사항 생성일")
     String date;
 }
