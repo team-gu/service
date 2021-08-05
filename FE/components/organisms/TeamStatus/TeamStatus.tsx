@@ -1,5 +1,4 @@
 import { ReactElement, useState, useEffect } from 'react';
-import styled from 'styled-components';
 import { OptionsType, OptionTypeBase } from 'react-select';
 
 import { Icon } from '@atoms';
@@ -9,58 +8,13 @@ import {
   Button,
   SimpleSelect,
 } from '@molecules';
-import { TeamStatusCard, TeamManageModal } from '@organisms';
+
+import { TeamStatusCard, TeamManageModal, LookupLayout } from '@organisms';
 import { getTeams } from '@repository/baseRepository';
-import { FILTER_IN_TEAMPAGE } from '@utils/constants';
+import { FILTER_TITLE } from '@utils/constants';
 import { MemberOption, Team } from '@utils/type';
-import { useUiState, useAppDispatch, setLoading } from '@store';
-
-const Wrapper = styled.div`
-  display: grid;
-  grid-template-columns: 200px auto;
-  grid-template-rows: auto;
-  gap: 20px;
-
-  .filter-container {
-  }
-
-  .team-status-header {
-    display: grid;
-    grid-template-columns: auto 200px 100px;
-    align-items: center;
-    justify-items: center;
-    gap: 10px;
-
-    > div {
-      width: 100%;
-    }
-
-    .sort-container {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-
-      .sort-icon {
-        flex: 1;
-        transform-origin: center;
-        transition: all 0.3s ease-in;
-      }
-      .rotated {
-        transform: rotate(0.5turn);
-      }
-
-      .sort-select {
-        flex: 9;
-      }
-    }
-  }
-
-  .team-status-list-container {
-    > div {
-      margin-bottom: 20px;
-    }
-  }
-`;
+import { useAuthState, useAppDispatch, setLoading } from '@store';
+import { getEachFiltersCodeList } from '@repository/filterRepository';
 
 const sortByOptions: OptionsType<OptionTypeBase> = [
   {
@@ -78,7 +32,11 @@ const sortByOptions: OptionsType<OptionTypeBase> = [
 ];
 
 export default function TeamStatus(): ReactElement {
-  const [filterContents, setFilterContents] = useState(FILTER_IN_TEAMPAGE);
+  const {
+    user: { projectCode, studentNumber },
+  } = useAuthState();
+  const [filterContents, setFilterContents] = useState<any>({});
+  const [payload, setPayload] = useState({});
   const [showTeamManageModal, setShowTeamManageModal] = useState(false);
   const [selectedTeamInfo, setSelectedTeaminfo] = useState<Team>();
   const [teams, setTeams] = useState<Team[]>([]);
@@ -88,14 +46,24 @@ export default function TeamStatus(): ReactElement {
   const [containsUserId, setContainsUserId] = useState<number>();
 
   const dispatch = useAppDispatch();
-  const { isLoading } = useUiState();
 
   // when initial render
   useEffect(() => {
-    renderTeams(sortBy, sortAsc, containsUserId);
+    (async () => {
+      const {
+        data: { data },
+      } = await getEachFiltersCodeList();
+      console.log(data);
+
+      setFilterContents(data);
+    })();
+
+    setPayload({
+      project: projectCode[projectCode.length - 1],
+      studentNumber,
+    });
   }, []);
 
-  // when change sortBy or sortAsc
   useEffect(() => {
     renderTeams(sortBy, sortAsc, containsUserId);
   }, [sortBy, sortAsc, containsUserId]);
@@ -116,23 +84,38 @@ export default function TeamStatus(): ReactElement {
     }, 1000);
   };
 
-  const handleFilter = (filterTitle: string, eachTitle: string) => {
-    const content = { ...filterContents };
-    content[filterTitle][eachTitle] = !content[filterTitle][eachTitle];
-    setFilterContents(content);
+  const handleFilter = (title: string, code: string) => {
+    const payloadTemp: any = { ...payload };
+    const convertTitle: any = FILTER_TITLE[title];
+
+    if (!payloadTemp.hasOwnProperty(convertTitle)) {
+      payloadTemp[convertTitle] = [];
+    }
+
+    if (payloadTemp[convertTitle].includes(code)) {
+      payloadTemp[convertTitle].splice(
+        payloadTemp[convertTitle].indexOf(code),
+        1,
+      );
+    } else {
+      payloadTemp[convertTitle].push(code);
+    }
+
+    // TODO: 필터링 결과 API Call을 여기서 해야 함
+
+    setPayload(payloadTemp);
   };
 
   const handleOpenManageTeamModal = () => {
     setShowTeamManageModal(true);
   };
+
   const handleCloseManageTeamModal = () => {
     setShowTeamManageModal(false);
     setSelectedTeaminfo(undefined);
   };
 
-  const handleChangeUserSelect = (
-    selectedUser: MemberOption | null,
-  ) => {
+  const handleChangeUserSelect = (selectedUser: MemberOption | null) => {
     if (selectedUser) {
       setContainsUserId(selectedUser.id);
     } else {
@@ -154,16 +137,20 @@ export default function TeamStatus(): ReactElement {
   };
 
   return (
-    <Wrapper>
+    <LookupLayout>
       <div className="filter-container">
-        {Object.keys(FILTER_IN_TEAMPAGE).map((each, index) => (
-          <Filter
-            title={each}
-            contents={filterContents[each]}
-            func={handleFilter}
-            key={index}
-          />
-        ))}
+        {filterContents &&
+          Object.keys(filterContents).map(
+            (each, index) =>
+              (each === '스킬' || each === '트랙') && (
+                <Filter
+                  title={each}
+                  contents={filterContents[each]}
+                  func={handleFilter}
+                  key={index}
+                />
+              ),
+          )}
       </div>
       <div className="team-status-list-container">
         <div className="team-status-header">
@@ -179,7 +166,6 @@ export default function TeamStatus(): ReactElement {
                 value={sortByOptions[0]}
               />
             </div>
-
             <span className={'sort-icon' + (sortAsc ? '' : ' rotated')}>
               <Icon iconName="sort" func={handleClickSort} />
             </span>
@@ -209,6 +195,6 @@ export default function TeamStatus(): ReactElement {
           defaultValue={selectedTeamInfo}
         />
       )}
-    </Wrapper>
+    </LookupLayout>
   );
 }
