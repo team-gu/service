@@ -12,9 +12,9 @@ import lombok.Data;
  * 인력풀, 팀풀 필터 컴포넌트에 사용될 코드를 보내줄 때 code_detail을 담는 객체
  */
 public class CodeDetailResDto {
-    @ApiModelProperty(name = "코드 세부명", example = "")
+    @ApiModelProperty(name = "코드 세부명")
     private String codeName;
 
-    @ApiModelProperty(name = "코드", example = "")
+    @ApiModelProperty(name = "코드")
     private int code;
 }
