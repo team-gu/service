@@ -167,95 +167,95 @@ export const getTeams = async (
   return new Promise<Team[]>((resolve) => {
     const dummy = [
       {
-        name: '팀구 1',
-        region: '서울',
-        class: '2',
-        members: [
+        id: 1,
+        name: '웹기술 할거에요',
+        introduce: '현재 TEAM 테이블에 팀 소개 컬럼이 존재하지 않습니다',
+        completeYN: 0,
+        nowNumber: 2,
+        maxNumber: 3,
+        leaderId: 1,
+        trackName: '웹 기술',
+        teamMembers: [
           {
-            profileSrc: '/profile.png',
-            name: '이용재',
-            leader: true,
             id: 1,
-            email: 'lee@naver.com',
+            name: '안석현',
+            img: 'default',
+            email: 'naannaan@naver.com',
+            profileSrc: '/profile.png',
           },
           {
-            profileSrc: '/profile.png',
-            name: '장민호',
-            leader: false,
             id: 3,
-            email: 'minho9301@naver.com',
+            name: '박싸피',
+            img: null,
+            email: 'parkssafy@naver.com',
+            profileSrc: '/profile.png',
           },
         ],
         skills: [
           {
             id: 1,
             name: 'React',
-            backgroundColor: '#61DAFB',
-            color: '#000',
           },
           {
             id: 2,
             name: 'Spring',
-            backgroundColor: '#6DB43D',
-            color: '#000',
           },
           {
             id: 3,
             name: 'MySQL',
-            backgroundColor: '#005C84',
-            color: '#000',
-          },
-        ],
-        track: '웹기술',
-        description:
-          '저희 팀의 목표는 1등입니다. 자신있는 벡엔드 개발자 DM주세요. 다들 화이팅입니다 👏👏👏',
-        isCompleted: false,
-      },
-      {
-        name: '팀구 2',
-        region: '서울',
-        class: '2',
-        members: [
-          {
-            profileSrc: '/profile.png',
-            name: '강승현',
-            leader: true,
-            id: 4,
-            email: 'kangkang@naver.com',
-          },
-          {
-            profileSrc: '/profile.png',
-            name: '장동균',
-            leader: false,
-            id: 2,
-            email: 'jang@gmail.com',
-          },
-        ],
-        skills: [
-          {
-            id: 2,
-            name: 'Spring',
-            backgroundColor: '#6DB43D',
-            color: '#000',
           },
           {
             id: 4,
             name: 'WebRTC',
-            backgroundColor: '#AC2523',
-            color: '#000',
           },
+        ],
+      },
+      {
+        id: 2,
+        name: '웹 디자인 할거에요',
+        introduce: '현재 TEAM 테이블에 팀 소개 컬럼이 존재하지 않습니다',
+        completeYN: 0,
+        nowNumber: 2,
+        maxNumber: 3,
+        leaderId: 2,
+        trackName: '웹 디자인',
+        teamMembers: [
+          {
+            id: 2,
+            name: '김싸피',
+            img: null,
+            email: 'kimssafy@naver.com',
+            profileSrc: '/profile.png',
+          },
+          {
+            id: 4,
+            name: '강싸피',
+            img: null,
+            email: 'kangssafy@naver.com',
+            profileSrc: '/profile.png',
+          },
+        ],
+        skills: [
           {
             id: 5,
             name: 'JPA',
-            backgroundColor: '#010101',
-            color: '#fff',
+          },
+          {
+            id: 6,
+            name: 'HTML',
+          },
+          {
+            id: 7,
+            name: 'CSS',
+          },
+          {
+            id: 8,
+            name: 'JavaScript',
           },
         ],
-        track: '웹기술',
-        description: '🔥🔥월화수목금금금🔥🔥 보내실 프론트엔드 구합니다. ',
-        isCompleted: true,
       },
     ];
+
 
     resolve(dummy);
   });
