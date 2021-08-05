@@ -24,6 +24,9 @@ public class Team extends BaseEntity {
 	short completeYn; //complete_yn
 	int maxMember;
 	
+	@Column(length = 1000)
+	String introduce;
+	
 	@OneToMany(mappedBy="team")
 	private List<UserTeam> userTeams = new ArrayList<>();
 	

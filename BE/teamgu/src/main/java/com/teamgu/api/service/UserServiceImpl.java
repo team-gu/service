@@ -200,7 +200,7 @@ public class UserServiceImpl implements UserService {
 		User user = getUserById(userId).get();
 
 		// Wish Position, Introduce 수정
-		//userRepositorySupport.updateUserDetailInfo(userInfoReqDto);
+		userRepositorySupport.updateUserDetailInfo(userInfoReqDto);
 		
 		/*
 		 * Wish Track 수정

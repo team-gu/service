@@ -35,6 +35,7 @@ public class UserSkillRepositorySupport {
 				.executeUpdate();
 
 		et.commit();
+		em.close();
 	}
 
 }
