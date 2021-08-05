@@ -1,8 +1,12 @@
 import { ReactElement } from 'react';
 import styled from 'styled-components';
 
-import { Text } from '@atoms';
+import { useRouter } from 'next/router'
+
+import { Text, Icon } from '@atoms';
 import { Tag, ProfileImage } from '@molecules';
+
+import { uuidv4 } from '@utils/snippet';
 
 const Wrapper = styled.div`
   position: relative;
@@ -27,6 +31,10 @@ const Wrapper = styled.div`
           display: inline-block;
           margin: 10px;
           text-align: center;
+          i {
+            margin-top: 20px;
+            cursor: pointer;
+          }
         }
       }
     }
@@ -61,15 +69,15 @@ interface UserStatusCard {
   user: {
     name: string;
     introduce: string;
-    profileSrc: string;
     trackList: string[];
     skillList: string[];
   };
 }
 
 export default function UserStatusCard({
-  user: { name, introduce, profileSrc = 'profile.png', trackList, skillList },
+  user: { name, introduce, trackList, skillList },
 }: UserStatusCard): ReactElement {
+  const router = useRouter();
   return (
     <Wrapper>
       <div className="grid-container">
@@ -78,6 +86,11 @@ export default function UserStatusCard({
             <div className="profile">
               <ProfileImage size={80} />
               <Text text={name} />
+              <Icon
+                iconName="call"
+                color="green"
+                func={() => router.push(`rtc/${uuidv4()}`)}
+              />
             </div>
           </div>
         </div>

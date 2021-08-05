@@ -84,10 +84,10 @@ export default function VideoChat(): ReactElement {
   const [camOn, setCamOn] = useState(false);
   const [chatShow, setChatShow] = useState(false);
 
-  const { user } = useAuthState();
-  const name = user.name;
+  const { user: { name } } = useAuthState();
+
   const myUserName = name ? name : 'MeetInSsafy';
-  const mySessionId = `session_of_${myUserName}`;
+  const mySessionId = router.query.id;
   const sessionTitle = `[${myUserName}]님의 세션`;
 
   // React Lifecycle Hook
