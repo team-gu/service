@@ -16,18 +16,18 @@ import java.util.List;
  * 공지사항의 세부 내용을 담기 위한 DTO 클래스
  */
 public class NoticeDetailResDto {
-    @ApiModelProperty(name = "공지사항 생성일", example = "")
+    @ApiModelProperty(name = "공지사항 생성일")
     String createDate;
 
-    @ApiModelProperty(name = "공지사항 수정일", example = "")
+    @ApiModelProperty(name = "공지사항 수정일")
     String modifyDate;
 
-    @ApiModelProperty(name = "공지사항 제목", example = "")
+    @ApiModelProperty(name = "공지사항 제목")
     String title;
 
-    @ApiModelProperty(name = "공지사항 내용", example = "")
+    @ApiModelProperty(name = "공지사항 내용")
     String content;
 
-    @ApiModelProperty(name = "공지사항 첨부파일 목록", example = "")
+    @ApiModelProperty(name = "공지사항 첨부파일 목록")
     private List<NoticeFileResDto> noticeFiles;
 }
