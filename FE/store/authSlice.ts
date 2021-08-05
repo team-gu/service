@@ -14,6 +14,7 @@ interface AuthState {
   major: number;
   name: string;
   projects: object[];
+  projectCode: number[];
   role: number;
   skills: string[];
   studentNumber: string;
@@ -31,6 +32,7 @@ const initialState: AuthState = {
   major: 0,
   name: '',
   projects: [],
+  projectCode: [101],
   role: 0,
   skills: [],
   studentNumber: '',
@@ -59,6 +61,7 @@ export const setLogin =
     dispatch(setLoading({ isLoading: true }));
     try {
       const { data } = await postLoginApi(param);
+      console.log(data);
       saveItem('accessToken', data.accessToken);
       // TODO: 리프레시 토큰 사용이 후순위로 밀려서 후에 이 부분에 대한 수정과 사용이 필요합니다.
       // saveItem('refreshToken', data.refreshToken);
