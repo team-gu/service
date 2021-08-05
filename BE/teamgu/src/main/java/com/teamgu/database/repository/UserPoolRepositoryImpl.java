@@ -156,7 +156,9 @@ public class UserPoolRepositoryImpl implements UserPoolRepositoryCustom {
         jpql.append("group by u.id, u.name").append(" ");
         jpql.append(havingStmt).append(" ");
         jpql.append(orderStmt);
-
-        return em.createNativeQuery(jpql.toString()).getResultList();
+        
+        List<Object[]> res = em.createNativeQuery(jpql.toString()).getResultList();
+        em.close();
+        return res;
     }
 }
