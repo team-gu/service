@@ -45,7 +45,7 @@ public class UserPoolRepositoryImpl implements UserPoolRepositoryCustom {
     }
 
     private String makeWhere() {
-        StringBuilder sb = new StringBuilder("where pd.project_code = " + prjCode);
+        StringBuilder sb = new StringBuilder("where pd.project_code = " + prjCode + " and ut.team_id is null");
 
         sb.append(" and (u.student_number like '" + stage + "%')");
 
@@ -134,6 +134,7 @@ public class UserPoolRepositoryImpl implements UserPoolRepositoryCustom {
         jpql.append("left join wish_track wt on u.id = wt.user_id").append(" ");
         jpql.append("left outer join mapping m on wt.mapping_id = m.id").append(" ");
         jpql.append("left outer join (select s.user_id, group_concat(s.skill_code) as gs from skill s group by s.user_id) as b on u.id = b.user_id").append(" ");
+        jpql.append("left outer join user_team ut on u.id = ut.user_id").append(" ");
         jpql.append(whereStmt).append(" ");
         jpql.append("group by u.id, u.name").append(" ");
         jpql.append(havingStmt).append(" ");
