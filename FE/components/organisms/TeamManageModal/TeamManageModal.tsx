@@ -162,6 +162,19 @@ const Wrapper = styled.div`
     text-align: center;
     padding-top: 20px;
     padding-bottom: 50px;
+
+    > div {
+      display: inline-block;
+      margin: 0 10px;
+
+      button {
+        width: 120px;
+      }
+    }
+
+    .team-delete-btn > button {
+      background-color: crimson;
+    }
   }
 
   .incorrect-select-shake {
@@ -183,6 +196,26 @@ const Wrapper = styled.div`
       margin-left: 0rem;
     }
   }
+
+  .confirm-modal-container {
+    padding: 50px;
+
+    .confirm-text {
+      margin-bottom: 20px;
+      text-align: center;
+    } 
+    
+    .confirm-btns {
+      button {
+        width: 90px;
+        margin 0 10px;
+      }
+
+      > button:nth-child(1) {
+        background-color: crimson;
+      }
+    }
+  }
 `;
 
 const trackOptions = SSAFY_TRACK.map((item) => {
@@ -199,7 +232,6 @@ export default function TeamManageModal({
   handleClickClose,
 }: TeamManageModalProps): ReactElement {
   const { user } = useAuthState();
-  console.log(user);
   const userToMember = () => {
     return {
       id: user.id,
@@ -228,6 +260,7 @@ export default function TeamManageModal({
   );
   const [teamLeader, setTeamLeader] = useState(0);
   const [incorrectSelectUser, setIncorrectSelectUser] = useState(false);
+  const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
 
   const teamNameInputRef = useRef<HTMLInputElement>(null);
   const teamDescriptionRef = useRef<HTMLTextAreaElement>(null);
@@ -280,13 +313,6 @@ export default function TeamManageModal({
   };
 
   const handleSubmit = () => {
-    console.log(teamName);
-    console.log(teamTrack);
-    console.log(teamDescription);
-    console.log(teamSkills);
-    console.log(teamLeader);
-    console.log(teamMembers);
-
     createTeam({
       name: teamName,
       trackName: teamTrack,
@@ -294,10 +320,26 @@ export default function TeamManageModal({
       skills: teamSkills,
       teamMembers: teamMembers,
       leaderId: teamLeader,
+    }).then(() => {
+      // TODO: 팀 등록 후 새로고침
+      // router.reload();
     });
+  };
 
-    // TODO: 팀 등록 후 새로고침
-    // router.reload();
+  const handleDeleteTeam = () => {
+    setShowDeleteConfirmModal(true);
+  };
+
+  const handleDeleteConfirmCancel = () => {
+    setShowDeleteConfirmModal(false);
+  };
+
+  const handleDeleteConfirm = () => {
+    setShowDeleteConfirmModal(false);
+    deleteTeam({ id: defaultValue?.id }).then(() => {
+      // TODO: 팀 삭제 후 새로고침
+      // router.reload();
+    });
   };
 
   const toOptionTypeBase = (value: string): OptionTypeBase => {
@@ -425,11 +467,32 @@ export default function TeamManageModal({
         </div>
 
         <div className="modal-footer">
-          <Button
-            title={defaultValue ? '저장' : '팀 만들기'}
-            func={handleSubmit}
-          />
+          <div>
+            <Button
+              title={defaultValue ? '저장' : '팀 만들기'}
+              func={handleSubmit}
+            />
+          </div>
+
+          {defaultValue && (
+            <div className="team-delete-btn">
+              <Button title="삭제" func={handleDeleteTeam} />
+            </div>
+          )}
         </div>
+        {defaultValue && showDeleteConfirmModal && (
+          <ModalWrapper modalName="deleteConfirmModal">
+            <div className="confirm-modal-container">
+              <div className="confirm-text">
+                <Text text="정말 삭제하시겠습니까?" fontSetting="n20m" />
+              </div>
+              <div className="confirm-btns">
+                <Button title="예" func={handleDeleteConfirm} />
+                <Button title="취소" func={handleDeleteConfirmCancel} />
+              </div>
+            </div>
+          </ModalWrapper>
+        )}
       </Wrapper>
     </ModalWrapper>
   );
