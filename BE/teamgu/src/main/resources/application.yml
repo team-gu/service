@@ -1,3 +1,9 @@
+server:
+  ssl:
+    key-alias: tomcat
+    key-store-type: PKCS12
+    key-store-password: code1995
+    key-store: /etc/letsencrypt/live/www.example.com/keystore.p12
 jasypt:
   encryptor:
     bean: jasyptStringEncryptor
