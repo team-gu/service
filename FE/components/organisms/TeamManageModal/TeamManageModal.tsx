@@ -4,6 +4,7 @@ import {
   useState,
   ChangeEvent,
   FocusEventHandler,
+  useEffect,
 } from 'react';
 import styled from 'styled-components';
 import { ModalWrapper } from '@organisms';
@@ -244,20 +245,26 @@ export default function TeamManageModal({
   const teamNameInputRef = useRef<HTMLInputElement>(null);
   const teamDescriptionRef = useRef<HTMLTextAreaElement>(null);
 
+  useEffect(() => {
+    if (teamDescriptionRef.current) {
+      teamDescriptionRef.current.value = teamDescription;
+    }
+  }, []);
+
   const handleChangeTeamName = ({ target }: ChangeEvent<HTMLInputElement>) => {
     setTeamName(target.value);
   };
 
-  const handleChangeRegion = (selectedRegion: string) => {
-    setTeamRegion(selectedRegion);
+  const handleChangeRegion = (selectedRegion: any) => {
+    setTeamRegion(selectedRegion.value);
   };
 
-  const handleChangeClass = (selectedClass: string) => {
-    setTeamClass(selectedClass);
+  const handleChangeClass = (selectedClass: any) => {
+    setTeamClass(selectedClass.value);
   };
 
-  const handleChangeTrack = (selectedTrack: string) => {
-    setTeamTrack(selectedTrack);
+  const handleChangeTrack = (selectedTrack: any) => {
+    setTeamTrack(selectedTrack.value);
   };
 
   const handleChangeSkillSelect = (
@@ -269,12 +276,12 @@ export default function TeamManageModal({
   const handleChangeUser = (selectedMember: MemberOption | null) => {
     if (selectedMember) {
       if (!teamMembers.some((v) => v.id === selectedMember.id)) {
-        setTeamMembers([...teamMembers, { ...selectedMember }]);  
+        setTeamMembers([...teamMembers, { ...selectedMember }]);
       } else {
         setIncorrectSelectUser(true);
         setTimeout(() => {
           setIncorrectSelectUser(false);
-        }, 1000)
+        }, 1000);
       }
     }
   };
@@ -379,7 +386,6 @@ export default function TeamManageModal({
           <Label text="팀 소개">
             <Textarea
               onBlur={handleChangeDescription}
-              refValue={defaultValue ? defaultValue.description : ''}
               ref={teamDescriptionRef}
             ></Textarea>
           </Label>
