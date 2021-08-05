@@ -8,6 +8,7 @@ import FloatingButton from './FloatingButton';
 import Label from './Label';
 import ProfileContainer from './ProfileContainer';
 import ProfileImage from './ProfileImage';
+import RadioButton from './RadioButton';
 import Spinner from './Spinner';
 import Tag from './Tag';
 import Title from './Title';
@@ -26,6 +27,7 @@ export {
   Label,
   ProfileContainer,
   ProfileImage,
+  RadioButton,
   Spinner,
   Tag,
   Title,
