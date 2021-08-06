@@ -52,7 +52,7 @@ export default function TeamStatus(): ReactElement {
     (async () => {
       const {
         data: { data },
-      } = await getEachFiltersCodeList();
+      } = await getEachFiltersCodeList(studentNumber);
       console.log(data);
 
       setFilterContents(data);

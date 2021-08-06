@@ -45,7 +45,7 @@ export default function UserStatus(): ReactElement {
     (async () => {
       const {
         data: { data },
-      } = await getEachFiltersCodeList();
+      } = await getEachFiltersCodeList(studentNumber);
 
       setFilterContents(data);
     })();
