@@ -1,8 +1,8 @@
 import api from '@context/serverContext';
 
-export const getEachFiltersCodeList = async () =>
+export const getEachFiltersCodeList = async (param: string) =>
   await api({
-    url: '/api/codeDetail/user',
+    url: `/api/codeDetail/user/${param}`,
     type: 'get',
   });
 
