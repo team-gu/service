@@ -56,7 +56,7 @@ export default function SidebarChat({
   session,
   children,
 }: SidebarChatProps): ReactElement {
-  const { user } = useAuthState();
+  const { user: { name } } = useAuthState();
   const [messageList, setMessageList] = useState<Chat[]>([]);
 
   useEffect(() => {
@@ -83,10 +83,6 @@ export default function SidebarChat({
     });
   }, [session]);
 
-  const getNickname = () => {
-    return user.name ? user.name : 'teamgu-1';
-  };
-
   // type을 맞추기 위해 억지로 Promise를 만듦
   const handleClickSend = (msg: string) => {
     return new Promise<void>((resolve, reject) => {
@@ -94,7 +90,7 @@ export default function SidebarChat({
       const payload = {
         isMe: true,
         message: msg,
-        nickname: getNickname(),
+        nickname: name ? name : 'unknown',
       };
 
       mySession.signal({
