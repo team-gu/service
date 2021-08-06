@@ -4,6 +4,7 @@ import {
   ChangeEvent,
   useEffect,
   useState,
+  MouseEvent,
 } from 'react';
 import styled from 'styled-components';
 import ModalWrapper from '../organisms/Modal/ModalWrapper';
@@ -232,13 +233,20 @@ export default function VideoRoomConfigModal({
     handlerJoin(micSelected, camSelected, micOn, camOn);
   };
 
+  const onClose = (event: MouseEvent) => {
+    if (localCamStream) {
+      allTrackOff(localCamStream);
+    }
+    handlerClose(event);
+  };
+
   return (
     <ModalWrapper modalName="videoConfigModal">
       <GridContainer>
         <div className="modal-header">
           <SessionTitle>{sessionTitle}</SessionTitle>
         </div>
-        <CloseBtn onClick={handlerClose}>
+        <CloseBtn onClick={onClose}>
           <Icon iconName="highlight_off" color="indianred" />
         </CloseBtn>
 

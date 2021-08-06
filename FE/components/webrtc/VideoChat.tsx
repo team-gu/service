@@ -92,7 +92,6 @@ export default function VideoChat(): ReactElement {
   const [micOn, setMicOn] = useState(false);
   const [camOn, setCamOn] = useState(false);
   const [chatShow, setChatShow] = useState(false);
-  const [isInitSession, setIsInitSession] = useState(false);
 
   const {
     user: { name },
@@ -221,7 +220,7 @@ export default function VideoChat(): ReactElement {
 
           let pub = OV.initPublisher('', {
             audioSource: userDevice.mic ? userDevice.mic : false,
-            videoSource: userDevice.cam ? userDevice.cam : false,
+            videoSource: userDevice.cam && camOn ? userDevice.cam : false,
             publishAudio: micOn,
             publishVideo: camOn,
             resolution: '640x480',
@@ -231,8 +230,6 @@ export default function VideoChat(): ReactElement {
 
           mySession.publish(pub).then(() => {
             setPublisher(pub);
-            setIsInitSession(true);
-            setCamOn(camOn);
           });
         });
       })
@@ -310,8 +307,10 @@ export default function VideoChat(): ReactElement {
 
   const handleVideoStateChanged = () => {
     if (userDevice.cam) {
-      publisher?.publishVideo(!camOn);
-      setCamOn(!camOn);
+      const newCamOnState = !camOn;
+
+      console.log("Camera State Changed :", newCamOnState);
+      republish(newCamOnState);
     }
   };
 
@@ -333,28 +332,20 @@ export default function VideoChat(): ReactElement {
       });
   };
 
-  useEffect(() => {
-    if (isInitSession && camOn) {
-      republish();
-    } else {
-      if (publisher) {
-        videoTrackOff(publisher);
-      }
-    }
-  }, [camOn]);
+  const republish = async (newCamOnState: boolean) => {
+    console.log('Re-publish');
 
-  const republish = () => {
     if (!OV || !session) return;
 
     if (publisher) {
-      session.unpublish(publisher);
+      await session.unpublish(publisher);
     }
 
     let newPublisher = OV.initPublisher('', {
       audioSource: userDevice.mic ? userDevice.mic : false,
-      videoSource: userDevice.cam ? userDevice.cam : false,
+      videoSource: userDevice.cam && newCamOnState ? userDevice.cam : false,
       publishAudio: micOn,
-      publishVideo: camOn,
+      publishVideo: newCamOnState,
       resolution: '640x480',
       frameRate: 30,
       mirror: true,
@@ -362,10 +353,16 @@ export default function VideoChat(): ReactElement {
 
     session.publish(newPublisher).then(() => {
       setPublisher(newPublisher);
+      newPublisher?.publishVideo(newCamOnState);
+      setCamOn(newCamOnState);
     });
   };
 
   const handleClickExit = () => {
+    if (publisher) {
+      videoTrackOff(publisher);
+    }
+
     leaveSession();
     router.push('/');
   };
