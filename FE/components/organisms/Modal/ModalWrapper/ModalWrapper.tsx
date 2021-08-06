@@ -59,7 +59,7 @@ export default function ModalWrapper({
   return (
     <>
       <Background />
-      <Wrapper tabIndex={-1} onClick={() => handleCloseModal}>
+      <Wrapper tabIndex={-1} onClick={handleCloseModal}>
         <Content tabIndex={0}>{children}</Content>
       </Wrapper>
     </>
