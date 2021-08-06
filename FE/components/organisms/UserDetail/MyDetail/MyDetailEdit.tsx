@@ -1,7 +1,12 @@
 import { ReactElement, SyntheticEvent, useState, useRef } from 'react';
 import styled from 'styled-components';
 import { Icon, Input, Textarea } from '@atoms';
-import { Button, SimpleSelect, SkillSelectAutoComplete } from '@molecules';
+import {
+  Button,
+  SimpleSelect,
+  SkillSelectAutoComplete,
+  Label,
+} from '@molecules';
 import {
   useAuthState,
   useAppDispatch,
@@ -124,6 +129,10 @@ const Manifesto = styled.div`
     width: 20vw;
   }
 
+  .introduce {
+    margin: 50px;
+  }
+
   .useableSkills {
     margin: 50px;
     width: 20vw;
@@ -132,7 +141,6 @@ const Manifesto = styled.div`
 
 const StyledTextarea = styled(Textarea)`
   width: 70%;
-  margin: 50px;
 `;
 
 const Portrait = styled.div`
@@ -464,6 +472,21 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
     // // formData.append('image', image);
     // formData.append('skills', useableSkills);
     // console.log(formData);
+    if (
+      !descriptionRef?.current?.value ||
+      !track ||
+      !position ||
+      !useableSkills.length
+    ) {
+      const message = [];
+      if (!descriptionRef?.current?.value) message.push('자기 소개');
+      if (!track) message.push('트랙');
+      if (!position) message.push('포지션');
+      if (!useableSkills.length) message.push('사용 기술');
+
+      alert(`${message.join(', ')} 값을 입력해주세요.`);
+      return;
+    }
     try {
       const data = {
         introduce: descriptionRef?.current?.value,
@@ -474,7 +497,7 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
         wishPosition: position,
         skills: useableSkills,
       };
-      const res = await updateDetailInformation(data);
+      await updateDetailInformation(data);
       await dispatch(
         setUserDetail({
           wishTracks: [track],
@@ -536,42 +559,57 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
         <Introduction>
           <Manifesto>
             <div className="track">
-              <SimpleSelect
-                options={trackOptions}
-                onChange={(track) => {
-                  setTrack(track.value);
-                }}
-                value={[{ name: user.wishTrack[0], label: user.wishTrack[0] }]}
-              />
+              <Label text="트랙">
+                <SimpleSelect
+                  options={trackOptions}
+                  onChange={(track) => {
+                    setTrack(track.value);
+                  }}
+                  value={[
+                    { name: user.wishTrack[0], label: user.wishTrack[0] },
+                  ]}
+                />
+              </Label>
             </div>
             <div className="position">
-              <SimpleSelect
-                options={SkillOptions}
-                onChange={(position) => {
-                  setPosition(position.value);
-                }}
-                value={[
-                  { name: user.wishPositionCode, label: user.wishPositionCode },
-                ]}
-              />
+              <Label text="포지션">
+                <SimpleSelect
+                  options={SkillOptions}
+                  onChange={(position) => {
+                    setPosition(position.value);
+                  }}
+                  value={[
+                    {
+                      name: user.wishPositionCode,
+                      label: user.wishPositionCode,
+                    },
+                  ]}
+                />
+              </Label>
             </div>
             <div className="useableSkills">
-              <SkillSelectAutoComplete
-                onChangeSkills={(skill) => changeUseableSkills(skill)}
-                value={getSkills(user.skills)}
-              />
+              <Label text="사용 기술">
+                <SkillSelectAutoComplete
+                  onChangeSkills={(skill) => changeUseableSkills(skill)}
+                  value={getSkills(user.skills)}
+                />
+              </Label>
             </div>
-            {user.introduce ? (
-              <StyledTextarea ref={descriptionRef} rows={7}>
-                {user.introduce}
-              </StyledTextarea>
-            ) : (
-              <StyledTextarea
-                ref={descriptionRef}
-                rows={7}
-                placeholder="자기소개를 작성해주세요"
-              ></StyledTextarea>
-            )}
+            <div className="introduce">
+              <Label text="자기 소개">
+                {user.introduce ? (
+                  <StyledTextarea ref={descriptionRef} rows={7}>
+                    {user.introduce}
+                  </StyledTextarea>
+                ) : (
+                  <StyledTextarea
+                    ref={descriptionRef}
+                    rows={7}
+                    placeholder="자기소개를 작성해주세요"
+                  ></StyledTextarea>
+                )}
+              </Label>
+            </div>
           </Manifesto>
           <Portrait>
             <img
@@ -610,7 +648,13 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
         <Project
           className="last-card"
           onClick={() =>
-            editProject(null, '팀 이름', '수행 포지션', '프로젝트 url', '소개')
+            editProject(
+              null,
+              '프로젝트 이름',
+              '수행 포지션',
+              '프로젝트 url',
+              '소개',
+            )
           }
         >
           <Icon iconName="add_circle" />
@@ -640,9 +684,7 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
         ))}
         <Award
           className="last-card"
-          onClick={() =>
-            editAward(null, '발행 기관', '날짜', '수상 목록', '소개')
-          }
+          onClick={() => editAward(null, '발행 기관', '날짜', '수상명', '소개')}
         >
           <Icon iconName="add_circle" />
         </Award>

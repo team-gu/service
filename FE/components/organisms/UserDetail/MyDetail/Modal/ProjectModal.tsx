@@ -43,6 +43,11 @@ const CreateProject = styled.div`
   }
 `;
 
+const Error = styled.div`
+  font-weight: 900;
+  color: red;
+`;
+
 const SkillOptions = [
   {
     value: 'Front',
@@ -66,9 +71,23 @@ export default function ProjectModal({
   const introduceRef = useRef<HTMLInputElement>(null);
 
   const [position, setPosition] = useState<string>(projectModalData.position);
+  const [error, setError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleProject = async (e: SyntheticEvent) => {
     e.preventDefault();
+
+    if (
+      !nameRef?.current?.value ||
+      !position ||
+      !urlRef?.current?.value ||
+      !introduceRef?.current?.value
+    ) {
+      setErrorMessage('모든 값을 입력해주세요.');
+      setError(true);
+      return;
+    }
+
     try {
       const data: ProjectType = {
         userId: user.id,
@@ -134,6 +153,7 @@ export default function ProjectModal({
                   refValue={projectModalData.introduce}
                 />
               </div>
+              {error && <Error>{errorMessage}</Error>}
               <div>
                 <Button title="수정" type="submit" />
                 <Button title="닫기" func={() => setShowProjectModal(false)} />
@@ -174,6 +194,7 @@ export default function ProjectModal({
                   ref={introduceRef}
                 />
               </div>
+              {error && <Error>{errorMessage}</Error>}
               <div>
                 <Button title="생성" type="submit" />
                 <Button title="닫기" func={() => setShowProjectModal(false)} />
