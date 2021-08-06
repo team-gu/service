@@ -1,6 +1,6 @@
 import { ReactElement } from 'react';
 import { Icon } from '@atoms';
-import { SkillSelectAutoComplete } from '@molecules';
+import { SkillSelectAutoComplete, Label } from '@molecules';
 import { useAuthState } from '@store';
 import styled from 'styled-components';
 
@@ -58,19 +58,35 @@ const Introduction = styled.div`
   }
 `;
 
+const StyledLabel = styled(Label)`
+  margin-left: 50px;
+`;
+
 const Manifesto = styled.div`
   p {
     font-size: 20px;
     font-weight: 600;
     line-height: 1.4;
-    margin: 50px;
     width: 80%;
     & + * {
       margin-top: 1em;
     }
-    .track {
-      width: 30%;
-    }
+  }
+  .basicInfo {
+    margin: 50px;
+  }
+  .track {
+    margin: 50px;
+  }
+  .position {
+    margin: 50px;
+  }
+  .skills {
+    margin: 50px;
+    width: 50%;
+  }
+  .introduce {
+    margin: 50px;
   }
 `;
 
@@ -180,11 +196,6 @@ const Award = styled.div`
   }
 `;
 
-const SkillSet = styled.div`
-  margin: 50px;
-  width: 50%;
-`;
-
 const getStudentClass = (ID: string) => {
   if (ID[0] !== '0') return ID.slice(0, 2);
   return ID[1];
@@ -222,20 +233,34 @@ export default function MyDetail({ changeEditMode }: any): ReactElement {
       </Icons>
       <Introduction>
         <Manifesto>
-          <p>{`${getStudentRegion(user.studentNumber)} ${getStudentClass(
-            user.studentNumber,
-          )}반 ${user.name}`}</p>
-          <div>
-            <p className="track">{user.wishTrack.join(', ')}</p>
-            <p>{user.wishPositionCode}</p>
+          <div className="basicInfo">
+            <p>{`${getStudentRegion(user.studentNumber)} ${getStudentClass(
+              user.studentNumber,
+            )}반 ${user.name}`}</p>
           </div>
-          <SkillSet>
-            <SkillSelectAutoComplete
-              value={getSkills(user.skills)}
-              disabled={true}
-            />
-          </SkillSet>
-          <p>{user.introduce}</p>
+          <div className="track">
+            <Label text="트랙">
+              <p>{user.wishTrack.join(', ')}</p>
+            </Label>
+          </div>
+          <div className="position">
+            <StyledLabel text="포지션">
+              <p>{user.wishPositionCode}</p>
+            </StyledLabel>
+          </div>
+          <div className="skills">
+            <Label text="사용 기술">
+              <SkillSelectAutoComplete
+                value={getSkills(user.skills)}
+                disabled={true}
+              />
+            </Label>
+          </div>
+          <div className="introduce">
+            <Label text="자기 소개">
+              <p>{user.introduce}</p>
+            </Label>
+          </div>
         </Manifesto>
         <Portrait>
           <img

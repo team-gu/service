@@ -1,4 +1,4 @@
-import { ReactElement, SyntheticEvent, useRef } from 'react';
+import { ReactElement, SyntheticEvent, useState, useRef } from 'react';
 import { Input } from '@atoms';
 import { Button } from '@molecules';
 import { ModalWrapper } from '@organisms';
@@ -43,12 +43,20 @@ const CreateAward = styled.div`
   }
 `;
 
+const Error = styled.div`
+  font-weight: 900;
+  color: red;
+`;
+
 export default function AwardModal({
   awardModalData,
   setShowAwardModal,
 }: any): ReactElement {
   const { user } = useAuthState();
   const dispatch = useAppDispatch();
+
+  const [error, setError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const agencynRef = useRef<HTMLInputElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
@@ -57,6 +65,17 @@ export default function AwardModal({
 
   const handleAward = async (e: SyntheticEvent) => {
     e.preventDefault();
+
+    if (
+      !agencynRef?.current?.value ||
+      !nameRef?.current?.value ||
+      !dateRef?.current?.value ||
+      !introduceRef?.current?.value
+    ) {
+      setErrorMessage('모든 값을 입력해주세요.');
+      setError(true);
+      return;
+    }
     try {
       const data: AwardType = {
         userId: user.id,
@@ -100,11 +119,23 @@ export default function AwardModal({
                 />
               </div>
               <div>
-                <Input type="date" width="30vw" height="50px" ref={dateRef} />
+                <Input
+                  type="date"
+                  width="30vw"
+                  height="50px"
+                  ref={dateRef}
+                  refValue={awardModalData.date}
+                />
               </div>
               <div>
-                <Input width="30vw" height="50px" ref={introduceRef} />
+                <Input
+                  width="30vw"
+                  height="50px"
+                  ref={introduceRef}
+                  refValue={awardModalData.introduce}
+                />
               </div>
+              {error && <Error>{errorMessage}</Error>}
               <div>
                 <Button title="수정" type="submit" />
                 <Button title="닫기" func={() => setShowAwardModal(false)} />
@@ -139,6 +170,7 @@ export default function AwardModal({
                   ref={introduceRef}
                 />
               </div>
+              {error && <Error>{errorMessage}</Error>}
               <div>
                 <Button title="생성" type="submit" />
                 <Button title="닫기" func={() => setShowAwardModal(false)} />
