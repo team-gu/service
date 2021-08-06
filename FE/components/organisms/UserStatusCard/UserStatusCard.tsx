@@ -101,20 +101,22 @@ export default function UserStatusCard({
             <div className="items">
               <Text text="트랙" color="gray" />
               <div className="items-tags">
-                {trackList.map((each, index) => (
+                {trackList.map((each) => (
+                  <>
                   <Tag
-                    text={filterContents && filterContents['트랙'][index]['codeName']}
+                    text={filterContents && filterContents['트랙'].find(({ code }) => code == each)?.codeName}
                     key={each}
                   />
+                  </>
                 ))}
               </div>
             </div>
             <div className="items">
               <Text text="기술" color="gray" />
               <div className="items-tags">
-                {skillList.map((each, index) => (
+                {skillList.map((each) => (
                   <Tag
-                    text={filterContents && filterContents['스킬'][index]['codeName']}
+                    text={filterContents && filterContents['스킬'].find(({ code }) => code == each)?.codeName}
                     key={each}
                   />
                 ))}
