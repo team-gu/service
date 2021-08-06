@@ -474,9 +474,7 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
         wishPosition: position,
         skills: useableSkills,
       };
-      console.log(data);
       const res = await updateDetailInformation(data);
-      console.log(res);
       await dispatch(
         setUserDetail({
           wishTracks: [track],
@@ -541,7 +539,6 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
               <SimpleSelect
                 options={trackOptions}
                 onChange={(track) => {
-                  console.log(track);
                   setTrack(track.value);
                 }}
                 value={[{ name: user.wishTrack[0], label: user.wishTrack[0] }]}
@@ -551,7 +548,6 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
               <SimpleSelect
                 options={SkillOptions}
                 onChange={(position) => {
-                  console.log(position);
                   setPosition(position.value);
                 }}
                 value={[
