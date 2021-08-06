@@ -6,5 +6,5 @@ import java.util.HashMap;
 import java.util.List;
 
 public interface CodeService {
-    HashMap<String, List<CodeDetailResDto>> getUserCode();
+    HashMap<String, List<CodeDetailResDto>> getUserCode(String studentNumber);
 }
