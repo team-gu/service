@@ -1,6 +1,6 @@
-import { ReactElement, SyntheticEvent, useRef } from 'react';
+import { ReactElement, SyntheticEvent, useState, useRef } from 'react';
 import { Input } from '@atoms';
-import { Button } from '@molecules';
+import { Button, SimpleSelect } from '@molecules';
 import { ModalWrapper } from '@organisms';
 import { postProject, updateProject } from '@repository/userprofile';
 import { useAuthState, useAppDispatch, setProjects } from '@store';
@@ -43,6 +43,17 @@ const CreateProject = styled.div`
   }
 `;
 
+const SkillOptions = [
+  {
+    value: 'Front',
+    label: 'Front',
+  },
+  {
+    value: 'Back',
+    label: 'Back',
+  },
+];
+
 export default function ProjectModal({
   projectModalData,
   setShowProjectModal,
@@ -51,9 +62,10 @@ export default function ProjectModal({
   const dispatch = useAppDispatch();
 
   const nameRef = useRef<HTMLInputElement>(null);
-  const positionRef = useRef<HTMLInputElement>(null);
   const urlRef = useRef<HTMLInputElement>(null);
   const introduceRef = useRef<HTMLInputElement>(null);
+
+  const [position, setPosition] = useState<string>(projectModalData.position);
 
   const handleProject = async (e: SyntheticEvent) => {
     e.preventDefault();
@@ -62,10 +74,11 @@ export default function ProjectModal({
         userId: user.id,
         id: projectModalData.id,
         name: nameRef.current && nameRef.current.value,
-        position: positionRef.current && positionRef.current.value,
+        position: position,
         url: urlRef.current && urlRef.current.value,
         introduce: introduceRef.current && introduceRef.current.value,
       };
+      console.log(data);
       const res = projectModalData.id
         ? await updateProject(data)
         : await postProject(data);
@@ -92,11 +105,17 @@ export default function ProjectModal({
                 />
               </div>
               <div>
-                <Input
-                  width="30vw"
-                  height="50px"
-                  ref={positionRef}
-                  refValue={projectModalData.position}
+                <SimpleSelect
+                  options={SkillOptions}
+                  onChange={(position) => {
+                    setPosition(position.value);
+                  }}
+                  value={[
+                    {
+                      name: projectModalData.position,
+                      label: projectModalData.position,
+                    },
+                  ]}
                 />
               </div>
               <div>
@@ -131,11 +150,12 @@ export default function ProjectModal({
                 />
               </div>
               <div>
-                <Input
-                  placeHolder={projectModalData.position}
-                  width="30vw"
-                  height="50px"
-                  ref={positionRef}
+                <SimpleSelect
+                  options={SkillOptions}
+                  onChange={(position) => {
+                    setPosition(position.value);
+                  }}
+                  placeholder={projectModalData.position}
                 />
               </div>
               <div>
