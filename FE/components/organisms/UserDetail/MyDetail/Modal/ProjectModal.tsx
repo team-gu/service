@@ -108,13 +108,12 @@ export default function ProjectModal({
                 <SimpleSelect
                   options={SkillOptions}
                   onChange={(position) => {
-                    console.log(position);
                     setPosition(position.value);
                   }}
                   value={[
                     {
-                      name: user.wishPositionCode,
-                      label: user.wishPositionCode,
+                      name: projectModalData.position,
+                      label: projectModalData.position,
                     },
                   ]}
                 />
@@ -154,7 +153,6 @@ export default function ProjectModal({
                 <SimpleSelect
                   options={SkillOptions}
                   onChange={(position) => {
-                    console.log(position);
                     setPosition(position.value);
                   }}
                   placeholder={projectModalData.position}
