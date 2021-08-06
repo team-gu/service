@@ -1,6 +1,6 @@
 logging:
   level:
-    root: debug
+    root: info
 server:
   ssl:
     key-alias: tomcat
