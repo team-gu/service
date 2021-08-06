@@ -1,5 +1,6 @@
 package com.teamgu.database.repository;
 
+import com.teamgu.api.dto.res.CodeDetailResDto;
 import com.teamgu.database.entity.CodeDetail;
 
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.List;
 public interface CodeDetailRepositoryCustom {
     List<CodeDetail> getStgCodeDetail();
     List<CodeDetail> getPrjCodeDetail();
-    List<CodeDetail> getTrkCodeDetail();
+    List<CodeDetailResDto> getTrkCodeDetail(String stage);
     List<CodeDetail> getSklCodeDetail();
     List<CodeDetail> getPosCodeDetail();
     List<CodeDetail> getRegCodeDetail();

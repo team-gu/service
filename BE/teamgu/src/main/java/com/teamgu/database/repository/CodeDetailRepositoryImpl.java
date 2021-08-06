@@ -1,9 +1,12 @@
 package com.teamgu.database.repository;
 
+import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.teamgu.api.dto.res.CodeDetailResDto;
 import com.teamgu.database.entity.CodeDetail;
 import com.teamgu.database.entity.QCodeDetail;
+import com.teamgu.database.entity.QMapping;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
@@ -14,6 +17,7 @@ public class CodeDetailRepositoryImpl implements CodeDetailRepositoryCustom {
     @Autowired
     private JPAQueryFactory jpaQueryFactory;
 
+    QMapping qMapping = QMapping.mapping;
     QCodeDetail qCodeDetail = QCodeDetail.codeDetail1;
 
     @Override
@@ -29,9 +33,12 @@ public class CodeDetailRepositoryImpl implements CodeDetailRepositoryCustom {
     }
 
     @Override
-    public List<CodeDetail> getTrkCodeDetail() {
-        return jpaQueryFactory.selectFrom(qCodeDetail)
-                .where(qCodeDetail.code.code.eq("TR")).fetch();
+    public List<CodeDetailResDto> getTrkCodeDetail(String stage) {
+        return jpaQueryFactory.select(Projections.constructor(CodeDetailResDto.class, qCodeDetail.Name, qCodeDetail.codeDetail))
+                .from(qCodeDetail)
+                .innerJoin(qMapping)
+                .on(qCodeDetail.codeDetail.eq(qMapping.trackCode))
+                .where(qMapping.stageCode.like("%" + stage).and(qCodeDetail.code.code.eq("TR"))).fetch();
     }
 
     @Override
