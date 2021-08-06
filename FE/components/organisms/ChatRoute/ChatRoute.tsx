@@ -1,8 +1,8 @@
-import { ReactElement, useState, useEffect, useRef, ChangeEvent } from 'react';
+import { ReactElement, useState, useRef } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 
-import { useAppDispatch, setChatOpen } from '@store';
+import { useAppDispatch, setChatOpen, useModalState } from '@store';
 import useSockStomp from '@hooks/useSockStomp';
 
 import { ChatList, ChatRoom } from '@organisms';
@@ -65,17 +65,17 @@ export default function ChatRoute(): ReactElement {
 
   const wrapperRef: any = useRef<HTMLInputElement>(null);
 
-  function handleClickOutside({ target }: ChangeEvent<HTMLInputElement>) {
-    if (!wrapperRef.current?.contains(target)) {
-      dispatch(setChatOpen({ isChatOpen: false }));
-    }
-  }
+  // function handleClickOutside({ target }: ChangeEvent<HTMLInputElement>) {
+  //   if (!wrapperRef.current?.contains(target)) {
+  //     dispatch(setChatOpen({ isChatOpen: false }));
+  //   }
+  // }
 
-  useEffect(() => {
-    document.addEventListener('click', handleClickOutside, true);
-    return () =>
-      document.removeEventListener('click', handleClickOutside, true);
-  }, []);
+  // useEffect(() => {
+  //   document.addEventListener('click', handleClickOutside, true);
+  //   return () =>
+  //     document.removeEventListener('click', handleClickOutside, true);
+  // }, []);
 
   const handleToChatRoom = async (id: number) => {
     await setRoomId(id);
