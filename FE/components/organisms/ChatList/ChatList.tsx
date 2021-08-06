@@ -78,29 +78,23 @@ export default function ChatList({ func }: ChatListProps): ReactElement {
   const handleCreateRoom = async () => {
     if (selectedUser) {
       try {
-        // const {
-        //   data: { data: { status } },
-        // } = 
-        await postCreateRoom({
+        const { status } = await postCreateRoom({
           user_id1: id,
           user_id2: selectedUser?.user_id,
         });
 
-        dispatch(
-          displayModal({ modalName: MODALS.ALERT_MODAL, content: '방이 생성되었습니다.' }),
-        );
-        // if (status) {
-        //   dispatch(
-        //     displayModal({ modalName: MODALS.ALERT_MODAL, content: '방이 생성되었습니다.' }),
-        //   );
-        // } else {
-        //   dispatch(
-        //     displayModal({ modalName: MODALS.ALERT_MODAL, content: '이미 만들어진 방 입니다.' }),
-        //   );
-        // }
+        if (status !== 204) {
+          dispatch(
+            displayModal({ modalName: MODALS.ALERT_MODAL, content: '방이 생성되었습니다.' }),
+          );
+        } else {
+          dispatch(
+            displayModal({ modalName: MODALS.ALERT_MODAL, content: '이미 만들어진 방 입니다.' }),
+          );
+        }
         return handleGetChatLists();
       } catch (error) {
-        console.error(error);
+        return console.error(error);
       }
     }
     dispatch(
