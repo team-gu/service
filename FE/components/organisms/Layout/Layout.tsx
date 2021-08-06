@@ -39,6 +39,8 @@ export default function Layout({ children }: LayoutProps) {
     }
   });
 
+  console.log(id);
+
   return (
     <>
       {router.pathname.startsWith(VIDEO_CHAT_PATH_PREFIX) ? (
@@ -60,7 +62,7 @@ export default function Layout({ children }: LayoutProps) {
             }}
           >
             {children}
-            {isChatOpen && <ChatRoute />}
+            {isChatOpen && id !== 0 && <ChatRoute />}
             {id !== 0 && (
               <FloatingButton
                 func={() => dispatch(setChatOpen({ isChatOpen: true }))}
