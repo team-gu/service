@@ -17,6 +17,7 @@ import { LoggerUtil } from './util/LoggerUtil';
 import { DevicesUtil } from './util/DeviceUtil';
 import { Util } from './util/Util';
 import { IDevice } from './types/device-type';
+import { useAuthState } from '@store';
 
 interface VideoRoomConfigModalProps {
   OV: OpenVidu;
@@ -116,6 +117,7 @@ export default function VideoRoomConfigModal({
   handlerClose,
   handlerJoin,
 }: VideoRoomConfigModalProps): ReactElement {
+  const { user } = useAuthState();
   const [cameras, setCameras] = useState<IDevice[]>([]);
   const [microphones, setMicrophones] = useState<IDevice[]>([]);
   const [camSelected, setCamSelected] = useState<string>();
@@ -228,7 +230,7 @@ export default function VideoRoomConfigModal({
               </Label>
               <Input
                 type="text"
-                value="meet-in-ssafy"
+                value={user.name}
                 width="230px"
                 readOnly={true}
               />
