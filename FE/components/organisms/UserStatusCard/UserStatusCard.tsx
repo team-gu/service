@@ -56,7 +56,7 @@ const Wrapper = styled.div`
             margin-top: 10px;
             > div {
               display: inline-block;
-              margin: 0 5px;
+              margin: 2px 5px;
             }
           }
         }
@@ -103,7 +103,7 @@ export default function UserStatusCard({
               <div className="items-tags">
                 {trackList.map((each, index) => (
                   <Tag
-                    text={filterContents['트랙'][index]['codeName']}
+                    text={filterContents && filterContents['트랙'][index]['codeName']}
                     key={each}
                   />
                 ))}
@@ -114,7 +114,7 @@ export default function UserStatusCard({
               <div className="items-tags">
                 {skillList.map((each, index) => (
                   <Tag
-                    text={filterContents['스킬'][index]['codeName']}
+                    text={filterContents && filterContents['스킬'][index]['codeName']}
                     key={each}
                   />
                 ))}
