@@ -83,6 +83,7 @@ const Manifesto = styled.div`
   }
   .skills {
     margin: 50px;
+    width: 50%;
   }
   .introduce {
     margin: 50px;
@@ -193,11 +194,6 @@ const Award = styled.div`
     margin-bottom: 8px;
     font-size: 8px;
   }
-`;
-
-const SkillSet = styled.div`
-  margin: 50px;
-  width: 50%;
 `;
 
 const getStudentClass = (ID: string) => {
