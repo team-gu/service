@@ -23,31 +23,20 @@ public class CodeServiceImpl implements CodeService {
     public HashMap<String, List<CodeDetailResDto>> getUserCode(String studentNumber) {
         String stage = studentNumber.substring(0, 2);
         HashMap<String, List<CodeDetailResDto>> retHash = initHash();
-        List<CodeDetail> stgList = codeDetailRepository.getStgCodeDetail(),
+        List<CodeDetailResDto> stgList = codeDetailRepository.getStgCodeDetail(),
                 prjList = codeDetailRepository.getPrjCodeDetail(),
+                trkList = codeDetailRepository.getTrkCodeDetail(stage),
                 sklList = codeDetailRepository.getSklCodeDetail(),
                 posList = codeDetailRepository.getPosCodeDetail(),
                 regList = codeDetailRepository.getRegCodeDetail();
 
-        List<CodeDetailResDto> trkList = codeDetailRepository.getTrkCodeDetail(stage);
-
+        retHash.put("프로젝트", prjList);
+        retHash.put("기수", stgList);
         retHash.put("트랙", trkList);
+        retHash.put("스킬", sklList);
+        retHash.put("역할", posList);
+        retHash.put("지역", regList);
 
-        for (CodeDetail elem : prjList) {
-            retHash.get("프로젝트").add(CodeDetailMapper.INSTANCE.codeDetailToDto(elem));
-        }
-        for (CodeDetail elem : stgList) {
-            retHash.get("기수").add(CodeDetailMapper.INSTANCE.codeDetailToDto(elem));
-        }
-        for (CodeDetail elem : sklList) {
-            retHash.get("스킬").add(CodeDetailMapper.INSTANCE.codeDetailToDto(elem));
-        }
-        for (CodeDetail elem : posList) {
-            retHash.get("역할").add(CodeDetailMapper.INSTANCE.codeDetailToDto(elem));
-        }
-        for (CodeDetail elem : regList) {
-            retHash.get("지역").add(CodeDetailMapper.INSTANCE.codeDetailToDto(elem));
-        }
         return retHash;
     }
 
