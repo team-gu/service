@@ -74,10 +74,12 @@ export default function UserStatus(): ReactElement {
           response: {
             data: { errorMessage },
           },
+          status,
         }) {
-          if (errorMessage === '일치하는 유저가 없습니다') {
-            setUsers([]);
-          }
+          setUsers([]);
+          // if (errorMessage === '일치하는 유저가 없습니다') {
+          //   setUsers([]);
+          // }
         }
       })();
     }
@@ -180,14 +182,17 @@ export default function UserStatus(): ReactElement {
             </span>
           </div>
         </div>
-        {users &&
+        {users && users.length === 0 ? (
+          <div>일치하는 유저가 없습니다.</div>
+        ) : (
           users.map((each: Users) => (
             <UserStatusCard
               key={each?.id}
               user={each}
               filterContents={filterContents}
             />
-          ))}
+          ))
+        )}
       </div>
     </LookupLayout>
   );
