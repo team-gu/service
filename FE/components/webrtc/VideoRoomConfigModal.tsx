@@ -7,7 +7,7 @@ import {
 } from 'react';
 import styled from 'styled-components';
 import ModalWrapper from '../organisms/Modal/ModalWrapper';
-import { OpenVidu, Publisher } from 'openvidu-browser';
+import { OpenVidu, Publisher, StreamManager } from 'openvidu-browser';
 
 import { Button, Label } from '@molecules';
 import { Icon, Input } from '@atoms';
@@ -135,9 +135,13 @@ export default function VideoRoomConfigModal({
 
       try {
         // To get user's permission of video and audio
-        await OV.initPublisherAsync('', {
+        const initForPermit = await OV.initPublisherAsync('', {
           resolution: '320x240',
+          publishAudio: false,
+          publishVideo: true,
+          mirror: true,
         });
+        allTrackOff(initForPermit);
 
         // After permit, get devices
         await devicesUtil.initDevices();
@@ -159,6 +163,23 @@ export default function VideoRoomConfigModal({
     })();
   }, []);
 
+  // Publish every time the camera changes
+  useEffect(() => {
+    if (camSelected) {
+      publishUserCameraStream();
+    }
+  }, [camSelected]);
+
+  useEffect(() => {
+    if (camSelected && camOn) {
+      publishUserCameraStream();
+    } else {
+      if (localCamStream) {
+        allTrackOff(localCamStream);
+      }
+    }
+  }, [camOn]);
+
   const handleCameraChange = (event: ChangeEvent<HTMLSelectElement>) => {
     setCamSelected(event.target.value);
   };
@@ -166,14 +187,6 @@ export default function VideoRoomConfigModal({
   const handleMicrophoneChange = (event: ChangeEvent<HTMLSelectElement>) => {
     setMicSelected(event.target.value);
   };
-
-  // TODO: 카메라가 필요없는 None을 선택해도 On-Air 불빛이 꺼지지 않는다.
-  // Publish every time the camera changes
-  useEffect(() => {
-    if (camSelected) {
-      publishUserCameraStream();
-    }
-  }, [camSelected]);
 
   const publishUserCameraStream = () => {
     const stream = OV.initPublisher('', {
@@ -185,6 +198,7 @@ export default function VideoRoomConfigModal({
       frameRate: 30,
       mirror: true,
     });
+
     setLocalCamStream(stream);
   };
 
@@ -195,6 +209,16 @@ export default function VideoRoomConfigModal({
     }
   };
 
+  const allTrackOff = (streamManager: StreamManager) => {
+    streamManager.stream
+      .getMediaStream()
+      .getTracks()
+      .map((m) => {
+        m.enabled = false;
+        m.stop();
+      });
+  };
+
   const handleMicOnChanged = () => {
     if (micSelected) {
       setMicOn(!micOn);
@@ -202,6 +226,9 @@ export default function VideoRoomConfigModal({
   };
 
   const handleClickJoin = () => {
+    if (localCamStream) {
+      allTrackOff(localCamStream);
+    }
     handlerJoin(micSelected, camSelected, micOn, camOn);
   };
 

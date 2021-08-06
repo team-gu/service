@@ -1,5 +1,11 @@
 import { ReactElement, useState, useEffect } from 'react';
-import { OpenVidu, Session, Subscriber, Publisher } from 'openvidu-browser';
+import {
+  OpenVidu,
+  Session,
+  Subscriber,
+  Publisher,
+  StreamManager,
+} from 'openvidu-browser';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
 import axios from 'axios';
@@ -14,7 +20,7 @@ import {
 } from '../webrtc';
 import { useAuthState } from '@store';
 
-var OpenViduBrowser: any;
+var OpenViduBrowser: typeof import('/Users/minho/Workspace/fe/FE/node_modules/openvidu-browser/lib/index');
 
 const Wrapper = styled.div`
   margin: 30px 10px;
@@ -86,19 +92,18 @@ export default function VideoChat(): ReactElement {
   const [micOn, setMicOn] = useState(false);
   const [camOn, setCamOn] = useState(false);
   const [chatShow, setChatShow] = useState(false);
+  const [isInitSession, setIsInitSession] = useState(false);
 
   const {
     user: { name },
   } = useAuthState();
 
-  const myUserName = name  ? name : 'unknown';
+  const myUserName = name ? name : 'unknown';
   const mySessionId = router.query.id;
   const sessionTitle = `세션에 입장합니다...`;
 
   // React Lifecycle Hook
   useEffect(() => {
-    // componentDidMount
-    window.addEventListener('beforeunload', onbeforeunload);
     // Dynamic module import
     importOpenVidu().then((ob) => {
       OpenViduBrowser = ob;
@@ -107,8 +112,8 @@ export default function VideoChat(): ReactElement {
 
     // componentWillUnmount
     return () => {
-      window.removeEventListener('beforeunload', onbeforeunload);
-      clear();
+      console.log('componentWillUnmount');
+      leaveSession();
     };
   }, []);
 
@@ -125,10 +130,6 @@ export default function VideoChat(): ReactElement {
     });
   };
 
-  const onbeforeunload = () => {
-    leaveSession();
-  };
-
   const deleteSubscriber = (streamManager: Subscriber) => {
     let subs = subscribers;
     let index = subscribers.indexOf(streamManager, 0);
@@ -139,7 +140,7 @@ export default function VideoChat(): ReactElement {
   };
 
   const clear = () => {
-    setOV(new OpenViduBrowser.OpenVidu());
+    setOV(undefined);
     setSession(undefined);
     setPublisher(undefined);
     setSubscribers([]);
@@ -218,7 +219,7 @@ export default function VideoChat(): ReactElement {
         mySession.connect(token, { clientData: myUserName }).then(() => {
           if (!OV) return;
 
-          let publisher = OV.initPublisher('', {
+          let pub = OV.initPublisher('', {
             audioSource: userDevice.mic ? userDevice.mic : false,
             videoSource: userDevice.cam ? userDevice.cam : false,
             publishAudio: micOn,
@@ -228,9 +229,11 @@ export default function VideoChat(): ReactElement {
             mirror: true,
           });
 
-          mySession.publish(publisher);
-
-          setPublisher(publisher);
+          mySession.publish(pub).then(() => {
+            setPublisher(pub);
+            setIsInitSession(true);
+            setCamOn(camOn);
+          });
         });
       })
       .catch((error) => {
@@ -251,9 +254,19 @@ export default function VideoChat(): ReactElement {
   };
 
   const getToken = () => {
-    return createSession(mySessionId).then((sessionId) =>
-      createToken(sessionId),
-    );
+    if (mySessionId) {
+      if (typeof mySessionId === 'object') {
+        return createSession(mySessionId[0]).then((sessionId) =>
+          createToken(sessionId),
+        );
+      } else {
+        return createSession(mySessionId).then((sessionId) =>
+          createToken(sessionId),
+        );
+      }
+    } else {
+      throw 'No Session Id';
+    }
   };
 
   const createSession = (sessionId: string) => {
@@ -309,9 +322,51 @@ export default function VideoChat(): ReactElement {
     }
   };
 
+  const videoTrackOff = (sm: StreamManager) => {
+    console.log('Video track OFF');
+    sm.stream
+      .getMediaStream()
+      .getVideoTracks()
+      .map((m) => {
+        m.enabled = false;
+        m.stop();
+      });
+  };
+
+  useEffect(() => {
+    if (isInitSession && camOn) {
+      republish();
+    } else {
+      if (publisher) {
+        videoTrackOff(publisher);
+      }
+    }
+  }, [camOn]);
+
+  const republish = () => {
+    if (!OV || !session) return;
+
+    if (publisher) {
+      session.unpublish(publisher);
+    }
+
+    let newPublisher = OV.initPublisher('', {
+      audioSource: userDevice.mic ? userDevice.mic : false,
+      videoSource: userDevice.cam ? userDevice.cam : false,
+      publishAudio: micOn,
+      publishVideo: camOn,
+      resolution: '640x480',
+      frameRate: 30,
+      mirror: true,
+    });
+
+    session.publish(newPublisher).then(() => {
+      setPublisher(newPublisher);
+    });
+  };
+
   const handleClickExit = () => {
     leaveSession();
-    clear();
     router.push('/');
   };
 
