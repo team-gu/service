@@ -56,6 +56,8 @@ const CHAT_ROOM = 1;
 export default function ChatRoute(): ReactElement {
   const dispatch = useAppDispatch();
   const [room_id, setRoomId] = useState(0);
+  const [roomName, setRoomName] = useState(0);
+
   const [route, setRoute] = useState(CHAT_LIST);
 
   const { handleSendMessage, messageList, setMessageList, isConnectStomp } =
@@ -77,8 +79,9 @@ export default function ChatRoute(): ReactElement {
   //     document.removeEventListener('click', handleClickOutside, true);
   // }, []);
 
-  const handleToChatRoom = async (id: number) => {
+  const handleToChatRoom = async (id: number, room_name: string) => {
     await setRoomId(id);
+    setRoomName(room_name);
     setRoute(CHAT_ROOM);
   };
 
@@ -104,11 +107,14 @@ export default function ChatRoute(): ReactElement {
         {route === CHAT_LIST ? (
           <Text text="채팅 목록" fontSetting="n16b" color="white" />
         ) : (
-          <Icon
-            iconName="arrow_back"
-            color="white"
-            func={() => setRoute(CHAT_LIST)}
-          />
+          <>
+            <Icon
+              iconName="arrow_back"
+              color="white"
+              func={() => setRoute(CHAT_LIST)}
+            />
+            <Text text={roomName} fontSetting="n16b" color="white" />
+          </>
         )}
         <Icon
           iconName="close"

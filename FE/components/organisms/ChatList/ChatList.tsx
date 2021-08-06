@@ -125,7 +125,7 @@ export default function ChatList({ func }: ChatListProps): ReactElement {
               isActive={false}
               time={create_date_time}
               alertNumber={unread_message_count}
-              func={() => func(chat_room_id)}
+              func={() => func(chat_room_id, room_name)}
             />
           ),
         )}
