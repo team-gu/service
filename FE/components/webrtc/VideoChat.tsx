@@ -78,17 +78,22 @@ export default function VideoChat(): ReactElement {
   const [publisher, setPublisher] = useState<Publisher>();
   const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
   const [isConfigModalShow, setIsConfigModalShow] = useState<boolean>(true);
-  const [userDevice, setUserDevice] = useState<UserDevice>({ mic: undefined, cam: undefined });
+  const [userDevice, setUserDevice] = useState<UserDevice>({
+    mic: undefined,
+    cam: undefined,
+  });
 
   const [micOn, setMicOn] = useState(false);
   const [camOn, setCamOn] = useState(false);
   const [chatShow, setChatShow] = useState(false);
 
-  const { user: { name } } = useAuthState();
+  const {
+    user: { name },
+  } = useAuthState();
 
-  const myUserName = name ? name : 'MeetInSsafy';
+  const myUserName = name  ? name : 'unknown';
   const mySessionId = router.query.id;
-  const sessionTitle = `[${myUserName}]님의 세션`;
+  const sessionTitle = `세션에 입장합니다...`;
 
   // React Lifecycle Hook
   useEffect(() => {
@@ -147,7 +152,7 @@ export default function VideoChat(): ReactElement {
     setPublisher(undefined);
     setIsConfigModalShow(false);
     console.log('Config cancel. Redirect previous page.');
-    router.back();
+    router.push('/');
   };
 
   const handlerJoinBtn = (
@@ -157,7 +162,6 @@ export default function VideoChat(): ReactElement {
     camState: boolean,
   ) => {
     if (micSelected && camSelected) {
-      
     }
     setUserDevice({
       mic: micSelected,
@@ -295,20 +299,20 @@ export default function VideoChat(): ReactElement {
     if (userDevice.cam) {
       publisher?.publishVideo(!camOn);
       setCamOn(!camOn);
-    }    
-  }
+    }
+  };
 
   const handleAudioStateChanged = () => {
     if (userDevice.mic) {
       publisher?.publishAudio(!micOn);
       setMicOn(!micOn);
     }
-  }
+  };
 
   const handleClickExit = () => {
     leaveSession();
     clear();
-    setIsConfigModalShow(true);
+    router.push('/');
   };
 
   const handleClickScreenShare = () => {
