@@ -2,7 +2,13 @@ import { ReactElement, SyntheticEvent, useState, useRef } from 'react';
 import styled from 'styled-components';
 import { Icon, Input, Textarea } from '@atoms';
 import { Button, SimpleSelect, SkillSelectAutoComplete } from '@molecules';
-import { useAuthState, useAppDispatch, setProjects, setAwards } from '@store';
+import {
+  useAuthState,
+  useAppDispatch,
+  setProjects,
+  setAwards,
+  setUserDetail,
+} from '@store';
 import {
   deleteProject,
   deleteAward,
@@ -10,6 +16,7 @@ import {
 } from '@repository/userprofile';
 import { ProjectModal, AwardModal } from './Modal';
 import { Skill } from '@utils/type';
+import router from 'next/router';
 
 interface ProjectType {
   id: number | null;
@@ -470,6 +477,17 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
       console.log(data);
       const res = await updateDetailInformation(data);
       console.log(res);
+      await dispatch(
+        setUserDetail({
+          wishTracks: [track],
+          wishPosition: position,
+          introduce: descriptionRef?.current?.value,
+          skills: useableSkills,
+        }),
+      );
+      // TODO 추후에 모달로
+      alert('수정되었습니다.');
+      changeEditMode();
     } catch (e) {
       console.log(e);
     }

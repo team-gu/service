@@ -62,10 +62,20 @@ const authReducer = createSlice({
         awards: action.payload,
       };
     },
+    setUserDetail(state, action) {
+      state.user = {
+        ...state.user,
+        wishTrack: action.payload.wishTracks,
+        wishPositionCode: action.payload.wishPosition,
+        introduce: action.payload.introduce,
+        skills: action.payload.skills,
+      };
+    },
   },
 });
 
-export const { setUser, setProjects, setAwards } = authReducer.actions;
+export const { setUser, setProjects, setAwards, setUserDetail } =
+  authReducer.actions;
 export default authReducer.reducer;
 
 export const setLogin =
