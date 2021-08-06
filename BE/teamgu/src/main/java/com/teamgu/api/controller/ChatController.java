@@ -123,6 +123,8 @@ public class ChatController {
 			log.info(result+"방이 생성되었습니다");
 			chatService.inviteUser(users.getUser_id1(), result);//둘 다 초대
 			chatService.inviteUser(users.getUser_id2(), result);
+		}else {//이미 존재하는 경우
+			return ResponseEntity.noContent().build();
 		}
 		return ResponseEntity.ok(new CommonResponse<Long>(result));		
 	}
