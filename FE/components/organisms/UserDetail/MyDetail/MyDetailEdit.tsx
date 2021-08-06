@@ -489,7 +489,7 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
     }
     try {
       const data = {
-        introduce: descriptionRef?.current?.value,
+        introduce: descriptionRef?.current?.value.slice(0, 999),
         email: user.email,
         id: user.id,
         stidentNumber: user.studentNumber,
