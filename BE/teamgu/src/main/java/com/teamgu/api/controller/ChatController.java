@@ -26,6 +26,7 @@ import com.teamgu.api.dto.res.CommonResponse;
 import com.teamgu.api.dto.res.ErrorResponse;
 import com.teamgu.api.service.ChatService;
 import com.teamgu.api.service.ChatServiceImpl;
+import com.teamgu.api.service.UserServiceImpl;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -42,6 +43,8 @@ public class ChatController {
 	@Autowired
 	ChatServiceImpl chatService;
 	
+	@Autowired
+	UserServiceImpl userService;
 	/**
 	 * 특정 유저의 채팅방 목록을 가져온다
 	 */
@@ -119,7 +122,10 @@ public class ChatController {
 	public ResponseEntity<? extends BasicResponse> checkRoom(@RequestBody UserRoomCheckDto users){
 		long result = chatService.roomCheck(users.getUser_id1(), users.getUser_id2());
 		if(result==0) {//존재하지 않는 경우 방을 생성하고 방 번호를 반환한다.
-			result = chatService.createRoom("방번호 없어서 새로 생성된 방");
+			String name1 = userService.getUserById(users.getUser_id1()).get().getName();
+			String name2 = userService.getUserById(users.getUser_id2()).get().getName();
+			
+			result = chatService.createRoom(name1+", "+name2+"의 방");
 			log.info(result+"방이 생성되었습니다");
 			chatService.inviteUser(users.getUser_id1(), result);//둘 다 초대
 			chatService.inviteUser(users.getUser_id2(), result);
