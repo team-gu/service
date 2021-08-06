@@ -230,7 +230,7 @@ export default function VideoRoomConfigModal({
               </Label>
               <Input
                 type="text"
-                value={user.name}
+                value={user.name ? user.name : 'unknown'}
                 width="230px"
                 readOnly={true}
               />
