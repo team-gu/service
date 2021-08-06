@@ -126,7 +126,6 @@ const Projects = styled.div`
 `;
 
 const Awards = styled.div`
-  grid-column: span 3;
   display: grid;
   grid-gap: 20px;
   grid-template-columns: 1fr 1fr 1fr;
@@ -148,6 +147,7 @@ const Awards = styled.div`
 `;
 
 const Project = styled.div`
+  position: relative;
   border: 1px solid #eaeaea;
   padding: 24px;
   border-radius: 5px;
@@ -167,9 +167,13 @@ const Project = styled.div`
     font-size: 10px;
     margin-bottom: 16px;
   }
+  .introduce {
+    position: absolute;
+  }
 `;
 
 const Award = styled.div`
+  position: relative;
   border: 1px solid #eaeaea;
   padding: 24px;
   border-radius: 5px;
@@ -280,7 +284,7 @@ export default function MyDetail({ changeEditMode }: any): ReactElement {
                   <p>{name}</p>
                   <p>{position}</p>
                 </div>
-                <div>{introduce}</div>
+                <div className="introduce">{introduce}</div>
               </Project>
             </a>
           ))
