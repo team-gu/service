@@ -236,7 +236,7 @@ export default function MyDetail({ changeEditMode }: any): ReactElement {
           <div className="basicInfo">
             <p>{`${getStudentRegion(user.studentNumber)} ${getStudentClass(
               user.studentNumber,
-            )}반 ${user.name}`}</p>
+            )}기 ${user.name}`}</p>
           </div>
           <div className="track">
             <Label text="트랙">
@@ -273,9 +273,9 @@ export default function MyDetail({ changeEditMode }: any): ReactElement {
       <div className="name">프로젝트</div>
       <Projects>
         {user.projects.length ? (
-          user.projects.map(({ name, position, url, introduce }: any) => (
+          user.projects.map(({ id, name, position, url, introduce }: any) => (
             <a href={url}>
-              <Project>
+              <Project key={id}>
                 <div className="top">
                   <p>{name}</p>
                   <p>{position}</p>
@@ -291,8 +291,8 @@ export default function MyDetail({ changeEditMode }: any): ReactElement {
       <div className="name">수상경력</div>
       <Awards>
         {user.awards.length ? (
-          user.awards.map(({ agency, date, name, introduce }: any) => (
-            <Award>
+          user.awards.map(({ id, agency, date, name, introduce }: any) => (
+            <Award key={id}>
               <div className="top">
                 <p>{agency}</p>
                 <p>{name}</p>
