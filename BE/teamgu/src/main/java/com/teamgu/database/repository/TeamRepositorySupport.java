@@ -210,10 +210,10 @@ public class TeamRepositorySupport {
 		
 		String jpql = "select user_id from user_team where team_id in " 
 				+ "(select id from team where mapping_id in "
-				+		"(select id from mapping where project_code = "
-				+			"(select project_code from mapping where track_code = (select code_detail from code_detail where name = ?2))"
-				+		"and stage_code = "
-				+			"(select stage_code from mapping where track_code = (select code_detail from code_detail where name = ?2))))"
+				+		"(select id from mapping where project_code in "
+				+			"(select distinct project_code from mapping where track_code = (select code_detail from code_detail where name = ?2))"
+				+		"and stage_code in "
+				+			"(select distinct stage_code from mapping where track_code = (select code_detail from code_detail where name = ?2))))"
 				+	"and user_id = ?1";
 		Query query = em.createNativeQuery(jpql)
 		.setParameter(1, userId)
