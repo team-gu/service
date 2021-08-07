@@ -1,11 +1,13 @@
 package com.teamgu.database.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceUnit;
+import javax.persistence.Query;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -200,6 +202,33 @@ public class TeamRepositorySupport {
 	public void deleteTeamInfobyTeamId(Long teamId) {
 
 		jpaQueryFactory.delete(qTeam).where(qTeam.id.eq(teamId)).execute();
+	}
+	
+	// Team 생성 가능 여부 체크
+	public boolean checkTeamBuilding(Long userId, String trackName) {
+		EntityManager em = emf.createEntityManager();
+		
+		String jpql = "select user_id from user_team where team_id in " 
+				+ "(select id from team where mapping_id in "
+				+		"(select id from mapping where project_code = "
+				+			"(select project_code from mapping where track_code = (select code_detail from code_detail where name = ?2))"
+				+		"and stage_code = "
+				+			"(select stage_code from mapping where track_code = (select code_detail from code_detail where name = ?2))))"
+				+	"and user_id = ?1";
+		Query query = em.createNativeQuery(jpql)
+		.setParameter(1, userId)
+		.setParameter(2, trackName)
+		;
+		List<Long> chk = query.getResultList();
+		int size = chk.size();
+		em.close();
+		if(size == 0) {
+			return true;
+		}
+		else {
+			return false;
+		}
+
 	}
 
 //	public void createTeam(TeamListResDto teamListResDto) {

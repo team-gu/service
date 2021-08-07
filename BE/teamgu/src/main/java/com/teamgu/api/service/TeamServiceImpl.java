@@ -323,6 +323,11 @@ public class TeamServiceImpl implements TeamService {
 		
 		return teamRepositorySupport.getTeamMemberIdbyTeamId(teamId);
 	}
+	@Override
+	public boolean checkTeamBuilding(Long userId, String trackName) {
+		// TODO Auto-generated method stub
+		return teamRepositorySupport.checkTeamBuilding(userId, trackName);
+	}
 	
 
 }
