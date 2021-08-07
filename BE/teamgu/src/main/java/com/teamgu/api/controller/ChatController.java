@@ -106,12 +106,12 @@ public class ChatController {
 			long user_id2 = userInviteTeamReqDto.getInvitee_id();
 			String name1 = userService.getUserById(user_id1).get().getName();
 			String name2 = userService.getUserById(user_id2).get().getName();
-			
-			result = chatService.createRoom(name1+", "+name2+"의 방");
-			log.info(result+"방이 생성되었습니다");
-			
-			chatService.inviteUser(userInviteTeamReqDto.getLeader_id(), result);
-			chatService.inviteUser(userInviteTeamReqDto.getInvitee_id(), result);
+			//미구현
+//			result = chatService.createRoom(name1+", "+name2+"의 방");
+//			log.info(result+"방이 생성되었습니다");
+//			
+//			chatService.inviteUser(userInviteTeamReqDto.getLeader_id(), result);
+//			chatService.inviteUser(userInviteTeamReqDto.getInvitee_id(), result);
 			//여기서 해당 채팅방에 leader to invitee로 팀원 초대 메세지를 보낸다.
 			
 			//1. DB에 먼저 저장
@@ -130,7 +130,8 @@ public class ChatController {
 		if(roomid==0) {//존재하지 않는 경우 방을 생성하고 방 번호를 반환한다.
 			String name1 = userService.getUserById(users.getUser_id1()).get().getName();
 			String name2 = userService.getUserById(users.getUser_id2()).get().getName();			
-			roomid = chatService.createRoom(name1+", "+name2+"의 방");
+			ChatRoomResDto chatRoomResDto = chatService.createRoom(name1+", "+name2+"의 방");
+			roomid = chatRoomResDto.getChat_room_id();
 			
 			log.info(roomid+"방이 생성되었습니다");
 			chatService.inviteUser(users.getUser_id1(), roomid);//둘 다 초대
