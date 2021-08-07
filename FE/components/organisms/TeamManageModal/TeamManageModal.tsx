@@ -15,8 +15,8 @@ import {
   SkillSelectAutoComplete,
   SimpleSelect,
 } from '@molecules';
-import { SSAFY_TRACK } from '@utils/constants';
-import { useAuthState } from '@store';
+import { MODALS, SSAFY_TRACK } from '@utils/constants';
+import { displayModal, useAppDispatch, useAuthState } from '@store';
 import { createTeam, deleteTeam, exitTeam } from '@repository/teamRepository';
 import { OptionTypeBase, OptionsType } from 'react-select';
 import { Team, SkillOption, Member } from '@utils/type';
@@ -202,7 +202,20 @@ const Wrapper = styled.div`
       margin-bottom: 20px;
       text-align: center;
     } 
-    
+
+    .create-confirm-btns {
+      text-align: center;
+
+      button {
+        width: 90px;
+        margin 0 10px;
+      }
+
+      > button:nth-child(1) {
+        background-color: forestgreen;
+      }
+    }
+
     .confirm-btns {
       text-align: center;
 
@@ -232,6 +245,7 @@ export default function TeamManageModal({
   defaultValue,
   handleClickClose,
 }: TeamManageModalProps): ReactElement {
+  const dispatch = useAppDispatch();
   const { user } = useAuthState();
   const userToMember = () => {
     return {
@@ -261,6 +275,7 @@ export default function TeamManageModal({
   );
   const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
   const [showExitConfirmModal, setShowExitConfirmModal] = useState(false);
+  const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
 
   const teamNameInputRef = useRef<HTMLInputElement>(null);
   const teamDescriptionRef = useRef<HTMLTextAreaElement>(null);
@@ -297,24 +312,48 @@ export default function TeamManageModal({
     setTeamLeader(newMember.id);
   };
 
+  const formValidation = () => {
+    if (!teamName || teamName === '') {
+      dispatch(
+        displayModal({
+          modalName: MODALS.ALERT_MODAL,
+          content: '팀 이름을 입력해주세요',
+        }),
+      );
+      return false;
+
+    } else if (!teamTrack || teamTrack === '') {
+      dispatch(
+        displayModal({
+          modalName: MODALS.ALERT_MODAL,
+          content: '트랙을 선택해주세요',
+        }),
+      );
+      return false;
+    } else if (!teamDescription || teamDescription === '') {
+      dispatch(
+        displayModal({
+          modalName: MODALS.ALERT_MODAL,
+          content: '팀 소개를 입력해주세요',
+        }),
+      );
+      return false;
+    }
+
+    return true;
+  }
+
   const handleSubmit = () => {
-    const skills = teamSkills.map((skill) => ({
-      skillCode: skill.id,
-      skillName: skill.name,
-    }));
-    createTeam({
-      name: teamName,
-      trackName: teamTrack,
-      introduce: teamDescription,
-      skills,
-      teamMembers,
-      leaderId: teamLeader,
-      completeYn: 0,
-    }).then(() => {
-      // TODO: 팀 등록 후 새로고침
-      // router.reload();
-    });
+    if (formValidation()) {
+      setShowSubmitConfirm(true);
+    } 
   };
+
+  const handleUpdateSubmit = () => {
+    if (formValidation()) {
+      setShowSubmitConfirm(true);
+    } 
+  }
 
   const handleDeleteTeam = () => {
     setShowDeleteConfirmModal(true);
@@ -348,6 +387,30 @@ export default function TeamManageModal({
     });
   };
 
+  const handleCreateTeamConfirmCancel = () => {
+    setShowSubmitConfirm(false);
+  }
+
+  const handleCreateTeamConfirm = () => {
+    setShowSubmitConfirm(false);
+    const skills = teamSkills.map((skill) => ({
+      skillCode: skill.id,
+      skillName: skill.name,
+    }));
+    createTeam({
+      name: teamName,
+      trackName: teamTrack,
+      introduce: teamDescription,
+      skills,
+      teamMembers,
+      leaderId: teamLeader,
+      completeYn: 0,
+    }).then(() => {
+      // TODO: 팀 등록 후 새로고침
+      // router.reload();
+    });
+  }
+
   const toOptionTypeBase = (value: string): OptionTypeBase => {
     const option: OptionTypeBase = {
       label: value,
@@ -357,7 +420,7 @@ export default function TeamManageModal({
   };
 
   return (
-    <ModalWrapper modalName="teamCreateModal">
+    <ModalWrapper modalName="teamCreateModal" zIndex={90}>
       <Wrapper>
         <div className="modal-header">
           <Text
@@ -433,7 +496,7 @@ export default function TeamManageModal({
           <div>
             <Button
               title={defaultValue ? '변경사항 저장' : '팀 만들기'}
-              func={handleSubmit}
+              func={defaultValue ? handleSubmit : handleUpdateSubmit}
             />
           </div>
 
@@ -448,6 +511,26 @@ export default function TeamManageModal({
             </div>
           )}
         </div>
+
+        {showSubmitConfirm && (
+          <ModalWrapper modalName="createConfirmModal" zIndex={100}>
+            <div className="confirm-modal-container">
+              <div className="confirm-text">
+                <Text
+                  text={
+                    defaultValue ? '변경사항을 저장합니다.' : '팀을 생성합니다.'
+                  }
+                  fontSetting="n18m"
+                />
+              </div>
+              <div className="create-confirm-btns">
+                <Button title="예" func={handleCreateTeamConfirm} />
+                <Button title="취소" func={handleCreateTeamConfirmCancel} />
+              </div>
+            </div>
+          </ModalWrapper>
+        )}
+
         {defaultValue && showDeleteConfirmModal && (
           <ModalWrapper modalName="deleteConfirmModal">
             <div className="confirm-modal-container">
@@ -459,20 +542,20 @@ export default function TeamManageModal({
                 />
               </div>
               <div className="confirm-btns">
-                <Button title="취소" func={handleDeleteConfirmCancel} />
                 <Button title="예" func={handleDeleteConfirm} />
+                <Button title="취소" func={handleDeleteConfirmCancel} />
               </div>
             </div>
           </ModalWrapper>
         )}
         {defaultValue && showExitConfirmModal && (
-          <ModalWrapper modalName="exitConfirmModal">
+          <ModalWrapper modalName="exitConfirmModal" zIndex={100}>
             <div className="confirm-modal-container">
               {currentUserIsLeader ? (
                 <>
                   <div className="confirm-text">
                     <Text
-                      text="팀장는 팀을 나갈 수 없습니다."
+                      text="팀장은 팀을 나갈 수 없습니다."
                       fontSetting="n20m"
                     />
                     <Text
