@@ -39,8 +39,6 @@ export default function Layout({ children }: LayoutProps) {
     }
   });
 
-  console.log(id);
-
   return (
     <>
       {router.pathname.startsWith(VIDEO_CHAT_PATH_PREFIX) ? (
