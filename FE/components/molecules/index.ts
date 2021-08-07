@@ -15,6 +15,7 @@ import Title from './Title';
 import SimpleSelect from './SimpleSelect';
 import UserSelectAutoComplete from './UserSelectAutoComplete';
 import SkillSelectAutoComplete from './SkillSelectAutoComplete';
+import ProjectCard from './ProjectCard';
 
 export {
   Button,
@@ -34,4 +35,5 @@ export {
   SimpleSelect,
   UserSelectAutoComplete,
   SkillSelectAutoComplete,
+  ProjectCard,
 };

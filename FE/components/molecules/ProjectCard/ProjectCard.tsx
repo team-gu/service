@@ -44,7 +44,7 @@ const Wrapper = styled.div`
       flex-wrap: wrap;
       > div {
         word-spacing: -2px;
-        margin-right: 20px;
+        margin-right: 10px;
       }
     }
   }
