@@ -444,7 +444,11 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
     setShowAwardModal(true);
   };
 
-  const changeImage = (e: any) => {
+  const handleIntroduce = (e: Event & { target: HTMLTextAreaElement }) => {
+    setIntroduce(e.target.value);
+  };
+
+  const changeImage = (e: EventTarget & { target: HTMLInputElement }) => {
     setImage(e.target.files[0]);
   };
 
