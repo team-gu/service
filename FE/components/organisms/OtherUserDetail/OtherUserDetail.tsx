@@ -253,7 +253,7 @@ export default function OtherUserDetail(): ReactElement {
     })();
   }, [id]);
 
-  if (!otherUser.name) return <div></div>;
+  if (!otherUser.name) return <div>존재하지 않는 사용자입니다.</div>;
   return (
     <Wrapper>
       <Icons>
