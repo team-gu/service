@@ -63,9 +63,6 @@ public class TeamServiceImpl implements TeamService {
 			// Team 구성 완료 여부
 			team.setCompleteYn(teamList.get(i).getCompleteYn());
 			
-			// Team 구성 최대 멤버
-			team.setMaxNumber(teamList.get(i).getMaxMember());
-			
 			// Team 현재 리더
 			team.setLeaderId(teamList.get(i).getUser().getId());
 			
@@ -82,9 +79,6 @@ public class TeamServiceImpl implements TeamService {
 			List<SkillResDto> teamSkills = teamRepositorySupport.getTeamSkillsByTeamId(teamId);
 			team.setSkills(teamSkills);
 			
-			// Team 구성 현재 인원
-			int nowNumber = teamMembers.size();
-			team.setNowNumber(nowNumber);			
 			list.add(team);
 		}
 		return list;
@@ -98,20 +92,18 @@ public class TeamServiceImpl implements TeamService {
 		teamListResDto.getTrackName();
 		int trackCode = codeDetailRepositorySupport.findTtrackCode(teamListResDto.getTrackName());
 		int stageCode = ((user.getStudentNumber().charAt(0) - '0') * 10 + user.getStudentNumber().charAt(1) - '0') + 100;
-		System.out.println(trackCode + " / " + stageCode);
+
 		Mapping mapping = mappingRepositorySupport.selectMapping(trackCode, stageCode);
-		System.out.println(mapping.getId());
+
 		Team team = new Team();
 		team.setUser(user);
 		team.setMapping(mapping);
 		team.setCompleteYn(teamListResDto.getCompleteYn());
 		team.setIntroduce(teamListResDto.getIntroduce());
-		team.setMaxMember(teamListResDto.getMaxNumber());
 		team.setName(teamListResDto.getName());
 		teamRepository.save(team);
 		
 		Long teamId = teamRepositorySupport.getTeamId(team);
-		System.out.println(teamId);
 		
 		// ADD Team Skill
 		List<SkillResDto> teamSkills = teamListResDto.getSkills();
@@ -145,7 +137,6 @@ public class TeamServiceImpl implements TeamService {
 		
 		Long teamId = team.getId();
 		team.setIntroduce(teamListResDto.getIntroduce());
-		team.setMaxMember(teamListResDto.getMaxNumber());
 		team.setName(teamListResDto.getName());
 		team.setUser(user);
 		team.setMapping(mapping);

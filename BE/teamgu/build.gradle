@@ -135,6 +135,10 @@ dependencies {
     implementation("io.springfox:springfox-data-rest:3.0.0")
     implementation("io.springfox:springfox-bean-validators:3.0.0")
     implementation("io.springfox:springfox-boot-starter:3.0.0")
+    // https://mvnrepository.com/artifact/io.swagger/swagger-annotations
+	implementation 'io.swagger:swagger-annotations:1.5.22'
+	// https://mvnrepository.com/artifact/io.swagger/swagger-models
+	implementation 'io.swagger:swagger-models:1.5.22'
 
     compile("javax.annotation:javax.annotation-api:1.2")
 
