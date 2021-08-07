@@ -139,4 +139,9 @@ public class ChatServiceImpl implements ChatService{
 		userChatRoomRepositorySupport.insertUser(user_id, room_id);
 		return true;
 	}
+	
+	@Override
+	public ChatRoomResDto getChatRoomInfo(long room_id) {		
+		return chatRoomRepositorySupport.getRoomInfo(room_id);
+	}
 }

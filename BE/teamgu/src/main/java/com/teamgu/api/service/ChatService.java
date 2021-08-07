@@ -57,4 +57,11 @@ public interface ChatService {
 	 * @return
 	 */
 	Chat saveChat(ChatReqDto chatReqDto);
+	
+	/**
+	 * 특정 채팅방의 정보를 반환한다
+	 * @param room_id
+	 * @return
+	 */
+	ChatRoomResDto getChatRoomInfo(long room_id);
 }
