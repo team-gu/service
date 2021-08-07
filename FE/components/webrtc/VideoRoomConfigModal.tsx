@@ -4,10 +4,11 @@ import {
   ChangeEvent,
   useEffect,
   useState,
+  MouseEvent,
 } from 'react';
 import styled from 'styled-components';
 import ModalWrapper from '../organisms/Modal/ModalWrapper';
-import { OpenVidu, Publisher } from 'openvidu-browser';
+import { OpenVidu, Publisher, StreamManager } from 'openvidu-browser';
 
 import { Button, Label } from '@molecules';
 import { Icon, Input } from '@atoms';
@@ -135,9 +136,11 @@ export default function VideoRoomConfigModal({
 
       try {
         // To get user's permission of video and audio
-        await OV.initPublisherAsync('', {
-          resolution: '320x240',
+        const initForPermit = await OV.initPublisherAsync('', {
+          publishAudio: false,
+          publishVideo: true,
         });
+        allTrackOff(initForPermit);
 
         // After permit, get devices
         await devicesUtil.initDevices();
@@ -159,6 +162,22 @@ export default function VideoRoomConfigModal({
     })();
   }, []);
 
+  useEffect(() => {
+    return () => {
+      allTrackOff(localCamStream);
+    }
+  }, [localCamStream]);
+
+  useEffect(() => {
+    if (camSelected && camOn) {
+      publishUserCameraStream();
+    } else {
+      if (localCamStream) {
+        allTrackOff(localCamStream);
+      }
+    }
+  }, [camSelected, camOn]);
+
   const handleCameraChange = (event: ChangeEvent<HTMLSelectElement>) => {
     setCamSelected(event.target.value);
   };
@@ -167,16 +186,8 @@ export default function VideoRoomConfigModal({
     setMicSelected(event.target.value);
   };
 
-  // TODO: 카메라가 필요없는 None을 선택해도 On-Air 불빛이 꺼지지 않는다.
-  // Publish every time the camera changes
-  useEffect(() => {
-    if (camSelected) {
-      publishUserCameraStream();
-    }
-  }, [camSelected]);
-
-  const publishUserCameraStream = () => {
-    const stream = OV.initPublisher('', {
+  const publishUserCameraStream = async () => {
+    const stream = await OV.initPublisher('', {
       audioSource: micSelected,
       videoSource: camSelected,
       publishAudio: false,
@@ -185,6 +196,7 @@ export default function VideoRoomConfigModal({
       frameRate: 30,
       mirror: true,
     });
+
     setLocalCamStream(stream);
   };
 
@@ -195,14 +207,32 @@ export default function VideoRoomConfigModal({
     }
   };
 
+  const allTrackOff = (sm: StreamManager | undefined) => {
+    if (sm) {
+      sm.stream
+        .getMediaStream()
+        .getTracks()
+        .map((m) => {
+          m.enabled = false;
+          m.stop();
+        });
+    } 
+  };
+
   const handleMicOnChanged = () => {
     if (micSelected) {
       setMicOn(!micOn);
     }
   };
 
-  const handleClickJoin = () => {
+  const onJoin = () => {
+    allTrackOff(localCamStream);
     handlerJoin(micSelected, camSelected, micOn, camOn);
+  };
+
+  const onClose = (event: MouseEvent) => {
+    allTrackOff(localCamStream);
+    handlerClose(event);
   };
 
   return (
@@ -211,7 +241,7 @@ export default function VideoRoomConfigModal({
         <div className="modal-header">
           <SessionTitle>{sessionTitle}</SessionTitle>
         </div>
-        <CloseBtn onClick={handlerClose}>
+        <CloseBtn onClick={onClose}>
           <Icon iconName="highlight_off" color="indianred" />
         </CloseBtn>
 
@@ -278,7 +308,7 @@ export default function VideoRoomConfigModal({
           </IconsAndInputs>
         </div>
         <div className="modal-footer">
-          <Button title="JOIN" func={handleClickJoin} />
+          <Button title="JOIN" func={onJoin} />
         </div>
       </GridContainer>
     </ModalWrapper>
