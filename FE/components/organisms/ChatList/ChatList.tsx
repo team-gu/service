@@ -9,7 +9,7 @@ import { MemberOption } from '@utils/type';
 import { MODALS } from '@utils/constants';
 
 interface ChatListProps {
-  func: (id: number) => Promise<void>;
+  func: (id: number, room_name: string) => Promise<void>;
 }
 
 interface UserList {
@@ -78,27 +78,26 @@ export default function ChatList({ func }: ChatListProps): ReactElement {
   const handleCreateRoom = async () => {
     if (selectedUser) {
       try {
-        const { status } = await postCreateRoom({
+        const {
+          data: {
+            data: { roomId, roomName },
+          },
+        } = await postCreateRoom({
           user_id1: id,
           user_id2: selectedUser?.user_id,
         });
 
-        if (status !== 204) {
-          dispatch(
-            displayModal({ modalName: MODALS.ALERT_MODAL, content: '방이 생성되었습니다.' }),
-          );
-        } else {
-          dispatch(
-            displayModal({ modalName: MODALS.ALERT_MODAL, content: '이미 만들어진 방 입니다.' }),
-          );
-        }
+        func(roomId, roomName);
         return handleGetChatLists();
       } catch (error) {
         return console.error(error);
       }
     }
     dispatch(
-      displayModal({ modalName: MODALS.ALERT_MODAL, content: '유저를 선택해주세요!.' }),
+      displayModal({
+        modalName: MODALS.ALERT_MODAL,
+        content: '유저를 선택해주세요!.',
+      }),
     );
   };
 
