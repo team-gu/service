@@ -100,7 +100,7 @@ export default function TeamStatusCard({
   const currentUserIsInTeam = team.teamMembers.find(m => m.id === user.id);
 
   return (
-    <Wrapper isComplete={team.completeYN !== 0}>
+    <Wrapper isComplete={team.completeYN === 0}>
       <div className="grid-container">
         <div className="team-name-container">
           <Text text="팀 이름" color="gray" />
