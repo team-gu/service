@@ -55,8 +55,8 @@ const CHAT_ROOM = 1;
 
 export default function ChatRoute(): ReactElement {
   const dispatch = useAppDispatch();
-  const [room_id, setRoomId] = useState(0);
-  const [roomName, setRoomName] = useState(0);
+  const [room_id, setRoomId] = useState<number>(0);
+  const [roomName, setRoomName] = useState<string>('');
 
   const [route, setRoute] = useState(CHAT_LIST);
 
