@@ -35,6 +35,12 @@ export const getTeams = async (
             img: null,
             email: 'parkssafy@naver.com',
           },
+          {
+            id: 6,
+            name: 'idea',
+            img: null,
+            email: 'idea@naver.com',
+          },
         ],
         skills: [
           {
@@ -127,6 +133,18 @@ export const deleteTeam = async (param: object) => {
   // TODO: api 연결 백엔드 미완.
   // return await api({
   //   url: `/path/to/delete-team`,
+  //   type: 'post',
+  //   param,
+  // });
+};
+
+export const exitTeam = async (param: object) => {
+  console.log('팀 탈퇴 API 호출: ');
+  console.log(param);
+
+  // TODO: api 연결 백엔드 미완.
+  // return await api({
+  //   url: `/path/to/exit-team`,
   //   type: 'post',
   //   param,
   // });

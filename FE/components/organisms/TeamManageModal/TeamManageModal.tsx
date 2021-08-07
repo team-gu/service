@@ -12,16 +12,14 @@ import { Icon, Input, Text, Textarea } from '@atoms';
 import {
   Button,
   Label,
-  ProfileImage,
   SkillSelectAutoComplete,
-  UserSelectAutoComplete,
   SimpleSelect,
 } from '@molecules';
 import { SSAFY_TRACK } from '@utils/constants';
 import { useAuthState } from '@store';
-import { createTeam, deleteTeam } from '@repository/teamRepository';
+import { createTeam, deleteTeam, exitTeam } from '@repository/teamRepository';
 import { OptionTypeBase, OptionsType } from 'react-select';
-import { Team, SkillOption, Member, MemberOption } from '@utils/type';
+import { Team, SkillOption, Member } from '@utils/type';
 import { useRef } from 'react';
 
 const Wrapper = styled.div`
@@ -206,18 +204,21 @@ const Wrapper = styled.div`
     } 
     
     .confirm-btns {
+      text-align: center;
+
       button {
         width: 90px;
         margin 0 10px;
       }
 
-      > button:nth-child(1) {
+      > button:nth-child(2) {
         background-color: crimson;
       }
     }
   }
 `;
 
+// TODO: 트랙 서버에서 가져오기
 const trackOptions = SSAFY_TRACK.map((item) => {
   return { label: item, value: item };
 });
@@ -255,15 +256,16 @@ export default function TeamManageModal({
     defaultValue?.introduce || '',
   );
   const [teamSkills, setTeamSkills] = useState(defaultValue?.skills || []);
-  const [teamMembers, setTeamMembers] = useState(
-    defaultValue?.teamMembers || [userToMember()],
+  const [teamLeader, setTeamLeader] = useState(
+    defaultValue?.leaderId || user.id,
   );
-  const [teamLeader, setTeamLeader] = useState(0);
-  const [incorrectSelectUser, setIncorrectSelectUser] = useState(false);
   const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
+  const [showExitConfirmModal, setShowExitConfirmModal] = useState(false);
 
   const teamNameInputRef = useRef<HTMLInputElement>(null);
   const teamDescriptionRef = useRef<HTMLTextAreaElement>(null);
+  const teamMembers = defaultValue?.teamMembers || [userToMember()];
+  const currentUserIsLeader: boolean = user.id === defaultValue?.leaderId;
 
   useEffect(() => {
     if (teamDescriptionRef.current) {
@@ -285,23 +287,6 @@ export default function TeamManageModal({
     setTeamSkills(selectedSkills.slice());
   };
 
-  const handleChangeUser = (selectedMember: MemberOption | null) => {
-    if (selectedMember) {
-      if (!teamMembers.some((v) => v.id === selectedMember.id)) {
-        setTeamMembers([...teamMembers, { ...selectedMember }]);
-      } else {
-        setIncorrectSelectUser(true);
-        setTimeout(() => {
-          setIncorrectSelectUser(false);
-        }, 1000);
-      }
-    }
-  };
-
-  const handleDeleteMember = (index: number) => {
-    setTeamMembers(teamMembers.filter((v, i) => i !== index));
-  };
-
   const handleChangeDescription: FocusEventHandler = () => {
     if (teamDescriptionRef.current) {
       setTeamDescription(teamDescriptionRef.current.value);
@@ -313,13 +298,18 @@ export default function TeamManageModal({
   };
 
   const handleSubmit = () => {
+    const skills = teamSkills.map((skill) => ({
+      skillCode: skill.id,
+      skillName: skill.name,
+    }));
     createTeam({
       name: teamName,
       trackName: teamTrack,
       introduce: teamDescription,
-      skills: teamSkills,
-      teamMembers: teamMembers,
+      skills,
+      teamMembers,
       leaderId: teamLeader,
+      completeYn: 0,
     }).then(() => {
       // TODO: 팀 등록 후 새로고침
       // router.reload();
@@ -336,8 +326,24 @@ export default function TeamManageModal({
 
   const handleDeleteConfirm = () => {
     setShowDeleteConfirmModal(false);
-    deleteTeam({ id: defaultValue?.id }).then(() => {
+    deleteTeam({ teamId: defaultValue?.id }).then(() => {
       // TODO: 팀 삭제 후 새로고침
+      // router.reload();
+    });
+  };
+
+  const handleExitTeam = () => {
+    setShowExitConfirmModal(true);
+  };
+
+  const handleExitTeamConfirmCancel = () => {
+    setShowExitConfirmModal(false);
+  };
+
+  const handleExitTeamConfirm = () => {
+    setShowExitConfirmModal(false);
+    exitTeam({ userId: user.id, teamId: defaultValue?.id }).then(() => {
+      // TODO: 팀 나가기 후 새로고침
       // router.reload();
     });
   };
@@ -423,60 +429,22 @@ export default function TeamManageModal({
           </Label>
         </div>
 
-        <div className="team-invite-container">
-          <Label text="팀원 초대">
-            <div>
-              <div
-                className={incorrectSelectUser ? 'incorrect-select-shake' : ''}
-              >
-                <UserSelectAutoComplete
-                  handleChangeUserSelect={handleChangeUser}
-                />
-              </div>
-
-              <div className="profiles">
-                <div className="profile-and-name">
-                  <ProfileImage
-                    src={
-                      user.img && !user.img.includes('null')
-                        ? user.img
-                        : undefined
-                    }
-                  />
-                  <div className="name-in-profile">
-                    {user.name ? user.name + ' (나)' : '이름'}
-                  </div>
-                </div>
-                {defaultValue &&
-                  teamMembers.map(
-                    (item: Member, index) =>
-                      item.id !== defaultValue.leaderId && (
-                        <div className="profile-and-name" key={item.id}>
-                          <ProfileImage src={item.img ? item.img : undefined} />
-                          <div className="name-in-profile">{item.name}</div>
-                          <Icon
-                            iconName="remove_circle"
-                            func={() => handleDeleteMember(index)}
-                          />
-                        </div>
-                      ),
-                  )}
-              </div>
-            </div>
-          </Label>
-        </div>
-
         <div className="modal-footer">
           <div>
             <Button
-              title={defaultValue ? '저장' : '팀 만들기'}
+              title={defaultValue ? '변경사항 저장' : '팀 만들기'}
               func={handleSubmit}
             />
           </div>
 
           {defaultValue && (
             <div className="team-delete-btn">
-              <Button title="삭제" func={handleDeleteTeam} />
+              <Button title="팀 나가기" func={handleExitTeam} />
+            </div>
+          )}
+          {defaultValue && currentUserIsLeader && (
+            <div className="team-delete-btn">
+              <Button title="팀 삭제" func={handleDeleteTeam} />
             </div>
           )}
         </div>
@@ -484,12 +452,49 @@ export default function TeamManageModal({
           <ModalWrapper modalName="deleteConfirmModal">
             <div className="confirm-modal-container">
               <div className="confirm-text">
-                <Text text="정말 삭제하시겠습니까?" fontSetting="n20m" />
+                <Text text="정말 팀을 삭제하시겠습니까?" fontSetting="n20m" />
+                <Text
+                  text="현재 팀에 대한 모든 정보가 삭제됩니다."
+                  fontSetting="n16m"
+                />
               </div>
               <div className="confirm-btns">
-                <Button title="예" func={handleDeleteConfirm} />
                 <Button title="취소" func={handleDeleteConfirmCancel} />
+                <Button title="예" func={handleDeleteConfirm} />
               </div>
+            </div>
+          </ModalWrapper>
+        )}
+        {defaultValue && showExitConfirmModal && (
+          <ModalWrapper modalName="exitConfirmModal">
+            <div className="confirm-modal-container">
+              {currentUserIsLeader ? (
+                <>
+                  <div className="confirm-text">
+                    <Text
+                      text="팀장는 팀을 나갈 수 없습니다."
+                      fontSetting="n20m"
+                    />
+                    <Text
+                      text="팀을 탈퇴하고 싶다면 팀장을 위임한 후에 시도해주세요."
+                      fontSetting="n16m"
+                    />
+                  </div>
+                  <div className="confirm-btns">
+                    <Button title="확인" func={handleExitTeamConfirmCancel} />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="confirm-text">
+                    <Text text="정말 팀을 나가시겠습니까?" fontSetting="n20m" />
+                  </div>
+                  <div className="confirm-btns">
+                    <Button title="취소" func={handleExitTeamConfirmCancel} />
+                    <Button title="예" func={handleExitTeamConfirm} />
+                  </div>
+                </>
+              )}
             </div>
           </ModalWrapper>
         )}

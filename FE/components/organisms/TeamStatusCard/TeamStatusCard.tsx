@@ -97,7 +97,7 @@ export default function TeamStatusCard({
   onClickTeamManage,
 }: TeamStatusCard): ReactElement {
   const { user } = useAuthState();
-  const currentUserIsLeader = user.id === team.leaderId;
+  const currentUserIsInTeam = team.teamMembers.find(m => m.id === user.id);
 
   return (
     <Wrapper isComplete={team.completeYN !== 0}>
@@ -148,7 +148,7 @@ export default function TeamStatusCard({
       </div>
 
       <div className="completed-team-overlay"></div>
-      {currentUserIsLeader && (
+      {currentUserIsInTeam && (
         <div className="team-manage-button">
           <Icon iconName="settings" func={() => onClickTeamManage(team)} />
         </div>
