@@ -80,14 +80,14 @@ export default function ChatList({ func }: ChatListProps): ReactElement {
       try {
         const {
           data: {
-            data: { roomId, roomName },
+            data: { chat_room_id, room_name },
           },
         } = await postCreateRoom({
           user_id1: id,
           user_id2: selectedUser?.user_id,
         });
 
-        func(roomId, roomName);
+        func(chat_room_id, room_name);
         return handleGetChatLists();
       } catch (error) {
         return console.error(error);
