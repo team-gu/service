@@ -27,7 +27,12 @@ export default function Layout({ children }: LayoutProps) {
 
   useEffect(() => {
     const path = router.route;
-    const requireAuthPath = ['/team', '/humanpool', '/userdetail'];
+    const requireAuthPath = [
+      '/team',
+      '/humanpool',
+      '/userdetail',
+      `/userdetail/${/\d+/}`,
+    ];
     const isNotLogIn = !id || id === 0;
     const isRequireAuthPath = requireAuthPath.some((p) => path.startsWith(p));
 
