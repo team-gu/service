@@ -21,7 +21,6 @@ import {
 } from '@repository/userprofile';
 import { ProjectModal, AwardModal } from './Modal';
 import { Skill } from '@utils/type';
-import router from 'next/router';
 
 interface ProjectType {
   id: number | null;
@@ -515,7 +514,7 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
   };
 
   //TODO 내가 이런식으로 직접 삭제할건지 결과 데이터를 받아와서 넣을 건지에 대한 대화 필요
-  const deleteProjectCard = async (id: number, type: string) => {
+  const deleteProjectCard = async (id: number) => {
     try {
       await deleteProject(id);
       await dispatch(
@@ -526,7 +525,7 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
     }
   };
 
-  const deleteAwardCard = async (id: number, type: string) => {
+  const deleteAwardCard = async (id: number) => {
     try {
       await deleteAward(id);
       await dispatch(setAwards(user.awards.filter((award) => award.id !== id)));
@@ -627,7 +626,7 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
       <div className="name">프로젝트</div>
       <Projects>
         {user.projects.map(({ id, name, position, url, introduce }: any) => (
-          <Project className="cards">
+          <Project className="cards" key={id}>
             <div className="top">
               <p>{name}</p>
               <p>{position}</p>
@@ -636,10 +635,7 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
                   iconName="edit"
                   func={() => editProject(id, name, position, url, introduce)}
                 />
-                <Icon
-                  iconName="clear"
-                  func={() => deleteProjectCard(id, 'project')}
-                />
+                <Icon iconName="clear" func={() => deleteProjectCard(id)} />
               </div>
             </div>
             <div>{introduce}</div>
@@ -663,7 +659,7 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
       <div className="name">수상경력</div>
       <Awards>
         {user.awards.map(({ id, agency, date, name, introduce }: any) => (
-          <Award className="cards">
+          <Award className="cards" key={id}>
             <div className="top">
               <p>{agency}</p>
               <p>{name}</p>
@@ -672,10 +668,7 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
                   iconName="edit"
                   func={() => editAward(id, agency, date, name, introduce)}
                 />
-                <Icon
-                  iconName="clear"
-                  func={() => deleteAwardCard(id, 'award')}
-                />
+                <Icon iconName="clear" func={() => deleteAwardCard(id)} />
               </div>
             </div>
             <div className="middle">{getDate(date)}</div>

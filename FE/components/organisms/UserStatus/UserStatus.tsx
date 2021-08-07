@@ -86,6 +86,12 @@ export default function UserStatus(): ReactElement {
   }, [payload]);
 
   const handleToggleFilter = (title: string, code: string) => {
+    if (code === '전체') {
+      const payloadTemp: any = { ...payload };
+      delete payloadTemp[FILTER_TITLE[title]];
+      return setPayload(payloadTemp);
+    }
+
     setPayload((prev) => ({ ...prev, [FILTER_TITLE[title]]: code }));
   };
 
@@ -189,6 +195,7 @@ export default function UserStatus(): ReactElement {
               key={each?.id}
               user={each}
               filterContents={filterContents}
+              id={each?.id}
             />
           ))
         )}

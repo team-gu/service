@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.teamgu.api.dto.req.TeamFilterReqDto;
 import com.teamgu.api.dto.req.TeamMemberReqDto;
 import com.teamgu.api.dto.res.BasicResponse;
 import com.teamgu.api.dto.res.CommonResponse;
@@ -46,19 +47,29 @@ public class TeamController {
 	 * 필터링 처리를 위해 남겨둔 PostMapping 메서드
 	 */
 
-//	@ApiOperation(value = "팀 리스트 조회")
-//	@PostMapping("/")
-//	public ResponseEntity<List<TeamListResDto>> getTeamListbyFilter() {
-//		return new ResponseEntity<List<TeamListResDto>>(teamService.getTeamList(), HttpStatus.OK);
-//	}
-//
+	@ApiOperation(value = "팀 리스트 조회")
+	@PostMapping("/")
+	public ResponseEntity<? extends BasicResponse> getTeamListbyFilter(@RequestBody TeamFilterReqDto teamFilterReqDto) {
+
+		List<TeamListResDto> teamListResDto = teamService.getTeamList();
+
+		return ResponseEntity.ok(new CommonResponse<List<TeamListResDto>>(teamListResDto));
+	}
+	
 	@ApiOperation(value = "팀 추가하기")
 	@PostMapping("/add")
 	public ResponseEntity<? extends BasicResponse> createTeam(@RequestBody TeamListResDto teamListResDto) {
-		teamService.createTeam(teamListResDto);
-		List<TeamListResDto> teamList = teamService.getTeamList();
+		
+		String trackName = teamListResDto.getTrackName();
+		Long userId = teamListResDto.getLeaderId();
 
-		return ResponseEntity.ok(new CommonResponse<List<TeamListResDto>>(teamList));
+		if(teamService.checkTeamBuilding(userId, trackName)) {
+		
+			teamService.createTeam(teamListResDto);
+			return ResponseEntity.ok(new CommonResponse<String>("팀 추가 완료"));
+		}
+
+		return ResponseEntity.badRequest().build();
 	}
 
 	@ApiOperation(value = "팀 정보 수정하기")

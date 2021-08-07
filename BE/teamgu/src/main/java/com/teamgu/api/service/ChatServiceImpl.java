@@ -120,12 +120,20 @@ public class ChatServiceImpl implements ChatService{
 	}
 	
 	@Override
-	public long createRoom(String title) {
+	public ChatRoomResDto createRoom(String title) {
 		ChatRoom chatRoom = new ChatRoom();
 		chatRoom.setTitle(title);
 		LocalDateTime localDateTime = LocalDateTime.now();
 		chatRoom.setCreatedDate(localDateTime);
-		return chatRoomRepository.save(chatRoom).getId();
+		ChatRoom res = chatRoomRepository.save(chatRoom);
+		long chatroomid = chatRoom.getId();
+		ChatRoomResDto crrd = new ChatRoomResDto();
+		crrd.setChat_room_id(chatroomid);
+		crrd.setRoom_name(chatRoomRepository.findById(chatroomid).get().getTitle());//채팅방 이름을 가져온다
+		Chat lastchat = chatRoomRepositorySupport.getLastMessage(chatroomid);
+		crrd.setLast_chat_message(lastchat.getMessage());//해당 채팅방의 마지막 메세지를 가져온다.
+		crrd.setSend_date_time(lastchat.getSendDateTime());//해당 채팅방의 마지막 전송 시간을 가져온다.			
+		return crrd;
 	}
 	
 	@Override
@@ -138,5 +146,10 @@ public class ChatServiceImpl implements ChatService{
 		log.info(user_id+" 유저를 "+room_id+" 방으로 초대합니다");	
 		userChatRoomRepositorySupport.insertUser(user_id, room_id);
 		return true;
+	}
+	
+	@Override
+	public ChatRoomResDto getChatRoomInfo(long room_id) {		
+		return chatRoomRepositorySupport.getRoomInfo(room_id);
 	}
 }

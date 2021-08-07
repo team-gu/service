@@ -33,6 +33,15 @@ export default function Filter({
       <Title title={title}>
         <>
           {/* TODO: each의 타입 정의  */}
+          {isRadioButton && (
+            <RadioButton
+              func={() => func(title, '전체')}
+              name={title}
+              defaultChecked
+            >
+              <Text text="전체" fontSetting={'n14m'} />
+            </RadioButton>
+          )}
           {contents?.map(({ codeName, code }) =>
             isRadioButton ? (
               <RadioButton func={() => func(title, code)} name={title}>
