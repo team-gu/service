@@ -23,13 +23,7 @@ public class TeamListResDto {
 	@ApiModelProperty(name = "프로젝트 구성 완료 여부", example="0" )
 	short completeYn;
 	
-	@ApiModelProperty(name = "프로젝트 현재 구성 인원", example="1" )
-	int nowNumber;
-
-	@ApiModelProperty(name = "프로젝트 최대 구성 인원", example="5" )
-	int maxNumber;
-	
-	@ApiModelProperty(name = "팀장 유저의 고유 번호", example = "1")
+	@ApiModelProperty(name = "팀장 유저의 고유 번호", example = "5")
 	Long leaderId;
 	
 	@ApiModelProperty(name = "트랙명", example = "웹 디자인")
