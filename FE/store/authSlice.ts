@@ -1,4 +1,4 @@
-import { createSlice, Dispatch } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 import { postLoginApi, getUserInfo } from '@repository/baseRepository';
 import { AppDispatch } from '@store';
 import { NextRouter } from 'next/router';

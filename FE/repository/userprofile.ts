@@ -48,3 +48,10 @@ export const updateDetailInformation = async (param: object) => {
     param,
   });
 };
+
+export const getUserDetail = async (id: string | string[] | undefined) => {
+  return await api({
+    url: `/api/auth/userInfo/${id}`,
+    type: 'get',
+  });
+};
