@@ -190,6 +190,7 @@ export default function UserStatus(): ReactElement {
               key={each?.id}
               user={each}
               filterContents={filterContents}
+              id={each?.id}
             />
           ))
         )}
