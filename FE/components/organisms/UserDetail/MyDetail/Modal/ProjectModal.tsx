@@ -1,5 +1,5 @@
 import { ReactElement, SyntheticEvent, useState, useRef } from 'react';
-import { Input } from '@atoms';
+import { Input, Textarea, Text } from '@atoms';
 import { Button, SimpleSelect } from '@molecules';
 import { ModalWrapper } from '@organisms';
 import { postProject, updateProject } from '@repository/userprofile';
@@ -43,6 +43,11 @@ const CreateProject = styled.div`
   }
 `;
 
+const StyledTextarea = styled(Textarea)`
+  width: 100%;
+  height: 50px;
+`;
+
 const Error = styled.div`
   font-weight: 900;
   color: red;
@@ -68,11 +73,17 @@ export default function ProjectModal({
 
   const nameRef = useRef<HTMLInputElement>(null);
   const urlRef = useRef<HTMLInputElement>(null);
-  const introduceRef = useRef<HTMLInputElement>(null);
 
   const [position, setPosition] = useState<string>(projectModalData.position);
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [introduce, setIntroduce] = useState(
+    projectModalData.introduce !== '소개' ? projectModalData.introduce : '',
+  );
+
+  const handleIntroduce = (e: Event & { target: HTMLTextAreaElement }) => {
+    setIntroduce(e.target.value);
+  };
 
   const handleProject = async (e: SyntheticEvent) => {
     e.preventDefault();
@@ -81,7 +92,7 @@ export default function ProjectModal({
       !nameRef?.current?.value ||
       !position ||
       !urlRef?.current?.value ||
-      !introduceRef?.current?.value
+      !introduce
     ) {
       setErrorMessage('모든 값을 입력해주세요.');
       setError(true);
@@ -95,9 +106,8 @@ export default function ProjectModal({
         name: nameRef.current && nameRef.current.value,
         position: position,
         url: urlRef.current && urlRef.current.value,
-        introduce: introduceRef.current && introduceRef.current.value,
+        introduce: introduce,
       };
-      console.log(data);
       const res = projectModalData.id
         ? await updateProject(data)
         : await postProject(data);
@@ -121,6 +131,7 @@ export default function ProjectModal({
                   height="50px"
                   ref={nameRef}
                   refValue={projectModalData.name}
+                  maxLength={15}
                 />
               </div>
               <div>
@@ -143,14 +154,17 @@ export default function ProjectModal({
                   height="50px"
                   ref={urlRef}
                   refValue={projectModalData.url}
+                  maxLength={50}
                 />
               </div>
               <div>
-                <Input
-                  width="30vw"
-                  height="50px"
-                  ref={introduceRef}
-                  refValue={projectModalData.introduce}
+                <StyledTextarea onChange={handleIntroduce} maxlength={100}>
+                  {introduce}
+                </StyledTextarea>
+                <Text
+                  text={introduce.length + ' / 100'}
+                  fontSetting="n12m"
+                  color="gray"
                 />
               </div>
               {error && <Error>{errorMessage}</Error>}
@@ -166,6 +180,7 @@ export default function ProjectModal({
                   placeHolder={projectModalData.name}
                   width="30vw"
                   height="50px"
+                  maxLength={15}
                   ref={nameRef}
                 />
               </div>
@@ -183,15 +198,20 @@ export default function ProjectModal({
                   placeHolder={projectModalData.url}
                   width="30vw"
                   height="50px"
+                  maxLength={50}
                   ref={urlRef}
                 />
               </div>
               <div>
-                <Input
-                  placeHolder={projectModalData.introduce}
-                  width="30vw"
-                  height="50px"
-                  ref={introduceRef}
+                <StyledTextarea
+                  placeholder={projectModalData.introduce}
+                  onChange={handleIntroduce}
+                  maxlength={100}
+                />
+                <Text
+                  text={introduce.length + ' / 100'}
+                  fontSetting="n12m"
+                  color="gray"
                 />
               </div>
               {error && <Error>{errorMessage}</Error>}
