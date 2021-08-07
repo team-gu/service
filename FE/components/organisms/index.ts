@@ -7,6 +7,7 @@ import Footer from './Footer';
 import Layout from './Layout';
 import LookupLayout from './LookupLayout';
 import UserDetail from './UserDetail';
+import OtherUserDetail from './OtherUserDetail';
 import LineBackground from './LineBackground';
 import LoginComponent from './LoginComponent';
 import ModalWrapper from './Modal/ModalWrapper';
@@ -27,6 +28,7 @@ export {
   Layout,
   LookupLayout,
   UserDetail,
+  OtherUserDetail,
   LineBackground,
   LoginComponent,
   ModalWrapper,
