@@ -141,7 +141,6 @@ export default function UserStatus(): ReactElement {
             (each, index) =>
               each !== '기수' &&
               each !== '프로젝트' &&
-              each !== '역할' &&
               (each !== '전공/비전공' ? (
                 <Filter
                   title={each}
