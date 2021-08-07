@@ -137,10 +137,8 @@ export default function VideoRoomConfigModal({
       try {
         // To get user's permission of video and audio
         const initForPermit = await OV.initPublisherAsync('', {
-          resolution: '320x240',
           publishAudio: false,
           publishVideo: true,
-          mirror: true,
         });
         allTrackOff(initForPermit);
 
@@ -164,12 +162,11 @@ export default function VideoRoomConfigModal({
     })();
   }, []);
 
-  // Publish every time the camera changes
   useEffect(() => {
-    if (camSelected) {
-      publishUserCameraStream();
+    return () => {
+      allTrackOff(localCamStream);
     }
-  }, [camSelected]);
+  }, [localCamStream]);
 
   useEffect(() => {
     if (camSelected && camOn) {
@@ -179,7 +176,7 @@ export default function VideoRoomConfigModal({
         allTrackOff(localCamStream);
       }
     }
-  }, [camOn]);
+  }, [camSelected, camOn]);
 
   const handleCameraChange = (event: ChangeEvent<HTMLSelectElement>) => {
     setCamSelected(event.target.value);
@@ -189,8 +186,8 @@ export default function VideoRoomConfigModal({
     setMicSelected(event.target.value);
   };
 
-  const publishUserCameraStream = () => {
-    const stream = OV.initPublisher('', {
+  const publishUserCameraStream = async () => {
+    const stream = await OV.initPublisher('', {
       audioSource: micSelected,
       videoSource: camSelected,
       publishAudio: false,
@@ -210,14 +207,16 @@ export default function VideoRoomConfigModal({
     }
   };
 
-  const allTrackOff = (streamManager: StreamManager) => {
-    streamManager.stream
-      .getMediaStream()
-      .getTracks()
-      .map((m) => {
-        m.enabled = false;
-        m.stop();
-      });
+  const allTrackOff = (sm: StreamManager | undefined) => {
+    if (sm) {
+      sm.stream
+        .getMediaStream()
+        .getTracks()
+        .map((m) => {
+          m.enabled = false;
+          m.stop();
+        });
+    } 
   };
 
   const handleMicOnChanged = () => {
@@ -226,17 +225,13 @@ export default function VideoRoomConfigModal({
     }
   };
 
-  const handleClickJoin = () => {
-    if (localCamStream) {
-      allTrackOff(localCamStream);
-    }
+  const onJoin = () => {
+    allTrackOff(localCamStream);
     handlerJoin(micSelected, camSelected, micOn, camOn);
   };
 
   const onClose = (event: MouseEvent) => {
-    if (localCamStream) {
-      allTrackOff(localCamStream);
-    }
+    allTrackOff(localCamStream);
     handlerClose(event);
   };
 
@@ -313,7 +308,7 @@ export default function VideoRoomConfigModal({
           </IconsAndInputs>
         </div>
         <div className="modal-footer">
-          <Button title="JOIN" func={handleClickJoin} />
+          <Button title="JOIN" func={onJoin} />
         </div>
       </GridContainer>
     </ModalWrapper>

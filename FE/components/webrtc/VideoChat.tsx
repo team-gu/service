@@ -111,69 +111,15 @@ export default function VideoChat(): ReactElement {
 
     // componentWillUnmount
     return () => {
-      console.log('componentWillUnmount');
       leaveSession();
     };
   }, []);
 
-  const importOpenVidu = () => {
-    return new Promise<any>((resolve, reject) => {
-      import('openvidu-browser')
-        .then((ob) => {
-          resolve(ob);
-        })
-        .catch((error) => {
-          console.log('openvidu import error: ', error.code, error.message);
-          reject();
-        });
-    });
-  };
-
-  const deleteSubscriber = (streamManager: Subscriber) => {
-    let subs = subscribers;
-    let index = subscribers.indexOf(streamManager, 0);
-    if (index > -1) {
-      subs.splice(index, 1);
-      setSubscribers([...subs]);
-    }
-  };
-
-  const clear = () => {
-    setOV(undefined);
-    setSession(undefined);
-    setPublisher(undefined);
-    setSubscribers([]);
-    setUserDevice({ mic: '', cam: '' });
-    setMicOn(false);
-    setCamOn(false);
-  };
-
-  const handlerConfigModalCloseBtn = () => {
-    setPublisher(undefined);
-    setIsConfigModalShow(false);
-    console.log('Config cancel. Redirect previous page.');
-    router.push('/');
-  };
-
-  const handlerJoinBtn = (
-    micSelected: string | undefined,
-    camSelected: string | undefined,
-    micState: boolean,
-    camState: boolean,
-  ) => {
-    if (micSelected && camSelected) {
-    }
-    setUserDevice({
-      mic: micSelected,
-      cam: camSelected,
-    });
-
-    setMicOn(micState);
-    setCamOn(camState);
-
-    setIsConfigModalShow(false);
-    setSession(OV?.initSession());
-  };
+  useEffect(() => {
+    return () => {
+      allTrackOff(publisher);
+    };
+  }, [publisher]);
 
   // 'session' hook
   useEffect(() => {
@@ -242,6 +188,65 @@ export default function VideoChat(): ReactElement {
       });
   }, [session]);
 
+  const importOpenVidu = () => {
+    return new Promise<any>((resolve, reject) => {
+      import('openvidu-browser')
+        .then((ob) => {
+          resolve(ob);
+        })
+        .catch((error) => {
+          console.log('openvidu import error: ', error.code, error.message);
+          reject();
+        });
+    });
+  };
+
+  const deleteSubscriber = (streamManager: Subscriber) => {
+    let subs = subscribers;
+    let index = subscribers.indexOf(streamManager, 0);
+    if (index > -1) {
+      subs.splice(index, 1);
+      setSubscribers([...subs]);
+    }
+  };
+
+  const clear = () => {
+    setOV(undefined);
+    setSession(undefined);
+    setPublisher(undefined);
+    setSubscribers([]);
+    setUserDevice({ mic: '', cam: '' });
+    setMicOn(false);
+    setCamOn(false);
+  };
+
+  const handlerConfigModalCloseBtn = () => {
+    setPublisher(undefined);
+    setIsConfigModalShow(false);
+    console.log('Device Config cancel. Redirect to home.');
+    router.push('/');
+  };
+
+  const handlerJoinBtn = (
+    micSelected: string | undefined,
+    camSelected: string | undefined,
+    micState: boolean,
+    camState: boolean,
+  ) => {
+    if (micSelected && camSelected) {
+    }
+    setUserDevice({
+      mic: micSelected,
+      cam: camSelected,
+    });
+
+    setMicOn(micState);
+    setCamOn(camState);
+
+    setIsConfigModalShow(false);
+    setSession(OV?.initSession());
+  };
+
   const leaveSession = () => {
     const mySession = session;
     if (mySession) {
@@ -307,10 +312,7 @@ export default function VideoChat(): ReactElement {
 
   const handleVideoStateChanged = () => {
     if (userDevice.cam) {
-      const newCamOnState = !camOn;
-
-      console.log("Camera State Changed :", newCamOnState);
-      republish(newCamOnState);
+      republish(!camOn);
     }
   };
 
@@ -321,20 +323,31 @@ export default function VideoChat(): ReactElement {
     }
   };
 
-  const videoTrackOff = (sm: StreamManager) => {
-    console.log('Video track OFF');
-    sm.stream
-      .getMediaStream()
-      .getVideoTracks()
-      .map((m) => {
-        m.enabled = false;
-        m.stop();
-      });
+  const videoTrackOff = (sm: StreamManager | undefined) => {
+    if (sm) {
+      sm.stream
+        .getMediaStream()
+        .getVideoTracks()
+        .map((m) => {
+          m.enabled = false;
+          m.stop();
+        });
+    }
+  };
+
+  const allTrackOff = (sm: StreamManager | undefined) => {
+    if (sm) {
+      sm.stream
+        .getMediaStream()
+        .getTracks()
+        .map((m) => {
+          m.enabled = false;
+          m.stop();
+        });
+    }
   };
 
   const republish = async (newCamOnState: boolean) => {
-    console.log('Re-publish');
-
     if (!OV || !session) return;
 
     if (publisher) {
@@ -359,10 +372,7 @@ export default function VideoChat(): ReactElement {
   };
 
   const handleClickExit = () => {
-    if (publisher) {
-      videoTrackOff(publisher);
-    }
-
+    videoTrackOff(publisher);
     leaveSession();
     router.push('/');
   };
