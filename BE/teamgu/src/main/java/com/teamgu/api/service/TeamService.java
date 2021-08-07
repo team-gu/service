@@ -37,4 +37,7 @@ public interface TeamService {
 	// completeTeamBuilding
 	void completeTeamBuilding(Long teamId);
 	
+	// Check Team Building
+	boolean checkTeamBuilding(Long userId, String trackName);
+	
 }
