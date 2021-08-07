@@ -17,10 +17,16 @@ import {
 } from '@molecules';
 import { MODALS, SSAFY_TRACK } from '@utils/constants';
 import { displayModal, useAppDispatch, useAuthState } from '@store';
-import { createTeam, deleteTeam, exitTeam } from '@repository/teamRepository';
+import {
+  createTeam,
+  deleteTeam,
+  exitTeam,
+  updateTeam,
+} from '@repository/teamRepository';
 import { OptionTypeBase, OptionsType } from 'react-select';
 import { Team, SkillOption, Member } from '@utils/type';
 import { useRef } from 'react';
+import router from 'next/router';
 
 const Wrapper = styled.div`
   display: grid;
@@ -321,7 +327,6 @@ export default function TeamManageModal({
         }),
       );
       return false;
-
     } else if (!teamTrack || teamTrack === '') {
       dispatch(
         displayModal({
@@ -341,19 +346,19 @@ export default function TeamManageModal({
     }
 
     return true;
-  }
+  };
 
   const handleSubmit = () => {
     if (formValidation()) {
       setShowSubmitConfirm(true);
-    } 
+    }
   };
 
   const handleUpdateSubmit = () => {
     if (formValidation()) {
       setShowSubmitConfirm(true);
-    } 
-  }
+    }
+  };
 
   const handleDeleteTeam = () => {
     setShowDeleteConfirmModal(true);
@@ -387,9 +392,9 @@ export default function TeamManageModal({
     });
   };
 
-  const handleCreateTeamConfirmCancel = () => {
+  const handleSubmitTeamConfirmCancel = () => {
     setShowSubmitConfirm(false);
-  }
+  };
 
   const handleCreateTeamConfirm = () => {
     setShowSubmitConfirm(false);
@@ -409,7 +414,34 @@ export default function TeamManageModal({
       // TODO: 팀 등록 후 새로고침
       // router.reload();
     });
-  }
+  };
+
+  const handleUpdateTeamConfirm = () => {
+    setShowSubmitConfirm(false);
+    if (!defaultValue) {
+      console.error("수정할 팀 정보가 없습니다. 다시 시도해주세요");
+      router.reload();
+      return;
+    }
+
+    const skills = teamSkills.map((skill) => ({
+      skillCode: skill.id,
+      skillName: skill.name,
+    }));
+    updateTeam({
+      id: defaultValue.id,
+      name: teamName,
+      trackName: teamTrack,
+      introduce: teamDescription,
+      skills,
+      teamMembers,
+      leaderId: teamLeader,
+      completeYn: 0,
+    }).then(() => {
+      // TODO: 팀 수정 후 새로고침
+      // router.reload();
+    });
+  };
 
   const toOptionTypeBase = (value: string): OptionTypeBase => {
     const option: OptionTypeBase = {
@@ -524,8 +556,15 @@ export default function TeamManageModal({
                 />
               </div>
               <div className="create-confirm-btns">
-                <Button title="예" func={handleCreateTeamConfirm} />
-                <Button title="취소" func={handleCreateTeamConfirmCancel} />
+                <Button
+                  title="예"
+                  func={
+                    defaultValue
+                      ? handleUpdateTeamConfirm
+                      : handleCreateTeamConfirm
+                  }
+                />
+                <Button title="취소" func={handleSubmitTeamConfirmCancel} />
               </div>
             </div>
           </ModalWrapper>

@@ -126,6 +126,18 @@ export const createTeam = async (param: object) => {
   // });
 };
 
+export const updateTeam = async (param: object) => {
+  console.log('팀 수정 API 호출: ');
+  console.log(param);
+
+  // TODO: api 연결 백엔드 미완.
+  // return await api({
+  //   url: `/path/to/create-team`,
+  //   type: 'post',
+  //   param,
+  // });
+};
+
 export const deleteTeam = async (param: object) => {
   console.log('팀 삭제 API 호출: ');
   console.log(param);
