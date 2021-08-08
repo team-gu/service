@@ -97,7 +97,7 @@ export default function TeamStatusCard({
   onClickTeamManage,
 }: TeamStatusCard): ReactElement {
   const { user } = useAuthState();
-  const currentUserIsInTeam = team.teamMembers.find(m => m.id === user.id);
+  const currentUserIsInTeam = team.teamMembers.find((m) => m.id === user.id);
 
   return (
     <Wrapper isComplete={team.completeYN === 0}>

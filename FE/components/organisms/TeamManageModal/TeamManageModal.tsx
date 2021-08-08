@@ -419,7 +419,7 @@ export default function TeamManageModal({
   const handleUpdateTeamConfirm = () => {
     setShowSubmitConfirm(false);
     if (!defaultValue) {
-      console.error("수정할 팀 정보가 없습니다. 다시 시도해주세요");
+      console.error('수정할 팀 정보가 없습니다. 다시 시도해주세요');
       router.reload();
       return;
     }

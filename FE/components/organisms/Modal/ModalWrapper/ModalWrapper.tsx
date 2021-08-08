@@ -8,7 +8,7 @@ interface ModalWrapperProps {
   zIndex?: number;
 }
 
-const Background = styled.div<{zIndex: number}>`
+const Background = styled.div<{ zIndex: number }>`
   position: fixed;
   left: 0;
   top: 0;
@@ -17,7 +17,7 @@ const Background = styled.div<{zIndex: number}>`
   overflow: none;
   background-color: rgba(0, 0, 0, 0.4);
 
-  ${({zIndex }) => 'z-index: '+zIndex}
+  ${({ zIndex }) => 'z-index: ' + zIndex}
 `;
 
 const Wrapper = styled.div<{ zIndex: number }>`
@@ -32,7 +32,7 @@ const Wrapper = styled.div<{ zIndex: number }>`
   overflow: auto;
   outline: none;
 
-  ${({ zIndex }) => 'z-index: ' + (zIndex+1)}
+  ${({ zIndex }) => 'z-index: ' + (zIndex + 1)}
 `;
 
 const Content = styled.div`
