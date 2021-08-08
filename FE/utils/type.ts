@@ -20,7 +20,7 @@ export interface Team {
   name: string;
   introduce: string;
 
-  completeYN: number;
+  completeYn: number;
   nowNumber: number;
   maxNumber: number;
 
