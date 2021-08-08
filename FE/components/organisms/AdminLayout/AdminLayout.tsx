@@ -9,6 +9,8 @@ import { DUMMY_PROJECTS } from '@utils/dummy';
 const Wrapper = styled.div`
   display: flex;
   gap: 30px;
+  min-height: 90vh;
+  
   .sidebar {
     flex: 0 0 200px;
   }

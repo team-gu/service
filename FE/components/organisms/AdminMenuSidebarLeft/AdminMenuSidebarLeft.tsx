@@ -7,49 +7,48 @@ import { Project } from '@utils/type';
 import { ADMIN_MENU_CONTENT } from '@utils/constants';
 
 const Wrapper = styled.div`
-  .sidebar {
-    position: relative;
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+  box-shadow: 3px 0px 5px rgba(55, 53, 47, 0.4);
+  height: 100%;
+
+  .sidebar-header {
+    flex: 0 0 100px;
 
     display: flex;
-    flex-direction: column;
-    box-shadow: 3px 0px 5px rgba(55, 53, 47, 0.4);
+    align-items: center;
 
-    .sidebar-header {
-      flex: 0 0 100px;
+    border: solid 2px #3848a0;
+    background-color: #e8eaf6;
 
-      display: flex;
-      align-items: center;
+    .selected-project-info {
+      flex: 1;
+      text-align: center;
 
-      border: solid 2px #3848a0;
-      background-color: #e8eaf6;
-
-      .selected-project-info {
-        flex: 1;
-        text-align: center;
-
-        .current-project-text {
-          cursor: pointer;
-          text-decoration: underline;
-          text-decoration-thickness: 1px;
-          text-underline-offset: 3px;
-        }
+      .current-project-text {
+        cursor: pointer;
+        text-decoration: underline;
+        text-decoration-thickness: 1px;
+        text-underline-offset: 3px;
       }
     }
+  }
 
-    .sidebar-content {
-      flex: 1 0 auto;
-      display: flex;
-      flex-direction: column;
-      gap: 40px;
+  .sidebar-content {
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
 
-      background-color: #3848a0;
-      color: white;
-      padding: 60px 0;
+    background-color: #3848a0;
+    color: white;
+    padding: 60px 0;
 
-      > div {
-        margin-left: 20px;
-        cursor: pointer;
-      }
+    > div {
+      margin-left: 20px;
+      cursor: pointer;
     }
   }
 `;
@@ -128,38 +127,39 @@ export default function AdminMenuSidebarLeft({
 
   return (
     <Wrapper>
-      <div className="sidebar">
-        <div className="sidebar-header">
-          <div className="selected-project-info">
-            <Text text="현재 선택된 프로젝트" color="gray" fontSetting="n16m" />
-            {clickSelectProject ? (
-              <SimpleSelect
-                options={projectOptions}
-                onChange={handleChangeProject}
-                onBlur={handleChangeSelectProject}
-                customStyles={customStyles}
-                value={selectedProject}
-                autofocus={true}
-              />
-            ) : (
-              <div onClick={handleChangeSelectProject} className="current-project-text">
-                <Text text={selectedProject.name} fontSetting="n20m" />
-              </div>
-            )}
-          </div>
-        </div>
-        <div className="sidebar-content">
-          {menuOptions.map(({ id, title }) => (
-            <div key={id} onClick={() => handleChangeMenu(id)}>
-              <Text
-                text={title}
-                fontSetting={id === selectedMenu ? 'n26b' : 'n16m'}
-                color={id === selectedMenu ? 'white' : '#eeeeee'}
-                isLineBreak
-              />
+      <div className="sidebar-header">
+        <div className="selected-project-info">
+          <Text text="현재 선택된 프로젝트" color="gray" fontSetting="n16m" />
+          {clickSelectProject ? (
+            <SimpleSelect
+              options={projectOptions}
+              onChange={handleChangeProject}
+              onBlur={handleChangeSelectProject}
+              customStyles={customStyles}
+              value={selectedProject}
+              autofocus={true}
+            />
+          ) : (
+            <div
+              onClick={handleChangeSelectProject}
+              className="current-project-text"
+            >
+              <Text text={selectedProject.name} fontSetting="n20m" />
             </div>
-          ))}
+          )}
         </div>
+      </div>
+      <div className="sidebar-content">
+        {menuOptions.map(({ id, title }) => (
+          <div key={id} onClick={() => handleChangeMenu(id)}>
+            <Text
+              text={title}
+              fontSetting={id === selectedMenu ? 'n26b' : 'n16m'}
+              color={id === selectedMenu ? 'white' : '#eeeeee'}
+              isLineBreak
+            />
+          </div>
+        ))}
       </div>
     </Wrapper>
   );
