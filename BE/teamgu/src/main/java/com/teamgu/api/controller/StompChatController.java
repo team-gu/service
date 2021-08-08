@@ -1,6 +1,8 @@
 package com.teamgu.api.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -9,17 +11,22 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.teamgu.api.dto.req.ChatReqDto;
+import com.teamgu.api.dto.req.UserRoomCheckDto;
 import com.teamgu.api.dto.res.ChatMessageResDto;
+import com.teamgu.api.dto.res.ChatRoomResDto;
+import com.teamgu.api.dto.res.CommonResponse;
 import com.teamgu.api.service.ChatServiceImpl;
 import com.teamgu.api.service.UserServiceImpl;
+import com.teamgu.api.vo.MessageTemplate;
 import com.teamgu.database.entity.Chat;
 import com.teamgu.database.entity.User;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 @Controller
-@RequiredArgsConstructor
 @Log4j2
 @CrossOrigin("*")
 public class StompChatController {
@@ -29,11 +36,13 @@ public class StompChatController {
 	@Autowired
 	UserServiceImpl userService;
 	
-	private final SimpMessagingTemplate template;
+	@Autowired
+	MessageTemplate simpMessagingTemplate;
+	
 	@MessageMapping(value="/chat/enter")//참여
 	public void enter(ChatReqDto message) {
 		message.setMessage(message.getSender_id()+"님이 채팅방에 참여하셨습니다.");
-		template.convertAndSend("/receive/chat/room/"+message.getRoom_id(),message);
+		simpMessagingTemplate.getTemplate().convertAndSend("/receive/chat/room/"+message.getRoom_id(),message);
 	}
 	
 	/**
@@ -54,13 +63,58 @@ public class StompChatController {
 		if (chatres!=null) {
 			ChatMessageResDto chatMessageResDto = new ChatMessageResDto(message.getSender_id(), 
 					sender.getName(),
+					chatres.getType(),
 					chatres.getMessage(), 
-					chatres.getSendDateTime(), 
-					0);
-			template.convertAndSend("/receive/chat/room/"+message.getRoom_id(),chatMessageResDto);			
+					chatres.getSendDateTime(),
+					0
+					);
+			simpMessagingTemplate.getTemplate().convertAndSend("/receive/chat/room/"+message.getRoom_id(),chatMessageResDto);			
 			log.info("message db saved done");
 		}
 		else
 			log.error("message db save failed");
+	}
+	
+	/**
+	 * 메세지를 동일하게 전송하지만 RTC 전용 메세지 처리부다
+	 * @param message
+	 */
+	@MessageMapping(value="/chat/messageRTC")
+	public void messageRTC(@RequestBody UserRoomCheckDto users) {
+		log.info("in user-invite...");
+		log.info(users.getUser_id1()+", "+users.getUser_id2());
+		long roomid = chatService.roomCheck(users.getUser_id1(), users.getUser_id2());
+		String name1 = userService.getUserById(users.getUser_id1()).get().getName();
+		String name2 = userService.getUserById(users.getUser_id2()).get().getName();			
+		if(roomid==0) {//존재하지 않는 경우 방을 생성하고 방 번호를 반환한다.
+			ChatRoomResDto chatRoomResDto = chatService.createRoom(name1+", "+name2+"의 방");
+			roomid = chatRoomResDto.getChat_room_id();
+			
+			log.info(roomid+"방이 생성되었습니다");
+			chatService.inviteUser(users.getUser_id1(), roomid);//둘 다 초대
+			chatService.inviteUser(users.getUser_id2(), roomid);
+		}		
+		//1. 초대 메세지 보내기 전에 저장
+		log.info("saving RTC invite message");
+		ChatReqDto chatReqDto = ChatReqDto.builder()
+											.room_id(roomid)
+											.sender_id(users.getUser_id1())
+											.message("화상회의실이 개설되었습니다")
+											.type("RTC_INVITE")
+											.build();
+		Chat chatres = chatService.saveChat(chatReqDto);
+		log.info("broadcasting RTC invite message");
+		//2. 메세지 구독룸으로 브로드캐스팅
+		ChatMessageResDto chatMessageResDto = ChatMessageResDto.builder()
+												.create_date_time(chatres.getSendDateTime())
+												.message(chatres.getMessage())
+												.sender_id(users.getUser_id1())
+												.sender_name(name1)
+												.type(chatres.getType())
+												.unread_user_count(0)
+												.build();												
+		log.info("브로드캐스팅 방 번호 : "+roomid);
+		simpMessagingTemplate.getTemplate().convertAndSend("/receive/chat/room/"+roomid,chatMessageResDto);
+		log.info("bradcasting done");	
 	}
 }

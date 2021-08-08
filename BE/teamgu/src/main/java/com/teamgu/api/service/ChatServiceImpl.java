@@ -110,8 +110,9 @@ public class ChatServiceImpl implements ChatService{
 //														.build());
 		Chat chat = new Chat();
 		chat.setMessage(chatReqDto.getMessage());
-//		chat.setType(chatReqDto.getType());
-		chat.setType("NORMAL");//save로 요청되는 채팅은 모두 NORMAL type 채팅이다
+		if(chatReqDto.getType()==null || chatReqDto.getType().equals(""))
+			chatReqDto.setType("NORMAL");
+		chat.setType(chatReqDto.getType());
 		chat.setUser(userRepository.getOne(chatReqDto.getSender_id()));//set sender_id
 		chat.setChatRoom(chatRoomRepository.getOne(chatReqDto.getRoom_id()));//set room_id		
 		chat.setSendDateTime(created_time);
