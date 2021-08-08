@@ -3,16 +3,14 @@ import styled from 'styled-components';
 
 interface LookupLayoutProps {
   children: ReactElement<any, string | JSXElementConstructor<any>> | any;
+  showTeamCreateBtn: boolean;
 }
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<{ showTeamCreateBtn: boolean }>`
   display: grid;
-  grid-template-columns: 200px auto;
+  grid-template-columns: 250px auto;
   grid-template-rows: auto;
   gap: 20px;
-
-  .filter-container {
-  }
 
   .sort-container {
     display: flex;
@@ -33,7 +31,10 @@ const Wrapper = styled.div`
 
   .team-status-header {
     display: grid;
-    grid-template-columns: auto 150px 100px;
+    ${({ showTeamCreateBtn }) =>
+      showTeamCreateBtn
+        ? 'grid-template-columns: auto 150px 100px;'
+        : 'grid-template-columns: auto 150px;'}
     align-items: center;
     justify-items: center;
     gap: 10px;
@@ -52,6 +53,7 @@ const Wrapper = styled.div`
 
 export default function LookupLayout({
   children,
+  showTeamCreateBtn,
 }: LookupLayoutProps): ReactElement {
-  return <Wrapper>{children}</Wrapper>;
+  return <Wrapper showTeamCreateBtn={showTeamCreateBtn}>{children}</Wrapper>;
 }

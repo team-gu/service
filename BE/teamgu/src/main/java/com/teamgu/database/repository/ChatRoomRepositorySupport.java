@@ -12,8 +12,11 @@ import org.springframework.stereotype.Repository;
 
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.teamgu.api.dto.res.ChatRoomResDto;
 import com.teamgu.database.entity.Chat;
+import com.teamgu.database.entity.ChatRoom;
 import com.teamgu.database.entity.QChat;
+import com.teamgu.database.entity.QChatRoom;
 import com.teamgu.database.entity.QUser;
 
 import lombok.extern.log4j.Log4j2;
@@ -25,9 +28,26 @@ public class ChatRoomRepositorySupport {
 	private JPAQueryFactory jpaQueryFactory;
 	QChat qchat = QChat.chat;
 	QUser quser = QUser.user; 
-	
+	QChatRoom qChatRoom = QChatRoom.chatRoom;
 	@PersistenceUnit
 	EntityManagerFactory emf;	
+	/**
+	 * 방 번호가 입력되면 채팅방에 관한 정보가 반환된다
+	 * @param room_id
+	 * @return
+	 */
+	public ChatRoomResDto getRoomInfo(long room_id) {
+		ChatRoom chatRoom = jpaQueryFactory.select(qChatRoom)
+											.from(qChatRoom)
+											.where(qChatRoom.id.eq(room_id))
+											.fetchOne();
+		ChatRoomResDto chatRoomResDto = new ChatRoomResDto();
+		//방 번호와 방 이름만 반환한다.
+		//한번에 채팅방에 들어갔을 때를 위함이다.
+		chatRoomResDto.setChat_room_id(room_id);
+		chatRoomResDto.setRoom_name(chatRoom.getTitle());
+		return chatRoomResDto;
+	}
 	
 	public Chat getLastMessage(long room_id) {
 		log.info("조회하는 채팅방 번호 : "+room_id);
