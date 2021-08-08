@@ -32,6 +32,8 @@ const Wrapper = styled.div`
 
       padding: 5px 5px;
 
+      white-space: pre;
+
       resize: none;
       border: none;
       outline: 0px none transparent;

@@ -48,6 +48,8 @@ const Wrapper = styled.div<{ isMe: boolean }>`
       min-height: 20px;
       line-height: 1.1;
 
+      white-space: pre-wrap;
+
       padding: 8px 16px 8px 16px;
       border-radius: ${({ isMe }) =>
         isMe ? '16px 0px 16px 16px' : '0px 16px 16px 16px'};
