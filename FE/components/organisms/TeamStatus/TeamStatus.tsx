@@ -90,7 +90,6 @@ export default function TeamStatus(): ReactElement {
     dispatch(setLoading({ isLoading: true }));
 
     getTeams(by, asc, userid).then(({ data: { data } }) => {
-      console.log(data);
       setTeams(data);
       dispatch(setLoading({ isLoading: false }));
     });
@@ -190,6 +189,9 @@ export default function TeamStatus(): ReactElement {
             </div>
           )}
         </div>
+        {(!teams || teams.length === 0) && (
+          <div>현재 등록된 팀이 없거나, 필터링 조건에 일치하는 팀이 없습니다.</div>
+        )}
         {teams.map((item, index) => (
           <TeamStatusCard
             key={index}
