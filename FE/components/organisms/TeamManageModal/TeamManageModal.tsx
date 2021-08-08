@@ -327,7 +327,9 @@ export default function TeamManageModal({
         }),
       );
       return false;
-    } else if (!teamTrack || teamTrack === '') {
+    } 
+    
+    if (!teamTrack || teamTrack === '') {
       dispatch(
         displayModal({
           modalName: MODALS.ALERT_MODAL,
@@ -335,7 +337,9 @@ export default function TeamManageModal({
         }),
       );
       return false;
-    } else if (!teamDescription || teamDescription === '') {
+    } 
+    
+    if (!teamDescription || teamDescription === '') {
       dispatch(
         displayModal({
           modalName: MODALS.ALERT_MODAL,
