@@ -1,6 +1,6 @@
 import { ReactElement, SyntheticEvent, useState, useRef } from 'react';
 import styled from 'styled-components';
-import { Icon, Input, Textarea } from '@atoms';
+import { Icon, Input, Textarea, Text } from '@atoms';
 import {
   Button,
   SimpleSelect,
@@ -20,8 +20,15 @@ import {
   updateDetailInformation,
 } from '@repository/userprofile';
 import { ProjectModal, AwardModal } from './Modal';
-import { Skill } from '@utils/type';
-import router from 'next/router';
+
+// >>>>>>>>>> TODO: Skill 인터페이스 수정 (민호)
+// import { Skill } from '@utils/type';
+interface Skill {
+  id: number;
+  name: string;
+  backgroundColor: string;
+  color: string;
+}
 
 interface ProjectType {
   id: number | null;
@@ -406,10 +413,10 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
   const [awardModalData, setAwardModalData] = useState<AwardType>(Object);
   const [showAwardModal, setShowAwardModal] = useState(false);
   const [useableSkills, setUseableSkills] = useState<string[]>(user.skills);
+  const [introduce, setIntroduce] = useState(user.introduce);
   // TODO 이거 배열로 들어올지 아니면 문자열 하나로 들어올지 확실히 해야함.
   const [track, setTrack] = useState<string>(user.wishTrack[0]);
   const [position, setPosition] = useState<string>(user.wishPositionCode);
-  const descriptionRef = useRef<HTMLTextAreaElement>(null);
 
   const editProject = (
     id: number | null,
@@ -445,7 +452,11 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
     setShowAwardModal(true);
   };
 
-  const changeImage = (e: any) => {
+  const handleIntroduce = (e: Event & { target: HTMLTextAreaElement }) => {
+    setIntroduce(e.target.value);
+  };
+
+  const changeImage = (e: EventTarget & { target: HTMLInputElement }) => {
     setImage(e.target.files[0]);
   };
 
@@ -472,14 +483,9 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
     // // formData.append('image', image);
     // formData.append('skills', useableSkills);
     // console.log(formData);
-    if (
-      !descriptionRef?.current?.value ||
-      !track ||
-      !position ||
-      !useableSkills.length
-    ) {
+    if (!introduce || !track || !position || !useableSkills.length) {
       const message = [];
-      if (!descriptionRef?.current?.value) message.push('자기 소개');
+      if (!introduce) message.push('자기 소개');
       if (!track) message.push('트랙');
       if (!position) message.push('포지션');
       if (!useableSkills.length) message.push('사용 기술');
@@ -489,9 +495,9 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
     }
     try {
       const data = {
-        introduce: descriptionRef?.current?.value,
         email: user.email,
         id: user.id,
+        introduce: introduce,
         stidentNumber: user.studentNumber,
         wishTracks: [track],
         wishPosition: position,
@@ -502,7 +508,7 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
         setUserDetail({
           wishTracks: [track],
           wishPosition: position,
-          introduce: descriptionRef?.current?.value,
+          introduce: introduce,
           skills: useableSkills,
         }),
       );
@@ -515,7 +521,7 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
   };
 
   //TODO 내가 이런식으로 직접 삭제할건지 결과 데이터를 받아와서 넣을 건지에 대한 대화 필요
-  const deleteProjectCard = async (id: number, type: string) => {
+  const deleteProjectCard = async (id: number) => {
     try {
       await deleteProject(id);
       await dispatch(
@@ -526,7 +532,7 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
     }
   };
 
-  const deleteAwardCard = async (id: number, type: string) => {
+  const deleteAwardCard = async (id: number) => {
     try {
       await deleteAward(id);
       await dispatch(setAwards(user.awards.filter((award) => award.id !== id)));
@@ -598,15 +604,34 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
             <div className="introduce">
               <Label text="자기 소개">
                 {user.introduce ? (
-                  <StyledTextarea ref={descriptionRef} rows={7}>
-                    {user.introduce}
-                  </StyledTextarea>
+                  <>
+                    <StyledTextarea
+                      onChange={handleIntroduce}
+                      rows={7}
+                      maxlength={300}
+                    >
+                      {introduce}
+                    </StyledTextarea>
+                    <Text
+                      text={introduce.length + ' / 300'}
+                      fontSetting="n12m"
+                      color="gray"
+                    />
+                  </>
                 ) : (
-                  <StyledTextarea
-                    ref={descriptionRef}
-                    rows={7}
-                    placeholder="자기소개를 작성해주세요"
-                  ></StyledTextarea>
+                  <>
+                    <StyledTextarea
+                      onChange={handleIntroduce}
+                      rows={7}
+                      placeholder="자기소개를 작성해주세요"
+                      maxlength={300}
+                    ></StyledTextarea>
+                    <Text
+                      text={introduce.length + ' / 300'}
+                      fontSetting="n12m"
+                      color="gray"
+                    />
+                  </>
                 )}
               </Label>
             </div>
@@ -627,7 +652,7 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
       <div className="name">프로젝트</div>
       <Projects>
         {user.projects.map(({ id, name, position, url, introduce }: any) => (
-          <Project className="cards">
+          <Project className="cards" key={id}>
             <div className="top">
               <p>{name}</p>
               <p>{position}</p>
@@ -636,10 +661,7 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
                   iconName="edit"
                   func={() => editProject(id, name, position, url, introduce)}
                 />
-                <Icon
-                  iconName="clear"
-                  func={() => deleteProjectCard(id, 'project')}
-                />
+                <Icon iconName="clear" func={() => deleteProjectCard(id)} />
               </div>
             </div>
             <div>{introduce}</div>
@@ -663,7 +685,7 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
       <div className="name">수상경력</div>
       <Awards>
         {user.awards.map(({ id, agency, date, name, introduce }: any) => (
-          <Award className="cards">
+          <Award className="cards" key={id}>
             <div className="top">
               <p>{agency}</p>
               <p>{name}</p>
@@ -672,10 +694,7 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
                   iconName="edit"
                   func={() => editAward(id, agency, date, name, introduce)}
                 />
-                <Icon
-                  iconName="clear"
-                  func={() => deleteAwardCard(id, 'award')}
-                />
+                <Icon iconName="clear" func={() => deleteAwardCard(id)} />
               </div>
             </div>
             <div className="middle">{getDate(date)}</div>

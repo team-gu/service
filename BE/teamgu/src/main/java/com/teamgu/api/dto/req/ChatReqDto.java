@@ -24,9 +24,9 @@ public class ChatReqDto {
 	/**
 	 * type에 대한 정의
 	 * {% NORMAL %}
-	 * {% INVITE_NONE %}   	요청을 보냈으나 아직 응답을 안 한 상태
-	 * {% INVITE_YES %}		요청을 보냈고 수락한 상태
-	 * {% INVITE_NO %}		요청을 보냈고 거절한 상태
+	 * {% INVITE_12_NONE %}   	요청을 보냈으나 아직 응답을 안 한 상태, _ 뒤엔 반드시 팀 코드가 포함되어야한다.
+	 * {% INVITE_12_ACCEPT %}		요청을 보냈고 수락한 상태
+	 * {% INVITE_12_REJECT %}		요청을 보냈고 거절한 상태
 	 */
 	@JsonProperty("type")
 	String type;

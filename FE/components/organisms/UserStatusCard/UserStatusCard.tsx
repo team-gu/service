@@ -61,6 +61,7 @@ const Wrapper = styled.div`
           }
         }
       }
+      cursor: pointer;
     }
   }
 `;
@@ -73,11 +74,13 @@ interface UserStatusCard {
     skillList: string[];
   };
   filterContents: any;
+  id: number;
 }
 
 export default function UserStatusCard({
   user: { name, introduce, trackList, skillList },
   filterContents,
+  id,
 }: UserStatusCard): ReactElement {
   const router = useRouter();
   return (
@@ -96,25 +99,38 @@ export default function UserStatusCard({
             </div>
           </div>
         </div>
-        <div className="description-container">
+        <div
+          className="description-container"
+          onClick={() => router.push(`/userdetail/${id}`)}
+        >
           <div className="item-container">
             <div className="items">
               <Text text="트랙" color="gray" />
               <div className="items-tags">
-                {trackList.map((each, index) => (
-                  <Tag
-                    text={filterContents && filterContents['트랙'][index]['codeName']}
-                    key={each}
-                  />
+                {trackList.map((each) => (
+                  <>
+                    <Tag
+                      text={
+                        filterContents &&
+                        filterContents['트랙'].find(({ code }) => code == each)
+                          ?.codeName
+                      }
+                      key={each}
+                    />
+                  </>
                 ))}
               </div>
             </div>
             <div className="items">
               <Text text="기술" color="gray" />
               <div className="items-tags">
-                {skillList.map((each, index) => (
+                {skillList.map((each) => (
                   <Tag
-                    text={filterContents && filterContents['스킬'][index]['codeName']}
+                    text={
+                      filterContents &&
+                      filterContents['스킬'].find(({ code }) => code == each)
+                        ?.codeName
+                    }
                     key={each}
                   />
                 ))}

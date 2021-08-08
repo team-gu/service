@@ -1,8 +1,8 @@
-import { ReactElement, useState, useEffect, useRef, ChangeEvent } from 'react';
+import { ReactElement, useState, useRef } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 
-import { useAppDispatch, setChatOpen } from '@store';
+import { useAppDispatch, setChatOpen, useModalState } from '@store';
 import useSockStomp from '@hooks/useSockStomp';
 
 import { ChatList, ChatRoom } from '@organisms';
@@ -55,7 +55,9 @@ const CHAT_ROOM = 1;
 
 export default function ChatRoute(): ReactElement {
   const dispatch = useAppDispatch();
-  const [room_id, setRoomId] = useState(0);
+  const [room_id, setRoomId] = useState<number>(0);
+  const [roomName, setRoomName] = useState<string>('');
+
   const [route, setRoute] = useState(CHAT_LIST);
 
   const { handleSendMessage, messageList, setMessageList, isConnectStomp } =
@@ -65,20 +67,21 @@ export default function ChatRoute(): ReactElement {
 
   const wrapperRef: any = useRef<HTMLInputElement>(null);
 
-  function handleClickOutside({ target }: ChangeEvent<HTMLInputElement>) {
-    if (!wrapperRef.current?.contains(target)) {
-      dispatch(setChatOpen({ isChatOpen: false }));
-    }
-  }
+  // function handleClickOutside({ target }: ChangeEvent<HTMLInputElement>) {
+  //   if (!wrapperRef.current?.contains(target)) {
+  //     dispatch(setChatOpen({ isChatOpen: false }));
+  //   }
+  // }
 
-  useEffect(() => {
-    document.addEventListener('click', handleClickOutside, true);
-    return () =>
-      document.removeEventListener('click', handleClickOutside, true);
-  }, []);
+  // useEffect(() => {
+  //   document.addEventListener('click', handleClickOutside, true);
+  //   return () =>
+  //     document.removeEventListener('click', handleClickOutside, true);
+  // }, []);
 
-  const handleToChatRoom = async (id: number) => {
+  const handleToChatRoom = async (id: number, room_name: string) => {
     await setRoomId(id);
+    setRoomName(room_name);
     setRoute(CHAT_ROOM);
   };
 
@@ -104,11 +107,14 @@ export default function ChatRoute(): ReactElement {
         {route === CHAT_LIST ? (
           <Text text="채팅 목록" fontSetting="n16b" color="white" />
         ) : (
-          <Icon
-            iconName="arrow_back"
-            color="white"
-            func={() => setRoute(CHAT_LIST)}
-          />
+          <>
+            <Icon
+              iconName="arrow_back"
+              color="white"
+              func={() => setRoute(CHAT_LIST)}
+            />
+            <Text text={roomName} fontSetting="n16b" color="white" />
+          </>
         )}
         <Icon
           iconName="close"

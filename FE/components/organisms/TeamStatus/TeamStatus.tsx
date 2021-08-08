@@ -10,11 +10,11 @@ import {
 } from '@molecules';
 
 import { TeamStatusCard, TeamManageModal, LookupLayout } from '@organisms';
-import { getTeams } from '@repository/teamRepository';
 import { FILTER_TITLE } from '@utils/constants';
 import { MemberOption, Team } from '@utils/type';
 import { useAuthState, useAppDispatch, setLoading } from '@store';
 import { getEachFiltersCodeList } from '@repository/filterRepository';
+import { getTeams, getUserTeamIn } from '@repository/teamRepository';
 
 const sortByOptions: OptionsType<OptionTypeBase> = [
   {
@@ -44,30 +44,38 @@ export default function TeamStatus(): ReactElement {
   const [sortBy, setSortBy] = useState(sortByOptions[0].value);
   const [sortAsc, setSortAsc] = useState(true);
   const [containsUserId, setContainsUserId] = useState<number>();
+  const [isUserInTeam, setIsUserInTeam] = useState<boolean>();
 
   const dispatch = useAppDispatch();
 
-  // when initial render
   useEffect(() => {
+    // Fetch Filter content
     (async () => {
       const {
         data: { data },
       } = await getEachFiltersCodeList(studentNumber);
-      console.log(data);
 
       setFilterContents(data);
     })();
 
+    // Set Filter criteria
     setPayload({
       project:
         projectCode?.length > 1 ? projectCode[projectCode.length - 1] : 101,
       studentNumber,
     });
+
+    // TODO: Fetch is user in team
+    setIsUserInTeam(false);
+    // getUserTeamIn(projectCode).then(({ data }) => {
+    //   setIsUserInTeam(data);
+    // });
   }, []);
 
   useEffect(() => {
+    // TODO: 백엔드 API 완성되면 필터(payload) 추가해서 호출
     renderTeams(sortBy, sortAsc, containsUserId);
-  }, [sortBy, sortAsc, containsUserId]);
+  }, [sortBy, sortAsc, containsUserId, payload]);
 
   const renderTeams = (
     by: string,
@@ -76,13 +84,10 @@ export default function TeamStatus(): ReactElement {
   ) => {
     dispatch(setLoading({ isLoading: true }));
 
-    // TODO: API 연결되면 setTimeout 삭제
-    setTimeout(() => {
-      getTeams(by, asc, userid).then((data) => {
-        setTeams(data);
-        dispatch(setLoading({ isLoading: false }));
-      });
-    }, 1000);
+    getTeams(by, asc, userid).then(({ data: { data } }) => {
+      setTeams(data);
+      dispatch(setLoading({ isLoading: false }));
+    });
   };
 
   const handleFilter = (title: string, code: string) => {
@@ -101,8 +106,6 @@ export default function TeamStatus(): ReactElement {
     } else {
       payloadTemp[convertTitle].push(code);
     }
-
-    // TODO: 필터링 결과 API Call을 여기서 해야 함
 
     setPayload(payloadTemp);
   };
@@ -138,7 +141,7 @@ export default function TeamStatus(): ReactElement {
   };
 
   return (
-    <LookupLayout>
+    <LookupLayout showTeamCreateBtn={!isUserInTeam}>
       <div className="filter-container">
         {filterContents &&
           Object.keys(filterContents).map(
@@ -171,13 +174,15 @@ export default function TeamStatus(): ReactElement {
               <Icon iconName="sort" func={handleClickSort} />
             </span>
           </div>
-          <div>
-            <Button
-              title="팀 만들기"
-              func={handleOpenManageTeamModal}
-              width="90px"
-            />
-          </div>
+          {!isUserInTeam && (
+            <div>
+              <Button
+                title="팀 만들기"
+                func={handleOpenManageTeamModal}
+                width="90px"
+              />
+            </div>
+          )}
         </div>
         {teams.map((item, index) => (
           <TeamStatusCard
@@ -188,12 +193,16 @@ export default function TeamStatus(): ReactElement {
         ))}
       </div>
       {showTeamManageModal && (
-        <TeamManageModal handleClickClose={handleCloseManageTeamModal} />
+        <TeamManageModal
+          handleClickClose={handleCloseManageTeamModal}
+          fetchTeams={() => renderTeams(sortBy, sortAsc, containsUserId)}
+        />
       )}
       {showTeamManageModal && selectedTeamInfo && (
         <TeamManageModal
           handleClickClose={handleCloseManageTeamModal}
           defaultValue={selectedTeamInfo}
+          fetchTeams={() => renderTeams(sortBy, sortAsc, containsUserId)}
         />
       )}
     </LookupLayout>

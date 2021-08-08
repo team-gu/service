@@ -64,7 +64,7 @@ public class UserChatRoomRepositorySupport {
 		EntityManager em = emf.createEntityManager();
 		EntityTransaction et = em.getTransaction();
 		et.begin();
-		String jpql = "INSERT INTO user_chat_room(chat_room_id,user_id)"
+		String jpql = "INSERT INTO user_chat_room(chat_room_id,user_id) "
 					+ "VALUES(?1,?2)";
 		em.createNativeQuery(jpql)
 			.setParameter(1, room_id)

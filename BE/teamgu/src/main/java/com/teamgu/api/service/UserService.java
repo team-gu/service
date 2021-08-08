@@ -38,7 +38,7 @@ public interface UserService {
 	Optional<User> getUserById(Long id);
 
 	// User 상세 정보 조회
-	UserInfoResDto getUserDetailInfo(String email);
+	UserInfoResDto getUserDetailInfo(Long userId);
 
 	// 교육생의 개인 세부 이력 수정
 	void updateUserDetailInfo(UserInfoReqDto userInfoReq);

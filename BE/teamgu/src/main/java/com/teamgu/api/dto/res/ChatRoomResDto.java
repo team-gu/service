@@ -30,15 +30,13 @@ public class ChatRoomResDto extends BaseResDto{
 	
 	@ApiModelProperty(name="화면에 표시되는 채팅방 이름")
 	String room_name;
-
-//  마지막 채팅 메세지를 보낸 사람의 이름
-
-//	@ApiModelProperty(name="마지막 채팅 메세지") 
-//	String last_chat_message;
+	
+	@ApiModelProperty(name="마지막 채팅 메세지") 
+	String last_chat_message;
 	
 //	@ApiModelProperty(name="안읽은 메세지 갯수")
 //	int unread_message_count;
 	
-//	@ApiModelProperty(name="마지막 채팅 메세지 보낸 시간")
-//	LocalDateTime create_date_time;
+	@ApiModelProperty(name="마지막 채팅 메세지 보낸 시간")
+	LocalDateTime send_date_time;
 }

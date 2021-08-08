@@ -14,7 +14,7 @@ public class UserPoolRepositoryImpl implements UserPoolRepositoryCustom {
 
     private static short majorCode;
     private static int prjCode;
-    private static String name, sort, stage;
+    private static String name, sort, stage, studentNum;
     private static List<Integer> regList, posList, trkList, skList;
 
     @Autowired
@@ -25,6 +25,7 @@ public class UserPoolRepositoryImpl implements UserPoolRepositoryCustom {
 
     @Override
     public List<Object[]> findUsersByFilter(UserPoolReqDto userPoolReqDto) {
+        studentNum = userPoolReqDto.getStudentNumber(); //무조건 들어와야하는 값
         prjCode = userPoolReqDto.getProject(); //무조건 들어와야하는 값
         stage = userPoolReqDto.getStudentNumber().substring(0, 2); //무조건 들어와야하는 값
 
@@ -48,6 +49,7 @@ public class UserPoolRepositoryImpl implements UserPoolRepositoryCustom {
         StringBuilder sb = new StringBuilder("where pd.project_code = " + prjCode + " and ut.team_id is null");
 
         sb.append(" and (u.student_number like '" + stage + "%')");
+        sb.append(" and (u.student_number != '" + studentNum + "')");
 
         if (!CollectionUtils.isEmpty(regList)) { //지역
             sb.append(" and (");
