@@ -45,7 +45,7 @@ const WrapFilter = styled.div`
 
 export default function UserStatus(): ReactElement {
   const {
-    user: { projectCode, studentNumber },
+    user: { id, projectCode, studentNumber },
   } = useAuthState();
   const [filterContents, setFilterContents] = useState<any>();
   const [payload, setPayload] = useState({});
@@ -239,7 +239,7 @@ export default function UserStatus(): ReactElement {
               key={each?.id}
               user={each}
               filterContents={filterContents}
-              id={each?.id}
+              id={id}
             />
           ))
         )}

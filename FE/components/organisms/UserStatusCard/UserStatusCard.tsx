@@ -7,6 +7,7 @@ import { Text, Icon } from '@atoms';
 import { Tag, ProfileImage } from '@molecules';
 
 import { uuidv4 } from '@utils/snippet';
+import useSockStomp from '@hooks/useSockStomp';
 
 const Wrapper = styled.div`
   position: relative;
@@ -72,16 +73,19 @@ interface UserStatusCard {
     introduce: string;
     trackList: string[];
     skillList: string[];
+    id: number;
   };
   filterContents: any;
   id: number;
 }
 
 export default function UserStatusCard({
-  user: { name, introduce, trackList, skillList },
+  user: { name, introduce, trackList, skillList, id: opponentId },
   filterContents,
   id,
 }: UserStatusCard): ReactElement {
+  const { handleSendRtcLink } = useSockStomp({ room_id: undefined });
+
   const router = useRouter();
   return (
     <Wrapper>
@@ -94,14 +98,17 @@ export default function UserStatusCard({
               <Icon
                 iconName="call"
                 color="green"
-                func={() => router.push(`rtc/${uuidv4()}`)}
+                func={() => {
+                  router.push(`rtc/${uuidv4()}`);
+                  handleSendRtcLink(id, opponentId);
+                }}
               />
             </div>
           </div>
         </div>
         <div
           className="description-container"
-          onClick={() => router.push(`/userdetail/${id}`)}
+          onClick={() => router.push(`/userdetail/${opponentId}`)}
         >
           <div className="item-container">
             <div className="items">

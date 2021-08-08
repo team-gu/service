@@ -2,7 +2,7 @@ import { ReactElement, useState, useRef } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 
-import { useAppDispatch, setChatOpen, useModalState } from '@store';
+import { useAppDispatch, setChatOpen } from '@store';
 import useSockStomp from '@hooks/useSockStomp';
 
 import { ChatList, ChatRoom } from '@organisms';
@@ -60,10 +60,15 @@ export default function ChatRoute(): ReactElement {
 
   const [route, setRoute] = useState(CHAT_LIST);
 
-  const { handleSendMessage, messageList, setMessageList, isConnectStomp } =
-    useSockStomp({
-      room_id,
-    });
+  const {
+    handleSendMessage,
+    handleSendRtcLink,
+    messageList,
+    setMessageList,
+    isConnectStomp,
+  } = useSockStomp({
+    room_id,
+  });
 
   const wrapperRef: any = useRef<HTMLInputElement>(null);
 
@@ -124,7 +129,12 @@ export default function ChatRoute(): ReactElement {
       </div>
       {
         {
-          [CHAT_LIST]: <ChatList func={handleToChatRoom} />,
+          [CHAT_LIST]: (
+            <ChatList
+              handleToChatRoom={handleToChatRoom}
+              handleSendRtcLink={handleSendRtcLink}
+            />
+          ),
           [CHAT_ROOM]: (
             <ChatRoom
               isConnectStomp={isConnectStomp}
