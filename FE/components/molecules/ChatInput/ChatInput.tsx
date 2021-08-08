@@ -7,49 +7,78 @@ import {
 } from 'react';
 import styled from 'styled-components';
 import { Button } from '@molecules';
-import { Input, Text } from '@atoms';
+import { Textarea, Text } from '@atoms';
 
 interface ChatInputProps {
   func: (data: string) => Promise<void>;
 }
 
 const Wrapper = styled.div`
-  .container {
-    ${({ theme: { flexRow } }) => flexRow()}
-    > div > input {
-      position: absolute;
-      top: -2px;
+  ${({ theme: { flexCol } }) => flexCol()}
 
+  .container {
+    ${({ theme: { flexCol } }) => flexCol()}
+
+    width: 100%;
+    height: 100%;
+
+    border-radius: 5px;
+    border: 1px solid black;
+
+    > textarea {
       width: calc(100% - 15px);
-      height: 37px;
 
       z-index: 0;
 
-      padding: 0 10px;
+      padding: 5px 5px;
 
-      border-right-color: transparent;
-      border-radius: 10px;
+      resize: none;
+      border: none;
+      outline: 0px none transparent;
 
       ${({
         theme: {
-          font: { n16r },
+          font: { n12m },
         },
-      }) => n16r}
-    }
-    > button {
-      z-index: 1;
-      box-shadow: none;
-      border-radius: 0 10px 10px 0;
+      }) => n12m}
     }
   }
-  > div:last-child {
-    float: right;
+  .bottom {
+    position: relative;
+
+    height: 20px;
+    width: 100%;
+
+    > div:first-child {
+      position: absolute;
+      right: 50px;
+      bottom: 5px;
+    }
+    > button {
+      position: absolute;
+      right: 5px;
+      bottom: 5px;
+
+      height: 20px;
+
+      > div {
+        ${({
+          theme: {
+            font: { n10m },
+          },
+        }) => n10m}
+      }
+
+      z-index: 1;
+      box-shadow: none;
+      border-radius: 5px;
+    }
   }
 `;
 
 export default function ChatInput({ func }: ChatInputProps): ReactElement {
   const chatInputRef: any = useRef<HTMLInputElement>(null);
-  const [messageLength, setMessageLength] = useState(0);
+  const [message, setMessage] = useState<string>('');
 
   const handleSend = async () => {
     if (chatInputRef.current.value === '') return;
@@ -61,22 +90,36 @@ export default function ChatInput({ func }: ChatInputProps): ReactElement {
     chatInputRef.current.focus();
   }, []);
 
+  console.log(message);
   return (
     <Wrapper>
       <div className="container">
-        <Input
+        <Textarea
           ref={chatInputRef}
-          onKeyPress={({ key }: KeyboardEvent<HTMLDivElement>) =>
-            key === 'Enter' && handleSend()
+          onKeyPress={(e: KeyboardEvent<HTMLDivElement>) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              handleSend();
+            }
+            if (e.key == 'Enter' && e.shiftKey) {
+              // TODO: \n을 넣으면 될거라고 생각했는데 안됨
+            }
+          }}
+          onChange={({ target: { value } }: KeyboardEvent<HTMLDivElement>) =>
+            setMessage(value)
           }
-          func={() => setMessageLength(chatInputRef.current?.value.length)}
-          width="100%"
-          height="35px"
-          maxLength={120}
+          maxLength={119}
+          resize="none"
         />
-        <Button title="전송" func={() => handleSend()} width="50px" />
+        <div className="bottom">
+          <Text
+            text={message.length + ' / 120'}
+            fontSetting="n12m"
+            color="gray"
+          />
+          <Button title="전송" func={() => handleSend()} width="40px" />
+        </div>
       </div>
-      <Text text={messageLength + ' / 120'} fontSetting="n12m" color="gray" />
     </Wrapper>
   );
 }
