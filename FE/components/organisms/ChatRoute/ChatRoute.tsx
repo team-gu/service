@@ -48,6 +48,23 @@ const Wrapper = styled(motion.div)`
       user-select: none;
     }
   }
+
+  div {
+    ::-webkit-scrollbar {
+      background-color: white;
+      width: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background-color: white;
+    }
+    ::-webkit-scrollbar-thumb {
+      background-color: ${({
+        theme: {
+          colors: { gray },
+        },
+      }) => gray};
+    }
+  }
 `;
 
 const CHAT_LIST = 0;
