@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.teamgu.api.dto.req.TeamMemberReqDto;
 import com.teamgu.api.dto.res.SkillResDto;
 import com.teamgu.api.dto.res.TeamListResDto;
 import com.teamgu.api.dto.res.TeamMemberInfoResDto;
@@ -63,9 +64,6 @@ public class TeamServiceImpl implements TeamService {
 			// Team 구성 완료 여부
 			team.setCompleteYn(teamList.get(i).getCompleteYn());
 			
-			// Team 구성 최대 멤버
-			team.setMaxNumber(teamList.get(i).getMaxMember());
-			
 			// Team 현재 리더
 			team.setLeaderId(teamList.get(i).getUser().getId());
 			
@@ -82,9 +80,6 @@ public class TeamServiceImpl implements TeamService {
 			List<SkillResDto> teamSkills = teamRepositorySupport.getTeamSkillsByTeamId(teamId);
 			team.setSkills(teamSkills);
 			
-			// Team 구성 현재 인원
-			int nowNumber = teamMembers.size();
-			team.setNowNumber(nowNumber);			
 			list.add(team);
 		}
 		return list;
@@ -98,20 +93,18 @@ public class TeamServiceImpl implements TeamService {
 		teamListResDto.getTrackName();
 		int trackCode = codeDetailRepositorySupport.findTtrackCode(teamListResDto.getTrackName());
 		int stageCode = ((user.getStudentNumber().charAt(0) - '0') * 10 + user.getStudentNumber().charAt(1) - '0') + 100;
-		System.out.println(trackCode + " / " + stageCode);
+
 		Mapping mapping = mappingRepositorySupport.selectMapping(trackCode, stageCode);
-		System.out.println(mapping.getId());
+
 		Team team = new Team();
 		team.setUser(user);
 		team.setMapping(mapping);
 		team.setCompleteYn(teamListResDto.getCompleteYn());
 		team.setIntroduce(teamListResDto.getIntroduce());
-		team.setMaxMember(teamListResDto.getMaxNumber());
 		team.setName(teamListResDto.getName());
 		teamRepository.save(team);
 		
 		Long teamId = teamRepositorySupport.getTeamId(team);
-		System.out.println(teamId);
 		
 		// ADD Team Skill
 		List<SkillResDto> teamSkills = teamListResDto.getSkills();
@@ -145,7 +138,6 @@ public class TeamServiceImpl implements TeamService {
 		
 		Long teamId = team.getId();
 		team.setIntroduce(teamListResDto.getIntroduce());
-		team.setMaxMember(teamListResDto.getMaxNumber());
 		team.setName(teamListResDto.getName());
 		team.setUser(user);
 		team.setMapping(mapping);
@@ -229,5 +221,113 @@ public class TeamServiceImpl implements TeamService {
 		teamRepositorySupport.deleteTeamInfobyTeamId(teamId);
 		//teamRepository.deleteById(teamId);
 	}
+	
+	/*
+	 * Team Id를 이용한 팀 정보
+	 */	
+	
+	@Override
+	public TeamListResDto getTeamInfobyTeamId(Long teamId){
+		TeamListResDto team = new TeamListResDto();
+		Team teamList = teamRepository.getOne(teamId);
+		
+		team.setId(teamId);
+		
+		// Team 이름
+		team.setName(teamList.getName());
+		
+		// Team 소개
+		team.setIntroduce(teamList.getIntroduce());
+		
+		// Team 구성 완료 여부
+		team.setCompleteYn(teamList.getCompleteYn());
+		
+		// Team 현재 리더
+		team.setLeaderId(teamList.getUser().getId());
+		
+		// Team 트랙
+		Mapping mapping = mappingRepository.getOne(teamList.getMapping().getId());
+		String trackName = codeDetailRepositorySupport.findTtrackName(mapping.getTrackCode());
+		team.setTrackName(trackName);
+
+		// Team 구성 멤버 간단 정보 조회
+		List<TeamMemberInfoResDto> teamMembers = teamRepositorySupport.getTeamMemberInfo(teamId);
+		team.setTeamMembers(teamMembers);
+		
+		// Team 기술 스택
+		List<SkillResDto> teamSkills = teamRepositorySupport.getTeamSkillsByTeamId(teamId);
+		team.setSkills(teamSkills);
+		
+		return team;
+	}
+
+	/*
+	 * TeamId와 UserId를 이용한 멤버 추가
+	 */	
+	
+	@Override
+	public void addMember(TeamMemberReqDto teamMemberReqDto) {
+		
+		Long teamId = teamMemberReqDto.getTeamId();
+		Long userId = teamMemberReqDto.getUserId();
+		
+		teamRepositorySupport.addMember(teamId, userId);
+	}
+
+	/*
+	 * TeamId와 UserId를 이용한 팀장 변경
+	 */	
+		
+	@Override
+	public void changeTeamLeader(TeamMemberReqDto teamMemberReqDto) {
+		
+		Long teamId = teamMemberReqDto.getTeamId();
+		Long userId = teamMemberReqDto.getUserId();
+		
+		teamRepositorySupport.changeTeamLeader(teamId, userId);
+		
+	}
+
+	/*
+	 * TeamId와 UserId를 이용한 팀 나가기
+	 */	
+		
+	@Override
+	public void exitTeam(TeamMemberReqDto teamMemberReqDto) {
+
+		Long teamId = teamMemberReqDto.getTeamId();
+		Long userId = teamMemberReqDto.getUserId();
+		
+		teamRepositorySupport.deleteMember(teamId, userId);
+		
+	}
+
+	/*
+	 * TeamId를 이용한 팀 구성 완료 여부 변경
+	 */	
+	
+	@Override
+	public void completeTeamBuilding(Long teamId) {
+		
+		teamRepositorySupport.completeTeamBuilding(teamId);
+		
+	}
+	
+
+	/*
+	 * TeamId를 이용한 팀 멤버 id 조회
+	 */	
+	
+	@Override
+	public List<Long> getTeamMemberIdbyTeamId(Long teamId) {
+		
+		return teamRepositorySupport.getTeamMemberIdbyTeamId(teamId);
+	}
+	@Override
+	public boolean checkTeamBuilding(Long userId, String trackName) {
+		// TODO Auto-generated method stub
+		return teamRepositorySupport.checkTeamBuilding(userId, trackName);
+	}
+	
 
 }

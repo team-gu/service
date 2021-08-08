@@ -44,10 +44,10 @@ public class UserController {
 //	}
 
 	@ApiOperation(value = "사용자 상세정보 조회", notes = "마이페이지에서 사용자 상세정보를 조회한다.")
-	@GetMapping("/userInfo")
+	@GetMapping("/userInfo/{userId}")
 	public ResponseEntity<UserInfoResDto> getUserDetailInfo(
-			@RequestParam @ApiParam(value = "이메일", required = true) String email) {
-		return ResponseEntity.ok(userService.getUserDetailInfo(email));
+			@PathVariable Long userId) {
+		return ResponseEntity.ok(userService.getUserDetailInfo(userId));
 	}
 
 	@ApiOperation(value = "사용자 상세정보 입력/ 수정", notes = "사용자 상세정보를 입력, 수정한다.")
@@ -55,7 +55,7 @@ public class UserController {
 	public ResponseEntity<UserInfoResDto> updateUserDetailInfo(
 			@RequestBody @ApiParam(value = "마이페이지 정보", required = true) UserInfoReqDto userInfoReq) {
 		userService.updateUserDetailInfo(userInfoReq);
-		return ResponseEntity.ok(userService.getUserDetailInfo(userInfoReq.getEmail()));
+		return ResponseEntity.ok(userService.getUserDetailInfo(userInfoReq.getId()));
 	}
 
 	@ApiOperation(value = "유저 프로젝트 입력", notes = "사용자 프로젝트를 입력", response = String.class)

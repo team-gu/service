@@ -1,8 +1,14 @@
-import { ReactElement, useState, useEffect, useRef } from 'react';
+import { ReactElement, useState, useEffect } from 'react';
+import styled from 'styled-components';
 import { OptionsType, OptionTypeBase } from 'react-select';
 
 import { UserStatusCard, LookupLayout } from '@organisms';
-import { Filter, UserSelectAutoComplete, SimpleSelect } from '@molecules';
+import {
+  Filter,
+  UserSelectAutoComplete,
+  SimpleSelect,
+  Title,
+} from '@molecules';
 import { Icon } from '@atoms';
 
 import {
@@ -27,6 +33,15 @@ const sortByOptions: OptionsType<OptionTypeBase> = [
     value: 'name',
   },
 ];
+
+const WrapFilter = styled.div`
+  padding: 10px;
+  margin: 10px;
+  box-shadow: 0 6px 12px 0 rgba(4, 4, 161, 0.1);
+  > div > div {
+    width: 100%;
+  }
+`;
 
 export default function UserStatus(): ReactElement {
   const {
@@ -86,6 +101,12 @@ export default function UserStatus(): ReactElement {
   }, [payload]);
 
   const handleToggleFilter = (title: string, code: string) => {
+    if (code === '전체') {
+      const payloadTemp: any = { ...payload };
+      delete payloadTemp[FILTER_TITLE[title]];
+      return setPayload(payloadTemp);
+    }
+
     setPayload((prev) => ({ ...prev, [FILTER_TITLE[title]]: code }));
   };
 
@@ -104,6 +125,22 @@ export default function UserStatus(): ReactElement {
       );
     } else {
       payloadTemp[convertTitle].push(code);
+    }
+
+    setPayload(payloadTemp);
+  };
+
+  const handleFilterArray = (title: string, arr: any) => {
+    const payloadTemp: any = { ...payload };
+    const convertTitle: any = FILTER_TITLE[title];
+
+    if (arr.length === 0) {
+      delete payloadTemp[FILTER_TITLE[title]];
+    } else {
+      payloadTemp[convertTitle] = arr.reduce(
+        (acc, cur) => [...acc, cur.value],
+        [],
+      );
     }
 
     setPayload(payloadTemp);
@@ -131,24 +168,36 @@ export default function UserStatus(): ReactElement {
   return (
     <LookupLayout>
       <div className="filter-container">
-        <SimpleSelect
-          options={OPTIONS.slice(0, 1)} // projectCode?.length)}
-          onChange={handleSortByChange}
-          value={{ label: '공통', value: 101 }}
-        />
+        <WrapFilter>
+          <Title title="프로젝트">
+            <SimpleSelect
+              options={OPTIONS.slice(0, 1)} // projectCode?.length)}
+              onChange={handleSortByChange}
+              value={{ label: '공통', value: 101 }}
+            />
+          </Title>
+        </WrapFilter>
         {filterContents &&
           Object.keys(filterContents).map(
             (each, index) =>
               each !== '기수' &&
               each !== '프로젝트' &&
-              each !== '역할' &&
               (each !== '전공/비전공' ? (
-                <Filter
-                  title={each}
-                  contents={filterContents[each]}
-                  func={handleFilter}
-                  key={index}
-                />
+                filterContents[each].length < 5 ? (
+                  <Filter
+                    title={each}
+                    contents={filterContents[each]}
+                    func={handleFilter}
+                    key={index}
+                  />
+                ) : (
+                  <Filter
+                    title={each}
+                    contents={filterContents[each]}
+                    func={handleFilterArray}
+                    key={index}
+                  />
+                )
               ) : (
                 <Filter
                   title={each}
@@ -190,6 +239,7 @@ export default function UserStatus(): ReactElement {
               key={each?.id}
               user={each}
               filterContents={filterContents}
+              id={each?.id}
             />
           ))
         )}

@@ -37,7 +37,7 @@ public interface ChatService {
 	/**
 	 * 새로운 채팅방을 생성하고 새롭게 생성된 채팅방 ID를 반환한다.
 	 */
-	long createRoom(String title);
+	ChatRoomResDto createRoom(String title);
 	
 	/**
 	 * 특정 채팅방에 인원을 초대한다
@@ -57,4 +57,11 @@ public interface ChatService {
 	 * @return
 	 */
 	Chat saveChat(ChatReqDto chatReqDto);
+	
+	/**
+	 * 특정 채팅방의 정보를 반환한다
+	 * @param room_id
+	 * @return
+	 */
+	ChatRoomResDto getChatRoomInfo(long room_id);
 }

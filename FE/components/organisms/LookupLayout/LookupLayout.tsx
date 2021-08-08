@@ -7,12 +7,9 @@ interface LookupLayoutProps {
 
 const Wrapper = styled.div`
   display: grid;
-  grid-template-columns: 200px auto;
+  grid-template-columns: 250px auto;
   grid-template-rows: auto;
   gap: 20px;
-
-  .filter-container {
-  }
 
   .sort-container {
     display: flex;

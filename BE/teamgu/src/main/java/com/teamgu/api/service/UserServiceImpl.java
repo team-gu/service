@@ -150,7 +150,7 @@ public class UserServiceImpl implements UserService {
 		loginRes.setStatusCode(200);
 		loginRes.setMessage("Success");
 		loginRes.setAccessToken(accessToken);
-		loginRes.setUserInfo(getUserDetailInfo(user.getEmail()));
+		loginRes.setUserInfo(getUserDetailInfo(user.getId()));
 		return loginRes;
 	}
 
@@ -336,8 +336,8 @@ public class UserServiceImpl implements UserService {
 	 * 마이페이지 데이터 조회 함수
 	 */
 	@Override
-	public UserInfoResDto getUserDetailInfo(String email) {
-		User user = userRepository.findByEmail(email).get();
+	public UserInfoResDto getUserDetailInfo(Long userId) {
+		User user = userRepository.getOne(userId);
 		UserInfoResDto userInfoRes = new UserInfoResDto();
 
 		Long id = user.getId();
@@ -359,7 +359,7 @@ public class UserServiceImpl implements UserService {
 		userInfoRes.setRole(userRole);
 
 		// User 이메일
-		userInfoRes.setEmail(email);
+		userInfoRes.setEmail(user.getEmail());
 
 		// 교육생일 경우만 조회
 		if (userRole == 1) {

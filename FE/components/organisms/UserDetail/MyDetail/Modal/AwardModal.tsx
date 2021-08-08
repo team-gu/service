@@ -1,5 +1,5 @@
 import { ReactElement, SyntheticEvent, useState, useRef } from 'react';
-import { Input } from '@atoms';
+import { Input, Text, Textarea } from '@atoms';
 import { Button } from '@molecules';
 import { ModalWrapper } from '@organisms';
 import { postAward, updateAward } from '@repository/userprofile';
@@ -43,6 +43,11 @@ const CreateAward = styled.div`
   }
 `;
 
+const StyledTextarea = styled(Textarea)`
+  width: 100%;
+  height: 50px;
+`;
+
 const Error = styled.div`
   font-weight: 900;
   color: red;
@@ -61,7 +66,13 @@ export default function AwardModal({
   const agencynRef = useRef<HTMLInputElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
   const dateRef = useRef<HTMLInputElement>(null);
-  const introduceRef = useRef<HTMLInputElement>(null);
+  const [introduce, setIntroduce] = useState(
+    awardModalData.introduce !== '소개' ? awardModalData.introduce : '',
+  );
+
+  const handleIntroduce = (e: Event & { target: HTMLTextAreaElement }) => {
+    setIntroduce(e.target.value);
+  };
 
   const handleAward = async (e: SyntheticEvent) => {
     e.preventDefault();
@@ -70,7 +81,7 @@ export default function AwardModal({
       !agencynRef?.current?.value ||
       !nameRef?.current?.value ||
       !dateRef?.current?.value ||
-      !introduceRef?.current?.value
+      !introduce
     ) {
       setErrorMessage('모든 값을 입력해주세요.');
       setError(true);
@@ -83,7 +94,7 @@ export default function AwardModal({
         agency: agencynRef.current && agencynRef.current.value,
         name: nameRef.current && nameRef.current.value,
         date: dateRef.current && dateRef.current.value,
-        introduce: introduceRef.current && introduceRef.current.value,
+        introduce: introduce,
       };
       const res = awardModalData.id
         ? await updateAward(data)
@@ -108,6 +119,7 @@ export default function AwardModal({
                   height="50px"
                   ref={agencynRef}
                   refValue={awardModalData.agency}
+                  maxLength={15}
                 />
               </div>
               <div>
@@ -116,6 +128,7 @@ export default function AwardModal({
                   height="50px"
                   ref={nameRef}
                   refValue={awardModalData.name}
+                  maxLength={15}
                 />
               </div>
               <div>
@@ -128,11 +141,13 @@ export default function AwardModal({
                 />
               </div>
               <div>
-                <Input
-                  width="30vw"
-                  height="50px"
-                  ref={introduceRef}
-                  refValue={awardModalData.introduce}
+                <StyledTextarea onChange={handleIntroduce} maxlength={100}>
+                  {introduce}
+                </StyledTextarea>
+                <Text
+                  text={introduce.length + ' / 100'}
+                  fontSetting="n12m"
+                  color="gray"
                 />
               </div>
               {error && <Error>{errorMessage}</Error>}
@@ -149,6 +164,7 @@ export default function AwardModal({
                   width="30vw"
                   height="50px"
                   ref={agencynRef}
+                  maxLength={15}
                 />
               </div>
               <div>
@@ -157,17 +173,22 @@ export default function AwardModal({
                   width="30vw"
                   height="50px"
                   ref={nameRef}
+                  maxLength={15}
                 />
               </div>
               <div>
                 <Input type="date" width="30vw" height="50px" ref={dateRef} />
               </div>
               <div>
-                <Input
-                  placeHolder={awardModalData.introduce}
-                  width="30vw"
-                  height="50px"
-                  ref={introduceRef}
+                <StyledTextarea
+                  placeholder={awardModalData.introduce}
+                  onChange={handleIntroduce}
+                  maxlength={100}
+                />
+                <Text
+                  text={introduce.length + ' / 100'}
+                  fontSetting="n12m"
+                  color="gray"
                 />
               </div>
               {error && <Error>{errorMessage}</Error>}

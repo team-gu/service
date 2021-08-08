@@ -102,10 +102,16 @@ public class ChatController {
 	public ResponseEntity<? extends BasicResponse> sendTeamInviteMessage(@RequestBody UserInviteTeamReqDto userInviteTeamReqDto){
 		long result = chatService.roomCheck(userInviteTeamReqDto.getLeader_id(), userInviteTeamReqDto.getInvitee_id());
 		if(result==0) {//존재하지 않는 경우 방을 생성하고 방 번호를 반환한다.
-			result = chatService.createRoom("팀원 초대로 새로 생성된 방");
-			log.info(result+"방이 생성되었습니다");
-			chatService.inviteUser(userInviteTeamReqDto.getLeader_id(), result);
-			chatService.inviteUser(userInviteTeamReqDto.getInvitee_id(), result);
+			long user_id1 = userInviteTeamReqDto.getLeader_id();
+			long user_id2 = userInviteTeamReqDto.getInvitee_id();
+			String name1 = userService.getUserById(user_id1).get().getName();
+			String name2 = userService.getUserById(user_id2).get().getName();
+			//미구현
+//			result = chatService.createRoom(name1+", "+name2+"의 방");
+//			log.info(result+"방이 생성되었습니다");
+//			
+//			chatService.inviteUser(userInviteTeamReqDto.getLeader_id(), result);
+//			chatService.inviteUser(userInviteTeamReqDto.getInvitee_id(), result);
 			//여기서 해당 채팅방에 leader to invitee로 팀원 초대 메세지를 보낸다.
 			
 			//1. DB에 먼저 저장
@@ -120,19 +126,18 @@ public class ChatController {
 	@PostMapping("/room/check")
 	@ApiOperation(value="유저1과 유저2의 1:1 채팅방이 존재하는지 확인하고 없다면 새로 생성해서 채팅방을 추가한다")
 	public ResponseEntity<? extends BasicResponse> checkRoom(@RequestBody UserRoomCheckDto users){
-		long result = chatService.roomCheck(users.getUser_id1(), users.getUser_id2());
-		if(result==0) {//존재하지 않는 경우 방을 생성하고 방 번호를 반환한다.
+		long roomid = chatService.roomCheck(users.getUser_id1(), users.getUser_id2());
+		if(roomid==0) {//존재하지 않는 경우 방을 생성하고 방 번호를 반환한다.
 			String name1 = userService.getUserById(users.getUser_id1()).get().getName();
-			String name2 = userService.getUserById(users.getUser_id2()).get().getName();
+			String name2 = userService.getUserById(users.getUser_id2()).get().getName();			
+			ChatRoomResDto chatRoomResDto = chatService.createRoom(name1+", "+name2+"의 방");
+			roomid = chatRoomResDto.getChat_room_id();
 			
-			result = chatService.createRoom(name1+", "+name2+"의 방");
-			log.info(result+"방이 생성되었습니다");
-			chatService.inviteUser(users.getUser_id1(), result);//둘 다 초대
-			chatService.inviteUser(users.getUser_id2(), result);
-		}else {//이미 존재하는 경우
-			return ResponseEntity.noContent().build();
-		}
-		return ResponseEntity.ok(new CommonResponse<Long>(result));		
+			log.info(roomid+"방이 생성되었습니다");
+			chatService.inviteUser(users.getUser_id1(), roomid);//둘 다 초대
+			chatService.inviteUser(users.getUser_id2(), roomid);
+		}		
+		return ResponseEntity.ok(new CommonResponse<ChatRoomResDto>(chatService.getChatRoomInfo(roomid)));		
 	}
 	
 	@PostMapping("/room/invite")
