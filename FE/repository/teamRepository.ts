@@ -18,14 +18,17 @@ export const getTeams = async (
 };
 
 export const getUserTeamIn = async (param: any) => {
+  console.log('getUserTeamIn:', param);
+
   return await api({
     url: `/path/to/get-user-team-in/${param}`,
     type: 'get',
-  })
-}
+  });
+};
 
 export const createTeam = async (param: any) => {
   console.log('create team: ', param);
+
   return await api({
     url: `/api/team/add`,
     type: 'post',
@@ -35,6 +38,7 @@ export const createTeam = async (param: any) => {
 
 export const updateTeam = async (param: any) => {
   console.log('update team: ', param);
+
   return await api({
     url: `/api/team/${param.id}`,
     type: 'put',
@@ -43,7 +47,8 @@ export const updateTeam = async (param: any) => {
 };
 
 export const deleteTeam = async (param: any) => {
-  console.log('update team: ', param);
+  console.log('delete team: ', param);
+
   return await api({
     url: `/api/team/${param.id}`,
     type: 'delete',
