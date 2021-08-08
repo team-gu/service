@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import SockJS from 'sockjs-client';
 import Stomp from 'stompjs';
+import { useRouter } from 'next/router';
 
 import { useAuthState } from '@store';
 import { getChatRoomMessages } from '@repository/chatRepository';
@@ -14,6 +15,7 @@ const URL = 'https://i5a202.p.ssafy.io:8080/stomp/chat';
 
 export default function useSockStomp({ room_id }: useSockStompProps) {
   // TODO: login response에 profileSrc가 추가되면 store에서 가져오도록 변경
+  const router = useRouter();
   const {
     user: { id },
   } = useAuthState();
@@ -48,6 +50,7 @@ export default function useSockStomp({ room_id }: useSockStompProps) {
           user_id2,
         }),
       );
+      router.push(`rtc/${user_id2}`);
       clientRef.current?.disconnect();
     });
   };
