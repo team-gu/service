@@ -10,6 +10,7 @@ import { MODALS } from '@utils/constants';
 
 interface ChatListProps {
   handleToChatRoom: (id: number, room_name: string) => Promise<void>;
+  handleSendRtcLink: (user_id1: number, user_id2: number) => void;
 }
 
 interface UserList {
@@ -26,7 +27,7 @@ const Wrapper = styled.div`
 
   .upper {
     display: grid;
-    grid-template-columns: 1.7fr 0.3fr;
+    grid-template-columns: 1.5fr 0.25fr 0.25fr;
     > button {
       box-shadow: none;
       background-color: white;
@@ -46,6 +47,7 @@ const Wrapper = styled.div`
 
 export default function ChatList({
   handleToChatRoom,
+  handleSendRtcLink,
 }: ChatListProps): ReactElement {
   const dispatch = useAppDispatch();
   const {
@@ -110,6 +112,11 @@ export default function ChatList({
           handleChangeUserSelect={handleChangeUserSelect}
         />
         <Button title="생성" width="100%" func={() => handleCreateRoom()} />
+        <Button
+          title="통화"
+          width="100%"
+          func={() => handleSendRtcLink(id, selectedUser?.user_id)}
+        />
       </div>
       <div className="user-list">
         {userList?.map(
