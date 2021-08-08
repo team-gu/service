@@ -83,28 +83,27 @@ export default function ChatInput({ func }: ChatInputProps): ReactElement {
   const [message, setMessage] = useState<string>('');
 
   const handleSend = async () => {
-    if (chatInputRef.current.value === '') return;
-    await func(chatInputRef.current.value);
-    chatInputRef.current.value = '';
+    await func(message);
+    setMessage('');
   };
 
   useEffect(() => {
     chatInputRef.current.focus();
   }, []);
 
-  console.log(message);
   return (
     <Wrapper>
       <div className="container">
         <Textarea
           ref={chatInputRef}
+          value={message}
           onKeyPress={(e: KeyboardEvent<HTMLDivElement>) => {
-            if (e.key === 'Enter') {
-              e.preventDefault();
-              handleSend();
-            }
+            e.preventDefault();
             if (e.key == 'Enter' && e.shiftKey) {
-              // TODO: \n을 넣으면 될거라고 생각했는데 안됨
+              return setMessage((prev) => prev + '\n');
+            }
+            if (e.key === 'Enter') {
+              handleSend();
             }
           }}
           onChange={({ target: { value } }: KeyboardEvent<HTMLDivElement>) =>
