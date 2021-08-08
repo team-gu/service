@@ -1,19 +1,18 @@
 import { ReactElement, SyntheticEvent, useState, useRef } from 'react';
+import styled from 'styled-components';
 import { Input, Text, Textarea } from '@atoms';
 import { Button } from '@molecules';
 import { ModalWrapper } from '@organisms';
 import { postAward, updateAward } from '@repository/userprofile';
-import { useAuthState, useAppDispatch, setAwards } from '@store';
-import styled from 'styled-components';
-
-interface AwardType {
-  userId: number;
-  id?: number | null;
-  agency: string | null;
-  date: string | null;
-  name: string | null;
-  introduce: string | null;
-}
+import {
+  useAuthState,
+  useAppDispatch,
+  setAwards,
+  useModalState,
+  removeModal,
+} from '@store';
+import { MODALS } from '@utils/constants';
+import { AwardModalType } from '@utils/type';
 
 const Wrapper = styled.div`
   margin: 30px;
@@ -58,6 +57,7 @@ export default function AwardModal({
   setShowAwardModal,
 }: any): ReactElement {
   const { user } = useAuthState();
+  const { content } = useModalState();
   const dispatch = useAppDispatch();
 
   const [error, setError] = useState(false);
@@ -67,7 +67,7 @@ export default function AwardModal({
   const nameRef = useRef<HTMLInputElement>(null);
   const dateRef = useRef<HTMLInputElement>(null);
   const [introduce, setIntroduce] = useState(
-    awardModalData.introduce !== '소개' ? awardModalData.introduce : '',
+    content.introduce !== '소개' ? content.introduce : '',
   );
 
   const handleIntroduce = (e: Event & { target: HTMLTextAreaElement }) => {
@@ -88,22 +88,21 @@ export default function AwardModal({
       return;
     }
     try {
-      const data: AwardType = {
+      const data: AwardModalType = {
         userId: user.id,
-        id: awardModalData.id,
+        id: content.id,
         agency: agencynRef.current && agencynRef.current.value,
         name: nameRef.current && nameRef.current.value,
         date: dateRef.current && dateRef.current.value,
         introduce: introduce,
       };
-      const res = awardModalData.id
-        ? await updateAward(data)
-        : await postAward(data);
+      console.log(data);
+      const res = content.id ? await updateAward(data) : await postAward(data);
       dispatch(setAwards(res.data));
-      setShowAwardModal(false);
     } catch (e) {
       console.log(e);
-      setShowAwardModal(false);
+    } finally {
+      dispatch(removeModal({ modalName: MODALS.AWARD_MODAL }));
     }
   };
 
@@ -111,14 +110,14 @@ export default function AwardModal({
     <ModalWrapper modalName="addAward">
       <Wrapper>
         <form onSubmit={handleAward}>
-          {awardModalData.id ? (
+          {content.id ? (
             <UpdateAward>
               <div>
                 <Input
                   width="30vw"
                   height="50px"
                   ref={agencynRef}
-                  refValue={awardModalData.agency}
+                  refValue={content.agency}
                   maxLength={15}
                 />
               </div>
@@ -127,7 +126,7 @@ export default function AwardModal({
                   width="30vw"
                   height="50px"
                   ref={nameRef}
-                  refValue={awardModalData.name}
+                  refValue={content.name}
                   maxLength={15}
                 />
               </div>
@@ -137,13 +136,15 @@ export default function AwardModal({
                   width="30vw"
                   height="50px"
                   ref={dateRef}
-                  refValue={awardModalData.date}
+                  refValue={content.date}
                 />
               </div>
               <div>
-                <StyledTextarea onChange={handleIntroduce} maxlength={100}>
-                  {introduce}
-                </StyledTextarea>
+                <StyledTextarea
+                  onChange={handleIntroduce}
+                  maxlength={100}
+                  value={introduce}
+                />
                 <Text
                   text={introduce.length + ' / 100'}
                   fontSetting="n12m"
@@ -153,14 +154,19 @@ export default function AwardModal({
               {error && <Error>{errorMessage}</Error>}
               <div>
                 <Button title="수정" type="submit" />
-                <Button title="닫기" func={() => setShowAwardModal(false)} />
+                <Button
+                  title="닫기"
+                  func={() =>
+                    dispatch(removeModal({ modalName: MODALS.AWARD_MODAL }))
+                  }
+                />
               </div>
             </UpdateAward>
           ) : (
             <CreateAward>
               <div>
                 <Input
-                  placeHolder={awardModalData.agency}
+                  placeHolder={content.agency}
                   width="30vw"
                   height="50px"
                   ref={agencynRef}
@@ -169,7 +175,7 @@ export default function AwardModal({
               </div>
               <div>
                 <Input
-                  placeHolder={awardModalData.name}
+                  placeHolder={content.name}
                   width="30vw"
                   height="50px"
                   ref={nameRef}
@@ -181,7 +187,7 @@ export default function AwardModal({
               </div>
               <div>
                 <StyledTextarea
-                  placeholder={awardModalData.introduce}
+                  placeholder={content.introduce}
                   onChange={handleIntroduce}
                   maxlength={100}
                 />
@@ -194,7 +200,12 @@ export default function AwardModal({
               {error && <Error>{errorMessage}</Error>}
               <div>
                 <Button title="생성" type="submit" />
-                <Button title="닫기" func={() => setShowAwardModal(false)} />
+                <Button
+                  title="닫기"
+                  func={() =>
+                    dispatch(removeModal({ modalName: MODALS.AWARD_MODAL }))
+                  }
+                />
               </div>
             </CreateAward>
           )}
