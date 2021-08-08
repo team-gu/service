@@ -124,7 +124,11 @@ export default function ChatRoute(): ReactElement {
       </div>
       {
         {
-          [CHAT_LIST]: <ChatList func={handleToChatRoom} />,
+          [CHAT_LIST]: (
+            <ChatList
+              handleToChatRoom={handleToChatRoom}
+            />
+          ),
           [CHAT_ROOM]: (
             <ChatRoom
               isConnectStomp={isConnectStomp}

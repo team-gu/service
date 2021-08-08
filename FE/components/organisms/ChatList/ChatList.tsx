@@ -9,7 +9,7 @@ import { MemberOption } from '@utils/type';
 import { MODALS } from '@utils/constants';
 
 interface ChatListProps {
-  func: (id: number, room_name: string) => Promise<void>;
+  handleToChatRoom: (id: number, room_name: string) => Promise<void>;
 }
 
 interface UserList {
@@ -44,7 +44,9 @@ const Wrapper = styled.div`
   }
 `;
 
-export default function ChatList({ func }: ChatListProps): ReactElement {
+export default function ChatList({
+  handleToChatRoom,
+}: ChatListProps): ReactElement {
   const dispatch = useAppDispatch();
   const {
     user: { id },
@@ -87,7 +89,7 @@ export default function ChatList({ func }: ChatListProps): ReactElement {
           user_id2: selectedUser?.user_id,
         });
 
-        func(chat_room_id, room_name);
+        handleToChatRoom(chat_room_id, room_name);
         return handleGetChatLists();
       } catch (error) {
         return console.error(error);
@@ -124,7 +126,7 @@ export default function ChatList({ func }: ChatListProps): ReactElement {
               isActive={false}
               time={create_date_time}
               alertNumber={unread_message_count}
-              func={() => func(chat_room_id, room_name)}
+              func={() => handleToChatRoom(chat_room_id, room_name)}
             />
           ),
         )}
