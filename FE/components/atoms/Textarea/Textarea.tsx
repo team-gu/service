@@ -10,6 +10,7 @@ interface TextareaProps {
   children?: ReactNode;
   rows?: number;
   cols?: number;
+  value?: string;
   placeholder?: string;
   maxlength?: number;
   onChange?: (() => ChangeEvent<HTMLInputElement>) | any;
