@@ -61,7 +61,7 @@ export default function ChatRoom({
   };
 
   useEffect(() => {
-    handleScrollToEnd();
+    setTimeout(() => handleScrollToEnd(), 300);
 
     return () => setMessageList([]);
   }, []);
@@ -69,7 +69,7 @@ export default function ChatRoom({
   useEffect(() => {
     const interval = setInterval(() => {
       setMessageList([...messageList]);
-    }, 2000);
+    }, 60000);
 
     return () => clearInterval(interval);
   }, [messageList]);
