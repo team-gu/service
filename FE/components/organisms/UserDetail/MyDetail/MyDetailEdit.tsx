@@ -20,7 +20,15 @@ import {
   updateDetailInformation,
 } from '@repository/userprofile';
 import { ProjectModal, AwardModal } from './Modal';
-import { Skill } from '@utils/type';
+
+// >>>>>>>>>> TODO: Skill 인터페이스 수정 (민호)
+// import { Skill } from '@utils/type';
+interface Skill {
+  id: number;
+  name: string;
+  backgroundColor: string;
+  color: string;
+}
 
 interface ProjectType {
   id: number | null;
