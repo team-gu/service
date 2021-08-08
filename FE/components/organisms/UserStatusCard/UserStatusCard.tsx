@@ -108,7 +108,7 @@ export default function UserStatusCard({
         </div>
         <div
           className="description-container"
-          onClick={() => router.push(`/userdetail/${id}`)}
+          onClick={() => router.push(`/userdetail/${opponentId}`)}
         >
           <div className="item-container">
             <div className="items">
