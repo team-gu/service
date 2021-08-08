@@ -6,7 +6,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.teamgu.api.dto.req.TeamFilterReqDto;
 import com.teamgu.api.dto.req.TeamMemberReqDto;
+import com.teamgu.api.dto.req.TrackReqDto;
 import com.teamgu.api.dto.res.SkillResDto;
 import com.teamgu.api.dto.res.TeamListResDto;
 import com.teamgu.api.dto.res.TeamMemberInfoResDto;
@@ -51,47 +53,46 @@ public class TeamServiceImpl implements TeamService {
 		List<Team> teamList = teamRepository.findAll();
 		for(int i = 0, size=teamList.size(); i<size; i++) {
 
-			TeamListResDto team = new TeamListResDto();
 			Long teamId = teamList.get(i).getId();
-			team.setId(teamId);
-			
-			// Team 이름
-			team.setName(teamList.get(i).getName());
-			
-			// Team 소개
-			team.setIntroduce(teamList.get(i).getIntroduce());
-			
-			// Team 구성 완료 여부
-			team.setCompleteYn(teamList.get(i).getCompleteYn());
-			
-			// Team 현재 리더
-			team.setLeaderId(teamList.get(i).getUser().getId());
-			
-			// Team 트랙
-			Mapping mapping = mappingRepository.getOne(teamList.get(i).getMapping().getId());
-			String trackName = codeDetailRepositorySupport.findTtrackName(mapping.getTrackCode());
-			team.setTrackName(trackName);
-
-			// Team 구성 멤버 간단 정보 조회
-			List<TeamMemberInfoResDto> teamMembers = teamRepositorySupport.getTeamMemberInfo(teamId);
-			team.setTeamMembers(teamMembers);
-			
-			// Team 기술 스택
-			List<SkillResDto> teamSkills = teamRepositorySupport.getTeamSkillsByTeamId(teamId);
-			team.setSkills(teamSkills);
+			TeamListResDto team = getTeamInfobyTeamId(teamId);
 			
 			list.add(team);
 		}
 		return list;
 	}
+	
+	/*
+	 * Team List Filter 조회 
+	 */	
+	
+	@Override
+	public List<TeamListResDto> getTeamListbyFilter(TeamFilterReqDto teamFilterReqDto) {
+	
+		List<TeamListResDto> list = new ArrayList<>();
+		List<Long> teamIdList = teamRepositorySupport.getTeamIdbyFilter(teamFilterReqDto);
+		
+		if(teamIdList == null) return null;
+		System.out.println("TeamServiceImpl : " +  teamIdList.size());
+		
+		for(int i = 0, size=teamIdList.size(); i<size; i++) {
+			
+			Long teamId = Long.parseLong(String.valueOf(teamIdList.get(i)));
+			System.out.println("TeamServiceImpl (array) : " + teamId);
+			TeamListResDto team = getTeamInfobyTeamId(teamId);
+			
+			list.add(team);
+		}
+		
+		return list;
+	}
+	
 	/*
 	 * Team 생성
 	 */		
 	@Override
 	public void createTeam(TeamListResDto teamListResDto) {
 		User user = userRepository.getOne(teamListResDto.getLeaderId());
-		teamListResDto.getTrackName();
-		int trackCode = codeDetailRepositorySupport.findTtrackCode(teamListResDto.getTrackName());
+		int trackCode = codeDetailRepositorySupport.findTtrackCode(teamListResDto.getTrack().getCodeName());
 		int stageCode = ((user.getStudentNumber().charAt(0) - '0') * 10 + user.getStudentNumber().charAt(1) - '0') + 100;
 
 		Mapping mapping = mappingRepositorySupport.selectMapping(trackCode, stageCode);
@@ -110,7 +111,7 @@ public class TeamServiceImpl implements TeamService {
 		List<SkillResDto> teamSkills = teamListResDto.getSkills();
 		
 		for(SkillResDto skill : teamSkills) {
-			int skillCode = skill.getSkillCode();
+			int skillCode = skill.getCode();
 			teamRepositorySupport.addSkill(teamId, skillCode);
 		}
 		
@@ -131,7 +132,7 @@ public class TeamServiceImpl implements TeamService {
 		// TODO Auto-generated method stub
 		
 		User user = userRepository.getOne(teamListResDto.getLeaderId());
-		int trackCode = codeDetailRepositorySupport.findTtrackCode(teamListResDto.getTrackName());
+		int trackCode = codeDetailRepositorySupport.findTtrackCode(teamListResDto.getTrack().getCodeName());
 		int stageCode = ((user.getStudentNumber().charAt(0) - '0') * 10 + user.getStudentNumber().charAt(1) - '0') + 100;
 		Mapping mapping = mappingRepositorySupport.selectMapping(trackCode, stageCode);
 		Team team = teamRepository.getOne(teamListResDto.getId());
@@ -157,9 +158,9 @@ public class TeamServiceImpl implements TeamService {
 		int skillCode;
 		for(int i = 0 ;i<originSkillsSize; i++) {
 			int flag = 0;
-			String originSkillName = originSkills.get(i).getSkillName();
+			String originSkillName = originSkills.get(i).getCodeName();
 			for(int j = 0; j<updateSkiilsSize; j++) {
-				String updateSkillName = updateSkills.get(j).getSkillName();
+				String updateSkillName = updateSkills.get(j).getCodeName();
 				if(originSkillName.equals(updateSkillName)) {
 					updateSkillsCheck[j] = true;
 					//originSkillsCheck[i] = true;
@@ -167,14 +168,14 @@ public class TeamServiceImpl implements TeamService {
 				}
 			}
 			if(flag == 0) {
-				skillCode = originSkills.get(i).getSkillCode();
+				skillCode = originSkills.get(i).getCode();
 				teamRepositorySupport.deleteSkill(teamId, skillCode);
 			}
 		}
 		
 		for(int i = 0; i<updateSkiilsSize; i++) {
 			if(updateSkillsCheck[i]) continue;
-			skillCode = updateSkills.get(i).getSkillCode();
+			skillCode = updateSkills.get(i).getCode();
 			teamRepositorySupport.addSkill(teamId, skillCode);
 		}
 		/*
@@ -248,7 +249,9 @@ public class TeamServiceImpl implements TeamService {
 		// Team 트랙
 		Mapping mapping = mappingRepository.getOne(teamList.getMapping().getId());
 		String trackName = codeDetailRepositorySupport.findTtrackName(mapping.getTrackCode());
-		team.setTrackName(trackName);
+		int trackCode = codeDetailRepositorySupport.findTtrackCode(trackName);
+		TrackReqDto track = new TrackReqDto(trackCode, trackName);
+		team.setTrack(track);
 
 		// Team 구성 멤버 간단 정보 조회
 		List<TeamMemberInfoResDto> teamMembers = teamRepositorySupport.getTeamMemberInfo(teamId);
@@ -328,6 +331,6 @@ public class TeamServiceImpl implements TeamService {
 		// TODO Auto-generated method stub
 		return teamRepositorySupport.checkTeamBuilding(userId, trackName);
 	}
-	
+
 
 }

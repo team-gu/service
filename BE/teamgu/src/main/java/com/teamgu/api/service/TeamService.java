@@ -2,6 +2,7 @@ package com.teamgu.api.service;
 
 import java.util.List;
 
+import com.teamgu.api.dto.req.TeamFilterReqDto;
 import com.teamgu.api.dto.req.TeamMemberReqDto;
 import com.teamgu.api.dto.res.TeamListResDto;
 
@@ -9,6 +10,9 @@ public interface TeamService {
 
 	// Select Team Info
 	List<TeamListResDto> getTeamList();
+	
+	// Select Team Info by Filter
+	List<TeamListResDto> getTeamListbyFilter(TeamFilterReqDto teamFilterReqDto);
 	
 	// Select  Team Info 
 	TeamListResDto getTeamInfobyTeamId(Long teamId);

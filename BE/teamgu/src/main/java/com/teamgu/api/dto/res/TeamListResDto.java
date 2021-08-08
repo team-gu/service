@@ -3,6 +3,8 @@ package com.teamgu.api.dto.res;
 
 import java.util.List;
 
+import com.teamgu.api.dto.req.TrackReqDto;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -27,7 +29,7 @@ public class TeamListResDto {
 	Long leaderId;
 	
 	@ApiModelProperty(name = "트랙명", example = "웹 디자인")
-	String trackName;
+	TrackReqDto track;
 
 	@ApiModelProperty(name = "프로젝트 구성원 정보")
 	List<TeamMemberInfoResDto> teamMembers;
