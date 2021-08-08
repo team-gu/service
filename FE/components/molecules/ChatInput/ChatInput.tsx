@@ -91,6 +91,8 @@ export default function ChatInput({ func }: ChatInputProps): ReactElement {
     chatInputRef.current.focus();
   }, []);
 
+  console.log(message);
+
   return (
     <Wrapper>
       <div className="container">
@@ -98,11 +100,12 @@ export default function ChatInput({ func }: ChatInputProps): ReactElement {
           ref={chatInputRef}
           value={message}
           onKeyPress={(e: KeyboardEvent<HTMLDivElement>) => {
-            e.preventDefault();
             if (e.key == 'Enter' && e.shiftKey) {
+              e.preventDefault();
               return setMessage((prev) => prev + '\n');
             }
             if (e.key === 'Enter') {
+              e.preventDefault();
               handleSend();
             }
           }}
