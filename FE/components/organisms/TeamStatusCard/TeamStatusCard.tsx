@@ -97,7 +97,10 @@ export default function TeamStatusCard({
   onClickTeamManage,
 }: TeamStatusCard): ReactElement {
   const { user } = useAuthState();
-  const currentUserIsInTeam = team.teamMembers.find((m) => m.id === user.id);
+  const currentUserIsInTeam =
+    team.teamMembers.find((m) => m.id === user.id) || true; // TODO: 개발용으로 true 집어넣음 DEVELOP
+  console.log('TeamStateCard: ');
+  console.log(team);
 
   return (
     <Wrapper isComplete={team.completeYN === 0}>
@@ -130,14 +133,16 @@ export default function TeamStatusCard({
           <div className="skills">
             <Text text="기술" color="gray" />
             <div className="skills-tags">
-              {team.skills.map((item) => (
-                <Tag
-                  text={item.name}
-                  key={item.id}
-                  backgroundColor={item.backgroundColor}
-                  color={item.color}
-                />
-              ))}
+              {team.skills.map((item) => {
+                return (
+                  <Tag
+                    text={item.code}
+                    key={item.codeName}
+                    backgroundColor={item.backgroundColor}
+                    color={item.color}
+                  />
+                );
+              })}
             </div>
           </div>
           <div className="description">

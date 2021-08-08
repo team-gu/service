@@ -9,8 +9,8 @@ export interface Member {
 }
 
 export interface Skill {
-  id: number;
-  name: string;
+  code: number;
+  codeName: string;
   backgroundColor?: string;
   color?: string;
 }
