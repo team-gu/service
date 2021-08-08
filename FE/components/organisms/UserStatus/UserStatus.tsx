@@ -130,7 +130,7 @@ export default function UserStatus(): ReactElement {
     setPayload(payloadTemp);
   };
 
-  const haldeFilterArray = (title: string, arr: any) => {
+  const handleFilterArray = (title: string, arr: any) => {
     const payloadTemp: any = { ...payload };
     const convertTitle: any = FILTER_TITLE[title];
 
@@ -194,7 +194,7 @@ export default function UserStatus(): ReactElement {
                   <Filter
                     title={each}
                     contents={filterContents[each]}
-                    func={haldeFilterArray}
+                    func={handleFilterArray}
                     key={index}
                   />
                 )
