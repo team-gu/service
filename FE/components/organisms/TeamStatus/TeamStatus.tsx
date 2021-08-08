@@ -33,7 +33,7 @@ const sortByOptions: OptionsType<OptionTypeBase> = [
 
 export default function TeamStatus(): ReactElement {
   const {
-    user: { projectCode, studentNumber },
+    user: { id: userId, projectCode, studentNumber },
   } = useAuthState();
   const [filterContents, setFilterContents] = useState<any>({});
   const [payload, setPayload] = useState({});
@@ -44,7 +44,7 @@ export default function TeamStatus(): ReactElement {
   const [sortBy, setSortBy] = useState(sortByOptions[0].value);
   const [sortAsc, setSortAsc] = useState(true);
   const [containsUserId, setContainsUserId] = useState<number>();
-  const [isUserInTeam, setIsUserInTeam] = useState<boolean>();
+  const [userHasTeam, setUserHasTeam] = useState<boolean>();
 
   const dispatch = useAppDispatch();
 
@@ -65,11 +65,16 @@ export default function TeamStatus(): ReactElement {
       studentNumber,
     });
 
-    // TODO: Fetch is user in team
-    setIsUserInTeam(false);
-    // getUserTeamIn(projectCode).then(({ data }) => {
-    //   setIsUserInTeam(data);
-    // });
+    const project =
+      projectCode && projectCode.length > 0
+        ? projectCode[projectCode.length - 1]
+        : 101;
+    getUserTeamIn({
+      userId,
+      project: { code: project },
+    }).then(({ data }) => {
+      setUserHasTeam(data.hasTeam);
+    });
   }, []);
 
   useEffect(() => {
@@ -85,6 +90,7 @@ export default function TeamStatus(): ReactElement {
     dispatch(setLoading({ isLoading: true }));
 
     getTeams(by, asc, userid).then(({ data: { data } }) => {
+      console.log(data);
       setTeams(data);
       dispatch(setLoading({ isLoading: false }));
     });
@@ -141,7 +147,7 @@ export default function TeamStatus(): ReactElement {
   };
 
   return (
-    <LookupLayout showTeamCreateBtn={!isUserInTeam}>
+    <LookupLayout showTeamCreateBtn={!userHasTeam}>
       <div className="filter-container">
         {filterContents &&
           Object.keys(filterContents).map(
@@ -174,7 +180,7 @@ export default function TeamStatus(): ReactElement {
               <Icon iconName="sort" func={handleClickSort} />
             </span>
           </div>
-          {!isUserInTeam && (
+          {!userHasTeam && (
             <div>
               <Button
                 title="팀 만들기"

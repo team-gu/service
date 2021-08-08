@@ -75,12 +75,14 @@ interface UserStatusCard {
   };
   filterContents: any;
   id: number;
+  onClickInviteIcon?: () => void;
 }
 
 export default function UserStatusCard({
   user: { name, introduce, trackList, skillList },
   filterContents,
   id,
+  onClickInviteIcon,
 }: UserStatusCard): ReactElement {
   const router = useRouter();
   return (
@@ -96,6 +98,7 @@ export default function UserStatusCard({
                 color="green"
                 func={() => router.push(`rtc/${uuidv4()}`)}
               />
+              <Icon iconName="person_add_alt" func={onClickInviteIcon} />
             </div>
           </div>
         </div>

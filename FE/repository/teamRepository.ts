@@ -21,8 +21,9 @@ export const getUserTeamIn = async (param: any) => {
   console.log('getUserTeamIn:', param);
 
   return await api({
-    url: `/path/to/get-user-team-in/${param}`,
-    type: 'get',
+    url: `/api/team/${param.userId}`,
+    type: 'post',
+    param,
   });
 };
 
@@ -56,13 +57,21 @@ export const deleteTeam = async (param: any) => {
 };
 
 export const exitTeam = async (param: any) => {
-  console.log('팀 탈퇴 API 호출: ');
-  console.log(param);
+  console.log('exit team: ', param);
 
-  // TODO: api 연결 백엔드 미완.
-  // return await api({
-  //   url: `/api/team/exit-team`,
-  //   type: 'delete',
-  //   param,
-  // });
+  return await api({
+    url: `/api/team/exitTeam`,
+    type: 'put',
+    param,
+  });
 };
+
+export const addUserToTeam = async (param: any) => {
+  console.log('add user to team:', param);
+
+  return await api({
+    url: `/api/team/member`,
+    type: 'post',
+    param,
+  })
+}
