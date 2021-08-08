@@ -138,7 +138,7 @@ export default function TeamStatus(): ReactElement {
   };
 
   return (
-    <LookupLayout>
+    <LookupLayout showTeamCreateBtn={!isUserInTeam}>
       <div className="filter-container">
         {filterContents &&
           Object.keys(filterContents).map(

@@ -166,7 +166,7 @@ export default function UserStatus(): ReactElement {
   };
 
   return (
-    <LookupLayout>
+    <LookupLayout showTeamCreateBtn={false}>
       <div className="filter-container">
         <WrapFilter>
           <Title title="프로젝트">
