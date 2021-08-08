@@ -61,12 +61,12 @@ export default function ChatRoom({
   };
 
   useEffect(() => {
-    setTimeout(() => handleScrollToEnd(), 300);
-
     return () => setMessageList([]);
   }, []);
 
   useEffect(() => {
+    handleScrollToEnd();
+
     const interval = setInterval(() => {
       setMessageList([...messageList]);
     }, 60000);
