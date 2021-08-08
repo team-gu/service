@@ -43,5 +43,8 @@ public interface TeamService {
 	
 	// Check Team Building
 	boolean checkTeamBuilding(Long userId, String trackName);
+
+	// Check Team Building
+	boolean checkTeamBuilding(Long userId, int projectCode);
 	
 }

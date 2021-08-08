@@ -233,6 +233,31 @@ public class TeamRepositorySupport {
 
 	}
 	
+	// Team 생성 가능 여부 체크
+	public boolean checkTeamBuilding(Long userId, int projectCode) {
+		EntityManager em = emf.createEntityManager();
+		
+		String jpql = "select user_id from user_team where team_id in \r\n" + 
+				"(select id from team where team.mapping_id in \r\n" + 
+				"(select mapping.id from mapping where mapping.project_code = ?1))" +
+				" and user_id = ?2";
+		Query query = em.createNativeQuery(jpql)
+		.setParameter(1, projectCode)
+		.setParameter(2, userId)
+		;
+		List<Long> chk = query.getResultList();
+		int size = chk.size();
+		em.close();
+		if(size == 0) {
+			return true;
+		}
+		else {
+			return false;
+		}
+
+	}
+	
+	
 	// Team Id Filter
 	public List<Long> getTeamIdbyFilter(TeamFilterReqDto teamFilterReqDto) {
 		
