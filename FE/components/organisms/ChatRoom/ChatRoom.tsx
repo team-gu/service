@@ -51,7 +51,6 @@ export default function ChatRoom({
   } = useAuthState();
 
   const chatBoxRef: any = useRef<HTMLInputElement>(null);
-  const messageListRef = useRef();
 
   const handleScrollToEnd = () => {
     chatBoxRef.current.scrollTo({
@@ -62,20 +61,15 @@ export default function ChatRoom({
   };
 
   useEffect(() => {
-    messageListRef.current = messageList;
-  });
-
-  // TODO: DateTime.fromISO(time).toRelative()를 위해 60초마다 리렌더링이 일어나도록 강제.. 근데 좋은 코드인지는 모르겠음 추후 리펙토링
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setMessageList([...messageListRef.current]);
-    }, 60000);
-
-    return () => clearInterval(interval);
+    handleScrollToEnd();
   }, []);
 
   useEffect(() => {
-    handleScrollToEnd();
+    const interval = setInterval(() => {
+      setMessageList([...messageList]);
+    }, 2000);
+
+    return () => clearInterval(interval);
   }, [messageList]);
 
   useEffect(() => {
