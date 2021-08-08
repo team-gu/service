@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.teamgu.api.dto.req.TeamFilterReqDto;
+import com.teamgu.api.dto.req.TeamIsCreateReqDto;
 import com.teamgu.api.dto.req.TeamMemberReqDto;
 import com.teamgu.api.dto.res.BasicResponse;
 import com.teamgu.api.dto.res.CommonResponse;
@@ -33,7 +34,23 @@ public class TeamController {
 
 	@Autowired
 	TeamServiceImpl teamService;
+	
+	@ApiOperation(value = "팀 생성 가능 여부 조회")
+	@PostMapping("/{userId}")
+	public ResponseEntity<? extends BasicResponse> getIsCreateTeam(@RequestBody TeamIsCreateReqDto teamIsCreateReqDto){
+		
+		Long userId = teamIsCreateReqDto.getUserId();
+		int projectCode =teamIsCreateReqDto.getProject().getCode();
+		
+		if(teamService.checkTeamBuilding(userId, projectCode)) {
+			
+			return ResponseEntity.ok().build();
+		}
+		
+		return ResponseEntity.badRequest().build();
+	}
 
+	// 추후 필터 완성시 삭제될 메서드
 	@ApiOperation(value = "팀 리스트 조회")
 	@GetMapping
 	public ResponseEntity<? extends BasicResponse> getTeamList() {
@@ -43,12 +60,8 @@ public class TeamController {
 		return ResponseEntity.ok(new CommonResponse<List<TeamListResDto>>(teamListResDto));
 	}
 
-	/*
-	 * 필터링 처리를 위해 남겨둔 PostMapping 메서드
-	 */
-
-	@ApiOperation(value = "팀 리스트 조회")
-	@PostMapping("/")
+	@ApiOperation(value = "필터 팀 리스트 조회")
+	@PostMapping
 	public ResponseEntity<? extends BasicResponse> getTeamListbyFilter(@RequestBody TeamFilterReqDto teamFilterReqDto) {
 
 		
@@ -180,14 +193,15 @@ public class TeamController {
 
 		return ResponseEntity.badRequest().build();
 	}
-
-	@ApiOperation(value = "팀 구성 완료하기")
-	@GetMapping("/complete/{teamId}")
-	public ResponseEntity<? extends BasicResponse> completeTeamBuilding(@PathVariable Long teamId) {
-
-		teamService.completeTeamBuilding(teamId);
-		TeamListResDto team = teamService.getTeamInfobyTeamId(teamId);
-		return ResponseEntity.ok(new CommonResponse<TeamListResDto>(team));
-	}
+	
+//
+//	@ApiOperation(value = "팀 구성 완료하기")
+//	@GetMapping("/complete/{teamId}")
+//	public ResponseEntity<? extends BasicResponse> completeTeamBuilding(@PathVariable Long teamId) {
+//
+//		teamService.completeTeamBuilding(teamId);
+//		TeamListResDto team = teamService.getTeamInfobyTeamId(teamId);
+//		return ResponseEntity.ok(new CommonResponse<TeamListResDto>(team));
+//	}
 
 }
