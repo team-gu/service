@@ -41,7 +41,7 @@ const Wrapper = styled.div`
 
   .user-list {
     overflow-y: auto;
-    height: 500px;
+    height: calc(100% - 100px);
   }
 `;
 

@@ -48,6 +48,8 @@ const Wrapper = styled.div<{ isMe: boolean }>`
       min-height: 20px;
       line-height: 1.1;
 
+      white-space: pre-wrap;
+
       padding: 8px 16px 8px 16px;
       border-radius: ${({ isMe }) =>
         isMe ? '16px 0px 16px 16px' : '0px 16px 16px 16px'};
@@ -95,14 +97,30 @@ export default function ChatBubble({
                 />
               ),
               '{% request_yes %}': isMe ? (
-                <Text text={`${userName} 팀의 초대를 수락했습니다`} fontSetting="n16m" isLineBreak />
+                <Text
+                  text={`${userName} 팀의 초대를 수락했습니다`}
+                  fontSetting="n16m"
+                  isLineBreak
+                />
               ) : (
-                <Text text='상대방이 팀 초대를 수락하였습니다' fontSetting="n16m" isLineBreak />
+                <Text
+                  text="상대방이 팀 초대를 수락하였습니다"
+                  fontSetting="n16m"
+                  isLineBreak
+                />
               ),
               '{% request_no %}': isMe ? (
-                <Text text={`${userName} 팀의 초대를 거절했습니다`} fontSetting="n16m" isLineBreak />
+                <Text
+                  text={`${userName} 팀의 초대를 거절했습니다`}
+                  fontSetting="n16m"
+                  isLineBreak
+                />
               ) : (
-                <Text text='상대방이 팀 초대를 거절했습니다' fontSetting="n16m" isLineBreak />
+                <Text
+                  text="상대방이 팀 초대를 거절했습니다"
+                  fontSetting="n16m"
+                  isLineBreak
+                />
               ),
             }[message]
           ) : (

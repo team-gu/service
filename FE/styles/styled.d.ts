@@ -41,6 +41,7 @@ declare module 'styled-components' {
       n14r: FlattenSimpleInterpolation;
       n12b: FlattenSimpleInterpolation;
       n12m: FlattenSimpleInterpolation;
+      n10m: FlattenSimpleInterpolation;
       ellipse: (wrap?: string) => FlattenSimpleInterpolation;
     };
   }
