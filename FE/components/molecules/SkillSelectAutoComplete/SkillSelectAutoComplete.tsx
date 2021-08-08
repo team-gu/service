@@ -7,12 +7,14 @@ interface SkillSelectAutoCompleteProps {
   onChangeSkills?: (newValue: OptionsType<SkillOption>) => void;
   value?: Skill[] | null;
   disabled?: boolean;
+  options?: Skill[];
 }
 
 export default function SkillSelectAutoComplete({
   onChangeSkills,
   value,
   disabled = false,
+  options,
 }: SkillSelectAutoCompleteProps): ReactElement {
   const {
     user: { studentNumber },
@@ -47,23 +49,25 @@ export default function SkillSelectAutoComplete({
   };
 
   useEffect(() => {
-    getEachFiltersCodeList(studentNumber).then(({ data }) => {
-      setSkillOptions(
-        data.data['스킬'].reduce(
-          (acc: Skill[], cur: any) => [
-            ...acc,
-            { ...cur, value: cur.code, label: cur.codeName },
-          ],
-          [],
-        ),
-      );
-    });
+    if (!options) {
+      getEachFiltersCodeList(studentNumber).then(({ data }) => {
+        setSkillOptions(
+          data.data['스킬'].reduce(
+            (acc: Skill[], cur: any) => [
+              ...acc,
+              { ...cur, value: cur.code, label: cur.codeName },
+            ],
+            [],
+          ),
+        );
+      });
+    }
   }, []);
 
   return (
     <Select
       isMulti
-      options={skillOptions}
+      options={options || skillOptions}
       onChange={onChangeSkills}
       defaultValue={defaultSkillOptions}
       styles={colourStyles}
