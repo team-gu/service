@@ -2,7 +2,6 @@ import { ReactElement, SyntheticEvent, useState, useRef } from 'react';
 import styled from 'styled-components';
 import { Input, Text, Textarea } from '@atoms';
 import { Button } from '@molecules';
-import { ModalWrapper } from '@organisms';
 import { postAward, updateAward } from '@repository/userprofile';
 import {
   useAuthState,
@@ -52,10 +51,7 @@ const Error = styled.div`
   color: red;
 `;
 
-export default function AwardModal({
-  awardModalData,
-  setShowAwardModal,
-}: any): ReactElement {
+export default function AwardModal(): ReactElement {
   const { user } = useAuthState();
   const { content } = useModalState();
   const dispatch = useAppDispatch();
@@ -107,110 +103,108 @@ export default function AwardModal({
   };
 
   return (
-    <ModalWrapper modalName="addAward">
-      <Wrapper>
-        <form onSubmit={handleAward}>
-          {content.id ? (
-            <UpdateAward>
-              <div>
-                <Input
-                  width="30vw"
-                  height="50px"
-                  ref={agencynRef}
-                  refValue={content.agency}
-                  maxLength={15}
-                />
-              </div>
-              <div>
-                <Input
-                  width="30vw"
-                  height="50px"
-                  ref={nameRef}
-                  refValue={content.name}
-                  maxLength={15}
-                />
-              </div>
-              <div>
-                <Input
-                  type="date"
-                  width="30vw"
-                  height="50px"
-                  ref={dateRef}
-                  refValue={content.date}
-                />
-              </div>
-              <div>
-                <StyledTextarea
-                  onChange={handleIntroduce}
-                  maxlength={100}
-                  value={introduce}
-                />
-                <Text
-                  text={introduce.length + ' / 100'}
-                  fontSetting="n12m"
-                  color="gray"
-                />
-              </div>
-              {error && <Error>{errorMessage}</Error>}
-              <div>
-                <Button title="수정" type="submit" />
-                <Button
-                  title="닫기"
-                  func={() =>
-                    dispatch(removeModal({ modalName: MODALS.AWARD_MODAL }))
-                  }
-                />
-              </div>
-            </UpdateAward>
-          ) : (
-            <CreateAward>
-              <div>
-                <Input
-                  placeHolder={content.agency}
-                  width="30vw"
-                  height="50px"
-                  ref={agencynRef}
-                  maxLength={15}
-                />
-              </div>
-              <div>
-                <Input
-                  placeHolder={content.name}
-                  width="30vw"
-                  height="50px"
-                  ref={nameRef}
-                  maxLength={15}
-                />
-              </div>
-              <div>
-                <Input type="date" width="30vw" height="50px" ref={dateRef} />
-              </div>
-              <div>
-                <StyledTextarea
-                  placeholder={content.introduce}
-                  onChange={handleIntroduce}
-                  maxlength={100}
-                />
-                <Text
-                  text={introduce.length + ' / 100'}
-                  fontSetting="n12m"
-                  color="gray"
-                />
-              </div>
-              {error && <Error>{errorMessage}</Error>}
-              <div>
-                <Button title="생성" type="submit" />
-                <Button
-                  title="닫기"
-                  func={() =>
-                    dispatch(removeModal({ modalName: MODALS.AWARD_MODAL }))
-                  }
-                />
-              </div>
-            </CreateAward>
-          )}
-        </form>
-      </Wrapper>
-    </ModalWrapper>
+    <Wrapper>
+      <form onSubmit={handleAward}>
+        {content.id ? (
+          <UpdateAward>
+            <div>
+              <Input
+                width="30vw"
+                height="50px"
+                ref={agencynRef}
+                refValue={content.agency}
+                maxLength={15}
+              />
+            </div>
+            <div>
+              <Input
+                width="30vw"
+                height="50px"
+                ref={nameRef}
+                refValue={content.name}
+                maxLength={15}
+              />
+            </div>
+            <div>
+              <Input
+                type="date"
+                width="30vw"
+                height="50px"
+                ref={dateRef}
+                refValue={content.date}
+              />
+            </div>
+            <div>
+              <StyledTextarea
+                onChange={handleIntroduce}
+                maxlength={100}
+                value={introduce}
+              />
+              <Text
+                text={introduce.length + ' / 100'}
+                fontSetting="n12m"
+                color="gray"
+              />
+            </div>
+            {error && <Error>{errorMessage}</Error>}
+            <div>
+              <Button title="수정" type="submit" />
+              <Button
+                title="닫기"
+                func={() =>
+                  dispatch(removeModal({ modalName: MODALS.AWARD_MODAL }))
+                }
+              />
+            </div>
+          </UpdateAward>
+        ) : (
+          <CreateAward>
+            <div>
+              <Input
+                placeHolder={content.agency}
+                width="30vw"
+                height="50px"
+                ref={agencynRef}
+                maxLength={15}
+              />
+            </div>
+            <div>
+              <Input
+                placeHolder={content.name}
+                width="30vw"
+                height="50px"
+                ref={nameRef}
+                maxLength={15}
+              />
+            </div>
+            <div>
+              <Input type="date" width="30vw" height="50px" ref={dateRef} />
+            </div>
+            <div>
+              <StyledTextarea
+                placeholder={content.introduce}
+                onChange={handleIntroduce}
+                maxlength={100}
+              />
+              <Text
+                text={introduce.length + ' / 100'}
+                fontSetting="n12m"
+                color="gray"
+              />
+            </div>
+            {error && <Error>{errorMessage}</Error>}
+            <div>
+              <Button title="생성" type="submit" />
+              <Button
+                title="닫기"
+                func={() =>
+                  dispatch(removeModal({ modalName: MODALS.AWARD_MODAL }))
+                }
+              />
+            </div>
+          </CreateAward>
+        )}
+      </form>
+    </Wrapper>
   );
 }
