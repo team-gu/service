@@ -14,7 +14,7 @@ import { FILTER_TITLE } from '@utils/constants';
 import { MemberOption, Team } from '@utils/type';
 import { useAuthState, useAppDispatch, setLoading } from '@store';
 import { getEachFiltersCodeList } from '@repository/filterRepository';
-import { getTeams, getUserTeamIn } from '@repository/teamRepository';
+import { getTeams, getUserHasTeam } from '@repository/teamRepository';
 
 const sortByOptions: OptionsType<OptionTypeBase> = [
   {
@@ -69,7 +69,7 @@ export default function TeamStatus(): ReactElement {
       projectCode && projectCode.length > 0
         ? projectCode[projectCode.length - 1]
         : 101;
-    getUserTeamIn({
+    getUserHasTeam({
       userId,
       project: { code: project },
     }).then(({ data }) => {

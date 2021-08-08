@@ -17,8 +17,8 @@ export const getTeams = async (
   });
 };
 
-export const getUserTeamIn = async (param: any) => {
-  console.log('getUserTeamIn:', param);
+export const getUserHasTeam = async (param: any) => {
+  console.log('getUserHasTeam:', param);
 
   return await api({
     url: `/api/team/${param.userId}`,

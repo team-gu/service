@@ -20,7 +20,7 @@ import { setLoading, useAppDispatch, useAuthState, displayModal } from '@store';
 import { FILTER_TITLE, OPTIONS } from '@utils/constants';
 import { MemberOption } from '@utils/type';
 import { ModalWrapper } from '@organisms';
-import { getUserTeamIn, addUserToTeam } from '@repository/teamRepository';
+import { getUserHasTeam, addUserToTeam } from '@repository/teamRepository';
 import { MODALS } from '@utils/constants';
 
 interface Users {
@@ -241,11 +241,11 @@ export default function UserStatus(): ReactElement {
 
     // TODO: 팀원 추가 API 테스트
     // dispatch(setLoading({ isLoading: true }));
-    const { data: hasTeamResult } = await getUserTeamIn({
+    const { data: hasTeamResult } = await getUserHasTeam({
       userId,
       project: { code: project },
     });
-    console.log('getUserTeamIn:', hasTeamResult);
+    console.log('getUserHasTeam:', hasTeamResult);
 
     if (!hasTeamResult.hasTeam) {
       dispatch(
