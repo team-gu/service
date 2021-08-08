@@ -10,12 +10,12 @@ import lombok.Setter;
 @NoArgsConstructor
 @ApiModel
 public class SkillResDto {
-	int skillCode;
-	String skillName;
+	int code;
+	String codeName;
 	
-	public SkillResDto(int skillCode, String skillName) {
-		this.skillCode = skillCode;
-		this.skillName = skillName;
+	public SkillResDto(int code, String codeName) {
+		this.code = code;
+		this.codeName = codeName;
 	}
 	
 }

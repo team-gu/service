@@ -11,12 +11,12 @@ import lombok.Setter;
 @ApiModel(description = "Team Track Filter Request Model")
 public class TrackReqDto {
 	
-	int trackCode;
-	String trackName;
+	int code;
+	String codeName;
 	
-	public TrackReqDto(int trackCode, String trackName) {
-		this.trackCode = trackCode;
-		this.trackName = trackName;
+	public TrackReqDto(int code, String codeName) {
+		this.code = code;
+		this.codeName = codeName;
 	}
 	
 }

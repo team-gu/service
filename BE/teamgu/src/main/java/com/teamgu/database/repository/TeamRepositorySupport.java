@@ -15,6 +15,8 @@ import org.springframework.stereotype.Repository;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.teamgu.api.dto.req.TeamFilterReqDto;
+import com.teamgu.api.dto.req.TrackReqDto;
 import com.teamgu.api.dto.res.SkillResDto;
 import com.teamgu.api.dto.res.TeamListResDto;
 import com.teamgu.api.dto.res.TeamMemberInfoResDto;
@@ -229,6 +231,67 @@ public class TeamRepositorySupport {
 			return false;
 		}
 
+	}
+	
+	// Team Id Filter
+	public List<Long> getTeamIdbyFilter(TeamFilterReqDto teamFilterReqDto) {
+		
+		EntityManager em = emf.createEntityManager();
+		
+		StringBuilder skillFilter = new StringBuilder();
+		StringBuilder trackFilter = new StringBuilder();
+		
+		// skillsFilter
+		List<SkillResDto> skills = teamFilterReqDto.getFilteredSkills();
+		int skillsSize =skills.size();
+		
+		List<TrackReqDto> tracks = teamFilterReqDto.getFilteredTracks();
+		int tracksSize = tracks.size();
+		
+		for(int i = 0; i<skillsSize; i++) {
+			if(i == 0) {
+				skillFilter.append("in (");
+			}
+			skillFilter.append(skills.get(i).getCode());
+			if(i == (skillsSize -1)) {
+				skillFilter.append(")\n");
+			}
+			else {
+				skillFilter.append(", ");
+			}
+		}
+		System.out.println(skillFilter.toString());
+		
+		//tracks Filter
+		for(int i = 0; i<tracksSize; i++) {
+			if(i == 0) {
+				trackFilter.append("in (\"");
+			}
+			trackFilter.append(tracks.get(i).getCodeName());
+			if(i == (tracksSize -1)) {
+				trackFilter.append("\")\n");
+			}
+			else {
+				trackFilter.append("\", \"");
+			}
+		}
+		System.out.println(trackFilter.toString());
+		
+		String jqpl = 
+				"select distinct team.id\r\n" + 
+				"from team left outer join team_skill\r\n" + 
+				"on team.id = team_skill.team_id\r\n" + 
+				"left outer join mapping\r\n" + 
+				"on team.mapping_id = mapping.id\r\n" + 
+				"where team_skill.skill_code " + skillFilter.toString() + "\r\n" + 
+				"and mapping_id in\r\n" + 
+				"(select id from mapping where stage_code = 105 and track_code in \r\n" + 
+				"(select code_detail from code_detail where name " + trackFilter.toString()  +"))\r\n" + 
+				"order by team.id asc";
+		List<Long> list = em.createNativeQuery(jqpl).getResultList();
+		em.close();
+
+		return list;
 	}
 
 //	public void createTeam(TeamListResDto teamListResDto) {

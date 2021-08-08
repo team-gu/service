@@ -51,8 +51,12 @@ public class TeamController {
 	@PostMapping("/")
 	public ResponseEntity<? extends BasicResponse> getTeamListbyFilter(@RequestBody TeamFilterReqDto teamFilterReqDto) {
 
-		List<TeamListResDto> teamListResDto = teamService.getTeamList();
-
+		
+		List<TeamListResDto> teamListResDto = teamService.getTeamListbyFilter(teamFilterReqDto);
+		if(teamListResDto == null) {
+			return ResponseEntity.badRequest().build();
+		}
+		
 		return ResponseEntity.ok(new CommonResponse<List<TeamListResDto>>(teamListResDto));
 	}
 	
@@ -60,7 +64,7 @@ public class TeamController {
 	@PostMapping("/add")
 	public ResponseEntity<? extends BasicResponse> createTeam(@RequestBody TeamListResDto teamListResDto) {
 		
-		String trackName = teamListResDto.getTrackName();
+		String trackName = teamListResDto.getTrack().getCodeName();
 		Long userId = teamListResDto.getLeaderId();
 
 		if(teamService.checkTeamBuilding(userId, trackName)) {
@@ -77,16 +81,15 @@ public class TeamController {
 	public ResponseEntity<? extends BasicResponse> updateTeamInfo(@RequestBody TeamListResDto teamListResDto) {
 
 		teamService.updateTeamInfo(teamListResDto);
-		List<TeamListResDto> teamList = teamService.getTeamList();
-		return ResponseEntity.ok(new CommonResponse<List<TeamListResDto>>(teamList));
+		TeamListResDto team = teamService.getTeamInfobyTeamId(teamListResDto.getId());
+		return ResponseEntity.ok(new CommonResponse<TeamListResDto>(team));
 	}
 
 	@ApiOperation(value = "팀 삭제하기")
 	@DeleteMapping("{teamId}")
 	public ResponseEntity<? extends BasicResponse> deleteTeam(@PathVariable Long teamId) {
 		teamService.deleteTeam(teamId);
-		List<TeamListResDto> teamList = teamService.getTeamList();
-		return ResponseEntity.ok(new CommonResponse<List<TeamListResDto>>(teamList));
+		return ResponseEntity.ok(new CommonResponse<String>("팀 삭제 완료"));
 	}
 
 	@ApiOperation(value = "멤버 추가하기")
@@ -152,17 +155,17 @@ public class TeamController {
 					} else { // id 빠른 사람을 일단 팀장으로 맡기고
 						for (Long nextLeader : ids) {
 							if (nextLeader == id) continue;
+						
 							TeamMemberReqDto newLeader = new TeamMemberReqDto();
 							newLeader.setTeamId(teamId);
 							newLeader.setUserId(nextLeader);
-							System.out.println("nextLeader : " + nextLeader );
-							System.out.println("id : " + id);
-							System.out.println("newLeader set userId : " + newLeader.getUserId());
-							teamService.changeTeamLeader(newLeader);
 
+							teamService.changeTeamLeader(newLeader);
 							teamService.exitTeam(teamMemberReqDto);
+							
 							team = teamService.getTeamInfobyTeamId(teamId);
 							team.setLeaderId(nextLeader);
+							
 							return ResponseEntity.ok(new CommonResponse<TeamListResDto>(team));
 						}
 					}
