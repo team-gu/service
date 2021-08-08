@@ -13,38 +13,15 @@ import {
   setProjects,
   setAwards,
   setUserDetail,
+  displayModal,
 } from '@store';
 import {
   deleteProject,
   deleteAward,
   updateDetailInformation,
 } from '@repository/userprofile';
-import { ProjectModal, AwardModal } from './Modal';
-
-// >>>>>>>>>> TODO: Skill 인터페이스 수정 (민호)
-// import { Skill } from '@utils/type';
-interface Skill {
-  id: number;
-  name: string;
-  backgroundColor: string;
-  color: string;
-}
-
-interface ProjectType {
-  id: number | null;
-  name: string;
-  position: string;
-  url: string;
-  introduce: string;
-}
-
-interface AwardType {
-  id: number | null;
-  agency: string;
-  date: string;
-  name: string;
-  introduce: string;
-}
+import { MODALS } from '@utils/constants';
+import { Skill } from '@utils/type';
 
 const Wrapper = styled.div`
   border: 1px solid rgba(0, 0, 0, 0.2);
@@ -299,62 +276,62 @@ const Award = styled.div`
 
 const dummy: Skill[] = [
   {
-    name: 'React',
-    id: 1,
+    codeName: 'React',
+    code: 1,
     backgroundColor: '#61DAFB',
     color: '#000',
   },
   {
-    name: 'Spring',
-    id: 2,
+    codeName: 'Spring',
+    code: 2,
     backgroundColor: '#6DB43D',
     color: '#000',
   },
   {
-    name: 'MySQL',
-    id: 3,
+    codeName: 'MySQL',
+    code: 3,
     backgroundColor: '#005C84',
     color: '#000',
   },
   {
-    name: 'WebRTC',
-    id: 4,
+    codeName: 'WebRTC',
+    code: 4,
     backgroundColor: '#AC2523',
     color: '#000',
   },
   {
-    name: 'JPA',
-    id: 5,
+    codeName: 'JPA',
+    code: 5,
     backgroundColor: '#010101',
     color: '#fff',
   },
   {
-    name: 'HTML',
-    id: 6,
+    codeName: 'HTML',
+    code: 6,
     backgroundColor: '#E44D26',
     color: '#000',
   },
   {
-    name: 'CSS',
-    id: 7,
+    codeName: 'CSS',
+    code: 7,
     backgroundColor: '#0B74B8',
     color: '#000',
   },
   {
-    name: 'JavaScript',
-    id: 8,
+    codeName: 'JavaScript',
+    code: 8,
     backgroundColor: '#DAB92C',
     color: '#000',
   },
   {
-    name: 'Vue',
-    id: 9,
+    codeName: 'Vue',
+    code: 9,
     backgroundColor: '#00C180',
     color: '#000',
   },
   {
-    name: 'Java',
-    id: 10,
+    codeName: 'Java',
+    code: 10,
     backgroundColor: '#E05141',
     color: '#000',
   },
@@ -389,10 +366,11 @@ const SkillOptions = [
 const getSkills = (skills: string[]) => {
   return skills.map((skill) => {
     return {
-      name: skill,
-      id: dummy.find((el) => el.name === skill)?.id,
-      backgroundColor: dummy.find((el) => el.name === skill)?.backgroundColor,
-      color: dummy.find((el) => el.name === skill)?.color,
+      codeName: skill,
+      code: dummy.find((el) => el.codeName === skill)?.code,
+      backgroundColor: dummy.find((el) => el.codeName === skill)
+        ?.backgroundColor,
+      color: dummy.find((el) => el.codeName === skill)?.color,
     };
   });
 };
@@ -408,49 +386,11 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
   const dispatch = useAppDispatch();
 
   // const [image, setImage] = useState('');
-  const [projectModalData, setProjectModalData] = useState<ProjectType>(Object);
-  const [showProjectModal, setShowProjectModal] = useState(false);
-  const [awardModalData, setAwardModalData] = useState<AwardType>(Object);
-  const [showAwardModal, setShowAwardModal] = useState(false);
   const [useableSkills, setUseableSkills] = useState<string[]>(user.skills);
   const [introduce, setIntroduce] = useState(user.introduce);
   // TODO 이거 배열로 들어올지 아니면 문자열 하나로 들어올지 확실히 해야함.
   const [track, setTrack] = useState<string>(user.wishTrack[0]);
   const [position, setPosition] = useState<string>(user.wishPositionCode);
-
-  const editProject = (
-    id: number | null,
-    name: string,
-    position: string,
-    url: string,
-    introduce: string,
-  ) => {
-    setProjectModalData({
-      id,
-      name,
-      position,
-      url,
-      introduce,
-    });
-    setShowProjectModal(true);
-  };
-
-  const editAward = (
-    id: number | null,
-    agency: string,
-    date: string,
-    name: string,
-    introduce: string,
-  ) => {
-    setAwardModalData({
-      id,
-      agency,
-      date,
-      name,
-      introduce,
-    });
-    setShowAwardModal(true);
-  };
 
   const handleIntroduce = (e: Event & { target: HTMLTextAreaElement }) => {
     setIntroduce(e.target.value);
@@ -543,23 +483,8 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
 
   return (
     <Wrapper>
-      {showProjectModal && (
-        <ProjectModal
-          projectModalData={projectModalData}
-          setShowProjectModal={setShowProjectModal}
-        />
-      )}
-      {showAwardModal && (
-        <AwardModal
-          awardModalData={awardModalData}
-          setShowAwardModal={setShowAwardModal}
-        />
-      )}
       <Icons>
         <Icon iconName="clear" color="black" func={changeEditMode} />
-        <Icon iconName="person_add_alt" color="black" />
-        <Icon iconName="chat" color="black" />
-        <Icon iconName="call" color="black" />
       </Icons>
       <form onSubmit={onSubmit} encType="multipart/form-data">
         <Introduction>
@@ -609,9 +534,8 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
                       onChange={handleIntroduce}
                       rows={7}
                       maxlength={300}
-                    >
-                      {introduce}
-                    </StyledTextarea>
+                      value={introduce}
+                    />
                     <Text
                       text={introduce.length + ' / 300'}
                       fontSetting="n12m"
@@ -625,7 +549,7 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
                       rows={7}
                       placeholder="자기소개를 작성해주세요"
                       maxlength={300}
-                    ></StyledTextarea>
+                    />
                     <Text
                       text={introduce.length + ' / 300'}
                       fontSetting="n12m"
@@ -659,7 +583,20 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
               <div className="icons">
                 <Icon
                   iconName="edit"
-                  func={() => editProject(id, name, position, url, introduce)}
+                  func={() =>
+                    dispatch(
+                      displayModal({
+                        modalName: MODALS.PROJECT_MODAL,
+                        content: {
+                          id,
+                          name,
+                          position,
+                          url,
+                          introduce,
+                        },
+                      }),
+                    )
+                  }
                 />
                 <Icon iconName="clear" func={() => deleteProjectCard(id)} />
               </div>
@@ -670,12 +607,17 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
         <Project
           className="last-card"
           onClick={() =>
-            editProject(
-              null,
-              '프로젝트 이름',
-              '수행 포지션',
-              '프로젝트 url',
-              '소개',
+            dispatch(
+              displayModal({
+                modalName: MODALS.PROJECT_MODAL,
+                content: {
+                  id: null,
+                  name: '프로젝트 이름',
+                  position: '수행 포지션',
+                  url: '프로젝트 url',
+                  introduce: '소개',
+                },
+              }),
             )
           }
         >
@@ -692,7 +634,20 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
               <div className="icons">
                 <Icon
                   iconName="edit"
-                  func={() => editAward(id, agency, date, name, introduce)}
+                  func={() =>
+                    dispatch(
+                      displayModal({
+                        modalName: MODALS.AWARD_MODAL,
+                        content: {
+                          id,
+                          agency,
+                          date,
+                          name,
+                          introduce,
+                        },
+                      }),
+                    )
+                  }
                 />
                 <Icon iconName="clear" func={() => deleteAwardCard(id)} />
               </div>
@@ -703,7 +658,20 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
         ))}
         <Award
           className="last-card"
-          onClick={() => editAward(null, '발행 기관', '날짜', '수상명', '소개')}
+          onClick={() =>
+            dispatch(
+              displayModal({
+                modalName: MODALS.AWARD_MODAL,
+                content: {
+                  id: null,
+                  agency: '발행 기관',
+                  date: '날짜',
+                  name: '수상명',
+                  introduce: '소개',
+                },
+              }),
+            )
+          }
         >
           <Icon iconName="add_circle" />
         </Award>
