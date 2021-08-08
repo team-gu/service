@@ -83,6 +83,7 @@ export default function ChatInput({ func }: ChatInputProps): ReactElement {
   const [message, setMessage] = useState<string>('');
 
   const handleSend = async () => {
+    if (message.length === 0) return;
     await func(message);
     setMessage('');
   };
