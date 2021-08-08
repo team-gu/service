@@ -126,7 +126,7 @@ export default function TeamStatusCard({
         <div className="description-container">
           <div className="track">
             <Text text="트랙" color="gray" />
-            <Text text={team.trackName} fontSetting="n20m" />
+            <Text text={team.track.codeName} fontSetting="n20m" />
           </div>
           <div className="skills">
             <Text text="기술" color="gray" />

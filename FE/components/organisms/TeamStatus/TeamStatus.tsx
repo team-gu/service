@@ -73,8 +73,9 @@ export default function TeamStatus(): ReactElement {
   }, []);
 
   useEffect(() => {
+    // TODO: 백엔드 API 완성되면 필터(payload) 추가해서 호출
     renderTeams(sortBy, sortAsc, containsUserId);
-  }, [sortBy, sortAsc, containsUserId]);
+  }, [sortBy, sortAsc, containsUserId, payload]);
 
   const renderTeams = (
     by: string,
@@ -83,13 +84,10 @@ export default function TeamStatus(): ReactElement {
   ) => {
     dispatch(setLoading({ isLoading: true }));
 
-    // TODO: API 연결되면 setTimeout 삭제
-    setTimeout(() => {
-      getTeams(by, asc, userid).then((data) => {
-        setTeams(data);
-        dispatch(setLoading({ isLoading: false }));
-      });
-    }, 1000);
+    getTeams(by, asc, userid).then(({ data: { data } }) => {
+      setTeams(data);
+      dispatch(setLoading({ isLoading: false }));
+    });
   };
 
   const handleFilter = (title: string, code: string) => {
@@ -108,8 +106,6 @@ export default function TeamStatus(): ReactElement {
     } else {
       payloadTemp[convertTitle].push(code);
     }
-
-    // TODO: 필터링 결과 API Call을 여기서 해야 함
 
     setPayload(payloadTemp);
   };
@@ -197,12 +193,16 @@ export default function TeamStatus(): ReactElement {
         ))}
       </div>
       {showTeamManageModal && (
-        <TeamManageModal handleClickClose={handleCloseManageTeamModal} />
+        <TeamManageModal
+          handleClickClose={handleCloseManageTeamModal}
+          fetchTeams={() => renderTeams(sortBy, sortAsc, containsUserId)}
+        />
       )}
       {showTeamManageModal && selectedTeamInfo && (
         <TeamManageModal
           handleClickClose={handleCloseManageTeamModal}
           defaultValue={selectedTeamInfo}
+          fetchTeams={() => renderTeams(sortBy, sortAsc, containsUserId)}
         />
       )}
     </LookupLayout>

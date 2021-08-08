@@ -5,7 +5,9 @@ import {
   ChangeEvent,
   FocusEventHandler,
   useEffect,
+  useRef,
 } from 'react';
+import router from 'next/router';
 import styled from 'styled-components';
 import { ModalWrapper } from '@organisms';
 import { Icon, Input, Text, Textarea } from '@atoms';
@@ -14,6 +16,7 @@ import {
   Label,
   SkillSelectAutoComplete,
   SimpleSelect,
+  Checkbox,
 } from '@molecules';
 import { MODALS, SSAFY_TRACK } from '@utils/constants';
 import { displayModal, useAppDispatch, useAuthState } from '@store';
@@ -23,10 +26,9 @@ import {
   exitTeam,
   updateTeam,
 } from '@repository/teamRepository';
+import { getEachFiltersCodeList } from '@repository/filterRepository';
 import { OptionTypeBase, OptionsType } from 'react-select';
-import { Team, SkillOption, Member } from '@utils/type';
-import { useRef } from 'react';
-import router from 'next/router';
+import { Team, SkillOption, Member, Skill } from '@utils/type';
 
 const Wrapper = styled.div`
   display: grid;
@@ -115,11 +117,21 @@ const Wrapper = styled.div`
     }
   }
 
-  .team-leader-container {
-    input {
-      padding-left: 15px;
-      box-sizing: border-box;
-      font-size: 16px;
+  .team-leader-complete-container {
+    display: flex;
+    gap: 20px;
+
+    .team-leader-container {
+      flex: 1;
+      input {
+        padding-left: 15px;
+        box-sizing: border-box;
+        font-size: 16px;
+      }
+    }
+
+    .team-complete-container {
+      flex: 1;
     }
   }
 
@@ -237,19 +249,16 @@ const Wrapper = styled.div`
   }
 `;
 
-// TODO: 트랙 서버에서 가져오기
-const trackOptions = SSAFY_TRACK.map((item) => {
-  return { label: item, value: item };
-});
-
 interface TeamManageModalProps {
   defaultValue?: Team;
   handleClickClose: MouseEventHandler;
+  fetchTeams: () => void;
 }
 
 export default function TeamManageModal({
   defaultValue,
   handleClickClose,
+  fetchTeams,
 }: TeamManageModalProps): ReactElement {
   const dispatch = useAppDispatch();
   const { user } = useAuthState();
@@ -262,22 +271,29 @@ export default function TeamManageModal({
     };
   };
 
-  const toMemberOptions = (members: Member[]) => {
-    return members.map((v) => ({
-      ...v,
-      label: v.name,
-      value: v.name,
-    }));
-  };
+  const teamMembers = defaultValue?.teamMembers || [userToMember()];
+  const teamMembersOptions = teamMembers.map((m) => ({
+    ...m,
+    label: `${m.name} (${m.email})`,
+    value: m.id,
+  }));
+
+  const [skillOptions, setSkillOptions] = useState<Skill[]>();
+  const [trackOptions, setTrackOptions] = useState([]);
 
   const [teamName, setTeamName] = useState(defaultValue?.name || '');
-  const [teamTrack, setTeamTrack] = useState(defaultValue?.trackName || '');
+  const [teamTrack, setTeamTrack] = useState(defaultValue?.track || '');
   const [teamDescription, setTeamDescription] = useState(
     defaultValue?.introduce || '',
   );
-  const [teamSkills, setTeamSkills] = useState(defaultValue?.skills || []);
+  const [teamSkills, setTeamSkills] = useState<Skill[]>(
+    defaultValue?.skills || [],
+  );
   const [teamLeader, setTeamLeader] = useState(
     defaultValue?.leaderId || user.id,
+  );
+  const [teamComplete, setTeamComplete] = useState(
+    defaultValue?.completeYn || 0,
   );
   const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
   const [showExitConfirmModal, setShowExitConfirmModal] = useState(false);
@@ -285,13 +301,37 @@ export default function TeamManageModal({
 
   const teamNameInputRef = useRef<HTMLInputElement>(null);
   const teamDescriptionRef = useRef<HTMLTextAreaElement>(null);
-  const teamMembers = defaultValue?.teamMembers || [userToMember()];
-  const currentUserIsLeader: boolean = user.id === defaultValue?.leaderId;
+  const currentUserIsLeader: boolean =
+    user.id === defaultValue?.leaderId || true; // TODO: 개발용으로 true 집어넣음 DEVELOP
 
   useEffect(() => {
     if (teamDescriptionRef.current) {
       teamDescriptionRef.current.value = teamDescription;
     }
+
+    getEachFiltersCodeList(user.studentNumber).then(({ data }) => {
+      console.log(data);
+
+      setSkillOptions(
+        data.data['스킬'].reduce(
+          (acc: Skill[], cur: any) => [
+            ...acc,
+            { ...cur, value: cur.code, label: cur.codeName },
+          ],
+          [],
+        ),
+      );
+
+      setTrackOptions(
+        data.data['트랙'].reduce(
+          (acc: { code: number; codeName: string }[], cur: any) => [
+            ...acc,
+            { ...cur, value: cur.code, label: cur.codeName },
+          ],
+          [],
+        ),
+      );
+    });
   }, []);
 
   const handleChangeTeamName = ({ target }: ChangeEvent<HTMLInputElement>) => {
@@ -299,13 +339,13 @@ export default function TeamManageModal({
   };
 
   const handleChangeTrack = (selectedTrack: any) => {
-    setTeamTrack(selectedTrack.value);
+    setTeamTrack(selectedTrack);
   };
 
   const handleChangeSkillSelect = (
     selectedSkills: OptionsType<SkillOption>,
   ) => {
-    setTeamSkills(selectedSkills.slice());
+    setTeamSkills([...selectedSkills]);
   };
 
   const handleChangeDescription: FocusEventHandler = () => {
@@ -318,6 +358,10 @@ export default function TeamManageModal({
     setTeamLeader(newMember.id);
   };
 
+  const handleChangeTeamComplete = () => {
+    setTeamComplete(teamComplete === 1 ? 0 : 1);
+  };
+
   const formValidation = () => {
     if (!teamName || teamName === '') {
       dispatch(
@@ -327,8 +371,8 @@ export default function TeamManageModal({
         }),
       );
       return false;
-    } 
-    
+    }
+
     if (!teamTrack || teamTrack === '') {
       dispatch(
         displayModal({
@@ -337,8 +381,8 @@ export default function TeamManageModal({
         }),
       );
       return false;
-    } 
-    
+    }
+
     if (!teamDescription || teamDescription === '') {
       dispatch(
         displayModal({
@@ -372,11 +416,11 @@ export default function TeamManageModal({
     setShowDeleteConfirmModal(false);
   };
 
-  const handleDeleteConfirm = () => {
+  const handleDeleteConfirm: MouseEventHandler = (event) => {
     setShowDeleteConfirmModal(false);
-    deleteTeam({ teamId: defaultValue?.id }).then(() => {
-      // TODO: 팀 삭제 후 새로고침
-      // router.reload();
+    deleteTeam({ id: defaultValue?.id }).then(() => {
+      handleClickClose(event);
+      fetchTeams();
     });
   };
 
@@ -400,27 +444,29 @@ export default function TeamManageModal({
     setShowSubmitConfirm(false);
   };
 
-  const handleCreateTeamConfirm = () => {
+  const handleCreateTeamConfirm: MouseEventHandler = (event) => {
+    console.log(user);
+
+    if (!user) {
+      return;
+    }
+
     setShowSubmitConfirm(false);
-    const skills = teamSkills.map((skill) => ({
-      skillCode: skill.id,
-      skillName: skill.name,
-    }));
     createTeam({
       name: teamName,
-      trackName: teamTrack,
+      track: teamTrack,
       introduce: teamDescription,
-      skills,
+      skills: teamSkills,
       teamMembers,
       leaderId: teamLeader,
-      completeYn: 0,
+      completeYn: teamComplete,
     }).then(() => {
-      // TODO: 팀 등록 후 새로고침
-      // router.reload();
+      handleClickClose(event);
+      fetchTeams();
     });
   };
 
-  const handleUpdateTeamConfirm = () => {
+  const handleUpdateTeamConfirm: MouseEventHandler = (event) => {
     setShowSubmitConfirm(false);
     if (!defaultValue) {
       console.error('수정할 팀 정보가 없습니다. 다시 시도해주세요');
@@ -428,22 +474,18 @@ export default function TeamManageModal({
       return;
     }
 
-    const skills = teamSkills.map((skill) => ({
-      skillCode: skill.id,
-      skillName: skill.name,
-    }));
     updateTeam({
       id: defaultValue.id,
       name: teamName,
-      trackName: teamTrack,
+      track: teamTrack,
       introduce: teamDescription,
-      skills,
+      skills: teamSkills,
       teamMembers,
       leaderId: teamLeader,
-      completeYn: 0,
+      completeYn: teamComplete,
     }).then(() => {
-      // TODO: 팀 수정 후 새로고침
-      // router.reload();
+      handleClickClose(event);
+      fetchTeams();
     });
   };
 
@@ -486,7 +528,7 @@ export default function TeamManageModal({
               options={trackOptions}
               onChange={handleChangeTrack}
               value={
-                defaultValue ? toOptionTypeBase(defaultValue.trackName) : null
+                defaultValue ? toOptionTypeBase(defaultValue.track.codeName) : null
               }
             />
           </Label>
@@ -507,25 +549,41 @@ export default function TeamManageModal({
               <SkillSelectAutoComplete
                 onChangeSkills={handleChangeSkillSelect}
                 value={defaultValue ? defaultValue.skills : null}
+                options={skillOptions}
               />
             </div>
           </Label>
         </div>
 
-        <div className="team-leader-container">
-          <Label text="팀장">
-            <SimpleSelect
-              options={toMemberOptions(teamMembers)}
-              onChange={handleChangeTeamLeader}
-              value={
-                defaultValue
-                  ? toMemberOptions(teamMembers).find(
-                      (m) => m.id === defaultValue.leaderId,
-                    )
-                  : toMemberOptions(teamMembers)[0]
-              }
-            />
-          </Label>
+        <div className="team-leader-complete-container">
+          <div className="team-leader-container">
+            <Label text="팀장">
+              <SimpleSelect
+                options={teamMembersOptions}
+                onChange={handleChangeTeamLeader}
+                value={
+                  defaultValue
+                    ? teamMembersOptions.find(
+                        (m) => m.id === defaultValue.leaderId,
+                      )
+                    : teamMembersOptions[0]
+                }
+                isDisabled={!defaultValue}
+              />
+            </Label>
+          </div>
+          {defaultValue && (
+            <div className="team-complete-container">
+              <Label text="팀 구성 완료 여부">
+                <Checkbox
+                  func={handleChangeTeamComplete}
+                  defaultChecked={defaultValue.completeYn !== 0}
+                >
+                  <div>완료됨</div>
+                </Checkbox>
+              </Label>
+            </div>
+          )}
         </div>
 
         <div className="modal-footer">
@@ -585,8 +643,8 @@ export default function TeamManageModal({
                 />
               </div>
               <div className="confirm-btns">
-                <Button title="예" func={handleDeleteConfirm} />
                 <Button title="취소" func={handleDeleteConfirmCancel} />
+                <Button title="예" func={handleDeleteConfirm} />
               </div>
             </div>
           </ModalWrapper>
