@@ -69,7 +69,7 @@ export default function ChatRoom({
   useEffect(() => {
     const interval = setInterval(() => {
       setMessageList([...messageListRef.current]);
-    }, 2000);
+    }, 60000);
 
     return () => clearInterval(interval);
   }, []);
