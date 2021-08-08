@@ -1,8 +1,8 @@
 import { ReactElement } from 'react';
+import styled from 'styled-components';
 import { Icon } from '@atoms';
 import { SkillSelectAutoComplete, Label } from '@molecules';
 import { useAuthState } from '@store';
-import styled from 'styled-components';
 
 interface Project {
   name: string;
@@ -213,7 +213,7 @@ const getStudentRegion = (ID: string) => {
 const getSkills = (skills: string[]) => {
   return skills.map((skill) => {
     return {
-      name: skill,
+      codeName: skill,
     };
   });
 };
@@ -231,9 +231,6 @@ export default function MyDetail({ changeEditMode }: any): ReactElement {
     <Wrapper>
       <Icons>
         <Icon iconName="edit" color="black" func={changeEditMode} />
-        <Icon iconName="person_add_alt" color="black" />
-        <Icon iconName="chat" color="black" />
-        <Icon iconName="call" color="black" />
       </Icons>
       <Introduction>
         <Manifesto>

@@ -1,10 +1,10 @@
 import { ReactElement, useState, useEffect } from 'react';
-import { getUserDetail } from '@repository/userprofile';
+import styled from 'styled-components';
+import { useRouter } from 'next/router';
 import { Icon } from '@atoms';
 import { SkillSelectAutoComplete } from '@molecules';
 import { useAuthState, useAppDispatch, setLoading } from '@store';
-import styled from 'styled-components';
-import { useRouter } from 'next/router';
+import { getUserDetail } from '@repository/userprofile';
 
 interface AuthState {
   awards: object[];
