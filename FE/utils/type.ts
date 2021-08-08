@@ -25,7 +25,7 @@ export interface Team {
   maxNumber: number;
 
   leaderId: number;
-  trackName: string;
+  track: { code: number; codeName: string };
 
   skills: Skill[];
   teamMembers: Member[];
