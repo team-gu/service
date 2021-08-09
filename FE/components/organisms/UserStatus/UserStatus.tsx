@@ -222,8 +222,6 @@ export default function UserStatus(): ReactElement {
   };
 
   const handleInvite = async () => {
-    console.log('INVITE!!!');
-
     if (!invitedUser) {
       dispatch(
         displayModal({
@@ -239,15 +237,12 @@ export default function UserStatus(): ReactElement {
         ? projectCode[projectCode.length - 1]
         : 101;
 
-    // TODO: 팀원 추가 API 테스트
-    // dispatch(setLoading({ isLoading: true }));
     const { data: hasTeamResult } = await getUserHasTeam({
-      id,
+      userId: id,
       project: { code: project },
     });
-    console.log('getUserHasTeam:', hasTeamResult);
 
-    if (!hasTeamResult.hasTeam) {
+    if (!hasTeamResult.data.hasTeam) {
       dispatch(
         displayModal({
           modalName: MODALS.ALERT_MODAL,
@@ -257,12 +252,13 @@ export default function UserStatus(): ReactElement {
       return;
     }
 
-    const { data: inviteResult } = await addUserToTeam({
+    await addUserToTeam({
       userId: invitedUser.id,
-      teamId: hasTeamResult.team.id,
+      teamId: hasTeamResult.data.team.id,
     });
-    console.log('addUserToTeam: ', inviteResult);
-    // dispatch(setLoading({ isLoading: false }));
+
+    setShowInviteModal(false);
+    setPayload({ ...payload });
   };
 
   return (
