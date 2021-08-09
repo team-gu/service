@@ -27,7 +27,7 @@ const sortByOptions: OptionsType<OptionTypeBase> = [
   },
   {
     label: '팀 이름',
-    value: 'etc',
+    value: 'teamName',
   },
 ];
 
