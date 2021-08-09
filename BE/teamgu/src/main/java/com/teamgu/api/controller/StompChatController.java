@@ -62,14 +62,15 @@ public class StompChatController {
 		log.info(chatres.getMessage());
 		log.info(chatres.getSendDateTime());
 		if (chatres!=null) {
-			ChatMessageResDto chatMessageResDto = new ChatMessageResDto(message.getSender_id(), 
-					sender.getName(),
-					chatres.getType(),
-					chatres.getMessage(), 
-					chatres.getSendDateTime(),
-					0
-					);
-			simpMessagingTemplate.getTemplate().convertAndSend("/receive/chat/room/"+message.getRoom_id(),chatMessageResDto);			
+			ChatMessageResDto chatMessageResDto = ChatMessageResDto.builder()
+																	.chat_id(chatres.getId())
+																	.sender_id(message.getSender_id())
+																	.sender_name(sender.getName())
+																	.type(chatres.getType())
+																	.message(chatres.getMessage())
+																	.create_date_time(chatres.getSendDateTime())
+																	.unread_user_count(0)
+																	.build();simpMessagingTemplate.getTemplate().convertAndSend("/receive/chat/room/"+message.getRoom_id(),chatMessageResDto);			
 			log.info("message db saved done");
 		}
 		else

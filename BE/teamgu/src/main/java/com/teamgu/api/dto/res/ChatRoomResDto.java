@@ -4,8 +4,10 @@ import java.time.LocalDateTime;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -17,13 +19,11 @@ import lombok.Setter;
 
 @Getter
 @Setter
-//@Builder
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @ApiModel("ChatResponse")
-public class ChatRoomResDto extends BaseResDto{
-	public ChatRoomResDto() {
-		// TODO Auto-generated constructor stub
-	}
-
+public class ChatRoomResDto{
 	@ApiModelProperty(name="채팅방 고유 ID")
 	long chat_room_id;
 //	String chat_room_id; //id로 테스트후 랜덤uuid로 변경 예정
@@ -33,6 +33,9 @@ public class ChatRoomResDto extends BaseResDto{
 	
 	@ApiModelProperty(name="마지막 채팅 메세지") 
 	String last_chat_message;
+	
+	@ApiModelProperty(name="사용자가 마지막으로 읽은 메세지 id")
+	long out_check_chat_id;
 	
 //	@ApiModelProperty(name="안읽은 메세지 갯수")
 //	int unread_message_count;

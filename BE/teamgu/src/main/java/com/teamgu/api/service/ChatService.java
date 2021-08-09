@@ -64,4 +64,19 @@ public interface ChatService {
 	 * @return
 	 */
 	ChatRoomResDto getChatRoomInfo(long room_id);
+	
+	/**
+	 * 특정 채팅방의 마지막 채팅 id를 기록한다
+	 * @param room_id
+	 * @return
+	 */
+	long findLastChatId(long room_id);
+	
+	/**
+	 * 특정 채팅방에서 나갔을 때, 나간 유저의 마지막 채팅id가 무엇이었는지 기록한다
+	 * @param room_id
+	 * @param user_id
+	 * @param chat_id
+	 */
+	void writeLastChatId(long room_id, long user_id, long chat_id);
 }
