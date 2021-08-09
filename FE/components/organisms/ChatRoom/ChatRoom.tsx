@@ -119,6 +119,7 @@ export default function ChatRoom({
                   message,
                   sender_id,
                   sender_name,
+                  type,
                 }: ChatNormal,
                 index: number,
               ) => (
@@ -136,6 +137,7 @@ export default function ChatRoom({
                   message={message}
                   isMe={sender_id === id}
                   func={sendMessage}
+                  type={type}
                   roomId={roomId}
                 />
               ),
