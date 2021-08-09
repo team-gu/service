@@ -18,21 +18,21 @@ interface ChatRoomProps {
 }
 
 const Wrapper = styled.div<{ disabled: boolean }>`
-  padding: 0 20px;
-  width: calc(100% - 40px);
-  height: calc(100% - 60px);
+  width: 100%;
+  height: calc(100% - 50px);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 
   .chat-container {
+    padding: 10px;
+    width: calc(100% - 20px);
     overflow-y: scroll;
     overflow-x: none;
-
-    ::-webkit-scrollbar {
-      background-color: white;
-      width: 0;
-    }
+  }
+  .chat-input {
+    padding: 0 10px;
+    width: calc(100% - 20px);
   }
 
   ${({ disabled }) => disabled && 'pointer-events: none; opacity: 0.3;'}
@@ -60,17 +60,18 @@ export default function ChatRoom({
     });
   };
 
-  // TODO: DateTime.fromISO(time).toRelative()를 위해 60초마다 리렌더링이 일어나도록 강제.. 근데 좋은 코드인지는 모르겠음 추후 리펙토링
   useEffect(() => {
+    return () => setMessageList([]);
+  }, []);
+
+  useEffect(() => {
+    handleScrollToEnd();
+
     const interval = setInterval(() => {
       setMessageList([...messageList]);
     }, 60000);
 
     return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    handleScrollToEnd();
   }, [messageList]);
 
   useEffect(() => {
@@ -137,7 +138,9 @@ export default function ChatRoom({
               ),
             )}
       </div>
-      <ChatInput func={sendMessage} />
+      <div className="chat-input">
+        <ChatInput func={sendMessage} />
+      </div>
     </Wrapper>
   );
 }

@@ -86,7 +86,7 @@ const InviteConfirmModal = styled.div`
 
 export default function UserStatus(): ReactElement {
   const {
-    user: { id: userId, name: userName, projectCode, studentNumber },
+    user: { id, name: userName, projectCode, studentNumber },
   } = useAuthState();
   const [filterContents, setFilterContents] = useState<any>();
   const [payload, setPayload] = useState({});
@@ -242,7 +242,7 @@ export default function UserStatus(): ReactElement {
     // TODO: 팀원 추가 API 테스트
     // dispatch(setLoading({ isLoading: true }));
     const { data: hasTeamResult } = await getUserHasTeam({
-      userId,
+      id,
       project: { code: project },
     });
     console.log('getUserHasTeam:', hasTeamResult);
@@ -339,7 +339,7 @@ export default function UserStatus(): ReactElement {
               key={each?.id}
               user={each}
               filterContents={filterContents}
-              id={each?.id}
+              id={id}
               onClickInviteIcon={() => handleClickInviteIcon(each)}
             />
           ))

@@ -9,7 +9,8 @@ import { MemberOption } from '@utils/type';
 import { MODALS } from '@utils/constants';
 
 interface ChatListProps {
-  func: (id: number, room_name: string) => Promise<void>;
+  handleToChatRoom: (id: number, room_name: string) => Promise<void>;
+  handleSendRtcLink: (user_id1: number, user_id2: number) => void;
 }
 
 interface UserList {
@@ -26,7 +27,7 @@ const Wrapper = styled.div`
 
   .upper {
     display: grid;
-    grid-template-columns: 1.7fr 0.3fr;
+    grid-template-columns: 1.5fr 0.25fr 0.25fr;
     > button {
       box-shadow: none;
       background-color: white;
@@ -40,11 +41,14 @@ const Wrapper = styled.div`
 
   .user-list {
     overflow-y: auto;
-    height: 500px;
+    height: calc(100% - 100px);
   }
 `;
 
-export default function ChatList({ func }: ChatListProps): ReactElement {
+export default function ChatList({
+  handleToChatRoom,
+  handleSendRtcLink,
+}: ChatListProps): ReactElement {
   const dispatch = useAppDispatch();
   const {
     user: { id },
@@ -87,7 +91,7 @@ export default function ChatList({ func }: ChatListProps): ReactElement {
           user_id2: selectedUser?.user_id,
         });
 
-        func(chat_room_id, room_name);
+        handleToChatRoom(chat_room_id, room_name);
         return handleGetChatLists();
       } catch (error) {
         return console.error(error);
@@ -108,6 +112,11 @@ export default function ChatList({ func }: ChatListProps): ReactElement {
           handleChangeUserSelect={handleChangeUserSelect}
         />
         <Button title="생성" width="100%" func={() => handleCreateRoom()} />
+        <Button
+          title="통화"
+          width="100%"
+          func={() => handleSendRtcLink(id, selectedUser?.user_id)}
+        />
       </div>
       <div className="user-list">
         {userList?.map(
@@ -124,7 +133,7 @@ export default function ChatList({ func }: ChatListProps): ReactElement {
               isActive={false}
               time={create_date_time}
               alertNumber={unread_message_count}
-              func={() => func(chat_room_id, room_name)}
+              func={() => handleToChatRoom(chat_room_id, room_name)}
             />
           ),
         )}

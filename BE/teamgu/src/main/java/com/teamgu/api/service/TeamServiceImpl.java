@@ -140,6 +140,7 @@ public class TeamServiceImpl implements TeamService {
 		Long teamId = team.getId();
 		team.setIntroduce(teamListResDto.getIntroduce());
 		team.setName(teamListResDto.getName());
+		team.setCompleteYn(teamListResDto.getCompleteYn());
 		team.setUser(user);
 		team.setMapping(mapping);
 		teamRepository.save(team);
@@ -330,6 +331,12 @@ public class TeamServiceImpl implements TeamService {
 	public boolean checkTeamBuilding(Long userId, String trackName) {
 		// TODO Auto-generated method stub
 		return teamRepositorySupport.checkTeamBuilding(userId, trackName);
+	}
+
+	@Override
+	public boolean checkTeamBuilding(Long userId, int projectCode) {
+		// TODO Auto-generated method stub
+		return teamRepositorySupport.checkTeamBuilding(userId, projectCode);
 	}
 
 

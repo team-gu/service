@@ -7,7 +7,7 @@ import { getChatRoomMessages } from '@repository/chatRepository';
 import { ChatNormal } from '@types/chat-type';
 
 interface useSockStompProps {
-  room_id: number;
+  room_id?: number | undefined;
 }
 
 const URL = 'https://i5a202.p.ssafy.io:8080/stomp/chat';
@@ -36,53 +36,72 @@ export default function useSockStomp({ room_id }: useSockStompProps) {
     );
   };
 
-  useEffect(() => {
-    (async () => {
-      clientRef.current = await Stomp.over(new SockJS(URL));
+  const handleSendRtcLink = async (user_id1: number, user_id2: number) => {
+    clientRef.current = await Stomp.over(new SockJS(URL));
 
-      clientRef.current?.connect(
+    clientRef.current?.connect({}, async () => {
+      await clientRef.current?.send(
+        '/send/chat/messageRTC',
         {},
-        async () => {
-          const {
-            data: { data },
-          } = await getChatRoomMessages(room_id);
-
-          await setMessageList(data);
-          await setIsConnectStomp(true);
-
-          clientRef.current?.subscribe(
-            `/receive/chat/room/${room_id}`,
-            ({ body }: { body: string }) => {
-              const { create_date_time, message, sender_id, sender_name } =
-                JSON.parse(body);
-
-              const chatData: ChatNormal = {
-                create_date_time,
-                message,
-                sender_id,
-                sender_name,
-              };
-
-              setMessageList((prev: ChatNormal[]): ChatNormal[] => [
-                ...prev,
-                chatData,
-              ]);
-            },
-          );
-        },
-        (error: Error) => {
-          console.error(error);
-        },
+        JSON.stringify({
+          user_id1,
+          user_id2,
+        }),
       );
-    })();
-    return () => {
       clientRef.current?.disconnect();
-    };
+    });
+  };
+
+  useEffect(() => {
+    if (room_id) {
+      (async () => {
+        clientRef.current = await Stomp.over(new SockJS(URL));
+
+        clientRef.current?.connect(
+          {},
+          async () => {
+            const {
+              data: { data },
+            } = await getChatRoomMessages(room_id);
+
+            await setMessageList(data);
+            await setIsConnectStomp(true);
+
+            clientRef.current?.subscribe(
+              `/receive/chat/room/${room_id}`,
+              ({ body }: { body: string }) => {
+                const { create_date_time, message, sender_id, sender_name } =
+                  JSON.parse(body);
+
+                const chatData: ChatNormal = {
+                  create_date_time,
+                  message,
+                  sender_id,
+                  sender_name,
+                };
+
+                setMessageList((prev: ChatNormal[]): ChatNormal[] => [
+                  ...prev,
+                  chatData,
+                ]);
+              },
+            );
+          },
+          (error: Error) => {
+            console.error(error);
+          },
+        );
+      })();
+      return () => {
+        clientRef.current?.disconnect();
+      };
+    }
   }, [room_id]);
 
   return {
     clientRef: clientRef.current,
     handleSendMessage,
+    handleSendRtcLink,
     messageList,
     setMessageList,
     isConnectStomp,

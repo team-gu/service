@@ -45,3 +45,21 @@ export interface Project {
   startDate: DateTime;
   endDate: DateTime;
 }
+
+export interface ProjectModalType {
+  userId?: number;
+  id: number | null;
+  name: string | null;
+  position: string | null;
+  url: string | null;
+  introduce: string | null;
+}
+
+export interface AwardModalType {
+  userId?: number;
+  id: number | null;
+  agency: string;
+  date: string;
+  name: string;
+  introduce: string;
+}

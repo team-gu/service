@@ -1,5 +1,11 @@
-export const MODALS: { ALERT_MODAL: string } = {
+export const MODALS: {
+  ALERT_MODAL: string;
+  PROJECT_MODAL: string;
+  AWARD_MODAL: string;
+} = {
   ALERT_MODAL: 'alertModal',
+  PROJECT_MODAL: 'projectModal',
+  AWARD_MODAL: 'awardModal',
 };
 
 export const PROJECT_CODE: any = {
