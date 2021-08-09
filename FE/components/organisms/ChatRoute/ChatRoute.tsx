@@ -158,6 +158,7 @@ export default function ChatRoute(): ReactElement {
               messageList={messageList}
               setMessageList={setMessageList}
               handleClickSend={handleClickSend}
+              roomId={room_id}
             />
           ),
         }[route]

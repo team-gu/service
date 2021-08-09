@@ -1,5 +1,6 @@
 import { ReactElement } from 'react';
 import styled from 'styled-components';
+import { useRouter } from 'next/router';
 
 import { ProfileImage, ChatBubbleSelect } from '@molecules';
 import { Text } from '@atoms';
@@ -13,6 +14,8 @@ interface ChatBubbleProps {
   isMe?: boolean;
   // TODO: 추후 타입 정의
   func?: any;
+  type?: string;
+  roomId?: number;
 }
 
 const Wrapper = styled.div<{ isMe: boolean }>`
@@ -70,8 +73,11 @@ export default function ChatBubble({
   time,
   message,
   isMe = false,
-  func,
+  // func,
+  type,
+  roomId,
 }: ChatBubbleProps): ReactElement {
+  const router = useRouter();
   return (
     <Wrapper isMe={isMe}>
       {!isMe && <ProfileImage src={profileSrc} />}
@@ -81,7 +87,7 @@ export default function ChatBubble({
           <Text text={time} fontSetting="n12m" />
         </div>
         <div className="chat-message">
-          {message.includes('{%') && message.includes('%}') ? (
+          {/* {message.includes('{%') && message.includes('%}') ? (
             {
               '{% request_none %}': isMe ? (
                 <ChatBubbleSelect
@@ -122,7 +128,16 @@ export default function ChatBubble({
                   isLineBreak
                 />
               ),
-            }[message]
+            }[message] */}
+          {type && type !== 'NORMAL' ? (
+            {
+              ['RTC_INVITE']: (
+                <ChatBubbleSelect
+                  text={`화상전화 요청`}
+                  funcAccept={() => router.push(`rtc/${roomId}`)}
+                />
+              ),
+            }[type]
           ) : (
             <Text text={message} fontSetting="n16m" isLineBreak />
           )}
