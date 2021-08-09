@@ -11,6 +11,7 @@ export interface Chat {
 export interface ChatNormal {
   create_date_time?: string;
   message?: string;
-  sender_id?: string | number;
-  sender_name?: string | number;
+  sender_id?: number;
+  sender_name?: string;
+  type?: string;
 }
