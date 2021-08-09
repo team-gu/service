@@ -13,6 +13,7 @@ interface ChatBubbleProps {
   isMe?: boolean;
   // TODO: 추후 타입 정의
   func?: any;
+  roomId?: number;
 }
 
 const Wrapper = styled.div<{ isMe: boolean }>`
@@ -70,7 +71,7 @@ export default function ChatBubble({
   time,
   message,
   isMe = false,
-  func,
+  roomId,
 }: ChatBubbleProps): ReactElement {
   return (
     <Wrapper isMe={isMe}>

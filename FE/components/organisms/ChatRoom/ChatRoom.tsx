@@ -15,6 +15,7 @@ interface ChatRoomProps {
   messageList: Chat[] & ChatNormal[] & any;
   setMessageList: any; // TODO: 추후 타입 정의
   handleClickSend: (msg: string) => Promise<void>;
+  roomId?: number;
 }
 
 const Wrapper = styled.div<{ disabled: boolean }>`
@@ -45,6 +46,7 @@ export default function ChatRoom({
   messageList,
   setMessageList,
   handleClickSend,
+  roomId,
 }: ChatRoomProps): ReactElement {
   const {
     user: { id },
@@ -134,6 +136,7 @@ export default function ChatRoom({
                   message={message}
                   isMe={sender_id === id}
                   func={sendMessage}
+                  roomId={roomId}
                 />
               ),
             )}
