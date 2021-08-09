@@ -578,7 +578,7 @@ export default function TeamManageModal({
               <Label text="팀 구성 완료 여부">
                 <Checkbox
                   func={handleChangeTeamComplete}
-                  defaultChecked={defaultValue.completeYn !== 0}
+                  checked={defaultValue.completeYn !== 0}
                 >
                   <div>완료됨</div>
                 </Checkbox>
