@@ -146,11 +146,11 @@ export default function RenderCropper({
           />
         </div>
 
-        <Button title="Clear" func={onClear} width="5vw" />
+        <Button title="Clear" func={onClear} width="80px" />
 
-        <Button title="Choose" func={triggerFileSelectPopup} width="5vw" />
+        <Button title="Choose" func={triggerFileSelectPopup} width="80px" />
 
-        <Button title="Upload" func={onUpload} width="5vw" />
+        <Button title="Upload" func={onUpload} width="80px" />
       </div>
     </Wrapper>
   );
