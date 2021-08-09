@@ -134,6 +134,8 @@ const Portrait = styled.div`
   img {
     width: 70%;
     margin-top: 15vh;
+    border: 2px solid gray;
+    border-radius: 50%;
   }
 `;
 
