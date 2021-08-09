@@ -89,6 +89,7 @@ public class ChatServiceImpl implements ChatService{
 													.message(chat.getMessage())
 													.sender_id(chat.getUser().getId())
 													.sender_name(chat.getUser().getName())
+													.type(chat.getType())
 													.create_date_time(chat.getSendDateTime())
 													.unread_user_count(0)//읽지 않은 유저를 관리해야한다
 													.build();
