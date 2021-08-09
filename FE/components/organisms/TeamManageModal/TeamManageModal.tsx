@@ -301,8 +301,7 @@ export default function TeamManageModal({
 
   const teamNameInputRef = useRef<HTMLInputElement>(null);
   const teamDescriptionRef = useRef<HTMLTextAreaElement>(null);
-  const currentUserIsLeader: boolean =
-    user.id === defaultValue?.leaderId || true; // TODO: 개발용으로 true 집어넣음 DEVELOP
+  const currentUserIsLeader: boolean = user.id === defaultValue?.leaderId;
 
   useEffect(() => {
     if (teamDescriptionRef.current) {
@@ -432,11 +431,11 @@ export default function TeamManageModal({
     setShowExitConfirmModal(false);
   };
 
-  const handleExitTeamConfirm = () => {
+  const handleExitTeamConfirm: MouseEventHandler = (event) => {
     setShowExitConfirmModal(false);
     exitTeam({ userId: user.id, teamId: defaultValue?.id }).then(() => {
-      // TODO: 팀 나가기 후 새로고침
-      // router.reload();
+      handleClickClose(event);
+      fetchTeams();
     });
   };
 
@@ -528,7 +527,9 @@ export default function TeamManageModal({
               options={trackOptions}
               onChange={handleChangeTrack}
               value={
-                defaultValue ? toOptionTypeBase(defaultValue.track.codeName) : null
+                defaultValue
+                  ? toOptionTypeBase(defaultValue.track.codeName)
+                  : null
               }
             />
           </Label>
@@ -577,7 +578,7 @@ export default function TeamManageModal({
               <Label text="팀 구성 완료 여부">
                 <Checkbox
                   func={handleChangeTeamComplete}
-                  defaultChecked={defaultValue.completeYn !== 0}
+                  checked={defaultValue.completeYn !== 0}
                 >
                   <div>완료됨</div>
                 </Checkbox>

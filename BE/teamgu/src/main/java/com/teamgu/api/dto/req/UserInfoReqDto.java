@@ -2,6 +2,8 @@ package com.teamgu.api.dto.req;
 
 import java.util.List;
 
+import com.teamgu.api.dto.res.SkillResDto;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -25,12 +27,12 @@ public class UserInfoReqDto {
 	String wishPosition;
 	
 	@ApiModelProperty(name = "wishTrack")
-	List<String> wishTracks;
+	List<TrackReqDto> wishTracks;
 	
 	@ApiModelProperty(name = "introduce", example = "안녕하세요! 할말이 없어요!")
 	String introduce;
 	
 	@ApiModelProperty(name = "skill")
-	List<String> skills;
+	List<SkillResDto> skills;
 	
 }

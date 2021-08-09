@@ -2,6 +2,7 @@ package com.teamgu.api.dto.res;
 
 import java.util.List;
 
+import com.teamgu.api.dto.req.TrackReqDto;
 import com.teamgu.database.entity.UserInfoAward;
 
 import io.swagger.annotations.ApiModel;
@@ -30,11 +31,11 @@ public class UserInfoResDto {
 	@ApiModelProperty(name = "wishPositionCode", example = "101")
 	String wishPositionCode;
 	@ApiModelProperty(name = "wishTrack")
-	List<String> wishTrack;
+	List<TrackReqDto> wishTrack;
 	@ApiModelProperty(name = "introduce", example = "안녕하세요! 할말이 없어요!")
 	String introduce;
 	@ApiModelProperty(name = "skill")
-	List<String> skills;
+	List<SkillResDto> skills;
 	@ApiModelProperty(name = "project")
 	List<UserInfoProjectResDto> projects;
 	@ApiModelProperty(name = "awards")

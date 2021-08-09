@@ -78,6 +78,7 @@ export default function ChatBubble({
   roomId,
 }: ChatBubbleProps): ReactElement {
   const router = useRouter();
+  console.log(type);
   return (
     <Wrapper isMe={isMe}>
       {!isMe && <ProfileImage src={profileSrc} />}
@@ -131,7 +132,7 @@ export default function ChatBubble({
             }[message] */}
           {type && type !== 'NORMAL' ? (
             {
-              ['RTC_INVITE']: (
+              RTC_INVITE: (
                 <ChatBubbleSelect
                   text={`화상전화 요청`}
                   funcAccept={() => router.push(`rtc/${roomId}`)}

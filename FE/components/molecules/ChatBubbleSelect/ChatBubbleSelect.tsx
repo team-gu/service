@@ -6,8 +6,8 @@ import { Text } from '@atoms';
 
 interface ChatBubbleSelectProps {
   text: string;
-  funcAccept: MouseEventHandler<HTMLSpanElement>;
-  funcDecline: MouseEventHandler<HTMLSpanElement>;
+  funcAccept?: MouseEventHandler<HTMLSpanElement>;
+  funcDecline?: MouseEventHandler<HTMLSpanElement>;
 }
 
 const Wrapper = styled.div`

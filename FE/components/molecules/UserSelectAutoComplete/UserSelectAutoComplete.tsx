@@ -13,14 +13,23 @@ const promiseOptions = (inputValue: string) =>
 const customStyles = {
   control: (base: any) => ({
     ...base,
-    height: 45,
+    height: '45px',
   }),
-  singleValue: (provided: any) => {
-    const height = '35px';
-    const lineHeight = '35px';
-
-    return { ...provided, height, lineHeight };
-  },
+  singleValue: (base: any) => ({
+    ...base,
+    height: '35px',
+    lineHeight: '35px',
+  }),
+  menuList: (base: any) => ({
+    ...base,
+    paddingTop: 0,
+    paddingBottom: 0,
+  }),
+  menu: (base: any) => ({
+    ...base,
+    zIndex: 101,
+    marginTop: 0,
+  }),
 };
 
 interface UserSelectAutoCompleteProps {

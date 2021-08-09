@@ -20,4 +20,19 @@ public class TeamFilterReqDto {
 	@ApiModelProperty(name = "Filtered Tracks")
 	List<TrackReqDto> filteredTracks;
 	
+	@ApiModelProperty(name = "Search by User", example = "1")
+	Long userId;
+	
+	@ApiModelProperty(name = "projectCode", example = "101")
+	int project;
+	
+	@ApiModelProperty(name = "sort column", example = "id")
+	String sortBy;
+	
+	@ApiModelProperty(name = "student Number", example = "0540001")
+	String studentNumber;
+	
+	@ApiModelProperty(name = "sort type", example = "true")
+	boolean sortAsc;
+	
 }

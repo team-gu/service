@@ -8,16 +8,20 @@ import {
   UserSelectAutoComplete,
   SimpleSelect,
   Title,
+  Button,
 } from '@molecules';
-import { Icon } from '@atoms';
+import { Icon, Text } from '@atoms';
 
 import {
   getEachFiltersCodeList,
   postByFilteredUsers,
 } from '@repository/filterRepository';
-import { useAuthState } from '@store';
+import { setLoading, useAppDispatch, useAuthState, displayModal } from '@store';
 import { FILTER_TITLE, OPTIONS } from '@utils/constants';
 import { MemberOption } from '@utils/type';
+import { ModalWrapper } from '@organisms';
+import { getUserHasTeam, addUserToTeam } from '@repository/teamRepository';
+import { MODALS } from '@utils/constants';
 
 interface Users {
   id: number;
@@ -43,9 +47,46 @@ const WrapFilter = styled.div`
   }
 `;
 
+const InviteConfirmModal = styled.div`
+  position: relative;
+  padding: 50px;
+
+  .modal-header {
+    text-align: center;
+
+    .close-btn {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+
+      i {
+        font-size: 30px;
+        cursor: pointer;
+      }
+    }
+  }
+
+  .modal-content {
+    text-align: center;
+    margin: 20px 0;
+  }
+
+  .modal-footer {
+    text-align: center;
+    margin-top: 30px;
+
+    > button:nth-child(1) {
+      margin-right: 20px;
+    }
+    > button:nth-child(2) {
+      background-color: deeppink;
+    }
+  }
+`;
+
 export default function UserStatus(): ReactElement {
   const {
-    user: { id, projectCode, studentNumber },
+    user: { id, name: userName, projectCode, studentNumber },
   } = useAuthState();
   const [filterContents, setFilterContents] = useState<any>();
   const [payload, setPayload] = useState({});
@@ -55,6 +96,10 @@ export default function UserStatus(): ReactElement {
   const [users, setUsers] = useState([]);
   // TODO: Search contain
   const [containsUserId, setContainsUserId] = useState<number>();
+
+  const [showInviteModal, setShowInviteModal] = useState(false);
+  const [invitedUser, setInvitedUser] = useState<Users>();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     (async () => {
@@ -165,6 +210,57 @@ export default function UserStatus(): ReactElement {
     setSortAsc(!sortAsc);
   };
 
+  const handleCloseInviteModal = () => {
+    setShowInviteModal(false);
+    setInvitedUser(undefined);
+  };
+
+  const handleClickInviteIcon = (selectedUser: Users) => {
+    console.log(selectedUser);
+    setShowInviteModal(true);
+    setInvitedUser(selectedUser);
+  };
+
+  const handleInvite = async () => {
+    if (!invitedUser) {
+      dispatch(
+        displayModal({
+          modalName: MODALS.ALERT_MODAL,
+          content: `알 수 없는 에러가 발생했습니다. 새로고침한 후 다시 시도해주세요.`,
+        }),
+      );
+      return;
+    }
+
+    const project =
+      projectCode && projectCode.length > 0
+        ? projectCode[projectCode.length - 1]
+        : 101;
+
+    const { data: hasTeamResult } = await getUserHasTeam({
+      userId: id,
+      project: { code: project },
+    });
+
+    if (!hasTeamResult.data.hasTeam) {
+      dispatch(
+        displayModal({
+          modalName: MODALS.ALERT_MODAL,
+          content: `현재 팀에 소속되어 있지 않습니다. 팀을 생성한 후에 시도해주세요.`,
+        }),
+      );
+      return;
+    }
+
+    await addUserToTeam({
+      userId: invitedUser.id,
+      teamId: hasTeamResult.data.team.id,
+    });
+
+    setShowInviteModal(false);
+    setPayload({ ...payload });
+  };
+
   return (
     <LookupLayout showTeamCreateBtn={false}>
       <div className="filter-container">
@@ -240,10 +336,36 @@ export default function UserStatus(): ReactElement {
               user={each}
               filterContents={filterContents}
               id={id}
+              onClickInviteIcon={() => handleClickInviteIcon(each)}
             />
           ))
         )}
       </div>
+      {showInviteModal && invitedUser && (
+        <ModalWrapper modalName="inviteConfirmModal">
+          <InviteConfirmModal>
+            <div className="modal-header">
+              <Text text="팀원 초대" fontSetting="n26b" />
+              <div className="close-btn">
+                <Icon iconName="close" func={handleCloseInviteModal} />
+              </div>
+            </div>
+            <div className="modal-content">
+              <Text
+                text={`[${invitedUser.name}]님을 팀으로 초대하시겠습니까?`}
+              />
+            </div>
+            <div className="modal-footer">
+              <Button
+                title="취소"
+                width="100px"
+                func={handleCloseInviteModal}
+              />
+              <Button title="초대" width="100px" func={handleInvite} />
+            </div>
+          </InviteConfirmModal>
+        </ModalWrapper>
+      )}
     </LookupLayout>
   );
 }

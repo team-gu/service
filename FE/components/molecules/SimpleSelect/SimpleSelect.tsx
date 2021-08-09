@@ -27,6 +27,20 @@ export default function SimpleSelect({
   autofocus,
   isDisabled,
 }: SimpleSelectProps): ReactElement {
+  const styles = {
+    menuList: (base: any) => ({
+      ...base,
+      paddingTop: 0,
+      paddingBottom: 0,
+    }),
+    menu: (base: any) => ({
+      ...base,
+      zIndex: 101,
+      marginTop: 0,
+    }),
+    ...customStyles,
+  };
+
   return (
     <Select
       options={options}
@@ -35,8 +49,8 @@ export default function SimpleSelect({
       placeholder={placeholder}
       defaultValue={value}
       onBlur={onBlur}
-      styles={customStyles}
       autoFocus={autofocus}
+      styles={styles}
       isDisabled={isDisabled}
     />
   );
