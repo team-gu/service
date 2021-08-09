@@ -1,10 +1,11 @@
-import { ReactElement, useState } from 'react';
+import { ReactElement, useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 import { Text } from '@atoms';
 import { SimpleSelect } from '@molecules';
 import { Project } from '@utils/type';
 import { ADMIN_MENU_CONTENT } from '@utils/constants';
+import { OptionTypeBase } from 'react-select';
 
 const Wrapper = styled.div`
   position: relative;
@@ -53,8 +54,6 @@ const Wrapper = styled.div`
   }
 `;
 
-
-
 interface AdminMenuSidebarLeftProps {
   onChangeMenu: (selectedMenu: number) => void;
   onChangeProject: (selectedProjectId: number) => void;
@@ -75,12 +74,18 @@ export default function AdminMenuSidebarLeft({
   });
 
   const [selectedMenu, setSelectedMenu] = useState(0);
-  const [selectedProject, setSelectedProject] = useState({
-    ...projects[0],
-    label: projects[0].name,
-    value: projects[0].id,
-  });
+  const [selectedProject, setSelectedProject] = useState<OptionTypeBase>();
   const [clickSelectProject, setClickSelectProject] = useState(false);
+
+  useEffect(() => {
+    if (projects && projects.length > 0) {
+      setSelectedProject({
+        ...projects[0],
+        label: projects[0].name,
+        value: projects[0].id,
+      });
+    }
+  }, [projects]);
 
   const handleChangeMenu = (index: number) => {
     setSelectedMenu(index);
@@ -144,7 +149,7 @@ export default function AdminMenuSidebarLeft({
               onClick={handleChangeSelectProject}
               className="current-project-text"
             >
-              <Text text={selectedProject.name} fontSetting="n20m" />
+              <Text text={selectedProject?.name} fontSetting="n20m" />
             </div>
           )}
         </div>
