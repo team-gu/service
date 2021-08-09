@@ -83,7 +83,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/swagger/**",
                         "/api/chat/**",//sockjs jwt allowed
                         "/receive/chat/**",
-                        "/stomp/**" 
+                        "/stomp/**",
+                        "/api/display/**",
+                        "/api/download/**"
                        )
                 .permitAll()
                 // 다른 모든 요청은 인증을 한다.

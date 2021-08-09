@@ -6,7 +6,6 @@ import { useRouter } from 'next/router';
 import { Text, Icon } from '@atoms';
 import { Tag, ProfileImage } from '@molecules';
 
-import { uuidv4 } from '@utils/snippet';
 import useSockStomp from '@hooks/useSockStomp';
 
 const Wrapper = styled.div`
@@ -100,10 +99,7 @@ export default function UserStatusCard({
               <Icon
                 iconName="call"
                 color="green"
-                func={() => {
-                  router.push(`rtc/${uuidv4()}`);
-                  handleSendRtcLink(id, opponentId);
-                }}
+                func={() => handleSendRtcLink(id, opponentId)}
               />
               <Icon iconName="person_add_alt" func={onClickInviteIcon} />
             </div>

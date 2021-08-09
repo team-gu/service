@@ -1,12 +1,13 @@
-import { ReactElement, SyntheticEvent, useState, useRef } from 'react';
+import { ReactElement, SyntheticEvent, useState } from 'react';
 import styled from 'styled-components';
-import { Icon, Input, Textarea, Text } from '@atoms';
+import { Icon, Textarea, Text } from '@atoms';
 import {
   Button,
   SimpleSelect,
   SkillSelectAutoComplete,
   Label,
 } from '@molecules';
+import { ModalWrapper } from '@organisms';
 import {
   useAuthState,
   useAppDispatch,
@@ -22,6 +23,7 @@ import {
 } from '@repository/userprofile';
 import { MODALS } from '@utils/constants';
 import { Skill } from '@utils/type';
+import SetImageModal from '../MyDetail/Modal/SetImageModal';
 
 const Wrapper = styled.div`
   border: 1px solid rgba(0, 0, 0, 0.2);
@@ -134,6 +136,8 @@ const Portrait = styled.div`
   img {
     width: 70%;
     margin-top: 15vh;
+    border: 2px solid gray;
+    border-radius: 50%;
   }
 `;
 
@@ -385,19 +389,34 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
   const { user } = useAuthState();
   const dispatch = useAppDispatch();
 
-  // const [image, setImage] = useState('');
+  const [image, setImage] = useState(
+    user.img === 'null.null' ? '/profile.png' : user.img,
+  );
+
+  // 실제 제출하게될 이미지 파일
+  const [submitImage, setSubmitImage] = useState<File>();
+
   const [useableSkills, setUseableSkills] = useState<string[]>(user.skills);
   const [introduce, setIntroduce] = useState(user.introduce);
   // TODO 이거 배열로 들어올지 아니면 문자열 하나로 들어올지 확실히 해야함.
   const [track, setTrack] = useState<string>(user.wishTrack[0]);
   const [position, setPosition] = useState<string>(user.wishPositionCode);
+  const [showCroppedArea, setShowCroppedArea] = useState(false);
+
+  const handleImage = (image: string) => {
+    setImage(image);
+  };
+
+  const handleSubmitImage = (image: File) => {
+    setSubmitImage(image);
+  };
+
+  const changeImageMode = () => {
+    setShowCroppedArea(!showCroppedArea);
+  };
 
   const handleIntroduce = (e: Event & { target: HTMLTextAreaElement }) => {
     setIntroduce(e.target.value);
-  };
-
-  const changeImage = (e: EventTarget & { target: HTMLInputElement }) => {
-    setImage(e.target.files[0]);
   };
 
   const changeUseableSkills = (value: { id: number; name: string }[]) => {
@@ -483,6 +502,16 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
 
   return (
     <Wrapper>
+      {showCroppedArea && (
+        <ModalWrapper modalName="setImage">
+          <SetImageModal
+            image={image}
+            setImage={handleImage}
+            setSubmitImage={handleSubmitImage}
+            changeImageMode={changeImageMode}
+          />
+        </ModalWrapper>
+      )}
       <Icons>
         <Icon iconName="clear" color="black" func={changeEditMode} />
       </Icons>
@@ -561,12 +590,8 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
             </div>
           </Manifesto>
           <Portrait>
-            <img
-              className="default-image"
-              alt="프로필이미지"
-              src="/profile.png"
-            />
-            <Input type="file" func={changeImage} name="img" />
+            <img className="default-image" alt="프로필이미지" src={image} />
+            <Icon iconName="photo_camera" func={changeImageMode} />
           </Portrait>
         </Introduction>
         <div className="buttonRight">
