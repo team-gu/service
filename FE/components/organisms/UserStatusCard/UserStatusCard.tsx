@@ -66,7 +66,7 @@ const Wrapper = styled.div`
   }
 `;
 
-interface UserStatusCard {
+interface UserStatusCardProps {
   user: {
     name: string;
     introduce: string;
@@ -77,6 +77,7 @@ interface UserStatusCard {
   filterContents: any;
   id: number;
   onClickInviteIcon?: () => void;
+  currentUserIsLeader: boolean;
 }
 
 export default function UserStatusCard({
@@ -84,7 +85,8 @@ export default function UserStatusCard({
   filterContents,
   id,
   onClickInviteIcon,
-}: UserStatusCard): ReactElement {
+  currentUserIsLeader,
+}: UserStatusCardProps): ReactElement {
   const { handleSendRtcLink } = useSockStomp({ room_id: undefined });
 
   const router = useRouter();
@@ -101,7 +103,9 @@ export default function UserStatusCard({
                 color="green"
                 func={() => handleSendRtcLink(id, opponentId)}
               />
-              <Icon iconName="person_add_alt" func={onClickInviteIcon} />
+              {currentUserIsLeader && (
+                <Icon iconName="person_add_alt" func={onClickInviteIcon} />
+              )}
             </div>
           </div>
         </div>
