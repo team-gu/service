@@ -1,20 +1,22 @@
 import api from '@context/serverContext';
 
-export const getTeams = async (
-  sortBy: string,
-  sortAsc: boolean,
-  containsUserId?: number,
-) => {
-  console.log('팀 조회 API 호출');
-  console.log('정렬 기준 :', sortBy);
-  console.log('오름차순 :', sortAsc);
-  console.log('포함하는 사용자 아이디 :', containsUserId);
+export const getTeams = async (param: any) => {
+  console.log('getTeams: ', param);
 
-  // TODO: 필터링 추가
   return await api({
     url: `/api/team`,
     type: 'get',
   });
+};
+
+export const getTeamsFiltered = async (param: any) => {
+  console.log('getTeamsFiltered: ', param);
+
+  // TODO: 필터링 추가
+  // return await api({
+  //   url: `/api/team`,
+  //   type: 'post',
+  // });
 };
 
 export const getUserHasTeam = async (param: any) => {
@@ -28,7 +30,7 @@ export const getUserHasTeam = async (param: any) => {
 };
 
 export const createTeam = async (param: any) => {
-  console.log('create team: ', param);
+  console.log('createTeam: ', param);
 
   return await api({
     url: `/api/team/add`,
@@ -38,7 +40,7 @@ export const createTeam = async (param: any) => {
 };
 
 export const updateTeam = async (param: any) => {
-  console.log('update team: ', param);
+  console.log('updateTeam: ', param);
 
   return await api({
     url: `/api/team/${param.id}`,
@@ -48,7 +50,7 @@ export const updateTeam = async (param: any) => {
 };
 
 export const deleteTeam = async (param: any) => {
-  console.log('delete team: ', param);
+  console.log('deleteTeam: ', param);
 
   return await api({
     url: `/api/team/${param.id}`,
@@ -57,7 +59,7 @@ export const deleteTeam = async (param: any) => {
 };
 
 export const exitTeam = async (param: any) => {
-  console.log('exit team: ', param);
+  console.log('exitTeam: ', param);
 
   return await api({
     url: `/api/team/exitTeam`,
@@ -67,11 +69,11 @@ export const exitTeam = async (param: any) => {
 };
 
 export const addUserToTeam = async (param: any) => {
-  console.log('add user to team:', param);
+  console.log('addUserToTeam:', param);
 
   return await api({
     url: `/api/team/member`,
     type: 'post',
     param,
-  })
-}
+  });
+};
