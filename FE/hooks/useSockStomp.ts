@@ -66,10 +66,11 @@ export default function useSockStomp({ room_id }: useSockStompProps) {
         '/send/chat/messageRTC',
         {},
         JSON.stringify({
-          user_id1: from,
-          user_id2: target,
+          user_id: from,
+          room_id: target,
         }),
       );
+
       router.push(`rtc/${target}`);
       clientRef.current?.disconnect();
     });
