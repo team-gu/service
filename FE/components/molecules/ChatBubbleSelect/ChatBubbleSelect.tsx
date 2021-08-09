@@ -20,6 +20,9 @@ const Wrapper = styled.div`
   > div > button {
     height: 30px;
 
+    > div {
+      font-size: 12px;
+    }
     box-shadow: none;
   }
 `;
@@ -31,10 +34,10 @@ export default function ChatBubbleSelect({
 }: ChatBubbleSelectProps): ReactElement {
   return (
     <Wrapper>
-      <Text text={text} fontSetting="n16b" />
+      <Text text={text} fontSetting="n14b" />
       <div>
-        {funcAccept && <Button func={funcAccept} title="참여" width="50px" />}
-        {funcDecline && <Button func={funcDecline} title="거절" width="50px" />}
+        {funcAccept && <Button func={funcAccept} title="참여" width="45px" />}
+        {funcDecline && <Button func={funcDecline} title="거절" width="45px" />}
       </div>
     </Wrapper>
   );
