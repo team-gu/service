@@ -1,12 +1,13 @@
-import { ReactElement, SyntheticEvent, useState, useRef } from 'react';
+import { ReactElement, SyntheticEvent, useState } from 'react';
 import styled from 'styled-components';
-import { Icon, Input, Textarea, Text } from '@atoms';
+import { Icon, Textarea, Text } from '@atoms';
 import {
   Button,
   SimpleSelect,
   SkillSelectAutoComplete,
   Label,
 } from '@molecules';
+import { ModalWrapper } from '@organisms';
 import {
   useAuthState,
   useAppDispatch,
@@ -23,7 +24,6 @@ import {
 import { MODALS } from '@utils/constants';
 import { Skill } from '@utils/type';
 import SetImageModal from '../MyDetail/Modal/SetImageModal';
-import { ModalWrapper } from 'components/organisms';
 
 const Wrapper = styled.div`
   border: 1px solid rgba(0, 0, 0, 0.2);
