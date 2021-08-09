@@ -15,8 +15,10 @@ import org.springframework.stereotype.Service;
 import com.teamgu.api.dto.req.LoginReqDto;
 import com.teamgu.api.dto.req.PasswordReqDto;
 import com.teamgu.api.dto.req.TokenReqDto;
+import com.teamgu.api.dto.req.TrackReqDto;
 import com.teamgu.api.dto.req.UserInfoReqDto;
 import com.teamgu.api.dto.res.LoginResDto;
+import com.teamgu.api.dto.res.SkillResDto;
 import com.teamgu.api.dto.res.TokenResDto;
 import com.teamgu.api.dto.res.UserClassResDto;
 import com.teamgu.api.dto.res.UserInfoAwardResDto;
@@ -208,9 +210,9 @@ public class UserServiceImpl implements UserService {
 		 * Wish Track 수정
 		 */
 		// 수정할 WishTrack
-		List<String> updateWishTracks = userInfoReqDto.getWishTracks();
+		List<TrackReqDto> updateWishTracks = userInfoReqDto.getWishTracks();
 		// 기존 WishTrack
-		List<String> originWishTracks = userRepositorySupport.selectUserWishTrackByUserId(userId);
+		List<TrackReqDto> originWishTracks = userRepositorySupport.selectUserWishTrackByUserId(userId);
 
 		int updateWishTracksSize = updateWishTracks.size();
 		int originWishTracksSize = originWishTracks.size();
@@ -221,7 +223,7 @@ public class UserServiceImpl implements UserService {
 		// 추가, 삭제 체크
 		for(int i = 0; i<updateWishTracksSize; i++) {
 			for(int j = 0; j<originWishTracksSize; j++) {
-				if(updateWishTracks.get(i).equals(originWishTracks.get(j))) {
+				if(updateWishTracks.get(i).getCodeName().equals(originWishTracks.get(j).getCodeName())) {
 					updateWishTracksCheck[i] = true;
 					originWishTracksCheck[j] = true;
 				}
@@ -231,8 +233,7 @@ public class UserServiceImpl implements UserService {
 		// updateWishTracksCheck가 false 이면 추가된 Track
 		for(int i = 0; i<updateWishTracksSize; i++) {
 			if(updateWishTracksCheck[i]) continue;
-			int trackCode = codeDetailRepositorySupport.findTtrackCode(updateWishTracks.get(i));
-			Mapping mapping = mappingRepositorySupport.selectMapping(trackCode, stageCode);
+			Mapping mapping = mappingRepositorySupport.selectMapping(updateWishTracks.get(i).getCode(), stageCode);
 			wishTrackRepositorySupport.insertWishTrack(userId, mapping.getId());
 			
 		}
@@ -240,8 +241,7 @@ public class UserServiceImpl implements UserService {
 		// originWishTracksCheck가 false이면 삭제된 Track
 		for(int i = 0; i<originWishTracksSize; i++) {
 			if(originWishTracksCheck[i]) continue;
-			int trackCode = codeDetailRepositorySupport.findTtrackCode(originWishTracks.get(i));
-			Mapping mapping = mappingRepositorySupport.selectMapping(trackCode, stageCode);
+			Mapping mapping = mappingRepositorySupport.selectMapping(originWishTracks.get(i).getCode(), stageCode);
 
 			userRepositorySupport.deleteUserWishTrack(userId, mapping.getId());
 		}
@@ -251,9 +251,9 @@ public class UserServiceImpl implements UserService {
 		 * Skill 수정
 		 */
 		// 업데이트 Skills
-		List<String> updateSkills = userInfoReqDto.getSkills();
+		List<SkillResDto> updateSkills = userInfoReqDto.getSkills();
 		// 기존 Skills
-		List<String> originSkills = userRepositorySupport.selectUserSkillByUserId(userInfoReqDto.getId());
+		List<SkillResDto> originSkills = userRepositorySupport.selectUserSkillByUserId(userInfoReqDto.getId());
 				
 		int updateSkillsSize = updateSkills.size();
 		int originSkillsSize = originSkills.size();
@@ -264,7 +264,7 @@ public class UserServiceImpl implements UserService {
 		// 추가, 삭제 체크
 		for(int i = 0; i<updateSkillsSize; i++) {
 			for(int j = 0; j<originSkillsSize; j++) {
-				if(updateSkills.get(i).equals(originSkills.get(j))) {
+				if(updateSkills.get(i).getCodeName().equals(originSkills.get(j).getCodeName())) {
 					updateSkillsCheck[i] = true;
 					originSkillsCheck[j] = true;
 				}
@@ -274,15 +274,13 @@ public class UserServiceImpl implements UserService {
 		// updateSkillsCheck가 false 이면 추가된 Skill
 		for(int i = 0; i<updateSkillsSize; i++) {
 			if(updateSkillsCheck[i]) continue;
-			int skillCode = codeDetailRepositorySupport.findSkillCode(updateSkills.get(i));
-			userSkillRepositorySupport.insertSkiil(userId, skillCode);
+			userSkillRepositorySupport.insertSkiil(userId, updateSkills.get(i).getCode());
 		}
 		
 		// originSkillsCheck가 false 이면 삭제된 Skill
 		for(int i = 0; i<originSkillsSize; i++) {
 			if(originSkillsCheck[i]) continue;
-			int skillCode = codeDetailRepositorySupport.findSkillCode(originSkills.get(i));
-			userRepositorySupport.deleteUserSkill(userId, skillCode);
+			userRepositorySupport.deleteUserSkill(userId, originSkills.get(i).getCode());
 		}
 	}
 
@@ -335,7 +333,7 @@ public class UserServiceImpl implements UserService {
 			userInfoRes.setStudentNumber(studentNumber);
 
 			// User 기술 스택 조회
-			List<String> skills = userRepositorySupport.selectUserSkillByUserId(id);
+			List<SkillResDto> skills = userRepositorySupport.selectUserSkillByUserId(id);
 			userInfoRes.setSkills(skills);
 
 			// User Position 조회
@@ -354,7 +352,7 @@ public class UserServiceImpl implements UserService {
 			userInfoRes.setAwards(awards);
 
 			// User Wish Track 조회
-			List<String> tracks = userRepositorySupport.selectUserWishTrackByUserId(id);
+			List<TrackReqDto> tracks = userRepositorySupport.selectUserWishTrackByUserId(id);
 			userInfoRes.setWishTrack(tracks);
 
 			// User Class 조회

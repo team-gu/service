@@ -3,7 +3,6 @@ package com.teamgu.api.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.teamgu.api.dto.req.TeamAutoCorrectReqDto;
 import com.teamgu.api.dto.req.TeamFilterReqDto;
 import com.teamgu.api.dto.req.TeamIsCreateReqDto;
 import com.teamgu.api.dto.req.TeamMemberReqDto;
@@ -22,6 +22,7 @@ import com.teamgu.api.dto.res.BasicResponse;
 import com.teamgu.api.dto.res.CommonResponse;
 import com.teamgu.api.dto.res.TeamIsCreateResDto;
 import com.teamgu.api.dto.res.TeamListResDto;
+import com.teamgu.api.dto.res.TeamAutoCorrectResDto;
 import com.teamgu.api.service.TeamServiceImpl;
 
 import io.swagger.annotations.Api;
@@ -36,12 +37,22 @@ public class TeamController {
 	@Autowired
 	TeamServiceImpl teamService;
 	
+	@ApiOperation(value = "유저 자동 완성 기능")
+	@PostMapping("/search")
+	public ResponseEntity<? extends BasicResponse> getUserAutoCorrect(@RequestBody TeamAutoCorrectReqDto teamAutoCorrectReqDto){
+		
+		List<TeamAutoCorrectResDto> list = teamService.getUserAutoCorrect(teamAutoCorrectReqDto);
+
+		return ResponseEntity.ok(new CommonResponse<List<TeamAutoCorrectResDto>>(list));
+	}
+	
+	
 	@ApiOperation(value = "팀 생성 가능 여부 조회")
 	@PostMapping("/{userId}")
 	public ResponseEntity<? extends BasicResponse> getIsCreateTeam(@RequestBody TeamIsCreateReqDto teamIsCreateReqDto){
 		
 		Long userId = teamIsCreateReqDto.getUserId();
-		int projectCode =teamIsCreateReqDto.getProject().getCode();
+		int projectCode = teamIsCreateReqDto.getProject().getCode();
 		
 		TeamIsCreateResDto teamIsCreateResDto = teamService.checkTeamBuilding(userId, projectCode);
 
@@ -62,12 +73,10 @@ public class TeamController {
 	@PostMapping
 	public ResponseEntity<? extends BasicResponse> getTeamListbyFilter(@RequestBody TeamFilterReqDto teamFilterReqDto) {
 
+		System.out.println(teamFilterReqDto.getUserId());
 		
 		List<TeamListResDto> teamListResDto = teamService.getTeamListbyFilter(teamFilterReqDto);
-		if(teamListResDto == null) {
-			return ResponseEntity.badRequest().build();
-		}
-		
+			
 		return ResponseEntity.ok(new CommonResponse<List<TeamListResDto>>(teamListResDto));
 	}
 	
