@@ -27,6 +27,9 @@ public class ChatMessageResDto {
 	@ApiModelProperty(name="보내는 사람의 이름")
 	String sender_name;
 	
+	@ApiModelProperty(name="채팅 타입")
+	String type;
+	
 	@ApiModelProperty(name="채팅 메세지")
 	String message;
 	

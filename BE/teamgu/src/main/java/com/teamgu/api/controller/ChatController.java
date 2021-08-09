@@ -1,11 +1,13 @@
 package com.teamgu.api.controller;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,18 +21,24 @@ import com.teamgu.api.dto.req.ChatReqDto;
 import com.teamgu.api.dto.req.UserInviteTeamReqDto;
 import com.teamgu.api.dto.req.UserRoomCheckDto;
 import com.teamgu.api.dto.req.UserRoomInviteReqDto;
+import com.teamgu.api.dto.res.BaseResDto;
 import com.teamgu.api.dto.res.BasicResponse;
 import com.teamgu.api.dto.res.ChatMessageResDto;
 import com.teamgu.api.dto.res.ChatRoomResDto;
 import com.teamgu.api.dto.res.CommonResponse;
 import com.teamgu.api.dto.res.ErrorResponse;
+import com.teamgu.api.dto.res.LoginResDto;
 import com.teamgu.api.service.ChatService;
 import com.teamgu.api.service.ChatServiceImpl;
 import com.teamgu.api.service.UserServiceImpl;
+import com.teamgu.api.vo.MessageTemplate;
+import com.teamgu.database.entity.Chat;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import lombok.extern.log4j.Log4j2;
 
 
@@ -39,12 +47,15 @@ import lombok.extern.log4j.Log4j2;
 @CrossOrigin("*")
 @RequestMapping("/api/chat")
 @Log4j2
-public class ChatController {
+public class ChatController {		
 	@Autowired
 	ChatServiceImpl chatService;
 	
 	@Autowired
 	UserServiceImpl userService;
+	
+	@Autowired
+	MessageTemplate simpMessagingTemplate;
 	/**
 	 * 특정 유저의 채팅방 목록을 가져온다
 	 */
@@ -149,4 +160,47 @@ public class ChatController {
 		}
 		return ResponseEntity.noContent().build();
 	}
+	
+//	@PostMapping("/rtc/user-invite")
+//	@ApiOperation(value="채팅을 통해 1:1 RTC 세션으로 초대합니다")
+//	@ApiResponses({
+//        @ApiResponse(code = 200, message = "메세지 전송 성공", response = boolean.class)
+//    })
+//	public ResponseEntity<? extends BasicResponse> rtcUserInvite(@RequestBody UserRoomCheckDto users){
+//		log.info("in user-invite...");
+//		long roomid = chatService.roomCheck(users.getUser_id1(), users.getUser_id2());
+//		String name1 = userService.getUserById(users.getUser_id1()).get().getName();
+//		String name2 = userService.getUserById(users.getUser_id2()).get().getName();			
+//		if(roomid==0) {//존재하지 않는 경우 방을 생성하고 방 번호를 반환한다.
+//			ChatRoomResDto chatRoomResDto = chatService.createRoom(name1+", "+name2+"의 방");
+//			roomid = chatRoomResDto.getChat_room_id();
+//			
+//			log.info(roomid+"방이 생성되었습니다");
+//			chatService.inviteUser(users.getUser_id1(), roomid);//둘 다 초대
+//			chatService.inviteUser(users.getUser_id2(), roomid);
+//		}		
+//		//1. 초대 메세지 보내기 전에 저장
+//		log.info("saving RTC invite message");
+//		ChatReqDto chatReqDto = ChatReqDto.builder()
+//											.room_id(roomid)
+//											.sender_id(users.getUser_id1())
+//											.message("화상회의실이 개설되었습니다")
+//											.type("RTC_INVITE")
+//											.build();
+//		Chat chatres = chatService.saveChat(chatReqDto);
+//		log.info("broadcasting RTC invite message");
+//		//2. 메세지 구독룸으로 브로드캐스팅
+//		ChatMessageResDto chatMessageResDto = ChatMessageResDto.builder()
+//												.create_date_time(chatres.getSendDateTime())
+//												.message(chatres.getMessage())
+//												.sender_id(chatres.getUser().getId())
+//												.sender_name(chatres.getUser().getName())
+//												.type(chatres.getType())
+//												.unread_user_count(0)
+//												.build();														
+//		simpMessagingTemplate.getTemplate().convertAndSend("/receive/chat/room/"+chatres.getChatRoom().getId(),chatMessageResDto);
+//		log.info("bradcasting done");
+//		return ResponseEntity.ok(new CommonResponse<ChatRoomResDto>(chatService.getChatRoomInfo(roomid)));
+//	}
+	
 }
