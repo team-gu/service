@@ -1,10 +1,19 @@
-import { ReactElement, forwardRef, ReactNode, FocusEventHandler } from 'react';
+import {
+  ReactElement,
+  forwardRef,
+  ReactNode,
+  ChangeEvent,
+  FocusEventHandler,
+} from 'react';
 
 interface TextareaProps {
   children?: ReactNode;
   rows?: number;
   cols?: number;
+  value?: string;
   placeholder?: string;
+  maxlength?: number;
+  onChange?: (() => ChangeEvent<HTMLInputElement>) | any;
   onBlur?: FocusEventHandler;
 }
 

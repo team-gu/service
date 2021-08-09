@@ -12,7 +12,7 @@ public class UserPoolReqDto {
     @ApiModelProperty(name = "검색 하는 사람의 프로젝트 코드(동일한 프로젝트 내에서만 검색되게 함)", example = "")
     private int project;
 
-    @ApiModelProperty(name = "검색 대상의 지역 코드", example = "")
+    @ApiModelProperty(name = "검색 대상의 지역 코드")
     private List<Integer> region;
 
     @ApiModelProperty(name = "검색 대상의 포지션 코드")
@@ -30,9 +30,9 @@ public class UserPoolReqDto {
     @ApiModelProperty(name = "검색 대상의 이름")
     private String name;
 
-    @ApiModelProperty(name = "정렬 방식")
+    @ApiModelProperty(name = "정렬 방식", example = "asc")
     private String sort;
 
-    @ApiModelProperty(name = "검색하는 사람의 학번")
+    @ApiModelProperty(name = "검색하는 사람의 학번", example = "0503050")
     private String studentNumber;
 }

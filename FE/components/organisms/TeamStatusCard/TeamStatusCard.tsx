@@ -97,10 +97,11 @@ export default function TeamStatusCard({
   onClickTeamManage,
 }: TeamStatusCard): ReactElement {
   const { user } = useAuthState();
-  const currentUserIsLeader = user.id === team.leaderId;
+  const currentUserIsInThisTeam =
+    team.teamMembers.find((m) => m.id === user.id) || true; // TODO: 개발용으로 true 집어넣음 DEVELOP
 
   return (
-    <Wrapper isComplete={team.completeYN !== 0}>
+    <Wrapper isComplete={team.completeYn !== 0}>
       <div className="grid-container">
         <div className="team-name-container">
           <Text text="팀 이름" color="gray" />
@@ -125,19 +126,21 @@ export default function TeamStatusCard({
         <div className="description-container">
           <div className="track">
             <Text text="트랙" color="gray" />
-            <Text text={team.trackName} fontSetting="n20m" />
+            <Text text={team.track.codeName} fontSetting="n20m" />
           </div>
           <div className="skills">
             <Text text="기술" color="gray" />
             <div className="skills-tags">
-              {team.skills.map((item) => (
-                <Tag
-                  text={item.name}
-                  key={item.id}
-                  backgroundColor={item.backgroundColor}
-                  color={item.color}
-                />
-              ))}
+              {team.skills.map((item) => {
+                return (
+                  <Tag
+                    text={item.codeName}
+                    key={item.code}
+                    backgroundColor={item.backgroundColor}
+                    color={item.color}
+                  />
+                );
+              })}
             </div>
           </div>
           <div className="description">
@@ -148,7 +151,7 @@ export default function TeamStatusCard({
       </div>
 
       <div className="completed-team-overlay"></div>
-      {currentUserIsLeader && (
+      {currentUserIsInThisTeam && (
         <div className="team-manage-button">
           <Icon iconName="settings" func={() => onClickTeamManage(team)} />
         </div>

@@ -1,31 +1,29 @@
-import { ReactElement, SyntheticEvent, useState, useRef } from 'react';
+import { ReactElement, SyntheticEvent, useState } from 'react';
 import styled from 'styled-components';
-import { Icon, Input, Textarea } from '@atoms';
-import { Button, SimpleSelect, SkillSelectAutoComplete } from '@molecules';
-import { useAuthState, useAppDispatch, setProjects, setAwards } from '@store';
+import { Icon, Textarea, Text } from '@atoms';
+import {
+  Button,
+  SimpleSelect,
+  SkillSelectAutoComplete,
+  Label,
+} from '@molecules';
+import { ModalWrapper } from '@organisms';
+import {
+  useAuthState,
+  useAppDispatch,
+  setProjects,
+  setAwards,
+  setUserDetail,
+  displayModal,
+} from '@store';
 import {
   deleteProject,
   deleteAward,
   updateDetailInformation,
 } from '@repository/userprofile';
-import { ProjectModal, AwardModal } from './Modal';
+import { MODALS } from '@utils/constants';
 import { Skill } from '@utils/type';
-
-interface ProjectType {
-  id: number | null;
-  name: string;
-  position: string;
-  url: string;
-  introduce: string;
-}
-
-interface AwardType {
-  id: number | null;
-  agency: string;
-  date: string;
-  name: string;
-  introduce: string;
-}
+import SetImageModal from '../MyDetail/Modal/SetImageModal';
 
 const Wrapper = styled.div`
   border: 1px solid rgba(0, 0, 0, 0.2);
@@ -117,6 +115,10 @@ const Manifesto = styled.div`
     width: 20vw;
   }
 
+  .introduce {
+    margin: 50px;
+  }
+
   .useableSkills {
     margin: 50px;
     width: 20vw;
@@ -125,7 +127,6 @@ const Manifesto = styled.div`
 
 const StyledTextarea = styled(Textarea)`
   width: 70%;
-  margin: 50px;
 `;
 
 const Portrait = styled.div`
@@ -135,6 +136,8 @@ const Portrait = styled.div`
   img {
     width: 70%;
     margin-top: 15vh;
+    border: 2px solid gray;
+    border-radius: 50%;
   }
 `;
 
@@ -277,62 +280,62 @@ const Award = styled.div`
 
 const dummy: Skill[] = [
   {
-    name: 'React',
-    id: 1,
+    codeName: 'React',
+    code: 1,
     backgroundColor: '#61DAFB',
     color: '#000',
   },
   {
-    name: 'Spring',
-    id: 2,
+    codeName: 'Spring',
+    code: 2,
     backgroundColor: '#6DB43D',
     color: '#000',
   },
   {
-    name: 'MySQL',
-    id: 3,
+    codeName: 'MySQL',
+    code: 3,
     backgroundColor: '#005C84',
     color: '#000',
   },
   {
-    name: 'WebRTC',
-    id: 4,
+    codeName: 'WebRTC',
+    code: 4,
     backgroundColor: '#AC2523',
     color: '#000',
   },
   {
-    name: 'JPA',
-    id: 5,
+    codeName: 'JPA',
+    code: 5,
     backgroundColor: '#010101',
     color: '#fff',
   },
   {
-    name: 'HTML',
-    id: 6,
+    codeName: 'HTML',
+    code: 6,
     backgroundColor: '#E44D26',
     color: '#000',
   },
   {
-    name: 'CSS',
-    id: 7,
+    codeName: 'CSS',
+    code: 7,
     backgroundColor: '#0B74B8',
     color: '#000',
   },
   {
-    name: 'JavaScript',
-    id: 8,
+    codeName: 'JavaScript',
+    code: 8,
     backgroundColor: '#DAB92C',
     color: '#000',
   },
   {
-    name: 'Vue',
-    id: 9,
+    codeName: 'Vue',
+    code: 9,
     backgroundColor: '#00C180',
     color: '#000',
   },
   {
-    name: 'Java',
-    id: 10,
+    codeName: 'Java',
+    code: 10,
     backgroundColor: '#E05141',
     color: '#000',
   },
@@ -367,10 +370,11 @@ const SkillOptions = [
 const getSkills = (skills: string[]) => {
   return skills.map((skill) => {
     return {
-      name: skill,
-      id: dummy.find((el) => el.name === skill)?.id,
-      backgroundColor: dummy.find((el) => el.name === skill)?.backgroundColor,
-      color: dummy.find((el) => el.name === skill)?.color,
+      codeName: skill,
+      code: dummy.find((el) => el.codeName === skill)?.code,
+      backgroundColor: dummy.find((el) => el.codeName === skill)
+        ?.backgroundColor,
+      color: dummy.find((el) => el.codeName === skill)?.color,
     };
   });
 };
@@ -385,53 +389,34 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
   const { user } = useAuthState();
   const dispatch = useAppDispatch();
 
-  // const [image, setImage] = useState('');
-  const [projectModalData, setProjectModalData] = useState<ProjectType>(Object);
-  const [showProjectModal, setShowProjectModal] = useState(false);
-  const [awardModalData, setAwardModalData] = useState<AwardType>(Object);
-  const [showAwardModal, setShowAwardModal] = useState(false);
+  const [image, setImage] = useState(
+    user.img === 'null.null' ? '/profile.png' : user.img,
+  );
+
+  // 실제 제출하게될 이미지 파일
+  const [submitImage, setSubmitImage] = useState<File>();
+
   const [useableSkills, setUseableSkills] = useState<string[]>(user.skills);
+  const [introduce, setIntroduce] = useState(user.introduce);
   // TODO 이거 배열로 들어올지 아니면 문자열 하나로 들어올지 확실히 해야함.
   const [track, setTrack] = useState<string>(user.wishTrack[0]);
   const [position, setPosition] = useState<string>(user.wishPositionCode);
-  const descriptionRef = useRef<HTMLTextAreaElement>(null);
+  const [showCroppedArea, setShowCroppedArea] = useState(false);
 
-  const editProject = (
-    id: number | null,
-    name: string,
-    position: string,
-    url: string,
-    introduce: string,
-  ) => {
-    setProjectModalData({
-      id,
-      name,
-      position,
-      url,
-      introduce,
-    });
-    setShowProjectModal(true);
+  const handleImage = (image: string) => {
+    setImage(image);
   };
 
-  const editAward = (
-    id: number | null,
-    agency: string,
-    date: string,
-    name: string,
-    introduce: string,
-  ) => {
-    setAwardModalData({
-      id,
-      agency,
-      date,
-      name,
-      introduce,
-    });
-    setShowAwardModal(true);
+  const handleSubmitImage = (image: File) => {
+    setSubmitImage(image);
   };
 
-  const changeImage = (e: any) => {
-    setImage(e.target.files[0]);
+  const changeImageMode = () => {
+    setShowCroppedArea(!showCroppedArea);
+  };
+
+  const handleIntroduce = (e: Event & { target: HTMLTextAreaElement }) => {
+    setIntroduce(e.target.value);
   };
 
   const changeUseableSkills = (value: { id: number; name: string }[]) => {
@@ -457,26 +442,45 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
     // // formData.append('image', image);
     // formData.append('skills', useableSkills);
     // console.log(formData);
+    if (!introduce || !track || !position || !useableSkills.length) {
+      const message = [];
+      if (!introduce) message.push('자기 소개');
+      if (!track) message.push('트랙');
+      if (!position) message.push('포지션');
+      if (!useableSkills.length) message.push('사용 기술');
+
+      alert(`${message.join(', ')} 값을 입력해주세요.`);
+      return;
+    }
     try {
       const data = {
-        introduce: descriptionRef?.current?.value,
         email: user.email,
         id: user.id,
+        introduce: introduce,
         stidentNumber: user.studentNumber,
         wishTracks: [track],
         wishPosition: position,
         skills: useableSkills,
       };
-      console.log(data);
-      const res = await updateDetailInformation(data);
-      console.log(res);
+      await updateDetailInformation(data);
+      await dispatch(
+        setUserDetail({
+          wishTracks: [track],
+          wishPosition: position,
+          introduce: introduce,
+          skills: useableSkills,
+        }),
+      );
+      // TODO 추후에 모달로
+      alert('수정되었습니다.');
+      changeEditMode();
     } catch (e) {
       console.log(e);
     }
   };
 
   //TODO 내가 이런식으로 직접 삭제할건지 결과 데이터를 받아와서 넣을 건지에 대한 대화 필요
-  const deleteProjectCard = async (id: number, type: string) => {
+  const deleteProjectCard = async (id: number) => {
     try {
       await deleteProject(id);
       await dispatch(
@@ -487,7 +491,7 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
     }
   };
 
-  const deleteAwardCard = async (id: number, type: string) => {
+  const deleteAwardCard = async (id: number) => {
     try {
       await deleteAward(id);
       await dispatch(setAwards(user.awards.filter((award) => award.id !== id)));
@@ -498,74 +502,96 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
 
   return (
     <Wrapper>
-      {showProjectModal && (
-        <ProjectModal
-          projectModalData={projectModalData}
-          setShowProjectModal={setShowProjectModal}
-        />
-      )}
-      {showAwardModal && (
-        <AwardModal
-          awardModalData={awardModalData}
-          setShowAwardModal={setShowAwardModal}
-        />
+      {showCroppedArea && (
+        <ModalWrapper modalName="setImage">
+          <SetImageModal
+            image={image}
+            setImage={handleImage}
+            setSubmitImage={handleSubmitImage}
+            changeImageMode={changeImageMode}
+          />
+        </ModalWrapper>
       )}
       <Icons>
         <Icon iconName="clear" color="black" func={changeEditMode} />
-        <Icon iconName="person_add_alt" color="black" />
-        <Icon iconName="chat" color="black" />
-        <Icon iconName="call" color="black" />
       </Icons>
       <form onSubmit={onSubmit} encType="multipart/form-data">
         <Introduction>
           <Manifesto>
             <div className="track">
-              <SimpleSelect
-                options={trackOptions}
-                onChange={(track) => {
-                  console.log(track);
-                  setTrack(track.value);
-                }}
-                value={[{ name: user.wishTrack[0], label: user.wishTrack[0] }]}
-              />
+              <Label text="트랙">
+                <SimpleSelect
+                  options={trackOptions}
+                  onChange={(track) => {
+                    setTrack(track.value);
+                  }}
+                  value={[
+                    { name: user.wishTrack[0], label: user.wishTrack[0] },
+                  ]}
+                />
+              </Label>
             </div>
             <div className="position">
-              <SimpleSelect
-                options={SkillOptions}
-                onChange={(position) => {
-                  console.log(position);
-                  setPosition(position.value);
-                }}
-                value={[
-                  { name: user.wishPositionCode, label: user.wishPositionCode },
-                ]}
-              />
+              <Label text="포지션">
+                <SimpleSelect
+                  options={SkillOptions}
+                  onChange={(position) => {
+                    setPosition(position.value);
+                  }}
+                  value={[
+                    {
+                      name: user.wishPositionCode,
+                      label: user.wishPositionCode,
+                    },
+                  ]}
+                />
+              </Label>
             </div>
             <div className="useableSkills">
-              <SkillSelectAutoComplete
-                onChangeSkills={(skill) => changeUseableSkills(skill)}
-                value={getSkills(user.skills)}
-              />
+              <Label text="사용 기술">
+                <SkillSelectAutoComplete
+                  onChangeSkills={(skill) => changeUseableSkills(skill)}
+                  value={getSkills(user.skills)}
+                />
+              </Label>
             </div>
-            {user.introduce ? (
-              <StyledTextarea ref={descriptionRef} rows={7}>
-                {user.introduce}
-              </StyledTextarea>
-            ) : (
-              <StyledTextarea
-                ref={descriptionRef}
-                rows={7}
-                placeholder="자기소개를 작성해주세요"
-              ></StyledTextarea>
-            )}
+            <div className="introduce">
+              <Label text="자기 소개">
+                {user.introduce ? (
+                  <>
+                    <StyledTextarea
+                      onChange={handleIntroduce}
+                      rows={7}
+                      maxlength={300}
+                      value={introduce}
+                    />
+                    <Text
+                      text={introduce.length + ' / 300'}
+                      fontSetting="n12m"
+                      color="gray"
+                    />
+                  </>
+                ) : (
+                  <>
+                    <StyledTextarea
+                      onChange={handleIntroduce}
+                      rows={7}
+                      placeholder="자기소개를 작성해주세요"
+                      maxlength={300}
+                    />
+                    <Text
+                      text={introduce.length + ' / 300'}
+                      fontSetting="n12m"
+                      color="gray"
+                    />
+                  </>
+                )}
+              </Label>
+            </div>
           </Manifesto>
           <Portrait>
-            <img
-              className="default-image"
-              alt="프로필이미지"
-              src="/profile.png"
-            />
-            <Input type="file" func={changeImage} name="img" />
+            <img className="default-image" alt="프로필이미지" src={image} />
+            <Icon iconName="photo_camera" func={changeImageMode} />
           </Portrait>
         </Introduction>
         <div className="buttonRight">
@@ -575,19 +601,29 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
       <div className="name">프로젝트</div>
       <Projects>
         {user.projects.map(({ id, name, position, url, introduce }: any) => (
-          <Project className="cards">
+          <Project className="cards" key={id}>
             <div className="top">
               <p>{name}</p>
               <p>{position}</p>
               <div className="icons">
                 <Icon
                   iconName="edit"
-                  func={() => editProject(id, name, position, url, introduce)}
+                  func={() =>
+                    dispatch(
+                      displayModal({
+                        modalName: MODALS.PROJECT_MODAL,
+                        content: {
+                          id,
+                          name,
+                          position,
+                          url,
+                          introduce,
+                        },
+                      }),
+                    )
+                  }
                 />
-                <Icon
-                  iconName="clear"
-                  func={() => deleteProjectCard(id, 'project')}
-                />
+                <Icon iconName="clear" func={() => deleteProjectCard(id)} />
               </div>
             </div>
             <div>{introduce}</div>
@@ -596,7 +632,18 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
         <Project
           className="last-card"
           onClick={() =>
-            editProject(null, '팀 이름', '수행 포지션', '프로젝트 url', '소개')
+            dispatch(
+              displayModal({
+                modalName: MODALS.PROJECT_MODAL,
+                content: {
+                  id: null,
+                  name: '프로젝트 이름',
+                  position: '수행 포지션',
+                  url: '프로젝트 url',
+                  introduce: '소개',
+                },
+              }),
+            )
           }
         >
           <Icon iconName="add_circle" />
@@ -605,19 +652,29 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
       <div className="name">수상경력</div>
       <Awards>
         {user.awards.map(({ id, agency, date, name, introduce }: any) => (
-          <Award className="cards">
+          <Award className="cards" key={id}>
             <div className="top">
               <p>{agency}</p>
               <p>{name}</p>
               <div className="icons">
                 <Icon
                   iconName="edit"
-                  func={() => editAward(id, agency, date, name, introduce)}
+                  func={() =>
+                    dispatch(
+                      displayModal({
+                        modalName: MODALS.AWARD_MODAL,
+                        content: {
+                          id,
+                          agency,
+                          date,
+                          name,
+                          introduce,
+                        },
+                      }),
+                    )
+                  }
                 />
-                <Icon
-                  iconName="clear"
-                  func={() => deleteAwardCard(id, 'award')}
-                />
+                <Icon iconName="clear" func={() => deleteAwardCard(id)} />
               </div>
             </div>
             <div className="middle">{getDate(date)}</div>
@@ -627,7 +684,18 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
         <Award
           className="last-card"
           onClick={() =>
-            editAward(null, '발행 기관', '날짜', '수상 목록', '소개')
+            dispatch(
+              displayModal({
+                modalName: MODALS.AWARD_MODAL,
+                content: {
+                  id: null,
+                  agency: '발행 기관',
+                  date: '날짜',
+                  name: '수상명',
+                  introduce: '소개',
+                },
+              }),
+            )
           }
         >
           <Icon iconName="add_circle" />

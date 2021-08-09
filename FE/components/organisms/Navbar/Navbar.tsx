@@ -95,17 +95,17 @@ export default function Navbar(): ReactElement {
           <>
             <li>공지사항</li>
             <li>
-              <Link href="userdetail">
+              <Link href="/userdetail">
                 <a>마이페이지</a>
               </Link>
             </li>
             <li>
-              <Link href="humanpool">
+              <Link href="/humanpool">
                 <a>인력풀</a>
               </Link>
             </li>
             <li>
-              <Link href="team">
+              <Link href="/team">
                 <a>팀구성현황</a>
               </Link>
             </li>
@@ -120,7 +120,7 @@ export default function Navbar(): ReactElement {
           </>
         ) : (
           <li>
-            <Link href="login">
+            <Link href="/login">
               <a>로그인</a>
             </Link>
           </li>

@@ -5,12 +5,15 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Data;
 
-import java.util.Set;
+import java.util.List;
 
 @Data
 @Builder
 @ApiModel(description = "인력풀 검색 Response 모델")
 public class UserPoolResDto {
+    @ApiModelProperty(name = "유저 id")
+    private Long id;
+
     @ApiModelProperty(name = "유저 이름")
     private String name;
 
@@ -24,8 +27,8 @@ public class UserPoolResDto {
     private String extension;
 
     @ApiModelProperty(name = "원하는 트랙 리스트")
-    private Set<String> trackList;
+    private List<String> trackList;
 
     @ApiModelProperty(name = "유저의 스킬 리스트")
-    private Set<String> skillList;
+    private List<String> skillList;
 }

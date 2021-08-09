@@ -25,5 +25,14 @@ public class MappingRepositorySupport {
 		
 	}
 	
+    public Mapping selectMapping(int trackCode, int stageCode) {
+        
+        return (Mapping) jpaQueryFactory
+                .from(qMapping)
+                .where(qMapping.trackCode.eq(trackCode)
+                        .and(qMapping.stageCode.eq(stageCode)))
+                .fetchOne();
+        
+    }
 	
 }

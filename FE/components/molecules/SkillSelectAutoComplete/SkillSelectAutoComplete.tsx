@@ -1,72 +1,75 @@
 import { ReactElement, useState, useEffect } from 'react';
 import Select, { OptionsType } from 'react-select';
-import { getSkillList } from '@repository/baseRepository';
 import { Skill, SkillOption } from '@utils/type';
-
+import { getEachFiltersCodeList } from '@repository/filterRepository';
+import { useAuthState } from '@store';
 interface SkillSelectAutoCompleteProps {
   onChangeSkills?: (newValue: OptionsType<SkillOption>) => void;
   value?: Skill[] | null;
   disabled?: boolean;
+  options?: Skill[];
 }
 
 export default function SkillSelectAutoComplete({
   onChangeSkills,
   value,
   disabled = false,
+  options,
 }: SkillSelectAutoCompleteProps): ReactElement {
+  const {
+    user: { studentNumber },
+  } = useAuthState();
   const [skillOptions, setSkillOptions] = useState<Skill[]>([]);
-  const ops: OptionsType<SkillOption> | undefined = value?.map((s) => {
-    return {
-      id: s.id,
-      name: s.name,
-      label: s.name,
-      value: s.id,
-    };
-  });
+  const defaultSkillOptions: OptionsType<SkillOption> | undefined = value?.map(
+    (s) => {
+      return {
+        ...s,
+        label: s.codeName,
+        value: s.code,
+      };
+    },
+  );
 
   const colourStyles = {
     multiValue: (styles: object, { data }: any) => {
       const color = skillOptions.find(
-        (option) => option.name === data.name,
+        (option) => option.codeName === data.name,
       )?.backgroundColor;
       return {
         ...styles,
-        backgroundColor: color,
+        backgroundColor: color ? color : '#eeeeee',
       };
     },
-    multiValueLabel: (styles: object, { data }): any => ({
+    multiValueLabel: (styles: object, { data }: any) => ({
       ...styles,
-      color: skillOptions.find((option) => option.name === data.name)?.color,
+      color: skillOptions.find((option) => option.codeName === data.name)
+        ?.color,
       fontWeight: '900',
     }),
   };
 
-  const loadSkills = async () => {
-    const skillList = await getSkillList();
-    return skillList.map((s) => {
-      return {
-        id: s.id,
-        name: s.name,
-        label: s.name,
-        value: s.id,
-        backgroundColor: s.backgroundColor,
-        color: s.color,
-      };
-    });
-  };
-
   useEffect(() => {
-    loadSkills().then((data) => {
-      setSkillOptions(data);
-    });
+    if (!options) {
+      getEachFiltersCodeList(studentNumber).then(({ data }) => {
+        setSkillOptions(
+          data.data['스킬'].reduce(
+            (acc: Skill[], cur: any) => [
+              ...acc,
+              { ...cur, value: cur.code, label: cur.codeName },
+            ],
+            [],
+          ),
+        );
+      });
+    }
   }, []);
 
   return (
     <Select
       isMulti
-      options={skillOptions}
+      options={options || skillOptions}
       onChange={onChangeSkills}
-      defaultValue={ops}
+      defaultValue={defaultSkillOptions}
       styles={colourStyles}
       isDisabled={disabled}
     />

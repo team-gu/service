@@ -12,6 +12,7 @@ import authReducer, {
   setLogin,
   setUserInfo,
   setLogout,
+  setUserDetail,
 } from './authSlice';
 import uiReducer, { setLoading, setChatOpen } from './uiSlice';
 import stickyReducer, { setFixed, setOffset } from './stickySlice';
@@ -36,6 +37,7 @@ export {
   setLogin,
   setUserInfo,
   setLogout,
+  setUserDetail,
   setLoading,
   setChatOpen,
   setFixed,

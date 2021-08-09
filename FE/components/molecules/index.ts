@@ -14,6 +14,7 @@ import Tag from './Tag';
 import Title from './Title';
 import SimpleSelect from './SimpleSelect';
 import UserSelectAutoComplete from './UserSelectAutoComplete';
+import UserSelectChatAutoComplete from './UserSelectChatAutoComplete';
 import SkillSelectAutoComplete from './SkillSelectAutoComplete';
 import ProjectCard from './ProjectCard';
 
@@ -34,6 +35,7 @@ export {
   Title,
   SimpleSelect,
   UserSelectAutoComplete,
+  UserSelectChatAutoComplete,
   SkillSelectAutoComplete,
   ProjectCard,
 };

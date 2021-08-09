@@ -14,6 +14,7 @@ interface SimpleSelectProps {
   value?: OptionTypeBase | null;
   customStyles?: Partial<Styles<any, false, GroupTypeBase<any>>> | undefined;
   autofocus?: boolean | undefined;
+  isDisabled?: boolean | undefined;
 }
 
 export default function SimpleSelect({
@@ -24,6 +25,7 @@ export default function SimpleSelect({
   value,
   customStyles,
   autofocus,
+  isDisabled,
 }: SimpleSelectProps): ReactElement {
   return (
     <Select
@@ -35,6 +37,7 @@ export default function SimpleSelect({
       onBlur={onBlur}
       styles={customStyles}
       autoFocus={autofocus}
+      isDisabled={isDisabled}
     />
   );
 }

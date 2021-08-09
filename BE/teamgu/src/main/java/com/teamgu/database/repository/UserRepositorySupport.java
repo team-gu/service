@@ -172,12 +172,7 @@ public class UserRepositorySupport {
 	
 	// User Wish Track 삭제
 	@Transactional
-	public void deleteUserWishTrack(Long userId, int trackCode) {
-		JPAQuery<Long> mappingId = 
-				jpaQueryFactory
-				.select(qMapping.id)
-				.from(qMapping)
-				.where(qMapping.trackCode.eq(trackCode));
+	public void deleteUserWishTrack(Long userId, Long mappingId) {
 
 		jpaQueryFactory
 				.delete(qWishTrack)

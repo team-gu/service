@@ -1,5 +1,11 @@
-export const MODALS: { ALERT_MODAL: string } = {
+export const MODALS: {
+  ALERT_MODAL: string;
+  PROJECT_MODAL: string;
+  AWARD_MODAL: string;
+} = {
   ALERT_MODAL: 'alertModal',
+  PROJECT_MODAL: 'projectModal',
+  AWARD_MODAL: 'awardModal',
 };
 
 export const PROJECT_CODE: any = {
@@ -9,14 +15,21 @@ export const PROJECT_CODE: any = {
   자율: 104,
 };
 
+export const OPTIONS: any = [
+  { label: '공통', value: 101 },
+  { label: '특화', value: 102 },
+  { label: '필드', value: 103 },
+  { label: '자율', value: 104 },
+];
+
 export const FILTER_TITLE: any = {
-  '스킬': 'skills',
-  '프로젝트': 'project',
-  '지역': 'region',
-  '역할': 'position',
-  '트랙': 'track',
+  스킬: 'skills',
+  프로젝트: 'project',
+  지역: 'region',
+  역할: 'position',
+  트랙: 'track',
   '전공/비전공': 'isMajor',
-}
+};
 
 export const ADMIN_MENU_CONTENT = [
   '프로젝트 관리',

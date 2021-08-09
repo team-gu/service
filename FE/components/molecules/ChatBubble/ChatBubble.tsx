@@ -1,5 +1,6 @@
 import { ReactElement } from 'react';
 import styled from 'styled-components';
+import { useRouter } from 'next/router';
 
 import { ProfileImage, ChatBubbleSelect } from '@molecules';
 import { Text } from '@atoms';
@@ -13,6 +14,8 @@ interface ChatBubbleProps {
   isMe?: boolean;
   // TODO: 추후 타입 정의
   func?: any;
+  type?: string;
+  roomId?: number;
 }
 
 const Wrapper = styled.div<{ isMe: boolean }>`
@@ -48,6 +51,8 @@ const Wrapper = styled.div<{ isMe: boolean }>`
       min-height: 20px;
       line-height: 1.1;
 
+      white-space: pre-wrap;
+
       padding: 8px 16px 8px 16px;
       border-radius: ${({ isMe }) =>
         isMe ? '16px 0px 16px 16px' : '0px 16px 16px 16px'};
@@ -68,8 +73,11 @@ export default function ChatBubble({
   time,
   message,
   isMe = false,
-  func,
+  // func,
+  type,
+  roomId,
 }: ChatBubbleProps): ReactElement {
+  const router = useRouter();
   return (
     <Wrapper isMe={isMe}>
       {!isMe && <ProfileImage src={profileSrc} />}
@@ -79,7 +87,7 @@ export default function ChatBubble({
           <Text text={time} fontSetting="n12m" />
         </div>
         <div className="chat-message">
-          {message.includes('{%') && message.includes('%}') ? (
+          {/* {message.includes('{%') && message.includes('%}') ? (
             {
               '{% request_none %}': isMe ? (
                 <ChatBubbleSelect
@@ -95,16 +103,41 @@ export default function ChatBubble({
                 />
               ),
               '{% request_yes %}': isMe ? (
-                <Text text={`${userName} 팀의 초대를 수락했습니다`} fontSetting="n16m" isLineBreak />
+                <Text
+                  text={`${userName} 팀의 초대를 수락했습니다`}
+                  fontSetting="n16m"
+                  isLineBreak
+                />
               ) : (
-                <Text text='상대방이 팀 초대를 수락하였습니다' fontSetting="n16m" isLineBreak />
+                <Text
+                  text="상대방이 팀 초대를 수락하였습니다"
+                  fontSetting="n16m"
+                  isLineBreak
+                />
               ),
               '{% request_no %}': isMe ? (
-                <Text text={`${userName} 팀의 초대를 거절했습니다`} fontSetting="n16m" isLineBreak />
+                <Text
+                  text={`${userName} 팀의 초대를 거절했습니다`}
+                  fontSetting="n16m"
+                  isLineBreak
+                />
               ) : (
-                <Text text='상대방이 팀 초대를 거절했습니다' fontSetting="n16m" isLineBreak />
+                <Text
+                  text="상대방이 팀 초대를 거절했습니다"
+                  fontSetting="n16m"
+                  isLineBreak
+                />
               ),
-            }[message]
+            }[message] */}
+          {type && type !== 'NORMAL' ? (
+            {
+              ['RTC_INVITE']: (
+                <ChatBubbleSelect
+                  text={`화상전화 요청`}
+                  funcAccept={() => router.push(`rtc/${roomId}`)}
+                />
+              ),
+            }[type]
           ) : (
             <Text text={message} fontSetting="n16m" isLineBreak />
           )}

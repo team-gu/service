@@ -7,6 +7,7 @@ import Footer from './Footer';
 import Layout from './Layout';
 import LookupLayout from './LookupLayout';
 import UserDetail from './UserDetail';
+import OtherUserDetail from './OtherUserDetail';
 import LineBackground from './LineBackground';
 import LoginComponent from './LoginComponent';
 import ModalWrapper from './Modal/ModalWrapper';
@@ -16,6 +17,8 @@ import TeamStatus from './TeamStatus';
 import TeamManageModal from './TeamManageModal';
 import AdminMenuSidebarLeft from './AdminMenuSidebarLeft';
 import AdminLayout from './AdminLayout';
+import UserStatus from './UserStatus';
+import UserStatusCard from './UserStatusCard';
 
 export {
   ChatList,
@@ -27,6 +30,7 @@ export {
   Layout,
   LookupLayout,
   UserDetail,
+  OtherUserDetail,
   LineBackground,
   LoginComponent,
   ModalWrapper,
@@ -36,4 +40,6 @@ export {
   TeamManageModal,
   AdminMenuSidebarLeft,
   AdminLayout,
+  UserStatus,
+  UserStatusCard,
 };

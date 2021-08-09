@@ -1,8 +1,8 @@
 import { ReactElement } from 'react';
-import { Icon } from '@atoms';
-import { SkillSelectAutoComplete } from '@molecules';
-import { useAuthState } from '@store';
 import styled from 'styled-components';
+import { Icon } from '@atoms';
+import { SkillSelectAutoComplete, Label } from '@molecules';
+import { useAuthState } from '@store';
 
 interface Project {
   name: string;
@@ -58,19 +58,35 @@ const Introduction = styled.div`
   }
 `;
 
+const StyledLabel = styled(Label)`
+  margin-left: 50px;
+`;
+
 const Manifesto = styled.div`
   p {
     font-size: 20px;
     font-weight: 600;
     line-height: 1.4;
-    margin: 50px;
     width: 80%;
     & + * {
       margin-top: 1em;
     }
-    .track {
-      width: 30%;
-    }
+  }
+  .basicInfo {
+    margin: 50px;
+  }
+  .track {
+    margin: 50px;
+  }
+  .position {
+    margin: 50px;
+  }
+  .skills {
+    margin: 50px;
+    width: 50%;
+  }
+  .introduce {
+    margin: 50px;
   }
 `;
 
@@ -81,6 +97,8 @@ const Portrait = styled.div`
   img {
     width: 70%;
     margin-top: 15vh;
+    border: 2px solid gray;
+    border-radius: 50%;
   }
 `;
 
@@ -110,7 +128,6 @@ const Projects = styled.div`
 `;
 
 const Awards = styled.div`
-  grid-column: span 3;
   display: grid;
   grid-gap: 20px;
   grid-template-columns: 1fr 1fr 1fr;
@@ -132,6 +149,7 @@ const Awards = styled.div`
 `;
 
 const Project = styled.div`
+  position: relative;
   border: 1px solid #eaeaea;
   padding: 24px;
   border-radius: 5px;
@@ -151,9 +169,13 @@ const Project = styled.div`
     font-size: 10px;
     margin-bottom: 16px;
   }
+  .introduce {
+    position: absolute;
+  }
 `;
 
 const Award = styled.div`
+  position: relative;
   border: 1px solid #eaeaea;
   padding: 24px;
   border-radius: 5px;
@@ -180,11 +202,6 @@ const Award = styled.div`
   }
 `;
 
-const SkillSet = styled.div`
-  margin: 50px;
-  width: 50%;
-`;
-
 const getStudentClass = (ID: string) => {
   if (ID[0] !== '0') return ID.slice(0, 2);
   return ID[1];
@@ -198,7 +215,7 @@ const getStudentRegion = (ID: string) => {
 const getSkills = (skills: string[]) => {
   return skills.map((skill) => {
     return {
-      name: skill,
+      codeName: skill,
     };
   });
 };
@@ -216,26 +233,37 @@ export default function MyDetail({ changeEditMode }: any): ReactElement {
     <Wrapper>
       <Icons>
         <Icon iconName="edit" color="black" func={changeEditMode} />
-        <Icon iconName="person_add_alt" color="black" />
-        <Icon iconName="chat" color="black" />
-        <Icon iconName="call" color="black" />
       </Icons>
       <Introduction>
         <Manifesto>
-          <p>{`${getStudentRegion(user.studentNumber)} ${getStudentClass(
-            user.studentNumber,
-          )}반 ${user.name}`}</p>
-          <div>
-            <p className="track">{user.wishTrack.join(', ')}</p>
-            <p>{user.wishPositionCode}</p>
+          <div className="basicInfo">
+            <p>{`${getStudentRegion(user.studentNumber)} ${getStudentClass(
+              user.studentNumber,
+            )}기 ${user.name}`}</p>
           </div>
-          <SkillSet>
-            <SkillSelectAutoComplete
-              value={getSkills(user.skills)}
-              disabled={true}
-            />
-          </SkillSet>
-          <p>{user.introduce}</p>
+          <div className="track">
+            <Label text="트랙">
+              <p>{user.wishTrack.join(', ')}</p>
+            </Label>
+          </div>
+          <div className="position">
+            <StyledLabel text="포지션">
+              <p>{user.wishPositionCode}</p>
+            </StyledLabel>
+          </div>
+          <div className="skills">
+            <Label text="사용 기술">
+              <SkillSelectAutoComplete
+                value={getSkills(user.skills)}
+                disabled={true}
+              />
+            </Label>
+          </div>
+          <div className="introduce">
+            <Label text="자기 소개">
+              <p>{user.introduce}</p>
+            </Label>
+          </div>
         </Manifesto>
         <Portrait>
           <img
@@ -248,14 +276,14 @@ export default function MyDetail({ changeEditMode }: any): ReactElement {
       <div className="name">프로젝트</div>
       <Projects>
         {user.projects.length ? (
-          user.projects.map(({ name, position, url, introduce }: any) => (
+          user.projects.map(({ id, name, position, url, introduce }: any) => (
             <a href={url}>
-              <Project>
+              <Project key={id}>
                 <div className="top">
                   <p>{name}</p>
                   <p>{position}</p>
                 </div>
-                <div>{introduce}</div>
+                <div className="introduce">{introduce}</div>
               </Project>
             </a>
           ))
@@ -266,8 +294,8 @@ export default function MyDetail({ changeEditMode }: any): ReactElement {
       <div className="name">수상경력</div>
       <Awards>
         {user.awards.length ? (
-          user.awards.map(({ agency, date, name, introduce }: any) => (
-            <Award>
+          user.awards.map(({ id, agency, date, name, introduce }: any) => (
+            <Award key={id}>
               <div className="top">
                 <p>{agency}</p>
                 <p>{name}</p>

@@ -5,9 +5,10 @@ import { useAppDispatch, removeModal } from '@store';
 interface ModalWrapperProps {
   modalName: string;
   children: ReactElement;
+  zIndex?: number;
 }
 
-const Background = styled.div`
+const Background = styled.div<{ zIndex: number }>`
   position: fixed;
   left: 0;
   top: 0;
@@ -15,10 +16,11 @@ const Background = styled.div`
   height: 100%;
   overflow: none;
   background-color: rgba(0, 0, 0, 0.4);
-  z-index: 999;
+
+  ${({ zIndex }) => 'z-index: ' + zIndex}
 `;
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<{ zIndex: number }>`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -29,7 +31,8 @@ const Wrapper = styled.div`
   left: 0;
   overflow: auto;
   outline: none;
-  z-index: 1000;
+
+  ${({ zIndex }) => 'z-index: ' + (zIndex + 1)}
 `;
 
 const Content = styled.div`
@@ -48,6 +51,7 @@ const Content = styled.div`
 export default function ModalWrapper({
   modalName,
   children,
+  zIndex = 999,
 }: ModalWrapperProps): ReactElement {
   const dispatch = useAppDispatch();
   const handleCloseModal = (e: ChangeEvent<HTMLInputElement>) => {
@@ -58,8 +62,8 @@ export default function ModalWrapper({
 
   return (
     <>
-      <Background />
-      <Wrapper tabIndex={-1} onClick={() => handleCloseModal}>
+      <Background zIndex={zIndex} />
+      <Wrapper tabIndex={-1} zIndex={zIndex} onClick={handleCloseModal}>
         <Content tabIndex={0}>{children}</Content>
       </Wrapper>
     </>

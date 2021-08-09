@@ -17,7 +17,9 @@ function MyApp({ Component, pageProps }: AppProps) {
         <Layout>
           <Component {...pageProps} />
         </Layout>
-        <Modal modalName={MODALS.ALERT_MODAL} />
+        {Object.keys(MODALS).map((each, idx) => (
+          <Modal modalName={MODALS[each]} key={idx} />
+        ))}
         <Spinner />
       </ThemeProvider>
     </Provider>

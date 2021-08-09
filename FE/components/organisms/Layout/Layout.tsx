@@ -27,7 +27,12 @@ export default function Layout({ children }: LayoutProps) {
 
   useEffect(() => {
     const path = router.route;
-    const requireAuthPath = ['/rtc', '/team', '/humanpool', '/userdetail'];
+    const requireAuthPath = [
+      '/team',
+      '/humanpool',
+      '/userdetail',
+      `/userdetail/${/\d+/}`,
+    ];
     const isNotLogIn = !id || id === 0;
     const isRequireAuthPath = requireAuthPath.some((p) => path.startsWith(p));
 
@@ -60,7 +65,7 @@ export default function Layout({ children }: LayoutProps) {
             }}
           >
             {children}
-            {isChatOpen && <ChatRoute />}
+            {isChatOpen && id !== 0 && <ChatRoute />}
             {id !== 0 && (
               <FloatingButton
                 func={() => dispatch(setChatOpen({ isChatOpen: true }))}

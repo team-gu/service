@@ -7,5 +7,4 @@ import com.teamgu.database.entity.ProjectDetail;
 
 @Repository
 public interface ProjectDetailRepository extends JpaRepository<ProjectDetail, Long>  {
-
 }

@@ -9,8 +9,8 @@ export interface Member {
 }
 
 export interface Skill {
-  id: number;
-  name: string;
+  code: number;
+  codeName: string;
   backgroundColor?: string;
   color?: string;
 }
@@ -20,12 +20,12 @@ export interface Team {
   name: string;
   introduce: string;
 
-  completeYN: number;
+  completeYn: number;
   nowNumber: number;
   maxNumber: number;
 
   leaderId: number;
-  trackName: string;
+  track: { code: number; codeName: string };
 
   skills: Skill[];
   teamMembers: Member[];
@@ -44,4 +44,22 @@ export interface Project {
   activateDate: DateTime;
   startDate: DateTime;
   endDate: DateTime;
+}
+
+export interface ProjectModalType {
+  userId?: number;
+  id: number | null;
+  name: string | null;
+  position: string | null;
+  url: string | null;
+  introduce: string | null;
+}
+
+export interface AwardModalType {
+  userId?: number;
+  id: number | null;
+  agency: string;
+  date: string;
+  name: string;
+  introduce: string;
 }

@@ -1,4 +1,4 @@
-import { ReactElement, useState, useEffect, useRef, ChangeEvent } from 'react';
+import { ReactElement, useState, useRef } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 
@@ -42,6 +42,28 @@ const Wrapper = styled(motion.div)`
     i {
       cursor: pointer;
     }
+
+    div {
+      cursor: default;
+      user-select: none;
+    }
+  }
+
+  div {
+    ::-webkit-scrollbar {
+      background-color: white;
+      width: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background-color: white;
+    }
+    ::-webkit-scrollbar-thumb {
+      background-color: ${({
+        theme: {
+          colors: { gray },
+        },
+      }) => gray};
+    }
   }
 `;
 
@@ -50,29 +72,38 @@ const CHAT_ROOM = 1;
 
 export default function ChatRoute(): ReactElement {
   const dispatch = useAppDispatch();
-  const [room_id, setRoomId] = useState(0);
+  const [room_id, setRoomId] = useState<number>(0);
+  const [roomName, setRoomName] = useState<string>('');
+
   const [route, setRoute] = useState(CHAT_LIST);
 
-  const { handleSendMessage, messageList, setMessageList, isConnectStomp } =
-    useSockStomp({
-      room_id,
-    });
+  const {
+    handleSendMessage,
+    handleSendRtcLink,
+    messageList,
+    setMessageList,
+    isConnectStomp,
+  } = useSockStomp({
+    room_id,
+  });
 
   const wrapperRef: any = useRef<HTMLInputElement>(null);
 
-  function handleClickOutside({ target }: ChangeEvent<HTMLInputElement>) {
-    if (!wrapperRef.current?.contains(target)) {
-      dispatch(setChatOpen({ isChatOpen: false }));
-    }
-  }
+  // function handleClickOutside({ target }: ChangeEvent<HTMLInputElement>) {
+  //   if (!wrapperRef.current?.contains(target)) {
+  //     dispatch(setChatOpen({ isChatOpen: false }));
+  //   }
+  // }
 
-  useEffect(() => {
-    document.addEventListener('click', handleClickOutside, true);
-    return () => document.removeEventListener('click', handleClickOutside, true);
-  }, []);
+  // useEffect(() => {
+  //   document.addEventListener('click', handleClickOutside, true);
+  //   return () =>
+  //     document.removeEventListener('click', handleClickOutside, true);
+  // }, []);
 
-  const handleToChatRoom = async (id: number) => {
+  const handleToChatRoom = async (id: number, room_name: string) => {
     await setRoomId(id);
+    setRoomName(room_name);
     setRoute(CHAT_ROOM);
   };
 
@@ -95,7 +126,18 @@ export default function ChatRoute(): ReactElement {
       ref={wrapperRef}
     >
       <div className="header">
-        <Text text="채팅 목록" fontSetting="n16b" color="white" />
+        {route === CHAT_LIST ? (
+          <Text text="채팅 목록" fontSetting="n16b" color="white" />
+        ) : (
+          <>
+            <Icon
+              iconName="arrow_back"
+              color="white"
+              func={() => setRoute(CHAT_LIST)}
+            />
+            <Text text={roomName} fontSetting="n16b" color="white" />
+          </>
+        )}
         <Icon
           iconName="close"
           color="white"
@@ -104,13 +146,19 @@ export default function ChatRoute(): ReactElement {
       </div>
       {
         {
-          [CHAT_LIST]: <ChatList func={handleToChatRoom} />,
+          [CHAT_LIST]: (
+            <ChatList
+              handleToChatRoom={handleToChatRoom}
+              handleSendRtcLink={handleSendRtcLink}
+            />
+          ),
           [CHAT_ROOM]: (
             <ChatRoom
               isConnectStomp={isConnectStomp}
               messageList={messageList}
               setMessageList={setMessageList}
               handleClickSend={handleClickSend}
+              roomId={room_id}
             />
           ),
         }[route]

@@ -1,7 +1,6 @@
 package com.teamgu.database.repository;
 
 import com.teamgu.api.dto.req.UserPoolReqDto;
-import com.teamgu.database.entity.CodeDetail;
 import io.micrometer.core.instrument.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
@@ -9,14 +8,13 @@ import org.springframework.util.CollectionUtils;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
-import java.util.HashMap;
 import java.util.List;
 
 public class UserPoolRepositoryImpl implements UserPoolRepositoryCustom {
 
     private static short majorCode;
     private static int prjCode;
-    private static String name, sort, stage;
+    private static String name, sort, stage, studentNum;
     private static List<Integer> regList, posList, trkList, skList;
 
     @Autowired
@@ -27,6 +25,7 @@ public class UserPoolRepositoryImpl implements UserPoolRepositoryCustom {
 
     @Override
     public List<Object[]> findUsersByFilter(UserPoolReqDto userPoolReqDto) {
+        studentNum = userPoolReqDto.getStudentNumber(); //무조건 들어와야하는 값
         prjCode = userPoolReqDto.getProject(); //무조건 들어와야하는 값
         stage = userPoolReqDto.getStudentNumber().substring(0, 2); //무조건 들어와야하는 값
 
@@ -46,27 +45,11 @@ public class UserPoolRepositoryImpl implements UserPoolRepositoryCustom {
         return getList(whereStmt, orderStmt, havingStmt);
     }
 
-    @Override
-    public HashMap<String, String> getCodeDetail() {
-        HashMap<String, String> retHash = new HashMap<>();
-        List<CodeDetail> sklList = codeDetailRepository.getSklCodeDetail();
-        List<CodeDetail> trkList = codeDetailRepository.getTrkCodeDetail();
-
-        for (CodeDetail elem : sklList) {
-            retHash.put("SK" + elem.getCodeDetail(), elem.getName());
-        }
-
-        for (CodeDetail elem : trkList) {
-            retHash.put("TR" + elem.getCodeDetail(), elem.getName());
-        }
-
-        return retHash;
-    }
-
     private String makeWhere() {
-        StringBuilder sb = new StringBuilder("where pd.project_code = " + prjCode);
+        StringBuilder sb = new StringBuilder("where pd.project_code = " + prjCode + " and ut.team_id is null");
 
         sb.append(" and (u.student_number like '" + stage + "%')");
+        sb.append(" and (u.student_number != '" + studentNum + "')");
 
         if (!CollectionUtils.isEmpty(regList)) { //지역
             sb.append(" and (");
@@ -144,6 +127,7 @@ public class UserPoolRepositoryImpl implements UserPoolRepositoryCustom {
     private List<Object[]> getList(String whereStmt, String orderStmt, String havingStmt) {
         StringBuilder jpql = new StringBuilder();
         EntityManager em = emf.createEntityManager();
+        List<Object[]> res = null;
 
         jpql.append("select u.id as id, u.name as name, u.introduce, u.profile_server_name, u.profile_extension, group_concat(m.track_code) as wish_track, gs").append(" ");
         jpql.append("from project_detail pd").append(" ");
@@ -152,11 +136,16 @@ public class UserPoolRepositoryImpl implements UserPoolRepositoryCustom {
         jpql.append("left join wish_track wt on u.id = wt.user_id").append(" ");
         jpql.append("left outer join mapping m on wt.mapping_id = m.id").append(" ");
         jpql.append("left outer join (select s.user_id, group_concat(s.skill_code) as gs from skill s group by s.user_id) as b on u.id = b.user_id").append(" ");
+        jpql.append("left outer join user_team ut on u.id = ut.user_id").append(" ");
         jpql.append(whereStmt).append(" ");
         jpql.append("group by u.id, u.name").append(" ");
         jpql.append(havingStmt).append(" ");
         jpql.append(orderStmt);
+        
+        res = em.createNativeQuery(jpql.toString()).getResultList();
 
-        return em.createNativeQuery(jpql.toString()).getResultList();
+        em.close();
+
+        return res;
     }
 }

@@ -16,7 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
+import java.util.List;
 
 @Api(value = "인력풀 API", tags = {"UserPool."})
 @RestController
@@ -38,13 +38,13 @@ public class UserPoolController {
     public ResponseEntity<? extends BasicResponse> searchUserPool(
             @RequestBody @ApiParam(value = "검색 필터 데이터", required = true) UserPoolReqDto userPoolReqDto
     ) {
-        HashMap<Long, UserPoolResDto> oFilteredList = userPoolService.findUsersByFilter(userPoolReqDto);
+        List<UserPoolResDto> oFilteredList = userPoolService.findUsersByFilter(userPoolReqDto);
 
         if(CollectionUtils.isEmpty(oFilteredList)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new ErrorResponse("일치하는 유저가 없습니다"));
         }
 
-        return ResponseEntity.ok(new CommonResponse<HashMap<Long, UserPoolResDto>>(oFilteredList));
+        return ResponseEntity.ok(new CommonResponse<List<UserPoolResDto>>(oFilteredList));
     }
 }

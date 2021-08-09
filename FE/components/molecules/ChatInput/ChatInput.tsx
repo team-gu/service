@@ -1,65 +1,130 @@
-import { ReactElement, useRef, useEffect, KeyboardEvent } from 'react';
+import {
+  ReactElement,
+  useRef,
+  useState,
+  useEffect,
+  KeyboardEvent,
+} from 'react';
 import styled from 'styled-components';
 import { Button } from '@molecules';
-import { Input } from '@atoms';
+import { Textarea, Text } from '@atoms';
 
 interface ChatInputProps {
   func: (data: string) => Promise<void>;
 }
 
 const Wrapper = styled.div`
-  ${({ theme: { flexRow } }) => flexRow()}
-  > div > input {
-    position: absolute;
-    top: -2px;
+  ${({ theme: { flexCol } }) => flexCol()}
 
-    width: calc(100% - 15px);
-    height: 37px;
+  .container {
+    ${({ theme: { flexCol } }) => flexCol()}
 
-    z-index: 0;
+    width: 100%;
+    height: 100%;
 
-    padding: 0 10px;
+    border-radius: 5px;
+    border: 1px solid black;
 
-    border-right-color: transparent;
-    border-radius: 10px;
+    > textarea {
+      width: calc(100% - 15px);
 
-    ${({
-      theme: {
-        font: { n16r },
-      },
-    }) => n16r}
+      z-index: 0;
+
+      padding: 5px 5px;
+
+      white-space: pre;
+
+      resize: none;
+      border: none;
+      outline: 0px none transparent;
+
+      ${({
+        theme: {
+          font: { n12m },
+        },
+      }) => n12m}
+    }
   }
-  > button {
-    z-index: 1;
-    box-shadow: none;
-    border-radius: 0 10px 10px 0;
+  .bottom {
+    position: relative;
+
+    height: 20px;
+    width: 100%;
+
+    > div:first-child {
+      position: absolute;
+      right: 50px;
+      bottom: 5px;
+    }
+    > button {
+      position: absolute;
+      right: 5px;
+      bottom: 5px;
+
+      height: 20px;
+
+      > div {
+        ${({
+          theme: {
+            font: { n10m },
+          },
+        }) => n10m}
+      }
+
+      z-index: 1;
+      box-shadow: none;
+      border-radius: 5px;
+    }
   }
 `;
 
 export default function ChatInput({ func }: ChatInputProps): ReactElement {
   const chatInputRef: any = useRef<HTMLInputElement>(null);
+  const [message, setMessage] = useState<string>('');
 
   const handleSend = async () => {
-    if (chatInputRef.current.value === '') return;
-    await func(chatInputRef.current.value);
-    chatInputRef.current.value = '';
+    if (message.length === 0) return;
+    await func(message);
+    setMessage('');
   };
 
   useEffect(() => {
     chatInputRef.current.focus();
   }, []);
 
+  console.log(message);
+
   return (
     <Wrapper>
-      <Input
-        ref={chatInputRef}
-        onKeyPress={({ key }: KeyboardEvent<HTMLDivElement>) =>
-          key === 'Enter' && handleSend()
-        }
-        width="100%"
-        height="35px"
-      />
-      <Button title="전송" func={() => handleSend()} width="50px" />
+      <div className="container">
+        <Textarea
+          ref={chatInputRef}
+          value={message}
+          onKeyPress={(e: KeyboardEvent<HTMLDivElement>) => {
+            if (e.key == 'Enter' && e.shiftKey) {
+              e.preventDefault();
+              return setMessage((prev) => prev + '\n');
+            }
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              handleSend();
+            }
+          }}
+          onChange={({ target: { value } }: KeyboardEvent<HTMLDivElement>) =>
+            setMessage(value)
+          }
+          maxLength={119}
+          resize="none"
+        />
+        <div className="bottom">
+          <Text
+            text={message.length + ' / 120'}
+            fontSetting="n12m"
+            color="gray"
+          />
+          <Button title="전송" func={() => handleSend()} width="40px" />
+        </div>
+      </div>
     </Wrapper>
   );
 }

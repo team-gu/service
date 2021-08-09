@@ -1,5 +1,11 @@
 import { ReactElement, useState, useEffect } from 'react';
-import { OpenVidu, Session, Subscriber, Publisher } from 'openvidu-browser';
+import {
+  OpenVidu,
+  Session,
+  Subscriber,
+  Publisher,
+  StreamManager,
+} from 'openvidu-browser';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
 import axios from 'axios';
@@ -14,7 +20,7 @@ import {
 } from '../webrtc';
 import { useAuthState } from '@store';
 
-var OpenViduBrowser: any;
+var OpenViduBrowser: typeof import('/Users/minho/Workspace/fe/FE/node_modules/openvidu-browser/lib/index');
 
 const Wrapper = styled.div`
   margin: 30px 10px;
@@ -78,22 +84,25 @@ export default function VideoChat(): ReactElement {
   const [publisher, setPublisher] = useState<Publisher>();
   const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
   const [isConfigModalShow, setIsConfigModalShow] = useState<boolean>(true);
-  const [userDevice, setUserDevice] = useState<UserDevice>({ mic: undefined, cam: undefined });
+  const [userDevice, setUserDevice] = useState<UserDevice>({
+    mic: undefined,
+    cam: undefined,
+  });
 
   const [micOn, setMicOn] = useState(false);
   const [camOn, setCamOn] = useState(false);
   const [chatShow, setChatShow] = useState(false);
 
-  const { user } = useAuthState();
-  const name = user.name;
-  const myUserName = name ? name : 'MeetInSsafy';
-  const mySessionId = `session_of_${myUserName}`;
-  const sessionTitle = `[${myUserName}]님의 세션`;
+  const {
+    user: { name },
+  } = useAuthState();
+
+  const myUserName = name ? name : 'unknown';
+  const mySessionId = router.query.id;
+  const sessionTitle = `세션에 입장합니다...`;
 
   // React Lifecycle Hook
   useEffect(() => {
-    // componentDidMount
-    window.addEventListener('beforeunload', onbeforeunload);
     // Dynamic module import
     importOpenVidu().then((ob) => {
       OpenViduBrowser = ob;
@@ -102,74 +111,15 @@ export default function VideoChat(): ReactElement {
 
     // componentWillUnmount
     return () => {
-      window.removeEventListener('beforeunload', onbeforeunload);
-      clear();
+      leaveSession();
     };
   }, []);
 
-  const importOpenVidu = () => {
-    return new Promise<any>((resolve, reject) => {
-      import('openvidu-browser')
-        .then((ob) => {
-          resolve(ob);
-        })
-        .catch((error) => {
-          console.log('openvidu import error: ', error.code, error.message);
-          reject();
-        });
-    });
-  };
-
-  const onbeforeunload = () => {
-    leaveSession();
-  };
-
-  const deleteSubscriber = (streamManager: Subscriber) => {
-    let subs = subscribers;
-    let index = subscribers.indexOf(streamManager, 0);
-    if (index > -1) {
-      subs.splice(index, 1);
-      setSubscribers([...subs]);
-    }
-  };
-
-  const clear = () => {
-    setOV(new OpenViduBrowser.OpenVidu());
-    setSession(undefined);
-    setPublisher(undefined);
-    setSubscribers([]);
-    setUserDevice({ mic: '', cam: '' });
-    setMicOn(false);
-    setCamOn(false);
-  };
-
-  const handlerConfigModalCloseBtn = () => {
-    setPublisher(undefined);
-    setIsConfigModalShow(false);
-    console.log('Config cancel. Redirect previous page.');
-    router.back();
-  };
-
-  const handlerJoinBtn = (
-    micSelected: string | undefined,
-    camSelected: string | undefined,
-    micState: boolean,
-    camState: boolean,
-  ) => {
-    if (micSelected && camSelected) {
-      
-    }
-    setUserDevice({
-      mic: micSelected,
-      cam: camSelected,
-    });
-
-    setMicOn(micState);
-    setCamOn(camState);
-
-    setIsConfigModalShow(false);
-    setSession(OV?.initSession());
-  };
+  useEffect(() => {
+    return () => {
+      allTrackOff(publisher);
+    };
+  }, [publisher]);
 
   // 'session' hook
   useEffect(() => {
@@ -214,9 +164,9 @@ export default function VideoChat(): ReactElement {
         mySession.connect(token, { clientData: myUserName }).then(() => {
           if (!OV) return;
 
-          let publisher = OV.initPublisher('', {
+          let pub = OV.initPublisher('', {
             audioSource: userDevice.mic ? userDevice.mic : false,
-            videoSource: userDevice.cam ? userDevice.cam : false,
+            videoSource: userDevice.cam && camOn ? userDevice.cam : false,
             publishAudio: micOn,
             publishVideo: camOn,
             resolution: '640x480',
@@ -224,9 +174,9 @@ export default function VideoChat(): ReactElement {
             mirror: true,
           });
 
-          mySession.publish(publisher);
-
-          setPublisher(publisher);
+          mySession.publish(pub).then(() => {
+            setPublisher(pub);
+          });
         });
       })
       .catch((error) => {
@@ -238,6 +188,65 @@ export default function VideoChat(): ReactElement {
       });
   }, [session]);
 
+  const importOpenVidu = () => {
+    return new Promise<any>((resolve, reject) => {
+      import('openvidu-browser')
+        .then((ob) => {
+          resolve(ob);
+        })
+        .catch((error) => {
+          console.log('openvidu import error: ', error.code, error.message);
+          reject();
+        });
+    });
+  };
+
+  const deleteSubscriber = (streamManager: Subscriber) => {
+    let subs = subscribers;
+    let index = subscribers.indexOf(streamManager, 0);
+    if (index > -1) {
+      subs.splice(index, 1);
+      setSubscribers([...subs]);
+    }
+  };
+
+  const clear = () => {
+    setOV(undefined);
+    setSession(undefined);
+    setPublisher(undefined);
+    setSubscribers([]);
+    setUserDevice({ mic: '', cam: '' });
+    setMicOn(false);
+    setCamOn(false);
+  };
+
+  const handlerConfigModalCloseBtn = () => {
+    setPublisher(undefined);
+    setIsConfigModalShow(false);
+    console.log('Device Config cancel. Redirect to home.');
+    router.push('/');
+  };
+
+  const handlerJoinBtn = (
+    micSelected: string | undefined,
+    camSelected: string | undefined,
+    micState: boolean,
+    camState: boolean,
+  ) => {
+    if (micSelected && camSelected) {
+    }
+    setUserDevice({
+      mic: micSelected,
+      cam: camSelected,
+    });
+
+    setMicOn(micState);
+    setCamOn(camState);
+
+    setIsConfigModalShow(false);
+    setSession(OV?.initSession());
+  };
+
   const leaveSession = () => {
     const mySession = session;
     if (mySession) {
@@ -247,9 +256,19 @@ export default function VideoChat(): ReactElement {
   };
 
   const getToken = () => {
-    return createSession(mySessionId).then((sessionId) =>
-      createToken(sessionId),
-    );
+    if (mySessionId) {
+      if (typeof mySessionId === 'object') {
+        return createSession(mySessionId[0]).then((sessionId) =>
+          createToken(sessionId),
+        );
+      } else {
+        return createSession(mySessionId).then((sessionId) =>
+          createToken(sessionId),
+        );
+      }
+    } else {
+      throw 'No Session Id';
+    }
   };
 
   const createSession = (sessionId: string) => {
@@ -293,22 +312,69 @@ export default function VideoChat(): ReactElement {
 
   const handleVideoStateChanged = () => {
     if (userDevice.cam) {
-      publisher?.publishVideo(!camOn);
-      setCamOn(!camOn);
-    }    
-  }
+      republish(!camOn);
+    }
+  };
 
   const handleAudioStateChanged = () => {
     if (userDevice.mic) {
       publisher?.publishAudio(!micOn);
       setMicOn(!micOn);
     }
-  }
+  };
+
+  const videoTrackOff = (sm: StreamManager | undefined) => {
+    if (sm) {
+      sm.stream
+        .getMediaStream()
+        .getVideoTracks()
+        .map((m) => {
+          m.enabled = false;
+          m.stop();
+        });
+    }
+  };
+
+  const allTrackOff = (sm: StreamManager | undefined) => {
+    if (sm) {
+      sm.stream
+        .getMediaStream()
+        .getTracks()
+        .map((m) => {
+          m.enabled = false;
+          m.stop();
+        });
+    }
+  };
+
+  const republish = async (newCamOnState: boolean) => {
+    if (!OV || !session) return;
+
+    if (publisher) {
+      await session.unpublish(publisher);
+    }
+
+    let newPublisher = OV.initPublisher('', {
+      audioSource: userDevice.mic ? userDevice.mic : false,
+      videoSource: userDevice.cam && newCamOnState ? userDevice.cam : false,
+      publishAudio: micOn,
+      publishVideo: newCamOnState,
+      resolution: '640x480',
+      frameRate: 30,
+      mirror: true,
+    });
+
+    session.publish(newPublisher).then(() => {
+      setPublisher(newPublisher);
+      newPublisher?.publishVideo(newCamOnState);
+      setCamOn(newCamOnState);
+    });
+  };
 
   const handleClickExit = () => {
+    videoTrackOff(publisher);
     leaveSession();
-    clear();
-    setIsConfigModalShow(true);
+    router.push('/');
   };
 
   const handleClickScreenShare = () => {

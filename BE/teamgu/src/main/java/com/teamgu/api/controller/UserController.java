@@ -16,7 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.teamgu.api.dto.req.PasswordReqDto;
 import com.teamgu.api.dto.req.UserInfoReqDto;
+import com.teamgu.api.dto.res.BasicResponse;
+import com.teamgu.api.dto.res.CommonResponse;
 import com.teamgu.api.dto.res.UserInfoAwardResDto;
 import com.teamgu.api.dto.res.UserInfoProjectResDto;
 import com.teamgu.api.dto.res.UserInfoResDto;
@@ -35,27 +38,27 @@ public class UserController {
 	@Autowired
 	UserServiceImpl userService;
 
-//	@PostMapping("/password")
-//	@ApiOperation(value = "비밀번호 변경", notes = "비밀번호를 변경한다.")
-//	public ResponseEntity<BaseResDto> setPassword(
-//			@RequestBody @ApiParam(value = "비밀번호", required = true) PasswordReqDto password) {
-//		userService.setPassward(password);
-//		return ResponseEntity.ok(new BaseResDto(200, "Success"));
-//	}
+	@PutMapping("/password")
+	@ApiOperation(value = "비밀번호 변경", notes = "비밀번호를 변경한다.")
+	public ResponseEntity<? extends BasicResponse> setPassword(
+			@RequestBody @ApiParam(value = "비밀번호", required = true) PasswordReqDto password) {
+		userService.setPassward(password);
+		return ResponseEntity.ok(new CommonResponse<String>("비밀번호 변경 완료"));
+	}
 
 	@ApiOperation(value = "사용자 상세정보 조회", notes = "마이페이지에서 사용자 상세정보를 조회한다.")
-	@GetMapping("/userInfo")
+	@GetMapping("/userInfo/{userId}")
 	public ResponseEntity<UserInfoResDto> getUserDetailInfo(
-			@RequestParam @ApiParam(value = "이메일", required = true) String email) {
-		return ResponseEntity.ok(userService.getUserDetailInfo(email));
+			@PathVariable Long userId) {
+		return ResponseEntity.ok(userService.getUserDetailInfo(userId));
 	}
 
 	@ApiOperation(value = "사용자 상세정보 입력/ 수정", notes = "사용자 상세정보를 입력, 수정한다.")
 	@PutMapping("/userInfo")
-	public ResponseEntity<String> updateUserDetailInfo(
+	public ResponseEntity<UserInfoResDto> updateUserDetailInfo(
 			@RequestBody @ApiParam(value = "마이페이지 정보", required = true) UserInfoReqDto userInfoReq) {
 		userService.updateUserDetailInfo(userInfoReq);
-		return new ResponseEntity<String>("SUCCESS", HttpStatus.OK);
+		return ResponseEntity.ok(userService.getUserDetailInfo(userInfoReq.getId()));
 	}
 
 	@ApiOperation(value = "유저 프로젝트 입력", notes = "사용자 프로젝트를 입력", response = String.class)

@@ -4,11 +4,15 @@ import { MODALS } from '@utils/constants';
 interface ModalState {
   // TODO: 타입 정의
   [MODALS.ALERT_MODAL]: boolean;
-  content?: string;
+  [MODALS.PROJECT_MODAL]: boolean;
+  [MODALS.AWARD_MODAL]: boolean;
+  content?: any;
 }
 
 const initialState: ModalState = {
   [MODALS.ALERT_MODAL]: false,
+  [MODALS.PROJECT_MODAL]: false,
+  [MODALS.AWARD_MODAL]: false,
   content: '',
 };
 
@@ -20,7 +24,10 @@ const modalReducer = createSlice({
       state,
       {
         payload: { modalName, content },
-      }: PayloadAction<{ modalName: string; content: string }>,
+      }: PayloadAction<{
+        modalName: string;
+        content: any;
+      }>,
     ) {
       // TODO: 타입 정의
       state[modalName] = true;

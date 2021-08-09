@@ -24,6 +24,7 @@ interface InputProps {
   readOnly?: boolean;
   value?: string;
   refValue?: string;
+  accept?: string;
 }
 
 const Wrapper = styled.div<{
@@ -74,6 +75,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       readOnly = false,
       value,
       refValue = '',
+      accept = '',
     }: InputProps,
     ref,
   ): ReactElement => {
@@ -108,6 +110,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           readOnly={readOnly}
           value={value}
           onKeyDown={onKeyDown}
+          accept={accept}
         />
         {error?.split('/')[0] !== '' && <div>{error?.split('/')[0]}</div>}
       </Wrapper>

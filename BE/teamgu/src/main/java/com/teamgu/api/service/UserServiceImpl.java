@@ -150,7 +150,7 @@ public class UserServiceImpl implements UserService {
 		loginRes.setStatusCode(200);
 		loginRes.setMessage("Success");
 		loginRes.setAccessToken(accessToken);
-		loginRes.setUserInfo(getUserDetailInfo(user.getEmail()));
+		loginRes.setUserInfo(getUserDetailInfo(user.getId()));
 		return loginRes;
 	}
 
@@ -198,9 +198,11 @@ public class UserServiceImpl implements UserService {
 
 		Long userId = userInfoReqDto.getId();			
 		User user = getUserById(userId).get();
+		int stageCode = (user.getStudentNumber().charAt(0) - '0') * 10
+				+ user.getStudentNumber().charAt(1) - '0' + 100;
 
 		// Wish Position, Introduce 수정
-		//userRepositorySupport.updateUserDetailInfo(userInfoReqDto);
+		userRepositorySupport.updateUserDetailInfo(userInfoReqDto);
 		
 		/*
 		 * Wish Track 수정
@@ -230,11 +232,8 @@ public class UserServiceImpl implements UserService {
 		for(int i = 0; i<updateWishTracksSize; i++) {
 			if(updateWishTracksCheck[i]) continue;
 			int trackCode = codeDetailRepositorySupport.findTtrackCode(updateWishTracks.get(i));
-			WishTrack wishTrack = new WishTrack();
-			Mapping mapping = mappingRepositorySupport.selectMapping(trackCode);
-			//Mapping mapping = mappingRepository.findByTrackCode(trackCode).get();
+			Mapping mapping = mappingRepositorySupport.selectMapping(trackCode, stageCode);
 			wishTrackRepositorySupport.insertWishTrack(userId, mapping.getId());
-			//wishTrackRepository.save(wishTrack);
 			
 		}
 		
@@ -242,7 +241,9 @@ public class UserServiceImpl implements UserService {
 		for(int i = 0; i<originWishTracksSize; i++) {
 			if(originWishTracksCheck[i]) continue;
 			int trackCode = codeDetailRepositorySupport.findTtrackCode(originWishTracks.get(i));
-			userRepositorySupport.deleteUserWishTrack(userId, trackCode);
+			Mapping mapping = mappingRepositorySupport.selectMapping(trackCode, stageCode);
+
+			userRepositorySupport.deleteUserWishTrack(userId, mapping.getId());
 		}
 		
 		
@@ -275,7 +276,6 @@ public class UserServiceImpl implements UserService {
 			if(updateSkillsCheck[i]) continue;
 			int skillCode = codeDetailRepositorySupport.findSkillCode(updateSkills.get(i));
 			userSkillRepositorySupport.insertSkiil(userId, skillCode);
-			//skillRepository.save(skill);
 		}
 		
 		// originSkillsCheck가 false 이면 삭제된 Skill
@@ -284,42 +284,6 @@ public class UserServiceImpl implements UserService {
 			int skillCode = codeDetailRepositorySupport.findSkillCode(originSkills.get(i));
 			userRepositorySupport.deleteUserSkill(userId, skillCode);
 		}
-		
-		
-//		User user = getUserByEmail(userInfoReq.getEmail()).get();
-//		user.setStudentNumber(userInfoReq.getStudentNumber());
-//		user.setWishPositionCode(userInfoReq.getWishPosition());
-//		System.out.println(userInfoReq.getStudentNumber().substring(1, 2) + "기");
-//		// 학번 입력 받아서 project
-//		int stageCode = codeDetailRepositorySupport.finStageCode(userInfoReq.getStudentNumber().substring(1, 2) + "기");
-//
-//		int projegtCode = projectDetailRepositorySuport.findProjectCode();
-//
-//		// 선호 트랙 저장
-//		List<String> wishTracks = userInfoReq.getWishTrack();
-//		WishTrack wishTrack = new WishTrack();
-//		for (String name : wishTracks) {
-//			wishTrack.setUser(user);
-//			// string to int
-//			int code = codeDetailRepositorySupport.findTtrackCode(name);
-//			wishTrack.setMapping(
-//					Mapping.builder().stageCode(stageCode).projectCode(projegtCode).trackCode(code).build());
-//			wishTrackRepository.save(wishTrack);
-//		}
-//
-//		user.setIntroduce(userInfoReq.getIntroduce());
-//
-//		// 기술 스택 저장
-//		List<String> skills = userInfoReq.getSkill();
-//		Skill skill = new Skill();
-//		for (String name : skills) {
-//			int code = codeDetailRepositorySupport.findSkillCode(name);
-//			skill.setUser(user);
-//			skill.setSkillCode(code);
-//			skillRepository.save(skill);
-//		}
-//
-//		userRepository.save(user);
 	}
 
 	/**
@@ -336,8 +300,8 @@ public class UserServiceImpl implements UserService {
 	 * 마이페이지 데이터 조회 함수
 	 */
 	@Override
-	public UserInfoResDto getUserDetailInfo(String email) {
-		User user = userRepository.findByEmail(email).get();
+	public UserInfoResDto getUserDetailInfo(Long userId) {
+		User user = userRepository.getOne(userId);
 		UserInfoResDto userInfoRes = new UserInfoResDto();
 
 		Long id = user.getId();
@@ -359,7 +323,7 @@ public class UserServiceImpl implements UserService {
 		userInfoRes.setRole(userRole);
 
 		// User 이메일
-		userInfoRes.setEmail(email);
+		userInfoRes.setEmail(user.getEmail());
 
 		// 교육생일 경우만 조회
 		if (userRole == 1) {
