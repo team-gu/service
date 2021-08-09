@@ -103,11 +103,11 @@ export default function TeamStatus(): ReactElement {
   const renderTeams = () => {
     let payloadTemp = {
       project: payload.project,
-      filteredSkills: payload.skills?.map((s) => ({ code: s })),
-      filteredTracks: payload.track?.map((t) => ({ code: t })),
+      filteredSkills: payload.skills?.map((s) => ({ code: s })) || [],
+      filteredTracks: payload.track?.map((t) => ({ code: t })) || [],
       sortBy,
       sortAsc,
-      userId: containsUserId,
+      userId: containsUserId || 0,
       studentNumber,
     };
     console.log(payloadTemp);
