@@ -41,9 +41,8 @@ public class NoticeFileHandler {
 
             //프로젝트 디렉토리 내에 저장하기 위한 절대 경로 설정
             String absolutePath = new File("").getAbsolutePath() + File.separator + File.separator;
-
             //파일 저장할 세부 경로
-            String path = "images" + File.separator + curDate;
+            String path = "notice" + File.separator + curDate;
             File file = new File(path);
 
             //해당 디렉토리 존재 안하면
@@ -57,15 +56,23 @@ public class NoticeFileHandler {
             try {
                 for (MultipartFile multipartFile : multipartFiles) {
                     String[] dotSplitArr = multipartFile.getOriginalFilename().split("\\.");
-                    String originalName = dotSplitArr[0];
-                    String extension = dotSplitArr[1];
-                    String md5Name = new MD5GenUtil(originalName).toString();
+                    int size = dotSplitArr.length;
+                    StringBuilder originalName = new StringBuilder();
+                    String extension = dotSplitArr[size - 1];
+
+                    for(int i = 0; i < size - 1; i++) {
+                        originalName.append(dotSplitArr[i]).append(".");
+                    }
+
+                    originalName.setLength(originalName.length() - 1);
+
+                    String md5Name = new MD5GenUtil(originalName.toString()).toString();
 
                     //여기서 NoticeFileResDto를 만들고
                     //각각의 NoticeFileResDto를 Mapper를 통해 NoticeFile Entity로 변환
                     NoticeFile noticeFile = NoticeFileMapper.INSTANCE.dtoToNoticeFile(
                             NoticeFileResDto.builder()
-                                    .originalName(originalName)
+                                    .originalName(originalName.toString())
                                     .extension(extension)
                                     .name(md5Name)
                                     .registDate(curDate)

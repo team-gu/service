@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.teamgu.api.dto.req.TeamFilterReqDto;
 import com.teamgu.api.dto.req.TeamMemberReqDto;
+import com.teamgu.api.dto.res.TeamIsCreateResDto;
 import com.teamgu.api.dto.res.TeamListResDto;
 
 public interface TeamService {
@@ -45,6 +46,6 @@ public interface TeamService {
 	boolean checkTeamBuilding(Long userId, String trackName);
 
 	// Check Team Building
-	boolean checkTeamBuilding(Long userId, int projectCode);
+	TeamIsCreateResDto checkTeamBuilding(Long userId, int projectCode);
 	
 }

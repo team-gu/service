@@ -16,7 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.teamgu.api.dto.req.PasswordReqDto;
 import com.teamgu.api.dto.req.UserInfoReqDto;
+import com.teamgu.api.dto.res.BasicResponse;
+import com.teamgu.api.dto.res.CommonResponse;
 import com.teamgu.api.dto.res.UserInfoAwardResDto;
 import com.teamgu.api.dto.res.UserInfoProjectResDto;
 import com.teamgu.api.dto.res.UserInfoResDto;
@@ -35,13 +38,13 @@ public class UserController {
 	@Autowired
 	UserServiceImpl userService;
 
-//	@PostMapping("/password")
-//	@ApiOperation(value = "비밀번호 변경", notes = "비밀번호를 변경한다.")
-//	public ResponseEntity<BaseResDto> setPassword(
-//			@RequestBody @ApiParam(value = "비밀번호", required = true) PasswordReqDto password) {
-//		userService.setPassward(password);
-//		return ResponseEntity.ok(new BaseResDto(200, "Success"));
-//	}
+	@PutMapping("/password")
+	@ApiOperation(value = "비밀번호 변경", notes = "비밀번호를 변경한다.")
+	public ResponseEntity<? extends BasicResponse> setPassword(
+			@RequestBody @ApiParam(value = "비밀번호", required = true) PasswordReqDto password) {
+		userService.setPassward(password);
+		return ResponseEntity.ok(new CommonResponse<String>("비밀번호 변경 완료"));
+	}
 
 	@ApiOperation(value = "사용자 상세정보 조회", notes = "마이페이지에서 사용자 상세정보를 조회한다.")
 	@GetMapping("/userInfo/{userId}")

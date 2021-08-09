@@ -20,7 +20,7 @@ public interface NoticeFileMapper {
     NoticeFileMapper INSTANCE = Mappers.getMapper(NoticeFileMapper.class);
 
     //Date -> String 컬럼 변환
-    @Mapping(source = "registDate", target = "registDate", dateFormat = "yyyy.MM.dd")
+    @Mapping(source = "registDate", target = "registDate", dateFormat = "yyyyMMdd")
     NoticeFileResDto noticeFileToDto(NoticeFile noticeFile);
 
     //String -> Date로 변환

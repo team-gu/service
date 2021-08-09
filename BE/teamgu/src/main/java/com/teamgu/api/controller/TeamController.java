@@ -20,6 +20,7 @@ import com.teamgu.api.dto.req.TeamIsCreateReqDto;
 import com.teamgu.api.dto.req.TeamMemberReqDto;
 import com.teamgu.api.dto.res.BasicResponse;
 import com.teamgu.api.dto.res.CommonResponse;
+import com.teamgu.api.dto.res.TeamIsCreateResDto;
 import com.teamgu.api.dto.res.TeamListResDto;
 import com.teamgu.api.service.TeamServiceImpl;
 
@@ -42,12 +43,9 @@ public class TeamController {
 		Long userId = teamIsCreateReqDto.getUserId();
 		int projectCode =teamIsCreateReqDto.getProject().getCode();
 		
-		if(teamService.checkTeamBuilding(userId, projectCode)) {
-			
-			return ResponseEntity.ok().build();
-		}
-		
-		return ResponseEntity.badRequest().build();
+		TeamIsCreateResDto teamIsCreateResDto = teamService.checkTeamBuilding(userId, projectCode);
+
+		return ResponseEntity.ok(new CommonResponse<TeamIsCreateResDto>(teamIsCreateResDto));
 	}
 
 	// 추후 필터 완성시 삭제될 메서드
@@ -125,26 +123,6 @@ public class TeamController {
 		return ResponseEntity.ok(new CommonResponse<TeamListResDto>(team));
 	}
 
-	@ApiOperation(value = "팀장 변경하기")
-	@PutMapping("/member")
-	public ResponseEntity<? extends BasicResponse> changeTeamLeader(@RequestBody TeamMemberReqDto teamMemberReqDto) {
-
-		Long teamId = teamMemberReqDto.getTeamId();
-		Long userId = teamMemberReqDto.getUserId();
-
-		List<Long> ids = teamService.getTeamMemberIdbyTeamId(teamId);
-
-		for (Long id : ids) {
-			if (userId == id) { // 존재하는 멤버일 경우
-				teamService.changeTeamLeader(teamMemberReqDto);
-				TeamListResDto team = teamService.getTeamInfobyTeamId(teamId);
-				return ResponseEntity.ok(new CommonResponse<TeamListResDto>(team));
-			}
-		}
-
-		return ResponseEntity.badRequest().build();
-	}
-
 	@ApiOperation(value = "팀나가기")
 	@PutMapping("/exitTeam")
 	public ResponseEntity<? extends BasicResponse> exitTeam(@RequestBody TeamMemberReqDto teamMemberReqDto) {
@@ -194,7 +172,6 @@ public class TeamController {
 		return ResponseEntity.badRequest().build();
 	}
 	
-//
 //	@ApiOperation(value = "팀 구성 완료하기")
 //	@GetMapping("/complete/{teamId}")
 //	public ResponseEntity<? extends BasicResponse> completeTeamBuilding(@PathVariable Long teamId) {
@@ -204,4 +181,24 @@ public class TeamController {
 //		return ResponseEntity.ok(new CommonResponse<TeamListResDto>(team));
 //	}
 
+//	@ApiOperation(value = "팀장 변경하기")
+//	@PutMapping("/member")
+//	public ResponseEntity<? extends BasicResponse> changeTeamLeader(@RequestBody TeamMemberReqDto teamMemberReqDto) {
+//
+//		Long teamId = teamMemberReqDto.getTeamId();
+//		Long userId = teamMemberReqDto.getUserId();
+//
+//		List<Long> ids = teamService.getTeamMemberIdbyTeamId(teamId);
+//
+//		for (Long id : ids) {
+//			if (userId == id) { // 존재하는 멤버일 경우
+//				teamService.changeTeamLeader(teamMemberReqDto);
+//				TeamListResDto team = teamService.getTeamInfobyTeamId(teamId);
+//				return ResponseEntity.ok(new CommonResponse<TeamListResDto>(team));
+//			}
+//		}
+//
+//		return ResponseEntity.badRequest().build();
+//	}
+	
 }
