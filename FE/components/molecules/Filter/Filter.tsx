@@ -1,6 +1,6 @@
-import { ReactElement } from 'react';
+import { ReactElement, useState, useEffect } from 'react';
 import styled from 'styled-components';
-import Select, { OptionsType } from 'react-select';
+import Select, { OptionsType, OptionTypeBase } from 'react-select';
 
 import { Title, Checkbox, RadioButton } from '@molecules';
 import { Text } from '@atoms';
@@ -15,6 +15,7 @@ interface FilterProps {
   contents: Content[];
   func: any;
   isRadioButton?: boolean;
+  clear?: boolean;
 }
 
 const Wrapper = styled.div`
@@ -31,7 +32,36 @@ export default function Filter({
   contents,
   func,
   isRadioButton,
+  clear,
 }: FilterProps): ReactElement {
+  const [selectedValues, setSelectedValues] =
+    useState<OptionsType<OptionTypeBase>>();
+  const [checkedBox, setCheckedBox] = useState<number[]>([]);
+
+  const onChangeMultiSelect = (arr: OptionsType<OptionTypeBase>) => {
+    setSelectedValues(arr);
+    func(title, arr);
+  };
+
+  const onChangeCheckBox = (code: number) => {
+    const idx = checkedBox.indexOf(code);
+    let checkedBoxTmp = [...checkedBox];
+    if (idx >= 0) {
+      checkedBoxTmp.splice(idx, 1);
+    } else {
+      checkedBoxTmp.push(code);
+    }
+    setCheckedBox(checkedBoxTmp);
+    func(title, code);
+  };
+
+  useEffect(() => {
+    if (clear) {
+      setCheckedBox([]);
+      setSelectedValues([]);
+    }
+  }, [clear]);
+
   return (
     <Wrapper>
       <Title title={title}>
@@ -53,7 +83,10 @@ export default function Filter({
                   <Text text={codeName} fontSetting={'n14m'} />
                 </RadioButton>
               ) : (
-                <Checkbox func={() => func(title, code)}>
+                <Checkbox
+                  func={() => onChangeCheckBox(code)}
+                  checked={clear ? false : checkedBox.indexOf(code) > -1}
+                >
                   <Text text={codeName} fontSetting={'n14m'} />
                 </Checkbox>
               ),
@@ -68,8 +101,9 @@ export default function Filter({
                 ],
                 [],
               )}
-              onChange={(arr) => func(title, arr)}
+              onChange={onChangeMultiSelect}
               placeholder={title}
+              value={clear ? null : selectedValues}
             />
           )}
         </>
