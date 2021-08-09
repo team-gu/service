@@ -12,7 +12,7 @@ interface TextareaProps {
   cols?: number;
   value?: string;
   placeholder?: string;
-  maxlength?: number;
+  maxLength?: number;
   onChange?: (() => ChangeEvent<HTMLInputElement>) | any;
   onBlur?: FocusEventHandler;
 }

@@ -562,7 +562,7 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
                     <StyledTextarea
                       onChange={handleIntroduce}
                       rows={7}
-                      maxlength={300}
+                      maxLength={300}
                       value={introduce}
                     />
                     <Text
@@ -577,7 +577,7 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
                       onChange={handleIntroduce}
                       rows={7}
                       placeholder="자기소개를 작성해주세요"
-                      maxlength={300}
+                      maxLength={300}
                     />
                     <Text
                       text={introduce.length + ' / 300'}
