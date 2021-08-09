@@ -94,14 +94,20 @@ export default function useSockStomp({ room_id }: useSockStompProps) {
             clientRef.current?.subscribe(
               `/receive/chat/room/${room_id}`,
               ({ body }: { body: string }) => {
-                const { create_date_time, message, sender_id, sender_name } =
-                  JSON.parse(body);
+                const {
+                  create_date_time,
+                  message,
+                  sender_id,
+                  sender_name,
+                  type,
+                } = JSON.parse(body);
 
                 const chatData: ChatNormal = {
                   create_date_time,
                   message,
                   sender_id,
                   sender_name,
+                  type,
                 };
 
                 setMessageList((prev: ChatNormal[]): ChatNormal[] => [
