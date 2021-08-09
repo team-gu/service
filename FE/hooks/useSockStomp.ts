@@ -4,7 +4,10 @@ import Stomp from 'stompjs';
 import { useRouter } from 'next/router';
 
 import { useAuthState } from '@store';
-import { getChatRoomMessages } from '@repository/chatRepository';
+import {
+  getChatRoomMessages,
+  postCreateRoom,
+} from '@repository/chatRepository';
 import { ChatNormal } from '@types/chat-type';
 
 interface useSockStompProps {
@@ -38,19 +41,36 @@ export default function useSockStomp({ room_id }: useSockStompProps) {
     );
   };
 
-  const handleSendRtcLink = async (user_id1: number, user_id2: number) => {
+  const handleSendRtcLink = async (
+    from: number,
+    target: number,
+    isRoom?: boolean,
+  ) => {
     clientRef.current = await Stomp.over(new SockJS(URL));
 
     clientRef.current?.connect({}, async () => {
+      if (!isRoom) {
+        const {
+          data: {
+            data: { chat_room_id },
+          },
+        } = await postCreateRoom({
+          user_id1: from,
+          user_id2: target,
+        });
+
+        target = chat_room_id;
+      }
+
       await clientRef.current?.send(
         '/send/chat/messageRTC',
         {},
         JSON.stringify({
-          user_id1,
-          user_id2,
+          user_id1: from,
+          user_id2: target,
         }),
       );
-      router.push(`rtc/${user_id2}`);
+      router.push(`rtc/${target}`);
       clientRef.current?.disconnect();
     });
   };
