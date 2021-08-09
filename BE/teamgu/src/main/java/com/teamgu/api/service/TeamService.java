@@ -50,6 +50,8 @@ public interface TeamService {
 	// Check Team Building
 	TeamIsCreateResDto checkTeamBuilding(Long userId, int projectCode);
 	
+	// Check Team Leader
+	Boolean checkTeamLeader(Long userId, int projectCode);	
 	// Auto complete
 	List<TeamAutoCorrectResDto> getUserAutoCorrect(TeamAutoCorrectReqDto teamSearchReqDto);
 	
