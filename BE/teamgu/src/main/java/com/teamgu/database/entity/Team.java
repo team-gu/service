@@ -22,6 +22,9 @@ public class Team extends BaseEntity {
 	@Column(length = 45)
 	String name;
 	short completeYn; //complete_yn
+
+	int nowMember;
+	
 	int maxMember;
 	
 	@Column(length = 1000)
