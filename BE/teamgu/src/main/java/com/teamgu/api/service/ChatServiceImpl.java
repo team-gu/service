@@ -62,16 +62,29 @@ public class ChatServiceImpl implements ChatService{
 		List<UserChatRoom> userChatRoomList = userChatRoomRepository.findByUserId(userid); //JPAQueryFactory 이용
 		log.debug("userChatRoomList 갯수 : "+userChatRoomList.size());
 		List<ChatRoomResDto> chatRoomResDtoList = new ArrayList<ChatRoomResDto>();
-		for(UserChatRoom userChatRoom:userChatRoomList) {
+		for(UserChatRoom userChatRoom:userChatRoomList) {			
 			long chatroomid = userChatRoom.getChatRoom().getId();
 			
-			//해당 목록에서 필요한 정보를 DtoList에 저장한다.
-			ChatRoomResDto crrd = new ChatRoomResDto();
-			crrd.setChat_room_id(chatroomid);
-			crrd.setRoom_name(chatRoomRepository.findById(chatroomid).get().getTitle());//채팅방 이름을 가져온다
 			Chat lastchat = chatRoomRepositorySupport.getLastMessage(chatroomid);
-			crrd.setLast_chat_message(lastchat.getMessage());//해당 채팅방의 마지막 메세지를 가져온다.
-			crrd.setSend_date_time(lastchat.getSendDateTime());//해당 채팅방의 마지막 전송 시간을 가져온다.			
+			long last_chat_id = 0;
+			try {
+				last_chat_id = userChatRoom.getChat().getId();
+			}
+			catch(Exception e) {
+				log.error("userChatRoom.getChat().getId()가 null입니다");
+			}
+			
+			long unreadCount = userChatRoomRepositorySupport.countUnreadMessageByUserIdAndRoomId(userid, chatroomid);
+			
+			//해당 목록에서 필요한 정보를 DtoList에 저장한다.
+			ChatRoomResDto crrd = ChatRoomResDto.builder()
+												.chat_room_id(chatroomid)
+												.room_name(chatRoomRepository.findById(chatroomid).get().getTitle())
+												.last_chat_message(lastchat.getMessage())//해당 채팅방의 마지막 메세지를 가져온다.
+												.send_date_time(lastchat.getSendDateTime())//해당 채팅방의 마지막 전송 시간을 가져온다.
+												.out_check_chat_id(last_chat_id)//마지막 채팅 id
+												.unread_message_count(unreadCount)//아직 읽지 않은 메세지도 기록
+												.build();
 			chatRoomResDtoList.add(crrd);
 		}
 		log.debug("반환하는 chatRoomResDtoList 갯수 : "+chatRoomResDtoList.size());
@@ -86,6 +99,7 @@ public class ChatServiceImpl implements ChatService{
 		List<ChatMessageResDto> chatMessageResDtoList = new ArrayList<ChatMessageResDto>();
 		for(Chat chat:chatRepositorySupport.findByReceiveRoomId(chatRoomId)) {			
 			ChatMessageResDto chatMessageResDto = ChatMessageResDto.builder()
+													.chat_id(chat.getId())
 													.message(chat.getMessage())
 													.sender_id(chat.getUser().getId())
 													.sender_name(chat.getUser().getName())
@@ -153,5 +167,20 @@ public class ChatServiceImpl implements ChatService{
 	@Override
 	public ChatRoomResDto getChatRoomInfo(long room_id) {		
 		return chatRoomRepositorySupport.getRoomInfo(room_id);
+	}
+	
+	@Override
+	public long findLastChatId(long room_id) {
+		return chatRepositorySupport.findLastChatId(room_id);
+	}
+	
+	@Override
+	public void writeLastChatId(long room_id, long user_id, long chat_id) {
+		chatRepositorySupport.writeLastChatId(room_id, user_id, chat_id);
+	}
+	
+	@Override
+	public long countTotalUnreadMessage(long user_id) {
+		return userChatRoomRepositorySupport.countUnreadMessageByUserId(user_id);
 	}
 }

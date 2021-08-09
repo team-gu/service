@@ -62,18 +62,23 @@ public class StompChatController {
 		log.info(chatres.getMessage());
 		log.info(chatres.getSendDateTime());
 		if (chatres!=null) {
-			ChatMessageResDto chatMessageResDto = new ChatMessageResDto(message.getSender_id(), 
-					sender.getName(),
-					chatres.getType(),
-					chatres.getMessage(), 
-					chatres.getSendDateTime(),
-					0
-					);
-			simpMessagingTemplate.getTemplate().convertAndSend("/receive/chat/room/"+message.getRoom_id(),chatMessageResDto);			
+			ChatMessageResDto chatMessageResDto = ChatMessageResDto.builder()
+																	.chat_id(chatres.getId())
+																	.sender_id(message.getSender_id())
+																	.sender_name(sender.getName())
+																	.type(chatres.getType())
+																	.message(chatres.getMessage())
+																	.create_date_time(chatres.getSendDateTime())
+																	.unread_user_count(0)
+																	.build();simpMessagingTemplate.getTemplate().convertAndSend("/receive/chat/room/"+message.getRoom_id(),chatMessageResDto);			
 			log.info("message db saved done");
 		}
 		else
 			log.error("message db save failed");
+		
+		// 종료 시점 기록 엔드포인트를 거치지 않고 나갈 수 있기 때문에 마지막 채팅 id를 갱신해준다
+		long last_chat_id = chatService.findLastChatId(message.getRoom_id());
+		chatService.writeLastChatId(message.getRoom_id(), message.getSender_id(), last_chat_id);		
 	}
 	
 	/**
