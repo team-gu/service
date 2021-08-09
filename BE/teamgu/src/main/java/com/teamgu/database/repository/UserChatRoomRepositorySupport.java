@@ -60,19 +60,35 @@ public class UserChatRoomRepositorySupport {
 		}
 		return ucrList.get(0).longValue();
 	}
-	
-	public void insertUser(long user_id,long room_id) {
+	/**
+	 * 기존의 방에 새로운 유저를 초대한다 그리고 채팅방 명에 유저를 추가한다
+	 * @param user_id
+	 * @param room_id
+	 */
+	public boolean insertUser(long user_id,long room_id, String new_room_name) {
 		EntityManager em = emf.createEntityManager();
 		EntityTransaction et = em.getTransaction();
-		et.begin();
-		String jpql = "INSERT INTO user_chat_room(chat_room_id,user_id) "
-					+ "VALUES(?1,?2)";
-		em.createNativeQuery(jpql)
-			.setParameter(1, room_id)
-			.setParameter(2, user_id)
-			.executeUpdate();
-		et.commit();
-		em.close();
+		try {
+			et.begin();
+			String jpql = "INSERT INTO user_chat_room(chat_room_id,user_id) "
+						+ "VALUES(?1,?2)";
+			em.createNativeQuery(jpql)
+				.setParameter(1, room_id)
+				.setParameter(2, user_id)
+				.executeUpdate();
+			
+			jpql ="UPDATE chat_room SET title = :new_room_name WHERE id = :room_id";
+			em.createNativeQuery(jpql)
+				.setParameter("new_room_name", new_room_name)
+				.setParameter("room_id", room_id)
+				.executeUpdate();
+			et.commit();
+		}catch(Exception e) {
+			log.error("채팅방에 이미 해당 유저가 존재합니다");
+			et.rollback();			
+		}finally {
+			em.close();			
+		}
 	}
 	
 	/**

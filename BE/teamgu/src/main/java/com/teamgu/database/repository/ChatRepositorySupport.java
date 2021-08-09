@@ -58,19 +58,25 @@ public class ChatRepositorySupport {
 	 * @param chat_id
 	 */
 	public void writeLastChatId(long room_id, long user_id,long chat_id) {
+		
 		EntityManager em = emf.createEntityManager();
 		EntityTransaction et = em.getTransaction();
-		et.begin();
-		String jpql = "UPDATE user_chat_room\r\n"
-					+ "SET last_chat_id = :chat_id\r\n"
-					+ "WHERE chat_room_id = :room_id\r\n"
-					+ "AND user_id = :user_id";
-		em.createNativeQuery(jpql)
-							.setParameter("chat_id", chat_id)
-							.setParameter("room_id", room_id)
-							.setParameter("user_id", user_id)
-							.executeUpdate();
-		et.commit();
-		em.close();
+		try {
+			et.begin();
+			String jpql = "UPDATE user_chat_room\r\n"
+						+ "SET last_chat_id = :chat_id\r\n"
+						+ "WHERE chat_room_id = :room_id\r\n"
+						+ "AND user_id = :user_id";
+			em.createNativeQuery(jpql)
+								.setParameter("chat_id", chat_id)
+								.setParameter("room_id", room_id)
+								.setParameter("user_id", user_id)
+								.executeUpdate();
+			et.commit();
+		}catch(Exception e) {
+			et.rollback();
+		}finally {
+			em.close();
+		}
 	}
 }
