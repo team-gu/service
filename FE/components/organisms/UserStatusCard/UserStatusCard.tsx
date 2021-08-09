@@ -76,12 +76,14 @@ interface UserStatusCard {
   };
   filterContents: any;
   id: number;
+  onClickInviteIcon?: () => void;
 }
 
 export default function UserStatusCard({
   user: { name, introduce, trackList, skillList, id: opponentId },
   filterContents,
   id,
+  onClickInviteIcon,
 }: UserStatusCard): ReactElement {
   const { handleSendRtcLink } = useSockStomp({ room_id: undefined });
 
@@ -99,6 +101,7 @@ export default function UserStatusCard({
                 color="green"
                 func={() => handleSendRtcLink(id, opponentId)}
               />
+              <Icon iconName="person_add_alt" func={onClickInviteIcon} />
             </div>
           </div>
         </div>

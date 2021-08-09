@@ -31,6 +31,8 @@ const Wrapper = styled.div<{ isComplete: boolean }>`
   `}
 
   .team-manage-button {
+    position: relative;
+    z-index: 11;
     display: flex;
     justify-content: flex-end;
 
@@ -97,8 +99,9 @@ export default function TeamStatusCard({
   onClickTeamManage,
 }: TeamStatusCard): ReactElement {
   const { user } = useAuthState();
-  const currentUserIsInThisTeam =
-    team.teamMembers.find((m) => m.id === user.id) || true; // TODO: 개발용으로 true 집어넣음 DEVELOP
+  const currentUserIsInThisTeam = team.teamMembers.find(
+    (m) => m.id === user.id,
+  );
 
   return (
     <Wrapper isComplete={team.completeYn !== 0}>
@@ -111,16 +114,21 @@ export default function TeamStatusCard({
         <div className="profiles-container">
           <Text text="팀 구성" color="gray" />
           <div className="profiles">
-            {team.teamMembers.map((item) => (
-              <div className="profile" key={item.id}>
-                <ProfileImage size={80} src={item.img ? item.img : undefined} />
-                {item.id === team.leaderId ? (
-                  <Text text={item.name + '(팀장)'} />
-                ) : (
-                  <Text text={item.name} />
-                )}
-              </div>
-            ))}
+            {team.teamMembers
+              .sort((a, b) => (a.id === team.leaderId ? -1 : 1))
+              .map((item) => (
+                <div className="profile" key={item.id}>
+                  <ProfileImage
+                    size={80}
+                    src={item.img ? item.img : undefined}
+                  />
+                  {item.id === team.leaderId ? (
+                    <Text text={item.name + '(팀장)'} />
+                  ) : (
+                    <Text text={item.name} />
+                  )}
+                </div>
+              ))}
           </div>
         </div>
         <div className="description-container">

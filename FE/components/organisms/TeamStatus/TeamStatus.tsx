@@ -14,7 +14,7 @@ import { FILTER_TITLE } from '@utils/constants';
 import { MemberOption, Team } from '@utils/type';
 import { useAuthState, useAppDispatch, setLoading } from '@store';
 import { getEachFiltersCodeList } from '@repository/filterRepository';
-import { getTeams, getUserTeamIn } from '@repository/teamRepository';
+import { getTeams, getUserHasTeam } from '@repository/teamRepository';
 
 const sortByOptions: OptionsType<OptionTypeBase> = [
   {
@@ -27,13 +27,13 @@ const sortByOptions: OptionsType<OptionTypeBase> = [
   },
   {
     label: '팀 이름',
-    value: 'etc',
+    value: 'teamName',
   },
 ];
 
 export default function TeamStatus(): ReactElement {
   const {
-    user: { projectCode, studentNumber },
+    user: { id: userId, projectCode, studentNumber },
   } = useAuthState();
   const [filterContents, setFilterContents] = useState<any>({});
   const [payload, setPayload] = useState({});
@@ -44,7 +44,8 @@ export default function TeamStatus(): ReactElement {
   const [sortBy, setSortBy] = useState(sortByOptions[0].value);
   const [sortAsc, setSortAsc] = useState(true);
   const [containsUserId, setContainsUserId] = useState<number>();
-  const [isUserInTeam, setIsUserInTeam] = useState<boolean>();
+  const [userHasTeam, setUserHasTeam] = useState<boolean>();
+  const [filterClear, setFilterClear] = useState(false);
 
   const dispatch = useAppDispatch();
 
@@ -65,28 +66,41 @@ export default function TeamStatus(): ReactElement {
       studentNumber,
     });
 
-    // TODO: Fetch is user in team
-    setIsUserInTeam(false);
-    // getUserTeamIn(projectCode).then(({ data }) => {
-    //   setIsUserInTeam(data);
-    // });
+    const project =
+      projectCode && projectCode.length > 0
+        ? projectCode[projectCode.length - 1]
+        : 101;
+    getUserHasTeam({
+      userId,
+      project: { code: project },
+    }).then(({ data }) => {
+      setUserHasTeam(data.data.hasTeam);
+    });
   }, []);
 
   useEffect(() => {
-    // TODO: 백엔드 API 완성되면 필터(payload) 추가해서 호출
-    renderTeams(sortBy, sortAsc, containsUserId);
-  }, [sortBy, sortAsc, containsUserId, payload]);
+    setFilterClear(false);
+    renderTeams();
+  }, [sortBy, sortAsc, payload]);
 
-  const renderTeams = (
-    by: string,
-    asc: boolean,
-    userid: number | undefined,
-  ) => {
-    dispatch(setLoading({ isLoading: true }));
+  useEffect(() => {
+    if (containsUserId) {
+      setFilterClear(true);
+      setContainsUserId(undefined);
+      renderTeams();
+    }
+  }, [containsUserId]);
 
-    getTeams(by, asc, userid).then(({ data: { data } }) => {
+  const renderTeams = () => {
+    let payloadTemp = {
+      ...payload,
+      sortBy,
+      sortAsc,
+      containsUserId,
+    };
+
+    getTeams(payloadTemp).then(({ data: { data } }) => {
       setTeams(data);
-      dispatch(setLoading({ isLoading: false }));
     });
   };
 
@@ -105,6 +119,22 @@ export default function TeamStatus(): ReactElement {
       );
     } else {
       payloadTemp[convertTitle].push(code);
+    }
+
+    setPayload(payloadTemp);
+  };
+
+  const handleFilterArray = (title: string, arr: any) => {
+    const payloadTemp: any = { ...payload };
+    const convertTitle: any = FILTER_TITLE[title];
+
+    if (arr.length === 0) {
+      delete payloadTemp[FILTER_TITLE[title]];
+    } else {
+      payloadTemp[convertTitle] = arr.reduce(
+        (acc, cur) => [...acc, cur.value],
+        [],
+      );
     }
 
     setPayload(payloadTemp);
@@ -141,19 +171,29 @@ export default function TeamStatus(): ReactElement {
   };
 
   return (
-    <LookupLayout showTeamCreateBtn={!isUserInTeam}>
+    <LookupLayout showTeamCreateBtn={!userHasTeam}>
       <div className="filter-container">
         {filterContents &&
           Object.keys(filterContents).map(
             (each, index) =>
-              (each === '스킬' || each === '트랙') && (
+              (each === '스킬' || each === '트랙') &&
+              (filterContents[each].length < 5 ? (
                 <Filter
                   title={each}
                   contents={filterContents[each]}
                   func={handleFilter}
                   key={index}
+                  clear={filterClear}
                 />
-              ),
+              ) : (
+                <Filter
+                  title={each}
+                  contents={filterContents[each]}
+                  func={handleFilterArray}
+                  key={index}
+                  clear={filterClear}
+                />
+              )),
           )}
       </div>
       <div className="team-status-list-container">
@@ -174,7 +214,7 @@ export default function TeamStatus(): ReactElement {
               <Icon iconName="sort" func={handleClickSort} />
             </span>
           </div>
-          {!isUserInTeam && (
+          {!userHasTeam && (
             <div>
               <Button
                 title="팀 만들기"
@@ -184,6 +224,11 @@ export default function TeamStatus(): ReactElement {
             </div>
           )}
         </div>
+        {(!teams || teams.length === 0) && (
+          <div>
+            현재 등록된 팀이 없거나, 필터링 조건에 일치하는 팀이 없습니다.
+          </div>
+        )}
         {teams.map((item, index) => (
           <TeamStatusCard
             key={index}
@@ -195,14 +240,14 @@ export default function TeamStatus(): ReactElement {
       {showTeamManageModal && (
         <TeamManageModal
           handleClickClose={handleCloseManageTeamModal}
-          fetchTeams={() => renderTeams(sortBy, sortAsc, containsUserId)}
+          fetchTeams={renderTeams}
         />
       )}
       {showTeamManageModal && selectedTeamInfo && (
         <TeamManageModal
           handleClickClose={handleCloseManageTeamModal}
           defaultValue={selectedTeamInfo}
-          fetchTeams={() => renderTeams(sortBy, sortAsc, containsUserId)}
+          fetchTeams={renderTeams}
         />
       )}
     </LookupLayout>
