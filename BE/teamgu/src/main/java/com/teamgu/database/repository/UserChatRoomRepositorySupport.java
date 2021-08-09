@@ -83,12 +83,14 @@ public class UserChatRoomRepositorySupport {
 				.setParameter("room_id", room_id)
 				.executeUpdate();
 			et.commit();
+			return true;
 		}catch(Exception e) {
 			log.error("채팅방에 이미 해당 유저가 존재합니다");
 			et.rollback();			
 		}finally {
 			em.close();			
 		}
+		return false;
 	}
 	
 	/**
