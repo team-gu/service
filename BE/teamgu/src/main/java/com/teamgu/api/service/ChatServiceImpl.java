@@ -2,6 +2,8 @@ package com.teamgu.api.service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -87,6 +89,13 @@ public class ChatServiceImpl implements ChatService{
 												.build();
 			chatRoomResDtoList.add(crrd);
 		}
+		//최신메세지가 와있는 채팅방이 가장 위로 향한다
+		Collections.sort(chatRoomResDtoList,new Comparator<ChatRoomResDto>() {
+			@Override
+			public int compare(ChatRoomResDto o1, ChatRoomResDto o2) {
+				return o2.getSend_date_time().compareTo(o1.getSend_date_time());
+			}
+		});
 		log.debug("반환하는 chatRoomResDtoList 갯수 : "+chatRoomResDtoList.size());
 		return chatRoomResDtoList;
 	}
@@ -160,8 +169,11 @@ public class ChatServiceImpl implements ChatService{
 	@Override
 	public boolean inviteUser(long user_id, long room_id) {
 		log.info(user_id+" 유저를 "+room_id+" 방으로 초대합니다");	
-		userChatRoomRepositorySupport.insertUser(user_id, room_id);
-		return true;
+		String user_name = userRepository.findById(user_id).get().getName();
+		String room_name = chatRoomRepository.findById(room_id).get().getTitle();
+		String new_room_name = room_name.replace("의 방",", "+user_name+"의 방");
+		log.info("유저의 이름을 추가하여 바뀐 방 이름 : "+new_room_name);
+		return userChatRoomRepositorySupport.insertUser(user_id, room_id, new_room_name);
 	}
 	
 	@Override
