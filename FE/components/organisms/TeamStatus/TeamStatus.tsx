@@ -4,7 +4,7 @@ import { OptionsType, OptionTypeBase } from 'react-select';
 import { Icon } from '@atoms';
 import {
   Filter,
-  UserSelectAutoComplete,
+  UserSelectTeamAutoComplete,
   Button,
   SimpleSelect,
 } from '@molecules';
@@ -14,7 +14,11 @@ import { FILTER_TITLE } from '@utils/constants';
 import { MemberOption, Team } from '@utils/type';
 import { useAuthState, useAppDispatch, setLoading } from '@store';
 import { getEachFiltersCodeList } from '@repository/filterRepository';
-import { getTeams, getUserHasTeam } from '@repository/teamRepository';
+import {
+  getTeams,
+  getTeamsFiltered,
+  getUserHasTeam,
+} from '@repository/teamRepository';
 
 const sortByOptions: OptionsType<OptionTypeBase> = [
   {
@@ -36,7 +40,12 @@ export default function TeamStatus(): ReactElement {
     user: { id: userId, projectCode, studentNumber },
   } = useAuthState();
   const [filterContents, setFilterContents] = useState<any>({});
-  const [payload, setPayload] = useState({});
+  const [payload, setPayload] = useState<{
+    project?: number;
+    skills?: number[];
+    studentNumber?: string;
+    track?: number[];
+  }>({});
   const [showTeamManageModal, setShowTeamManageModal] = useState(false);
   const [selectedTeamInfo, setSelectedTeaminfo] = useState<Team>();
   const [teams, setTeams] = useState<Team[]>([]);
@@ -93,13 +102,19 @@ export default function TeamStatus(): ReactElement {
 
   const renderTeams = () => {
     let payloadTemp = {
-      ...payload,
+      project: payload.project,
+      filteredSkills: payload.skills?.map((s) => ({ code: s })),
+      filteredTracks: payload.track?.map((t) => ({ code: t })),
       sortBy,
       sortAsc,
-      containsUserId,
+      userId: containsUserId,
+      studentNumber,
     };
+    console.log(payloadTemp);
 
-    getTeams(payloadTemp).then(({ data: { data } }) => {
+    getTeamsFiltered(payloadTemp).then(({ data: { data } }) => {
+      console.log('RESULT getTeamsFiltered');
+      console.log(data);
       setTeams(data);
     });
   };
@@ -198,7 +213,7 @@ export default function TeamStatus(): ReactElement {
       </div>
       <div className="team-status-list-container">
         <div className="team-status-header">
-          <UserSelectAutoComplete
+          <UserSelectTeamAutoComplete
             handleChangeUserSelect={handleChangeUserSelect}
           />
           <div className="sort-container">

@@ -1,4 +1,5 @@
 import api from '@context/serverContext';
+import { MemberOption } from '@utils/type';
 
 export const getTeams = async (param: any) => {
   console.log('getTeams: ', param);
@@ -12,11 +13,11 @@ export const getTeams = async (param: any) => {
 export const getTeamsFiltered = async (param: any) => {
   console.log('getTeamsFiltered: ', param);
 
-  // TODO: 필터링 추가
-  // return await api({
-  //   url: `/api/team`,
-  //   type: 'post',
-  // });
+  return await api({
+    url: `/api/team`,
+    type: 'post',
+    param,
+  });
 };
 
 export const getUserHasTeam = async (param: any) => {
@@ -73,6 +74,16 @@ export const addUserToTeam = async (param: any) => {
 
   return await api({
     url: `/api/team/member`,
+    type: 'post',
+    param,
+  });
+};
+
+export const getUserListByNameContains = async (param: any) => {
+  console.log('getUserListByNameContains:', param);
+
+  return await api({
+    url: `/api/team/search`,
     type: 'post',
     param,
   });

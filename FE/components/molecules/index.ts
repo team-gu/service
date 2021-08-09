@@ -14,6 +14,7 @@ import Tag from './Tag';
 import Title from './Title';
 import SimpleSelect from './SimpleSelect';
 import UserSelectAutoComplete from './UserSelectAutoComplete';
+import UserSelectTeamAutoComplete from './UserSelectTeamAutoComplete';
 import UserSelectChatAutoComplete from './UserSelectChatAutoComplete';
 import SkillSelectAutoComplete from './SkillSelectAutoComplete';
 
@@ -36,4 +37,5 @@ export {
   UserSelectAutoComplete,
   UserSelectChatAutoComplete,
   SkillSelectAutoComplete,
+  UserSelectTeamAutoComplete,
 };
