@@ -75,6 +75,10 @@ public class StompChatController {
 		}
 		else
 			log.error("message db save failed");
+		
+		// 종료 시점 기록 엔드포인트를 거치지 않고 나갈 수 있기 때문에 마지막 채팅 id를 갱신해준다
+		long last_chat_id = chatService.findLastChatId(message.getRoom_id());
+		chatService.writeLastChatId(message.getRoom_id(), message.getSender_id(), last_chat_id);		
 	}
 	
 	/**
