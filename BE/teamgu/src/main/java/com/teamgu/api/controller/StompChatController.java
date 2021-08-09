@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import com.teamgu.api.dto.req.ChatReqDto;
 import com.teamgu.api.dto.req.UserRoomCheckDto;
+import com.teamgu.api.dto.req.UserRoomInviteReqDto;
 import com.teamgu.api.dto.res.ChatMessageResDto;
 import com.teamgu.api.dto.res.ChatRoomResDto;
 import com.teamgu.api.dto.res.CommonResponse;
@@ -80,25 +81,16 @@ public class StompChatController {
 	 * @param message
 	 */
 	@MessageMapping(value="/chat/messageRTC")
-	public void messageRTC(@RequestBody UserRoomCheckDto users) {
+	public void messageRTC(@RequestBody UserRoomInviteReqDto userReqDto) {
 		log.info("in user-invite...");
-		log.info(users.getUser_id1()+", "+users.getUser_id2());
-		long roomid = chatService.roomCheck(users.getUser_id1(), users.getUser_id2());
-		String name1 = userService.getUserById(users.getUser_id1()).get().getName();
-		String name2 = userService.getUserById(users.getUser_id2()).get().getName();			
-		if(roomid==0) {//존재하지 않는 경우 방을 생성하고 방 번호를 반환한다.
-			ChatRoomResDto chatRoomResDto = chatService.createRoom(name1+", "+name2+"의 방");
-			roomid = chatRoomResDto.getChat_room_id();
-			
-			log.info(roomid+"방이 생성되었습니다");
-			chatService.inviteUser(users.getUser_id1(), roomid);//둘 다 초대
-			chatService.inviteUser(users.getUser_id2(), roomid);
-		}		
+		log.info(userReqDto.getUser_id()+"가 "+userReqDto.getRoom_id()+" 방에 메세지를 보냅ㄴ디ㅏ");
+		long roomid = userReqDto.getRoom_id();
+		String name = userService.getUserById(userReqDto.getUser_id()).get().getName();
 		//1. 초대 메세지 보내기 전에 저장
 		log.info("saving RTC invite message");
 		ChatReqDto chatReqDto = ChatReqDto.builder()
 											.room_id(roomid)
-											.sender_id(users.getUser_id1())
+											.sender_id(userReqDto.getUser_id())
 											.message("화상회의실이 개설되었습니다")
 											.type("RTC_INVITE")
 											.build();
@@ -108,8 +100,8 @@ public class StompChatController {
 		ChatMessageResDto chatMessageResDto = ChatMessageResDto.builder()
 												.create_date_time(chatres.getSendDateTime())
 												.message(chatres.getMessage())
-												.sender_id(users.getUser_id1())
-												.sender_name(name1)
+												.sender_id(userReqDto.getUser_id())
+												.sender_name(name)
 												.type(chatres.getType())
 												.unread_user_count(0)
 												.build();												
