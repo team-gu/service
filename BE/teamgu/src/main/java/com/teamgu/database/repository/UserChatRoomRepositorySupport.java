@@ -93,7 +93,7 @@ public class UserChatRoomRepositorySupport {
 						"select 0 as unread_message\r\n" + 
 						"from dual\r\n" + 
 						"limit 1";
-		List<Long> res = em.createNativeQuery(jpql)
+		List<BigInteger> res = em.createNativeQuery(jpql)
 							.setParameter("user_id", user_id)
 							.setParameter("room_id", room_id)
 							.getResultList();
