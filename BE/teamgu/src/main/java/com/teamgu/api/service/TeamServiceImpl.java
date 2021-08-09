@@ -1,5 +1,6 @@
 package com.teamgu.api.service;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +11,7 @@ import com.teamgu.api.dto.req.TeamFilterReqDto;
 import com.teamgu.api.dto.req.TeamMemberReqDto;
 import com.teamgu.api.dto.req.TrackReqDto;
 import com.teamgu.api.dto.res.SkillResDto;
+import com.teamgu.api.dto.res.TeamIsCreateResDto;
 import com.teamgu.api.dto.res.TeamListResDto;
 import com.teamgu.api.dto.res.TeamMemberInfoResDto;
 import com.teamgu.database.entity.Mapping;
@@ -327,17 +329,57 @@ public class TeamServiceImpl implements TeamService {
 		
 		return teamRepositorySupport.getTeamMemberIdbyTeamId(teamId);
 	}
+	
+	/*
+	 * userId와 trackName을 이용한 팀빌딩 체크
+	 */	
+	
 	@Override
 	public boolean checkTeamBuilding(Long userId, String trackName) {
 		// TODO Auto-generated method stub
 		return teamRepositorySupport.checkTeamBuilding(userId, trackName);
 	}
 
+	/*
+	 * userId와 projectCode을 이용한 팀빌딩 체크
+	 */	
+	
 	@Override
-	public boolean checkTeamBuilding(Long userId, int projectCode) {
+	public TeamIsCreateResDto checkTeamBuilding(Long userId, int projectCode) {
 		// TODO Auto-generated method stub
-		return teamRepositorySupport.checkTeamBuilding(userId, projectCode);
+		
+		List<BigInteger> teamIds = teamRepositorySupport.checkTeamBuilding(userId, projectCode);
+		int size = teamIds.size();
+		
+		TeamIsCreateResDto teamIsCreateResDto = new TeamIsCreateResDto();
+		if(size == 0) {
+			
+			teamIsCreateResDto.setHasTeam(false);
+			return teamIsCreateResDto;
+			
+		}
+		else {
+			Long teamId = teamIds.get(0).longValue();
+			System.out.println(teamId + " / " + teamId.getClass());
+			System.out.println("TeamServiceImple : 팀이 있음");
+			teamIsCreateResDto.setHasTeam(true);
+			teamIsCreateResDto.setTeam(getTeamInfobyTeamId(teamId));
+			return teamIsCreateResDto;
+		}
+		
 	}
 
 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }
