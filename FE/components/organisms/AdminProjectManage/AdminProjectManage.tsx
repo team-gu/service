@@ -2,8 +2,9 @@ import { ReactElement, useState } from 'react';
 import styled from 'styled-components';
 import { Project } from '@utils/type';
 import { Text, Icon } from '@atoms';
-import { ProjectCard } from '@molecules';
+import { Button, ProjectCard } from '@molecules';
 import { AdminProjectManageModal } from '@organisms';
+import ModalWrapper from '../Modal/ModalWrapper';
 
 const Wrapper = styled.div`
   i {
@@ -26,6 +27,28 @@ const Wrapper = styled.div`
     gap: 20px;
     flex-wrap: wrap;
   }
+
+  .delete-modal-container {
+    padding: 50px;
+
+    .delete-text {
+      margin-bottom: 20px;
+      text-align: center;
+    } 
+
+    .delete-btns {
+      text-align: center;
+
+      button {
+        width: 90px;
+        margin 0 10px;
+      }
+
+      > button:nth-child(2) {
+        background-color: crimson;
+      }
+    }
+  }
 `;
 
 interface AdminProjectManageProps {
@@ -45,8 +68,9 @@ export default function AdminProjectManage({
     setShowManageeModal(true);
   };
 
-  const handleShowDeleteModal = () => {
-    console.log('DELETE MODAL');
+  const handleShowDeleteModal = (p: Project) => {
+    setSelectedProject(p);
+    setShowDeleteModal(true);
   };
 
   const handleShowEditModal = (p: Project) => {
@@ -56,10 +80,26 @@ export default function AdminProjectManage({
 
   const handleCloseProjectManageModal = () => {
     setShowManageeModal(false);
+    setSelectedProject(undefined);
   };
 
   const handleCloseProjectManageModalAndRerender = () => {
     setShowManageeModal(false);
+    setSelectedProject(undefined);
+    fetchProjects();
+  };
+
+  const handleCloseProjectDeleteModal = () => {
+    setShowDeleteModal(false);
+    setSelectedProject(undefined);
+  };
+
+  const handleDeleteProject = () => {
+    setShowDeleteModal(false);
+    setSelectedProject(undefined);
+
+    // TODO API call
+    console.log('DELETE PROJECT', selectedProject);
     fetchProjects();
   };
 
@@ -74,7 +114,7 @@ export default function AdminProjectManage({
           <ProjectCard
             key={p.id}
             project={p}
-            onClickDelete={handleShowDeleteModal}
+            onClickDelete={() => handleShowDeleteModal(p)}
             onClickEdit={() => handleShowEditModal(p)}
           />
         ))}
@@ -85,6 +125,22 @@ export default function AdminProjectManage({
           handleClickClose={handleCloseProjectManageModal}
           closeModalAndRerender={handleCloseProjectManageModalAndRerender}
         />
+      )}
+      {showDeleteModal && selectedProject && (
+        <ModalWrapper modalName="deleteAdminProjectModal" zIndex={90}>
+          <div className="delete-modal-container">
+            <div className="delete-text">
+              <Text
+                text={`[${selectedProject.name}] 프로젝트를 삭제하시겠습니까?`}
+                fontSetting="n20m"
+              />
+            </div>
+            <div className="delete-btns">
+              <Button title="취소" func={handleCloseProjectDeleteModal} />
+              <Button title="예" func={handleDeleteProject} />
+            </div>
+          </div>
+        </ModalWrapper>
       )}
     </Wrapper>
   );
