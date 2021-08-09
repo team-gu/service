@@ -79,4 +79,11 @@ public interface ChatService {
 	 * @param chat_id
 	 */
 	void writeLastChatId(long room_id, long user_id, long chat_id);
+	
+	/**
+	 * 특정 유저의 읽지 않은 메세지 갯수를 가져온다
+	 * @param user_id
+	 * @return
+	 */
+	long countTotalUnreadMessage(long user_id);
 }

@@ -37,8 +37,8 @@ public class ChatRoomResDto{
 	@ApiModelProperty(name="사용자가 마지막으로 읽은 메세지 id")
 	long out_check_chat_id;
 	
-//	@ApiModelProperty(name="안읽은 메세지 갯수")
-//	int unread_message_count;
+	@ApiModelProperty(name="안읽은 메세지 갯수")
+	long unread_message_count;
 	
 	@ApiModelProperty(name="마지막 채팅 메세지 보낸 시간")
 	LocalDateTime send_date_time;

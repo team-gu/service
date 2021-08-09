@@ -26,6 +26,7 @@ import com.teamgu.api.dto.res.BaseResDto;
 import com.teamgu.api.dto.res.BasicResponse;
 import com.teamgu.api.dto.res.ChatMessageResDto;
 import com.teamgu.api.dto.res.ChatRoomResDto;
+import com.teamgu.api.dto.res.ChatTotalUnreadResDto;
 import com.teamgu.api.dto.res.CommonResponse;
 import com.teamgu.api.dto.res.ErrorResponse;
 import com.teamgu.api.dto.res.LoginResDto;
@@ -176,7 +177,12 @@ public class ChatController {
 		return ResponseEntity.noContent().build();
 	}
 	
-	
+	@GetMapping("/unread/{userid}")
+	@ApiOperation(value="특정 유저의 읽지 않은 메세지 총 갯수를 반환한다")
+	public ResponseEntity<? extends BasicResponse> getUnreadMessageByUserId(@PathVariable("userid") @ApiParam(value ="조회하고자 하는 유저의 id 값",required=true) long user_id){
+		long unreadCount = chatService.countTotalUnreadMessage(user_id);
+		return ResponseEntity.ok(new CommonResponse<ChatTotalUnreadResDto>(ChatTotalUnreadResDto.builder().unreadcount(unreadCount).build()));		
+	}
 //	@PostMapping("/rtc/user-invite")
 //	@ApiOperation(value="채팅을 통해 1:1 RTC 세션으로 초대합니다")
 //	@ApiResponses({

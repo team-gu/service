@@ -73,6 +73,9 @@ public class ChatServiceImpl implements ChatService{
 			catch(Exception e) {
 				log.error("userChatRoom.getChat().getId()가 null입니다");
 			}
+			
+			long unreadCount = userChatRoomRepositorySupport.countUnreadMessageByUserIdAndRoomId(userid, chatroomid);
+			
 			//해당 목록에서 필요한 정보를 DtoList에 저장한다.
 			ChatRoomResDto crrd = ChatRoomResDto.builder()
 												.chat_room_id(chatroomid)
@@ -80,6 +83,7 @@ public class ChatServiceImpl implements ChatService{
 												.last_chat_message(lastchat.getMessage())//해당 채팅방의 마지막 메세지를 가져온다.
 												.send_date_time(lastchat.getSendDateTime())//해당 채팅방의 마지막 전송 시간을 가져온다.
 												.out_check_chat_id(last_chat_id)//마지막 채팅 id
+												.unread_message_count(unreadCount)//아직 읽지 않은 메세지도 기록
 												.build();
 			chatRoomResDtoList.add(crrd);
 		}
@@ -173,5 +177,10 @@ public class ChatServiceImpl implements ChatService{
 	@Override
 	public void writeLastChatId(long room_id, long user_id, long chat_id) {
 		chatRepositorySupport.writeLastChatId(room_id, user_id, chat_id);
+	}
+	
+	@Override
+	public long countTotalUnreadMessage(long user_id) {
+		return userChatRoomRepositorySupport.countUnreadMessageByUserId(user_id);
 	}
 }
