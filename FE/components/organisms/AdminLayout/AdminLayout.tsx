@@ -1,4 +1,4 @@
-import { ReactElement, useState } from 'react';
+import { ReactElement, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { AdminMenuSidebarLeft } from '@organisms';
 import { Project } from '@utils/type';
@@ -10,7 +10,7 @@ const Wrapper = styled.div`
   display: flex;
   gap: 30px;
   min-height: 90vh;
-  
+
   .sidebar {
     flex: 0 0 200px;
   }
@@ -23,7 +23,11 @@ const Wrapper = styled.div`
 export default function AdminLayout(): ReactElement {
   const [selectedMenu, setSelectedMenu] = useState(0);
   const [selectedProject, setSelectedProject] = useState(0);
-  const [projects, setProjects] = useState<Project[]>(DUMMY_PROJECTS); // TODO: 서버에서 프로젝트 가져오기
+  const [projects, setProjects] = useState<Project[]>([]);
+
+  useEffect(() => {
+    fetchProjects();
+  }, []);
 
   const handleChangeMenu = (menuIndex: number) => {
     setSelectedMenu(menuIndex);
@@ -31,6 +35,13 @@ export default function AdminLayout(): ReactElement {
 
   const handleChangeProject = (projectId: number) => {
     setSelectedProject(projectId);
+  };
+
+  const fetchProjects = () => {
+    console.log('fetchProjects');
+    // TODO: 서버에서 프로젝트 가져오기
+    const p = DUMMY_PROJECTS;
+    setProjects(p);
   };
 
   return (
@@ -45,7 +56,12 @@ export default function AdminLayout(): ReactElement {
       <div className="content">
         {
           {
-            [ADMIN_MENU_CONTENT[0]]: <AdminProjectManage projects={projects} />,
+            [ADMIN_MENU_CONTENT[0]]: (
+              <AdminProjectManage
+                projects={projects}
+                fetchProjects={fetchProjects}
+              />
+            ),
             [ADMIN_MENU_CONTENT[1]]: <div>대시보드</div>,
             [ADMIN_MENU_CONTENT[2]]: <div>회원 관리</div>,
             [ADMIN_MENU_CONTENT[3]]: <div>팀 관리</div>,
