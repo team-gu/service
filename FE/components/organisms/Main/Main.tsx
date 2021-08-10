@@ -123,7 +123,7 @@ export default function Home(): ReactElement {
     <Wrapper img={'/mainPage_background.png'}>
       <form onSubmit={handleLogin}>
         <div className="login-area">
-          <div className="in-head">
+          <div>
             <Image
               className="fixed-logo"
               alt="팀구"
@@ -132,7 +132,7 @@ export default function Home(): ReactElement {
               height={120}
             />
           </div>
-          <div className="field-set log-in">
+          <div>
             <div className="form-inner">
               <div className="id">
                 <Label text="아이디">
