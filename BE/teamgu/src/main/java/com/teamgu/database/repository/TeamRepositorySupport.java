@@ -319,7 +319,7 @@ public class TeamRepositorySupport {
 			String sort = "id";
 			
 			if(sortType.equals("numberOfMembers")) {
-				sort = "nowMember";
+				sort = "now_member";
 			}
 			else if(sortType.equals("teamName")) {
 				sort = "name";
