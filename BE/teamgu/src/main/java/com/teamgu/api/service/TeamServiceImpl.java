@@ -28,7 +28,7 @@ import com.teamgu.database.repository.UserRepository;
 
 @Service("teamService")
 public class TeamServiceImpl implements TeamService {
-
+	
 	@Autowired
 	TeamRepository teamRepository;
 	
@@ -52,9 +52,9 @@ public class TeamServiceImpl implements TeamService {
 	 */
 	@Override
 	public List<TeamListResDto> getTeamList() {
-		
 		List<TeamListResDto> list = new ArrayList<>();
 		List<Team> teamList = teamRepository.findAll();
+		
 		for(int i = 0, size=teamList.size(); i<size; i++) {
 
 			Long teamId = teamList.get(i).getId();
@@ -62,6 +62,7 @@ public class TeamServiceImpl implements TeamService {
 			
 			list.add(team);
 		}
+		
 		return list;
 	}
 	
@@ -76,12 +77,10 @@ public class TeamServiceImpl implements TeamService {
 		List<Long> teamIdList = teamRepositorySupport.getTeamIdbyFilter(teamFilterReqDto);
 		
 		if(teamIdList == null) return null;
-		System.out.println("TeamServiceImpl : " +  teamIdList.size());
 		
 		for(int i = 0, size=teamIdList.size(); i<size; i++) {
 			
 			Long teamId = Long.parseLong(String.valueOf(teamIdList.get(i)));
-			System.out.println("TeamServiceImpl (array) : " + teamId);
 			TeamListResDto team = getTeamInfobyTeamId(teamId);
 			
 			list.add(team);
@@ -102,11 +101,13 @@ public class TeamServiceImpl implements TeamService {
 		Mapping mapping = mappingRepositorySupport.selectMapping(trackCode, stageCode);
 
 		Team team = new Team();
+		
 		team.setUser(user);
 		team.setMapping(mapping);
 		team.setCompleteYn(teamListResDto.getCompleteYn());
 		team.setIntroduce(teamListResDto.getIntroduce());
 		team.setName(teamListResDto.getName());
+		
 		teamRepository.save(team);
 		
 		Long teamId = teamRepositorySupport.getTeamId(team);
@@ -135,7 +136,6 @@ public class TeamServiceImpl implements TeamService {
 	 */		
 	@Override
 	public void updateTeamInfo(TeamListResDto teamListResDto) {
-		// TODO Auto-generated method stub
 		
 		User user = userRepository.getOne(teamListResDto.getLeaderId());
 		int trackCode = codeDetailRepositorySupport.findTtrackCode(teamListResDto.getTrack().getCodeName());

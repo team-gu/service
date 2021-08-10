@@ -5,6 +5,7 @@ import { Session } from 'openvidu-browser';
 
 import { ChatInput, ChatBubble } from '@molecules';
 
+import { postExitRoom } from '@repository/chatRepository';
 import { Chat, ChatNormal } from '@types/chat-type';
 import { useAuthState } from '@store';
 
@@ -62,7 +63,10 @@ export default function ChatRoom({
   };
 
   useEffect(() => {
-    return () => setMessageList([]);
+    return () => {
+      setMessageList([]);
+      postExitRoom({ room_id: roomId, user_id: id });
+    };
   }, []);
 
   useEffect(() => {
@@ -103,8 +107,8 @@ export default function ChatRoom({
                   profileSrc={profileSrc ? profileSrc : '/profile.png'}
                   time={
                     DateTime.now().diff(createAt).toMillis() < 60000
-                      ? 'just now'
-                      : createAt.toRelative()
+                      ? '지금 막'
+                      : createAt.setLocale('ko').toRelative()
                   }
                   message={message}
                   isMe={connectionId === session.connection.connectionId}
@@ -132,7 +136,7 @@ export default function ChatRoom({
                       DateTime.now()
                         .diff(DateTime.fromISO(create_date_time))
                         .toMillis() < 60000
-                        ? 'just now'
+                        ? '지금 막'
                         : DateTime.fromISO(create_date_time)
                             .setLocale('ko')
                             .toRelative()

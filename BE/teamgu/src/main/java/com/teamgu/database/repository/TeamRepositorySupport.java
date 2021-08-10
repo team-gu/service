@@ -52,9 +52,14 @@ public class TeamRepositorySupport {
 	// Team Skill 조회
 	public List<SkillResDto> getTeamSkillsByTeamId(Long teamId) {
 		return jpaQueryFactory
-				.select(Projections.constructor(SkillResDto.class, qCodeDetail.codeDetail, qCodeDetail.Name))
-				.from(qTeamSkill).join(qCodeDetail).on(qCodeDetail.codeDetail.eq(qTeamSkill.skillCode))
-				.where(qTeamSkill.team.id.eq(teamId).and(qCodeDetail.code.code.eq("SK"))).fetch();
+				.select(Projections.constructor
+						(SkillResDto.class, qCodeDetail.codeDetail, qCodeDetail.Name))
+				.from(qTeamSkill)
+				.join(qCodeDetail)
+				.on(qCodeDetail.codeDetail.eq(qTeamSkill.skillCode))
+				.where(qTeamSkill.team.id.eq(teamId)
+						.and(qCodeDetail.code.code.eq("SK")))
+				.fetch();
 	}
 
 	// Team Skill 추가
@@ -67,7 +72,10 @@ public class TeamRepositorySupport {
 
 		String jpql = "INSERT INTO team_skill Values(?1, ?2)";
 
-		em.createNativeQuery(jpql).setParameter(1, skillCode).setParameter(2, teamId).executeUpdate();
+		em.createNativeQuery(jpql)
+		.setParameter(1, skillCode)
+		.setParameter(2, teamId)
+		.executeUpdate();
 
 		et.commit();
 		em.close();
@@ -77,7 +85,11 @@ public class TeamRepositorySupport {
 	// Team Skill 삭제
 	@Transactional
 	public void deleteSkill(Long teamId, int skillCode) {
-		jpaQueryFactory.delete(qTeamSkill).where(qTeamSkill.team.id.eq(teamId).and(qTeamSkill.skillCode.eq(skillCode)))
+		jpaQueryFactory
+		.delete(qTeamSkill)
+		.where(qTeamSkill.team.id
+				.eq(teamId)
+				.and(qTeamSkill.skillCode.eq(skillCode)))
 				.execute();
 	}
 
@@ -85,9 +97,13 @@ public class TeamRepositorySupport {
 	public List<TeamMemberInfoResDto> getTeamMemberInfo(Long teamId) {
 
 		return jpaQueryFactory
-				.select(Projections.constructor(TeamMemberInfoResDto.class, qUser.id, qUser.name,
+				.select(Projections.constructor
+						(TeamMemberInfoResDto.class, qUser.id, qUser.name,
 						qUser.profileServerName, qUser.email))
-				.from(qUser).join(qUserTeam).on(qUser.id.eq(qUserTeam.user.id)).where(qUserTeam.team.id.eq(teamId))
+				.from(qUser)
+				.join(qUserTeam)
+				.on(qUser.id.eq(qUserTeam.user.id))
+				.where(qUserTeam.team.id.eq(teamId))
 				.fetch();
 	}
 	
@@ -161,6 +177,7 @@ public class TeamRepositorySupport {
 	// Team 구성 완료 여부
 	@Transactional
 	public void completeTeamBuilding(Long teamId) {
+		
 		short value = jpaQueryFactory
 				.select(qTeam.completeYn)
 				.from(qTeam)
@@ -192,6 +209,7 @@ public class TeamRepositorySupport {
 
 	// Team 구성 취소 시 모든 유저 삭제
 	public void deleteAllTeamMemberbyUserId(Long teamId) {
+		
 		EntityManager em = emf.createEntityManager();
 		EntityTransaction et = em.getTransaction();
 
@@ -214,6 +232,7 @@ public class TeamRepositorySupport {
 	
 	// Team 생성 가능 여부 체크
 	public boolean checkTeamBuilding(Long userId, String trackName) {
+		
 		EntityManager em = emf.createEntityManager();
 		
 		String jpql = "select user_id from user_team where team_id in " 
@@ -300,7 +319,7 @@ public class TeamRepositorySupport {
 			String sort = "id";
 			
 			if(sortType.equals("numberOfMembers")) {
-				sort = "nowMember";
+				sort = "now_member";
 			}
 			else if(sortType.equals("teamName")) {
 				sort = "name";
@@ -331,11 +350,11 @@ public class TeamRepositorySupport {
 
 			for(int i = 0; i<tracksSize; i++) {
 				if(i == 0) {
-					trackFilter.append("in (\"");
+					trackFilter.append("in (");
 				}
-				trackFilter.append(tracks.get(i).getCodeName());
+				trackFilter.append(tracks.get(i).getCode());
 				if(i == (tracksSize -1)) {
-					trackFilter.append("\")\n");
+					trackFilter.append(")\n");
 				}
 				else {
 					trackFilter.append("\", \"");
@@ -350,8 +369,7 @@ public class TeamRepositorySupport {
 					"on team.mapping_id = mapping.id\r\n" + 
 					"where team_skill.skill_code " + skillFilter.toString() + "\r\n" + 
 					"and mapping_id in\r\n" + 
-					"(select id from mapping where stage_code = "+stageCode+" and track_code in \r\n" + 
-					"(select code_detail from code_detail where name " + trackFilter.toString()  +"))\r\n" + 
+					"(select id from mapping where project_code = " + projectCode + " and stage_code = "+stageCode+" and track_code " + trackFilter.toString()  +")\r\n" + 
 					"order by team.complete_yn, " + orderBy;
 			
 		}
@@ -387,30 +405,15 @@ public class TeamRepositorySupport {
 	
 	// Check Team Leader
 	public Boolean checkTeamLeader(Long userId, int projectCode) {
-		// TODO Auto-generated method stub
+
 		String studentNumber = jpaQueryFactory
 		.select(qUser.studentNumber)
 		.from(qUser)
 		.where(qUser.id.eq(userId))
 		.fetchOne();
-		System.out.println(studentNumber);
+		
 		if(studentNumber == null) return false;
 		int stageCode = ((studentNumber.charAt(0) - '0') * 10 + studentNumber.charAt(1) - '0') + 100;
-//		select leader_id from team
-//		where mapping_id in (select id from mapping where project_code = 101 
-//		and stage_code = 105)
-//		and id in (select team_id from user_team where user_id = 9);
-//		select * from user_team where user_id = 9
-		
-//		jpaQueryFactory
-//		.update(qTeam)
-//		.set(qTeam.nowMember,  (JPAExpressions
-//				.select(qUser.id.count().intValue())
-//				.from(qUserTeam)
-//				.where(qUserTeam.team.id.eq(teamId)))
-//				)
-//		.where(qTeam.id.eq(teamId))
-//		.execute();
 		
 		Long leaderId = 
 		jpaQueryFactory
@@ -427,34 +430,9 @@ public class TeamRepositorySupport {
 						.where(qUserTeam.user.id.eq(userId)))))
 		.fetchOne().longValue();
 		
-		System.out.println(leaderId +" / " + userId );
-		
 		if(leaderId == userId)
 			return true;
 		else 
 			return false;
 	}
-
-//	public void createTeam(TeamListResDto teamListResDto) {
-//	
-//		
-//	}
-
-//	QTeam qTeam = QTeam.team;
-//	QMapping qMapping = QMapping.mapping;
-//	QCodeDetail qCodeDetail = QCodeDetail.codeDetail1;
-//	
-//	public List<TeamListResDto> selectTeam(){
-//		
-//		return jpaQueryFactory
-//				.select(qTeam.id, qTeam.completeYn, qTeam.maxMember, qTeam.user.id, qCodeDetail.Name, qTeam.name)
-//				.from(qTeam)
-//				.leftJoin(qMapping)
-//				.join(qMapping, qCodeDetail)
-//				.on(qMapping.trackCode.eq(qCodeDetail.codeDetail))
-//				.where(qCodeDetail.Name.eq("TR"))
-//				.fetch();
-//		
-//	}
-	
 }

@@ -92,8 +92,14 @@ public class ChatServiceImpl implements ChatService{
 		//최신메세지가 와있는 채팅방이 가장 위로 향한다
 		Collections.sort(chatRoomResDtoList,new Comparator<ChatRoomResDto>() {
 			@Override
-			public int compare(ChatRoomResDto o1, ChatRoomResDto o2) {
-				return o2.getSend_date_time().compareTo(o1.getSend_date_time());
+			public int compare(ChatRoomResDto o1, ChatRoomResDto o2) {				
+				boolean exist1 = o1.getUnread_message_count()>0;
+				boolean exist2 = o2.getUnread_message_count()>0;
+				if((exist1&&exist2) || (!exist1&&!exist2))
+					return o2.getSend_date_time().compareTo(o1.getSend_date_time());
+				else
+					return Long.compare(o2.getUnread_message_count(),o1.getUnread_message_count());
+				 
 			}
 		});
 		log.debug("반환하는 chatRoomResDtoList 갯수 : "+chatRoomResDtoList.size());

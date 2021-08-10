@@ -125,12 +125,16 @@ const Wrapper = styled.div`
 
     .flex-container {
       display: flex;
+
+      > div:nth-child(2) {
+        flex-grow: 0;
+        flex-shrink: 0;
+      }
     }
 
     .add-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
+      font-size: 35px;
+      text-align: center;
 
       position: relative;
       z-index: 1;
@@ -172,6 +176,33 @@ const Wrapper = styled.div`
     padding-top: 30px;
     padding-bottom: 30px;
   }
+
+  .incorrect-select-shake {
+    animation: shake 0.2s ease-in-out 0s 2;
+    box-shadow: 0 0 5px crimson;
+    outline: none;
+    border: 1px solid crimson;
+  }
+
+  .incorrect-track-add-btn {
+    animation: shake 0.2s ease-in-out 0s 2;
+    box-shadow: 1px 0 5px crimson;
+  }
+
+  @keyframes shake {
+    0% {
+      margin-left: 0rem;
+    }
+    25% {
+      margin-left: 0.5rem;
+    }
+    75% {
+      margin-left: -0.5rem;
+    }
+    100% {
+      margin-left: 0rem;
+    }
+  }
 `;
 
 interface ProjectManageModalProps {
@@ -192,6 +223,7 @@ export default function ProjectManageModal({
   const projcetStartDateInputRef = useRef<HTMLInputElement>(null);
   const projcetEndDateInputRef = useRef<HTMLInputElement>(null);
   const projectTrackInputRef = useRef<HTMLInputElement>(null);
+  const projectTrackBtnRef = useRef<HTMLInputElement>(null);
 
   const [tracks, setTracks] = useState(defaultValue ? defaultValue.track : []);
 
@@ -247,31 +279,35 @@ export default function ProjectManageModal({
 
   const validateAndMakeProject = () => {
     if (isNotValidate(projectNameInputRef)) {
-      console.log('이름입력!!');
+      addClassNotValidateInput(projectNameInputRef);
       return false;
     }
     if (isNotValidate(projectStageInputRef)) {
-      console.log('기수입력!!');
+      addClassNotValidateInput(projectStageInputRef);
       return false;
     }
     if (isNotValidate(projectCategoryInputRef)) {
-      console.log('분류입력!!');
+      addClassNotValidateInput(projectCategoryInputRef);
       return false;
     }
     if (isNotValidate(projcetActivateDateInputRef)) {
-      console.log('활성화시작날짜입력!!');
+      addClassNotValidateInput(projcetActivateDateInputRef);
       return false;
     }
     if (isNotValidate(projcetStartDateInputRef)) {
-      console.log('프로젝트시작날짜입력!!');
+      addClassNotValidateInput(projcetStartDateInputRef);
       return false;
     }
     if (isNotValidate(projcetEndDateInputRef)) {
-      console.log('프로젝트끝날짜입력!!');
+      addClassNotValidateInput(projcetEndDateInputRef);
       return false;
     }
     if (!tracks || tracks.length === 0) {
-      console.log('트랙입력!!!');
+      addClassNotValidateInput(projectTrackInputRef);
+      projectTrackBtnRef.current?.classList.add('incorrect-track-add-btn');
+      setTimeout(() => {
+        projectTrackBtnRef.current?.classList.remove('incorrect-track-add-btn');
+      }, 1000);
       return false;
     }
 
@@ -300,6 +336,14 @@ export default function ProjectManageModal({
       return false;
     }
     return true;
+  };
+
+  const addClassNotValidateInput = (ref: RefObject<HTMLInputElement>) => {
+    ref.current?.focus();
+    ref.current?.classList.add('incorrect-select-shake');
+    setTimeout(() => {
+      ref.current?.classList.remove('incorrect-select-shake');
+    }, 1000);
   };
 
   return (
@@ -407,7 +451,7 @@ export default function ProjectManageModal({
                   ref={projectTrackInputRef}
                   onKeyPress={handleEnterInInput}
                 />
-                <div className="add-btn">
+                <div className="add-btn" ref={projectTrackBtnRef}>
                   <Icon
                     iconName="add"
                     color="white"
