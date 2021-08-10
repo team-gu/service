@@ -77,7 +77,7 @@ const Wrapper = styled.div<{ isComplete: boolean }>`
           margin-top: 10px;
           > div {
             display: inline-block;
-            margin: 0 5px;
+            margin: 0 5px 5px;
           }
         }
       }
