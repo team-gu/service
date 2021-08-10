@@ -27,6 +27,7 @@ import com.teamgu.api.service.TeamServiceImpl;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 
 @Api(value = "팀 관리 API", tags = { "Team." })
 @RestController
@@ -40,6 +41,7 @@ public class TeamController {
 	@ApiOperation(value = "유저 자동 완성 기능")
 	@PostMapping("/search")
 	public ResponseEntity<? extends BasicResponse> getUserAutoCorrect(@RequestBody TeamAutoCorrectReqDto teamAutoCorrectReqDto){
+		
 		
 		List<TeamAutoCorrectResDto> list = teamService.getUserAutoCorrect(teamAutoCorrectReqDto);
 
@@ -66,8 +68,6 @@ public class TeamController {
 		Long userId = checkTeamLeader.getUserId();
 		int projectCode = checkTeamLeader.getProject().getCode();
 		
-		
-		
 		return ResponseEntity.ok(new CommonResponse<Boolean>(teamService.checkTeamLeader(userId, projectCode)));
 	}
 
@@ -86,7 +86,6 @@ public class TeamController {
 	@PostMapping
 	public ResponseEntity<? extends BasicResponse> getTeamListbyFilter(@RequestBody TeamFilterReqDto teamFilterReqDto) {
 
-		System.out.println(teamFilterReqDto.getUserId());
 		
 		List<TeamListResDto> teamListResDto = teamService.getTeamListbyFilter(teamFilterReqDto);
 			
