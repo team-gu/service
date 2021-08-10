@@ -96,6 +96,7 @@ const Wrapper = styled(motion.div)`
 
 const CHAT_LIST = 0;
 const CHAT_ROOM = 1;
+const IS_EDIT = true;
 
 export default function ChatRoute(): ReactElement {
   const dispatch = useAppDispatch();
@@ -110,6 +111,8 @@ export default function ChatRoute(): ReactElement {
   const [userList, setUserList] = useState([]);
 
   const [route, setRoute] = useState(CHAT_LIST);
+
+  const [isEdit, setIsEdit] = useState(!IS_EDIT);
 
   const {
     handleSendMessage,
@@ -245,12 +248,16 @@ export default function ChatRoute(): ReactElement {
                 color="white"
                 func={() => setRoute(CHAT_LIST)}
               />
-              <Text
-                className="header-title"
-                text={roomName}
-                fontSetting="n16b"
-                color="white"
-              />
+              {isEdit === IS_EDIT ? (
+                <Text
+                  className="header-title"
+                  text={roomName}
+                  fontSetting="n16b"
+                  color="white"
+                />
+              ) : (
+                <></>
+              )}
               <div className="fixed-two">
                 <Icon
                   iconName="support_agent"

@@ -91,7 +91,7 @@ export default function FloatingButton({
             data: { unreadcount },
           },
         } = await getNotificationNumber(id);
-        console.log(unreadCountRef.current, unreadcount);
+
         if (unreadCountRef.current < unreadcount) {
           await setShake(true);
           setTimeout(() => {

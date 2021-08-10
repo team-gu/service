@@ -51,6 +51,7 @@ export default function ChatList({
             unread_message_count,
           }: UserList) => (
             <ProfileContainer
+              key={chat_room_id}
               name={room_name}
               content={last_chat_message}
               isActive={false}

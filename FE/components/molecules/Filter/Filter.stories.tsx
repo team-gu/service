@@ -10,10 +10,8 @@ export default {
 const Template: Story = ({ props }) => {
   const [contents, setContents] = useState(props);
 
-  console.log(contents);
   const handleData = (keyOne: string, keyTwo: string) => {
     const contentsTemp = { ...contents };
-    console.log(keyOne, keyTwo);
     contentsTemp[keyOne][keyTwo] = !contentsTemp[keyOne][keyTwo];
 
     setContents(contentsTemp);

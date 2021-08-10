@@ -89,8 +89,6 @@ export default function ChatInput({ func }: ChatInputProps): ReactElement {
     chatInputRef.current.focus();
   }, []);
 
-  console.log(message);
-
   return (
     <Wrapper>
       <div className="container">
