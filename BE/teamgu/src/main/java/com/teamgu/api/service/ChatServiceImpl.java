@@ -25,7 +25,6 @@ import com.teamgu.database.repository.ChatRoomRepositorySupport;
 import com.teamgu.database.repository.UserChatRoomRepository;
 import com.teamgu.database.repository.UserChatRoomRepositorySupport;
 import com.teamgu.database.repository.UserRepository;
-import com.teamgu.mapper.ChatMapper;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -142,6 +141,9 @@ public class ChatServiceImpl implements ChatService{
 		chat.setMessage(chatReqDto.getMessage());
 		if(chatReqDto.getType()==null || chatReqDto.getType().equals(""))
 			chatReqDto.setType("NORMAL");
+		else if(chatReqDto.getType().contains("TEAM_INVITE")) {//팀에 관한 type이라면
+			chat.setTeamId(chatReqDto.getTeam_id());//team id를 설정해준다
+		}
 		chat.setType(chatReqDto.getType());
 		chat.setUser(userRepository.getOne(chatReqDto.getSender_id()));//set sender_id
 		chat.setChatRoom(chatRoomRepository.getOne(chatReqDto.getRoom_id()));//set room_id		
