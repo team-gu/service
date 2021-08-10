@@ -46,3 +46,9 @@ export const postExitRoom = async (param: any) =>
     type: 'post',
     param,
   });
+
+export const getRoomUserList = async (param: any) =>
+  await api({
+    url: `/api/chat/room/show/${param}`,
+    type: 'get',
+  });
