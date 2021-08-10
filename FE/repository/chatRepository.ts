@@ -27,8 +27,15 @@ export const postCheckRoom = async (param: any) =>
   });
 
 export const postCreateRoom = async (param: any) =>
-  await api ({
-    url: '/api/chat/room/check',
+  await api({
+    url: '/api/chat/room/regist',
     type: 'post',
-    param
+    param,
+  });
+
+export const postInviteRoom = async (param: any) =>
+  await api({
+    url: '/api/chat/room/invite',
+    type: 'post',
+    param,
   });
