@@ -91,20 +91,16 @@ export default function TeamStatus(): ReactElement {
   }, []);
 
   useEffect(() => {
-    console.log('search by filter');
     renderTeams(SERACH_BY_FILTER);
     setSearchWhat(SERACH_BY_FILTER);
   }, [sortBy, sortAsc, payload]);
 
   useEffect(() => {
-    console.log('search by userid');
     renderTeams(SEARCH_BY_USERID);
     setSearchWhat(SEARCH_BY_USERID);
   }, [containsUserId]);
 
   const renderTeams = (by?: boolean) => {
-    console.log('renderTeams');
-
     let payloadTemp = {
       project: payload.project,
       filteredSkills:
