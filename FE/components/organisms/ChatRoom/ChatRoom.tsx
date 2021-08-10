@@ -5,6 +5,7 @@ import { Session } from 'openvidu-browser';
 
 import { ChatInput, ChatBubble } from '@molecules';
 
+import { postExitRoom } from '@repository/chatRepository';
 import { Chat, ChatNormal } from '@types/chat-type';
 import { useAuthState } from '@store';
 
@@ -62,7 +63,10 @@ export default function ChatRoom({
   };
 
   useEffect(() => {
-    return () => setMessageList([]);
+    return () => {
+      setMessageList([]);
+      postExitRoom({ room_id: roomId, user_id: id });
+    };
   }, []);
 
   useEffect(() => {
