@@ -2,6 +2,7 @@ package com.teamgu.database.repository;
 
 import com.teamgu.api.dto.req.UserPoolReqDto;
 import io.micrometer.core.instrument.util.StringUtils;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 
@@ -10,6 +11,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
 import java.util.List;
 
+@Log4j2
 public class UserPoolRepositoryImpl implements UserPoolRepositoryCustom {
 
     private static short majorCode;
@@ -25,9 +27,16 @@ public class UserPoolRepositoryImpl implements UserPoolRepositoryCustom {
 
     @Override
     public List<Object[]> findUsersByFilter(UserPoolReqDto userPoolReqDto) {
-        studentNum = userPoolReqDto.getStudentNumber(); //무조건 들어와야하는 값
-        prjCode = userPoolReqDto.getProject(); //무조건 들어와야하는 값
-        stage = userPoolReqDto.getStudentNumber().substring(0, 2); //무조건 들어와야하는 값
+        log.info(userPoolReqDto);
+
+        try {
+            studentNum = userPoolReqDto.getStudentNumber(); //무조건 들어와야하는 값
+            prjCode = userPoolReqDto.getProject(); //무조건 들어와야하는 값
+            stage = userPoolReqDto.getStudentNumber().substring(0, 2); //무조건 들어와야하는 값
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
 
         regList = userPoolReqDto.getRegion();
         posList = userPoolReqDto.getPosition();
