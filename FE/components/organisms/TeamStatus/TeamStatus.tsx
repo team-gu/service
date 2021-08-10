@@ -54,8 +54,10 @@ export default function TeamStatus(): ReactElement {
   const [sortAsc, setSortAsc] = useState(true);
   const [containsUserId, setContainsUserId] = useState<number>();
   const [userHasTeam, setUserHasTeam] = useState<boolean>();
-  const [filterClear, setFilterClear] = useState(false);
-  const [userFilterClear, setUserFilterClear] = useState(false);
+  const [searchWhat, setSearchWhat] = useState(false);
+
+  const SERACH_BY_FILTER = true;
+  const SEARCH_BY_USERID = false;
 
   const dispatch = useAppDispatch();
 
@@ -89,30 +91,33 @@ export default function TeamStatus(): ReactElement {
   }, []);
 
   useEffect(() => {
-    setFilterClear(false);
-    setUserFilterClear(true);
-    setContainsUserId(undefined);
-    renderTeams(true);
+    console.log('search by filter');
+    renderTeams(SERACH_BY_FILTER);
+    setSearchWhat(SERACH_BY_FILTER);
   }, [sortBy, sortAsc, payload]);
 
   useEffect(() => {
-    if (containsUserId) {
-      setFilterClear(true);
-      setPayload({...payload, skills: [], track: []})
-      setUserFilterClear(false);
-    }
-    
-    renderTeams(false);
+    console.log('search by userid');
+    renderTeams(SEARCH_BY_USERID);
+    setSearchWhat(SEARCH_BY_USERID);
   }, [containsUserId]);
 
-  const renderTeams = (byFilters?: boolean) => {
+  const renderTeams = (by?: boolean) => {
+    console.log('renderTeams');
+
     let payloadTemp = {
       project: payload.project,
-      filteredSkills: payload.skills?.map((s) => ({ code: s })) || [],
-      filteredTracks: payload.track?.map((t) => ({ code: t })) || [],
+      filteredSkills:
+        by === SEARCH_BY_USERID
+          ? []
+          : payload.skills?.map((s) => ({ code: s })) || [],
+      filteredTracks:
+        by === SEARCH_BY_USERID
+          ? []
+          : payload.track?.map((t) => ({ code: t })) || [],
       sortBy,
       sortAsc,
-      userId: byFilters ? 0 : containsUserId || 0,
+      userId: by === SERACH_BY_FILTER ? 0 : containsUserId || 0,
       studentNumber,
     };
 
@@ -200,7 +205,7 @@ export default function TeamStatus(): ReactElement {
                   contents={filterContents[each]}
                   func={handleFilter}
                   key={index}
-                  clear={filterClear}
+                  clear={searchWhat === SEARCH_BY_USERID}
                 />
               ) : (
                 <Filter
@@ -208,7 +213,7 @@ export default function TeamStatus(): ReactElement {
                   contents={filterContents[each]}
                   func={handleFilterArray}
                   key={index}
-                  clear={filterClear}
+                  clear={searchWhat === SEARCH_BY_USERID}
                 />
               )),
           )}
@@ -217,7 +222,7 @@ export default function TeamStatus(): ReactElement {
         <div className="team-status-header">
           <UserSelectTeamAutoComplete
             handleChangeUserSelect={handleChangeUserSelect}
-            clear={userFilterClear}
+            clear={searchWhat === SERACH_BY_FILTER}
           />
           <div className="sort-container">
             <div className="sort-select">
