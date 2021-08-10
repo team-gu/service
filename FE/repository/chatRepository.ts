@@ -52,3 +52,9 @@ export const getRoomUserList = async (param: any) =>
     url: `/api/chat/room/show/${param}`,
     type: 'get',
   });
+
+export const getNotificationNumber = async (param: any) =>
+  await api({
+    url: `/api/chat/unread/${param}`,
+    type: 'get',
+  });
