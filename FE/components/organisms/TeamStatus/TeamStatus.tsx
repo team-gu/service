@@ -15,7 +15,6 @@ import { MemberOption, Team } from '@utils/type';
 import { useAuthState, useAppDispatch, setLoading } from '@store';
 import { getEachFiltersCodeList } from '@repository/filterRepository';
 import {
-  getTeams,
   getTeamsFiltered,
   getUserHasTeam,
 } from '@repository/teamRepository';
@@ -35,17 +34,19 @@ const sortByOptions: OptionsType<OptionTypeBase> = [
   },
 ];
 
+interface Payload {
+  project?: number;
+  skills?: number[];
+  studentNumber?: string;
+  track?: number[];
+}
+
 export default function TeamStatus(): ReactElement {
   const {
     user: { id: userId, projectCode, studentNumber },
   } = useAuthState();
   const [filterContents, setFilterContents] = useState<any>({});
-  const [payload, setPayload] = useState<{
-    project?: number;
-    skills?: number[];
-    studentNumber?: string;
-    track?: number[];
-  }>({});
+  const [payload, setPayload] = useState<Payload>({});
   const [showTeamManageModal, setShowTeamManageModal] = useState(false);
   const [selectedTeamInfo, setSelectedTeaminfo] = useState<Team>();
   const [teams, setTeams] = useState<Team[]>([]);
