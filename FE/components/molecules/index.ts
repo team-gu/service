@@ -17,6 +17,8 @@ import UserSelectAutoComplete from './UserSelectAutoComplete';
 import UserSelectChatAutoComplete from './UserSelectChatAutoComplete';
 import SkillSelectAutoComplete from './SkillSelectAutoComplete';
 import ProjectCard from './ProjectCard';
+import DonutChart from './DonutChart';
+import BigDonutChart from './BigDonutChart';
 
 export {
   Button,
@@ -38,4 +40,6 @@ export {
   UserSelectChatAutoComplete,
   SkillSelectAutoComplete,
   ProjectCard,
+  DonutChart,
+  BigDonutChart,
 };
