@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
@@ -24,13 +25,16 @@ public class UserInfoReqDto {
 	@ApiModelProperty(name = "wishPosition", example = "Front")
 	String wishPosition;
 	
-	@ApiModelProperty(name = "wishTrack")
+	@ApiModelProperty(name = "wishTrack", example = "[\"웹 기술\", \"웹 디자인\"]")
 	List<String> wishTracks;
 	
 	@ApiModelProperty(name = "introduce", example = "안녕하세요! 할말이 없어요!")
 	String introduce;
 	
-	@ApiModelProperty(name = "skill")
+	@ApiModelProperty(name = "skill", example = "[\"C\", \"Java\"]")
 	List<String> skills;
+
+	@ApiModelProperty(name = "profile image")
+	MultipartFile profileImage;
 	
 }
