@@ -98,6 +98,7 @@ export default function TeamStatus(): ReactElement {
   useEffect(() => {
     if (containsUserId) {
       setFilterClear(true);
+      setPayload({...payload, skills: [], track: []})
       setUserFilterClear(false);
     }
     
