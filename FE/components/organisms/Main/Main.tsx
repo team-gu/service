@@ -41,6 +41,7 @@ const Wrapper = styled.div<{ img: string }>`
       top: 0;
       left: 0;
       width: 100%;
+      box-shadow: none;
     }
   }
   .form-inner {
