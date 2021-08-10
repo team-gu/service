@@ -22,3 +22,56 @@ export const DUMMY_PROJECTS = [
     endDate: DateTime.fromISO('2021-10-30T23:59:59.000+09:00'),
   },
 ];
+
+export const ADMIN_TEAM_DATA = [
+  {
+    title: '전체',
+    data: [
+      { name: '팀 완성', value: 31 },
+      { name: '팀 미완성', value: 71 },
+    ],
+  },
+  {
+    title: '서울',
+    data: [
+      { name: '팀 완성', value: 5 },
+      { name: '팀 미완성', value: 22 },
+    ],
+  },
+  {
+    title: '대전',
+    data: [
+      { name: '팀 완성', value: 1 },
+      { name: '팀 미완성', value: 12 },
+    ],
+  },
+  {
+    title: '구미',
+    data: [
+      { name: '팀 완성', value: 2 },
+      { name: '팀 미완성', value: 5 },
+    ],
+  },
+  {
+    title: '광주',
+    data: [
+      { name: '팀 완성', value: 2 },
+      { name: '팀 미완성', value: 7 },
+    ],
+  },
+];
+
+export const ADMIN_TRACK_DATA = [
+  {
+    title: '웹 기술',
+    data: 24,
+  },
+  {
+    title: '웹 디자인',
+    data: 14,
+  },
+  {
+    title: '웹 IoT',
+    data: 9,
+  },
+];
