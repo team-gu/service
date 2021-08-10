@@ -17,6 +17,7 @@ import UserSelectAutoComplete from './UserSelectAutoComplete';
 import UserSelectTeamAutoComplete from './UserSelectTeamAutoComplete';
 import UserSelectChatAutoComplete from './UserSelectChatAutoComplete';
 import SkillSelectAutoComplete from './SkillSelectAutoComplete';
+import ProjectCard from './ProjectCard';
 
 export {
   Button,
@@ -38,4 +39,5 @@ export {
   UserSelectChatAutoComplete,
   SkillSelectAutoComplete,
   UserSelectTeamAutoComplete,
+  ProjectCard,
 };

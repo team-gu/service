@@ -1,20 +1,19 @@
-import { ReactElement, useState } from 'react';
+import { ReactElement, useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 import { Text } from '@atoms';
 import { SimpleSelect } from '@molecules';
 import { Project } from '@utils/type';
+import { ADMIN_MENU_CONTENT } from '@utils/constants';
+import { OptionTypeBase } from 'react-select';
 
 const Wrapper = styled.div`
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  width: 200px;
+  position: relative;
 
   display: flex;
   flex-direction: column;
   box-shadow: 3px 0px 5px rgba(55, 53, 47, 0.4);
+  height: 100%;
 
   .sidebar-header {
     flex: 0 0 100px;
@@ -28,6 +27,13 @@ const Wrapper = styled.div`
     .selected-project-info {
       flex: 1;
       text-align: center;
+
+      .current-project-text {
+        cursor: pointer;
+        text-decoration: underline;
+        text-decoration-thickness: 1px;
+        text-underline-offset: 3px;
+      }
     }
   }
 
@@ -39,7 +45,7 @@ const Wrapper = styled.div`
 
     background-color: #3848a0;
     color: white;
-    padding-top: 60px;
+    padding: 60px 0;
 
     > div {
       margin-left: 20px;
@@ -48,26 +54,18 @@ const Wrapper = styled.div`
   }
 `;
 
-export const MENU_CONTENT = [
-  '프로젝트 관리',
-  '대시보드',
-  '회원 관리',
-  '팀 관리',
-  '공지사항 관리',
-];
-
 interface AdminMenuSidebarLeftProps {
-  changeMenu: (selectedMenu: number) => void;
-  changeProject: (selectedProjectId: number) => void;
+  onChangeMenu: (selectedMenu: number) => void;
+  onChangeProject: (selectedProjectId: number) => void;
   projects: Project[];
 }
 
 export default function AdminMenuSidebarLeft({
-  changeMenu,
-  changeProject,
+  onChangeMenu,
+  onChangeProject,
   projects,
 }: AdminMenuSidebarLeftProps): ReactElement {
-  const menuOptions = MENU_CONTENT.map((v, i) => {
+  const menuOptions = ADMIN_MENU_CONTENT.map((v, i) => {
     return { id: i, title: v, label: v, value: i };
   });
 
@@ -76,25 +74,31 @@ export default function AdminMenuSidebarLeft({
   });
 
   const [selectedMenu, setSelectedMenu] = useState(0);
-  const [selectedProject, setSelectedProject] = useState({
-    ...projects[0],
-    label: projects[0].name,
-    value: projects[0].id,
-  });
+  const [selectedProject, setSelectedProject] = useState<OptionTypeBase>();
   const [clickSelectProject, setClickSelectProject] = useState(false);
+
+  useEffect(() => {
+    if (projects && projects.length > 0) {
+      setSelectedProject({
+        ...projects[0],
+        label: projects[0].name,
+        value: projects[0].id,
+      });
+    }
+  }, [projects]);
 
   const handleChangeMenu = (index: number) => {
     setSelectedMenu(index);
-    changeMenu(index);
+    onChangeMenu(index);
   };
 
-  const handleChnageSelectProject = () => {
+  const handleChangeSelectProject = () => {
     setClickSelectProject(!clickSelectProject);
   };
 
   const handleChangeProject = (project: Project) => {
     setSelectedProject({ ...project, label: project.name, value: project.id });
-    changeProject(project.id);
+    onChangeProject(project.id);
   };
 
   const customStyles = {
@@ -135,22 +139,25 @@ export default function AdminMenuSidebarLeft({
             <SimpleSelect
               options={projectOptions}
               onChange={handleChangeProject}
-              onBlur={handleChnageSelectProject}
+              onBlur={handleChangeSelectProject}
               customStyles={customStyles}
               value={selectedProject}
+              autofocus={true}
             />
           ) : (
-            <div onClick={handleChnageSelectProject}>
-              <Text text={selectedProject.name} fontSetting="n20m" />
+            <div
+              onClick={handleChangeSelectProject}
+              className="current-project-text"
+            >
+              <Text text={selectedProject?.name} fontSetting="n20m" />
             </div>
           )}
         </div>
       </div>
       <div className="sidebar-content">
         {menuOptions.map(({ id, title }) => (
-          <div onClick={() => handleChangeMenu(id)}>
+          <div key={id} onClick={() => handleChangeMenu(id)}>
             <Text
-              key={id}
               text={title}
               fontSetting={id === selectedMenu ? 'n26b' : 'n16m'}
               color={id === selectedMenu ? 'white' : '#eeeeee'}

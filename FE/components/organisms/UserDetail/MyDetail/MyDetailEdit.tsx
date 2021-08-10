@@ -1,4 +1,4 @@
-import { ReactElement, SyntheticEvent, useState } from 'react';
+import { ReactElement, SyntheticEvent, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Icon, Textarea, Text } from '@atoms';
 import {
@@ -13,16 +13,17 @@ import {
   useAppDispatch,
   setProjects,
   setAwards,
-  setUserDetail,
   displayModal,
+  setUserDetail,
 } from '@store';
 import {
   deleteProject,
   deleteAward,
   updateDetailInformation,
 } from '@repository/userprofile';
+import { getEachFiltersCodeList } from '@repository/filterRepository';
 import { MODALS } from '@utils/constants';
-import { Skill } from '@utils/type';
+import { Skill, SkillOption } from '@utils/type';
 import SetImageModal from '../MyDetail/Modal/SetImageModal';
 
 const Wrapper = styled.div`
@@ -278,107 +279,6 @@ const Award = styled.div`
   }
 `;
 
-const dummy: Skill[] = [
-  {
-    codeName: 'React',
-    code: 1,
-    backgroundColor: '#61DAFB',
-    color: '#000',
-  },
-  {
-    codeName: 'Spring',
-    code: 2,
-    backgroundColor: '#6DB43D',
-    color: '#000',
-  },
-  {
-    codeName: 'MySQL',
-    code: 3,
-    backgroundColor: '#005C84',
-    color: '#000',
-  },
-  {
-    codeName: 'WebRTC',
-    code: 4,
-    backgroundColor: '#AC2523',
-    color: '#000',
-  },
-  {
-    codeName: 'JPA',
-    code: 5,
-    backgroundColor: '#010101',
-    color: '#fff',
-  },
-  {
-    codeName: 'HTML',
-    code: 6,
-    backgroundColor: '#E44D26',
-    color: '#000',
-  },
-  {
-    codeName: 'CSS',
-    code: 7,
-    backgroundColor: '#0B74B8',
-    color: '#000',
-  },
-  {
-    codeName: 'JavaScript',
-    code: 8,
-    backgroundColor: '#DAB92C',
-    color: '#000',
-  },
-  {
-    codeName: 'Vue',
-    code: 9,
-    backgroundColor: '#00C180',
-    color: '#000',
-  },
-  {
-    codeName: 'Java',
-    code: 10,
-    backgroundColor: '#E05141',
-    color: '#000',
-  },
-];
-
-const trackOptions = [
-  {
-    value: '웹 IOT',
-    label: '웹 IOT',
-  },
-  {
-    value: '웹 기술',
-    label: '웹 기술',
-  },
-  {
-    value: '웹 디자인',
-    label: '웹 디자인',
-  },
-];
-
-const SkillOptions = [
-  {
-    value: 'Front',
-    label: 'Front',
-  },
-  {
-    value: 'Back',
-    label: 'Back',
-  },
-];
-
-const getSkills = (skills: string[]) => {
-  return skills.map((skill) => {
-    return {
-      codeName: skill,
-      code: dummy.find((el) => el.codeName === skill)?.code,
-      backgroundColor: dummy.find((el) => el.codeName === skill)
-        ?.backgroundColor,
-      color: dummy.find((el) => el.codeName === skill)?.color,
-    };
-  });
-};
-
 const getDate = (date: Date) => {
   return date
     ? JSON.stringify(date).split('').slice(1, 11).join('')
@@ -395,13 +295,30 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
 
   // 실제 제출하게될 이미지 파일
   const [submitImage, setSubmitImage] = useState<File>();
+  const [useableSkills, setUseableSkills] = useState<
+    { code: number; codeName: string }[]
+  >(user.skills);
 
-  const [useableSkills, setUseableSkills] = useState<string[]>(user.skills);
   const [introduce, setIntroduce] = useState(user.introduce);
   // TODO 이거 배열로 들어올지 아니면 문자열 하나로 들어올지 확실히 해야함.
-  const [track, setTrack] = useState<string>(user.wishTrack[0]);
+  const [track, setTrack] = useState<{ code: number; codeName: string }[]>(
+    user.wishTrack[0],
+  );
   const [position, setPosition] = useState<string>(user.wishPositionCode);
   const [showCroppedArea, setShowCroppedArea] = useState(false);
+
+  const [trackOptions, setTrackOptions] = useState([]);
+  const [positionOptions, setPositionOptions] = useState([]);
+
+  useEffect(() => {
+    (async () => {
+      const {
+        data: { data },
+      } = await getEachFiltersCodeList(user.studentNumber);
+      setTrackOptions(data.트랙);
+      setPositionOptions(data.역할);
+    })();
+  }, []);
 
   const handleImage = (image: string) => {
     setImage(image);
@@ -419,8 +336,25 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
     setIntroduce(e.target.value);
   };
 
-  const changeUseableSkills = (value: { id: number; name: string }[]) => {
-    setUseableSkills(value.map((skill) => skill.name));
+  const changeUseableSkills = (value: Skill[]) => {
+    setUseableSkills(
+      value.map((skill) => {
+        return {
+          code: skill.code,
+          codeName: skill.codeName,
+        };
+      }),
+    );
+  };
+
+  const getOptions = (options: any) => {
+    return options.map((option: any) => {
+      return {
+        label: option.codeName,
+        value: option.codeName,
+        code: option.code,
+      };
+    });
   };
 
   const onSubmit = async (e: SyntheticEvent) => {
@@ -521,12 +455,15 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
             <div className="track">
               <Label text="트랙">
                 <SimpleSelect
-                  options={trackOptions}
+                  options={getOptions(trackOptions)}
                   onChange={(track) => {
-                    setTrack(track.value);
+                    setTrack({ codeName: track.value, code: track.code });
                   }}
                   value={[
-                    { name: user.wishTrack[0], label: user.wishTrack[0] },
+                    {
+                      name: user.wishTrack[0].codeName,
+                      label: user.wishTrack[0].codeName,
+                    },
                   ]}
                 />
               </Label>
@@ -534,7 +471,7 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
             <div className="position">
               <Label text="포지션">
                 <SimpleSelect
-                  options={SkillOptions}
+                  options={getOptions(positionOptions)}
                   onChange={(position) => {
                     setPosition(position.value);
                   }}
@@ -550,8 +487,8 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
             <div className="useableSkills">
               <Label text="사용 기술">
                 <SkillSelectAutoComplete
-                  onChangeSkills={(skill) => changeUseableSkills(skill)}
-                  value={getSkills(user.skills)}
+                  onChangeSkills={changeUseableSkills}
+                  value={user.skills}
                 />
               </Label>
             </div>
@@ -562,7 +499,7 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
                     <StyledTextarea
                       onChange={handleIntroduce}
                       rows={7}
-                      maxlength={300}
+                      maxLength={300}
                       value={introduce}
                     />
                     <Text
@@ -577,7 +514,7 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
                       onChange={handleIntroduce}
                       rows={7}
                       placeholder="자기소개를 작성해주세요"
-                      maxlength={300}
+                      maxLength={300}
                     />
                     <Text
                       text={introduce.length + ' / 300'}

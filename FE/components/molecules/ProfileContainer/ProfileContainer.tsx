@@ -86,7 +86,7 @@ export default function ProfileContainer({
         <Text
           text={
             DateTime.now().diff(DateTime.fromISO(time)).toMillis() < 60000
-              ? 'just now'
+              ? '지금 막'
               : DateTime.fromISO(time).setLocale('ko').toRelative()
           }
           fontSetting="n10m"
