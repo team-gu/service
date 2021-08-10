@@ -35,7 +35,7 @@ export const postCreateRoom = async (param: any) =>
 
 export const postInviteRoom = async (param: any) =>
   await api({
-    url: '/api/chat/room/invite',
+    url: '/api/chat/room/invite/users',
     type: 'post',
     param,
   });
