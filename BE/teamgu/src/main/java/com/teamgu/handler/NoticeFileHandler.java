@@ -16,7 +16,7 @@ import java.util.List;
 
 @Component
 /**
- * 첨부파일 I/O 핸들러 클래스
+ * 공지사항 첨부파일 I/O 핸들러 클래스
  */
 public class NoticeFileHandler {
 
