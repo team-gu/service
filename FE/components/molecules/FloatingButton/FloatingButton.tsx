@@ -1,4 +1,10 @@
-import { ReactElement, MouseEventHandler, useEffect, useState } from 'react';
+import {
+  ReactElement,
+  MouseEventHandler,
+  useEffect,
+  useState,
+  useRef,
+} from 'react';
 import { motion } from 'framer-motion';
 
 import styled from 'styled-components';
@@ -59,12 +65,24 @@ const Wrapper = styled(motion.div)<{ isRtc: boolean }>`
   `}
 `;
 
+const variants = {
+  alert: { rotate: [0, 15, -15, 15, -15, 0] },
+  normal: { opacity: 100 },
+};
+
 export default function FloatingButton({
   func = () => {},
   isRtc = false,
   id,
 }: FloatingButtonProps): ReactElement {
   const [unreadCount, setUnreadCount] = useState(0);
+  const [shake, setShake] = useState(false);
+  const unreadCountRef = useRef<number>(0);
+
+  useEffect(() => {
+    unreadCountRef.current = unreadCount;
+  });
+
   const handleGetNotificationNumber = async () => {
     try {
       if (id !== 0) {
@@ -73,12 +91,20 @@ export default function FloatingButton({
             data: { unreadcount },
           },
         } = await getNotificationNumber(id);
+        console.log(unreadCountRef.current, unreadcount);
+        if (unreadCountRef.current < unreadcount) {
+          await setShake(true);
+          setTimeout(() => {
+            setShake(false);
+          }, 500);
+        }
         setUnreadCount(unreadcount);
       }
     } catch (error) {
       console.error(error);
     }
   };
+
   useEffect(() => {
     handleGetNotificationNumber();
     const interval = setInterval(() => {
@@ -87,8 +113,15 @@ export default function FloatingButton({
 
     return () => clearInterval(interval);
   }, []);
+
   return (
-    <Wrapper onClick={func} whileTap={{ rotate: 90, scale: 0.9 }} isRtc={isRtc}>
+    <Wrapper
+      onClick={func}
+      whileTap={{ rotate: 90, scale: 0.9 }}
+      animate={shake ? 'alert' : 'normal'}
+      variants={variants}
+      isRtc={isRtc}
+    >
       <Icon iconName="message" size="24px" />
       {!isRtc && <Notification alertNumber={unreadCount} />}
     </Wrapper>
