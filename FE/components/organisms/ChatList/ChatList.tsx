@@ -1,4 +1,4 @@
-import { ReactElement } from 'react';
+import { ReactElement, useEffect } from 'react';
 import styled from 'styled-components';
 import { ProfileContainer } from '@molecules';
 
@@ -11,6 +11,7 @@ interface UserList {
 }
 interface ChatListProps {
   handleToChatRoom: (id: number, room_name: string) => Promise<void>;
+  handleGetChatLists: () => Promise<void>;
   userList: UserList[];
 }
 
@@ -26,8 +27,18 @@ const Wrapper = styled.div`
 
 export default function ChatList({
   handleToChatRoom,
+  handleGetChatLists,
   userList,
 }: ChatListProps): ReactElement {
+  useEffect(() => {
+    handleGetChatLists();
+    const interval = setInterval(() => {
+      handleGetChatLists();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <Wrapper>
       <div className="user-list">

@@ -1,4 +1,4 @@
-import { ReactElement, useState, useEffect, useRef } from 'react';
+import { ReactElement, useState, useRef } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { OptionsType } from 'react-select';
@@ -213,15 +213,6 @@ export default function ChatRoute(): ReactElement {
     }
   };
 
-  useEffect(() => {
-    handleGetChatLists();
-    const interval = setInterval(() => {
-      handleGetChatLists();
-    }, 60000);
-
-    return () => clearInterval(interval);
-  }, []);
-
   return (
     <>
       <Modal modalName={MODALS.HOC_MODAL}>
@@ -301,6 +292,7 @@ export default function ChatRoute(): ReactElement {
             [CHAT_LIST]: (
               <ChatList
                 handleToChatRoom={handleToChatRoom}
+                handleGetChatLists={handleGetChatLists}
                 userList={userList}
               />
             ),
