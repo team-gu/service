@@ -163,4 +163,84 @@ public class ChatRoomRepositorySupport {
 		}
 		return room_id;
 	}
+	
+	/**
+	 * 특정 방에 N명의 유저를 초대한다
+	 * @param users
+	 * @param room_id
+	 * @return
+	 */
+	public boolean inviteNUsers(List<Long> users, long room_id) {
+		EntityManager em = emf.createEntityManager();
+		EntityTransaction et = em.getTransaction();
+		log.debug("트랜잭션 시작 완료");
+		try {
+			et.begin();
+			//1. 채팅방에 인원 초대
+			String jpql = "INSERT INTO user_chat_room(chat_room_id,user_id,last_chat_id)";
+			for(int i = 0; i<users.size();i++) {
+				long user_id = users.get(i);
+				if(i==0) jpql+="\r\nVALUES";			
+				if(i>0) jpql+=",";
+				jpql+="\r\n("+room_id+","+user_id+",null)";
+			}			
+			log.debug(jpql);
+			em.createNativeQuery(jpql).executeUpdate();
+			et.commit();
+		}catch(Exception e) {
+			log.error("N명 대화방 초대에 실패했습니다");
+			et.rollback();
+			return false;
+		}finally {
+			em.close();
+		}
+		return true;		
+	}
+	
+	/**
+	 * 채팅방 내에서 방 이름을 변경하는 경우
+	 */
+	public boolean modifyRoomName(String title, long room_id) {
+		EntityManager em = emf.createEntityManager();
+		EntityTransaction et = em.getTransaction();
+		try {
+			et.begin();
+			String jpql = "UPDATE chat_room SET title = :title WHERE id=:room_id";
+			em.createNativeQuery(jpql).setParameter("title", title)
+										.setParameter("room_id", room_id)
+										.executeUpdate();
+			et.commit();
+		}catch(Exception e) {
+			log.error("채팅방 이름 변경에 실패했습니다");			
+			et.rollback();
+			return false;
+		}finally {
+			em.close();
+		}
+		return true;		
+	}
+	
+	/**
+	 * 개인이 특정 채팅방을 나가는 경우
+	 */
+	public boolean leaveRoom(long room_id, long user_id) {
+		EntityManager em = emf.createEntityManager();
+		EntityTransaction et = em.getTransaction();
+		try {
+			et.begin();
+			String jpql = "DELETE FROM user_chat_room\r\n"
+						+ "WHERE user_id = :user_id AND chat_room_id = :room_id";
+			em.createNativeQuery(jpql).setParameter("user_id", user_id)
+										.setParameter("room_id", room_id)
+										.executeUpdate();
+			et.commit();
+		}catch(Exception e) {
+			log.error("방 나가기에 실패했습니다");
+			et.rollback();
+			return false;
+		}finally {
+			em.close();
+		}
+		return true;		
+	}
 }
