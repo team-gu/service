@@ -6,11 +6,12 @@ import com.teamgu.api.dto.res.SkillResDto;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
-@Getter
-@Setter
+@Data
 @ApiModel(description = "사용자 정보 요청 모델")
 public class UserInfoReqDto {
 	
@@ -34,5 +35,8 @@ public class UserInfoReqDto {
 	
 	@ApiModelProperty(name = "skill")
 	List<SkillResDto> skills;
-	
+
+	@ApiModelProperty(name = "user profile image")
+	MultipartFile profileImage;
+
 }
