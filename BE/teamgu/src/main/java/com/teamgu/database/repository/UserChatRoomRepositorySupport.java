@@ -1,6 +1,7 @@
 package com.teamgu.database.repository;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -19,6 +20,7 @@ import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.teamgu.database.entity.QUserChatRoom;
+import com.teamgu.database.entity.User;
 import com.teamgu.database.entity.UserChatRoom;
 
 import lombok.extern.log4j.Log4j2;
@@ -140,5 +142,30 @@ public class UserChatRoomRepositorySupport {
 		em.close();
 		return res.get(0).longValue();
 		
+	}
+	
+	/**
+	 * 특정 채팅방에 속해있는 유저의 id 목록을 반환한다
+	 * @param room_id
+	 * @return
+	 */
+	public List<Long> getRoomUserList(long room_id) {
+		EntityManager em = emf.createEntityManager();
+		List<BigInteger> res = null;
+		try {
+			String jpql = "SELECT user_id FROM user_chat_room\r\n"
+						+ "WHERE chat_room_id = :room_id";
+			res = em.createNativeQuery(jpql).setParameter("room_id", room_id).getResultList();
+		}catch(Exception e){
+			log.error(room_id+"의 참여중인 유저 목록을 불러올 수 없습니다");
+			return null;
+		}finally {
+			em.close();
+		}
+		List<Long> longres = new ArrayList<Long>();
+		for(BigInteger r:res) {
+			longres.add(r.longValue());
+		}
+		return longres;
 	}
 }

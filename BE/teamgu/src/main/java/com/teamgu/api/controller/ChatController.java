@@ -1,7 +1,9 @@
 package com.teamgu.api.controller;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,7 +19,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.teamgu.api.dto.req.ChatInviteNUsersReqDto;
 import com.teamgu.api.dto.req.ChatReqDto;
+import com.teamgu.api.dto.req.ChatRoomLeaveReqDto;
+import com.teamgu.api.dto.req.ChatRoomModifyReqDto;
+import com.teamgu.api.dto.req.ChatRoomRegistReqDto;
 import com.teamgu.api.dto.req.UserInviteTeamReqDto;
 import com.teamgu.api.dto.req.UserRoomCheckDto;
 import com.teamgu.api.dto.req.UserRoomInviteReqDto;
@@ -30,11 +36,13 @@ import com.teamgu.api.dto.res.ChatTotalUnreadResDto;
 import com.teamgu.api.dto.res.CommonResponse;
 import com.teamgu.api.dto.res.ErrorResponse;
 import com.teamgu.api.dto.res.LoginResDto;
+import com.teamgu.api.dto.res.UserChatSearchResDto;
 import com.teamgu.api.service.ChatService;
 import com.teamgu.api.service.ChatServiceImpl;
 import com.teamgu.api.service.UserServiceImpl;
 import com.teamgu.api.vo.MessageTemplate;
 import com.teamgu.database.entity.Chat;
+import com.teamgu.database.entity.User;
 import com.teamgu.database.repository.TeamRepositorySupport;
 
 import io.swagger.annotations.Api;
@@ -183,46 +191,89 @@ public class ChatController {
 		long unreadCount = chatService.countTotalUnreadMessage(user_id);
 		return ResponseEntity.ok(new CommonResponse<ChatTotalUnreadResDto>(ChatTotalUnreadResDto.builder().unreadcount(unreadCount).build()));		
 	}
-//	@PostMapping("/rtc/user-invite")
-//	@ApiOperation(value="채팅을 통해 1:1 RTC 세션으로 초대합니다")
-//	@ApiResponses({
-//        @ApiResponse(code = 200, message = "메세지 전송 성공", response = boolean.class)
-//    })
-//	public ResponseEntity<? extends BasicResponse> rtcUserInvite(@RequestBody UserRoomCheckDto users){
-//		log.info("in user-invite...");
-//		long roomid = chatService.roomCheck(users.getUser_id1(), users.getUser_id2());
-//		String name1 = userService.getUserById(users.getUser_id1()).get().getName();
-//		String name2 = userService.getUserById(users.getUser_id2()).get().getName();			
-//		if(roomid==0) {//존재하지 않는 경우 방을 생성하고 방 번호를 반환한다.
-//			ChatRoomResDto chatRoomResDto = chatService.createRoom(name1+", "+name2+"의 방");
-//			roomid = chatRoomResDto.getChat_room_id();
-//			
-//			log.info(roomid+"방이 생성되었습니다");
-//			chatService.inviteUser(users.getUser_id1(), roomid);//둘 다 초대
-//			chatService.inviteUser(users.getUser_id2(), roomid);
-//		}		
-//		//1. 초대 메세지 보내기 전에 저장
-//		log.info("saving RTC invite message");
-//		ChatReqDto chatReqDto = ChatReqDto.builder()
-//											.room_id(roomid)
-//											.sender_id(users.getUser_id1())
-//											.message("화상회의실이 개설되었습니다")
-//											.type("RTC_INVITE")
-//											.build();
-//		Chat chatres = chatService.saveChat(chatReqDto);
-//		log.info("broadcasting RTC invite message");
-//		//2. 메세지 구독룸으로 브로드캐스팅
-//		ChatMessageResDto chatMessageResDto = ChatMessageResDto.builder()
-//												.create_date_time(chatres.getSendDateTime())
-//												.message(chatres.getMessage())
-//												.sender_id(chatres.getUser().getId())
-//												.sender_name(chatres.getUser().getName())
-//												.type(chatres.getType())
-//												.unread_user_count(0)
-//												.build();														
-//		simpMessagingTemplate.getTemplate().convertAndSend("/receive/chat/room/"+chatres.getChatRoom().getId(),chatMessageResDto);
-//		log.info("bradcasting done");
-//		return ResponseEntity.ok(new CommonResponse<ChatRoomResDto>(chatService.getChatRoomInfo(roomid)));
-//	}
 	
+	@PostMapping("/room/regist")
+	@ApiOperation(value="N명의 대화방을 생성한다")
+	public ResponseEntity<? extends BasicResponse> registNRoom(@RequestBody ChatRoomRegistReqDto chatRoomRegistReqDto){
+		List<Long> users = chatRoomRegistReqDto.getUserids();
+		long room_id = 0; 
+		try {
+			room_id = chatService.checkNRoom(users);
+			if(room_id==0) {//생성된 방이 없다면 새롭게 생성한다
+				String title = "의 방";
+				for(int i = 0;i<users.size();i++) {				
+					long user_id = users.get(i);
+					String name = userService.getUserById(user_id).get().getName();
+					if(i!=0)name=", "+name;
+					title = title.replace("의 방",name+"의 방");				
+				}
+				log.info("단톡명 :"+title);
+				room_id = chatService.registNRoom(users, title);
+			}	
+		}catch(Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR) 
+					.body(new ErrorResponse("단톡 만들기에 실패했습니다."));
+		}
+		if(room_id==0)
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR) 
+					.body(new ErrorResponse("단톡 만들기에 실패했습니다."));
+		return ResponseEntity.ok(new CommonResponse<Long>(room_id));
+	}
+	
+	@PostMapping("/room/invite/users")
+	@ApiOperation(value="N명을 대화방에 초대합니다")
+	public ResponseEntity<? extends BasicResponse> inviteNUsers(@RequestBody ChatInviteNUsersReqDto chatInviteNUsersReqDto){
+		List<Long> users = chatInviteNUsersReqDto.getUserids();
+		long room_id = chatInviteNUsersReqDto.getRoom_id();
+		if(chatService.inviteNUsers(users, room_id)==false) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR) 
+					.body(new ErrorResponse("채팅방 초대에 실패했습니다"));
+		}
+		return ResponseEntity.ok(new CommonResponse<Boolean>(true));
+	}
+	
+	@PostMapping("/room/modify")
+	@ApiOperation(value="방 이름을 수정합니다")
+	public ResponseEntity<? extends BasicResponse> modifyRoomName(@RequestBody ChatRoomModifyReqDto chatRoomModifyReqDto){
+		String title = chatRoomModifyReqDto.getTitle();
+		long room_id = chatRoomModifyReqDto.getRoom_id();
+		if(!chatService.modifyRoomName(title, room_id)) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR) 
+					.body(new ErrorResponse("방 이름 수정에 실패했습니다"));
+		}
+		return ResponseEntity.ok(new CommonResponse<Boolean>(true));
+	}
+	
+	@GetMapping("/room/show/{room_id}")
+	@ApiOperation(value="특정 방의 유저 목록을 조회합니다")
+	public ResponseEntity<? extends BasicResponse> getChatRoomUsers(@PathVariable("room_id") @ApiParam(value ="조회하고자 하는 방의 id 값",required=true) long room_id){
+		List<Long> users = chatService.getRoomUserList(room_id);
+		List<UserChatSearchResDto> result = new ArrayList<UserChatSearchResDto>();
+		for(Long user_id:users) {
+			User user = userService.getUserById(user_id).get();
+			UserChatSearchResDto userChatSearchResDto = UserChatSearchResDto.builder()
+														.email(user.getEmail())
+														.name(user.getName())
+														.user_id(user.getId()).build();
+			result.add(userChatSearchResDto);
+		}
+		if(result.size()==0) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR) 
+					.body(new ErrorResponse("유저 목록 가져오기에 실패했습니다"));			
+		}
+		return ResponseEntity.ok(new CommonResponse<List<UserChatSearchResDto>>(result));
+	}
+	
+	@PostMapping("/room/leave")
+	@ApiOperation(value="특정 유저가 채팅방을 나갑니다")
+	public ResponseEntity<? extends BasicResponse> modifyRoomName(@RequestBody ChatRoomLeaveReqDto chatRoomLeaveReqDto){
+		long user_id = chatRoomLeaveReqDto.getUser_id();
+		long room_id = chatRoomLeaveReqDto.getRoom_id();
+		
+		if(!chatService.leaveRoom(room_id, user_id)) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR) 
+					.body(new ErrorResponse("방 나가기에 실패했습니다"));
+		}
+		return ResponseEntity.ok(new CommonResponse<Boolean>(true));
+	}
 }

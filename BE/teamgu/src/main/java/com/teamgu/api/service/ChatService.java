@@ -11,6 +11,7 @@ import com.teamgu.api.dto.req.ChatReqDto;
 import com.teamgu.api.dto.res.ChatMessageResDto;
 import com.teamgu.api.dto.res.ChatRoomResDto;
 import com.teamgu.database.entity.Chat;
+import com.teamgu.database.entity.User;
 
 public interface ChatService {
 	/**
@@ -86,4 +87,48 @@ public interface ChatService {
 	 * @return
 	 */
 	long countTotalUnreadMessage(long user_id);
+	
+	/**
+	 * N 명이 동시에 존재하는 채팅방이 존재하는지 확인하고 이미 있다면 방 번호를 반환한다
+	 * 없다면 0을 반환한다
+	 * @param users
+	 * @return
+	 */
+	long checkNRoom(List<Long> users);
+	
+	/**
+	 * N 명이 있는 단톡방을 생성한다
+	 * @param users
+	 * @param title
+	 * @return
+	 */
+	long registNRoom(List<Long> users,String title);
+	
+	/**
+	 * 특정 방에 N명의 유저를 초대한다
+	 * @param users
+	 * @param room_id
+	 * @return
+	 */
+	boolean inviteNUsers(List<Long> users, long room_id);
+	
+	/**
+	 * 개인이 특정 채팅방을 나간다
+	 */
+	boolean leaveRoom(long room_id,long user_id);
+	
+	/**
+	 * 방 이름을 변경한다
+	 * @param title
+	 * @param room_id
+	 * @return
+	 */
+	boolean modifyRoomName(String title, long room_id);
+	
+	/**
+	 * 특정 채팅방에 속해있는 유저의 id를 반환한다
+	 * @param room_id
+	 * @return
+	 */
+	List<Long> getRoomUserList(long room_id);
 }
