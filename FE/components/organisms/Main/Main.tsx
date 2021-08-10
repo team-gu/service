@@ -31,7 +31,7 @@ const Wrapper = styled.div<{ img: string }>`
     z-index: 100;
     color: black;
 
-    .tmp {
+    .logo {
       ${({ theme: { flexRow } }) => flexRow()};
     }
 
@@ -127,7 +127,7 @@ export default function Home(): ReactElement {
     <Wrapper img={'/mainPage_background.png'}>
       <form onSubmit={handleLogin}>
         <div className="login-area">
-          <div className="tmp">
+          <div className="logo">
             <Image
               className="fixed-logo"
               alt="팀구"
