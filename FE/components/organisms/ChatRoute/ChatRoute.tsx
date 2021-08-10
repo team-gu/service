@@ -22,7 +22,7 @@ const Wrapper = styled(motion.div)`
 
   background-color: white;
 
-  z-index: 2;
+  z-index: 12;
 
   .header {
     ${({ theme: { flexRow } }) => flexRow('space-between')}
