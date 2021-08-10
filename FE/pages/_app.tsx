@@ -10,7 +10,7 @@ import GlobalStyle from '@styles/globalStyles';
 import store from '@store';
 import theme from '@styles/theme';
 
-function MyApp({ Component, pageProps }: AppProps) {
+export default function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();
 
   return (
@@ -24,12 +24,14 @@ function MyApp({ Component, pageProps }: AppProps) {
             <Component {...pageProps} />
           </Layout>
         )}
-        {Object.keys(MODALS).map((each, idx) => (
-          <Modal modalName={MODALS[each]} key={idx} />
-        ))}
+        {Object.keys(MODALS).map(
+          (each, idx) =>
+            each !== 'HOC_MODAL' && (
+              <Modal modalName={MODALS[each]} key={idx} />
+            ),
+        )}
         <Spinner />
       </ThemeProvider>
     </Provider>
   );
 }
-export default MyApp;

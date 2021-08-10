@@ -69,6 +69,7 @@ export default function Layout({ children }: LayoutProps) {
             {id !== 0 && (
               <FloatingButton
                 func={() => dispatch(setChatOpen({ isChatOpen: true }))}
+                id={id}
               />
             )}
           </Wrapper>
