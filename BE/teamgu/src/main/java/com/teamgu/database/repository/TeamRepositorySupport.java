@@ -47,6 +47,7 @@ public class TeamRepositorySupport {
 	QUser qUser = QUser.user;
 	QUserTeam qUserTeam = QUserTeam.userTeam;
 	QTeam qTeam = QTeam.team;
+	QMapping qMapping = QMapping.mapping;
 
 	// Team Skill 조회
 	public List<SkillResDto> getTeamSkillsByTeamId(Long teamId) {
@@ -222,13 +223,16 @@ public class TeamRepositorySupport {
 				+		"and stage_code in "
 				+			"(select distinct stage_code from mapping where track_code = (select code_detail from code_detail where name = ?2))))"
 				+	"and user_id = ?1";
+		
 		Query query = em.createNativeQuery(jpql)
 		.setParameter(1, userId)
-		.setParameter(2, trackName)
-		;
+		.setParameter(2, trackName);
+		
 		List<Long> chk = query.getResultList();
 		int size = chk.size();
+		
 		em.close();
+		
 		if(size == 0) {
 			return true;
 		}
@@ -240,16 +244,18 @@ public class TeamRepositorySupport {
 	
 	// Team 생성 가능 여부 체크
 	public List<BigInteger> checkTeamBuilding(Long userId, int projectCode) {
+		
 		EntityManager em = emf.createEntityManager();
 		
 		String jpql = "select team_id from user_team where team_id in \r\n" + 
 				"(select id from team where team.mapping_id in \r\n" + 
 				"(select mapping.id from mapping where mapping.project_code = ?1))" +
 				" and user_id = ?2";
+		
 		Query query = em.createNativeQuery(jpql)
 		.setParameter(1, projectCode)
-		.setParameter(2, userId)
-		;
+		.setParameter(2, userId);
+		
 		List<BigInteger> result = query.getResultList();
 		
 		return result;
@@ -259,7 +265,6 @@ public class TeamRepositorySupport {
 	// Team Id Now Member 업데이트
 	@Transactional
 	public void updateTeamBuildMemberCount(Long teamId){
-		
 
 		jpaQueryFactory
 		.update(qTeam)
@@ -269,8 +274,7 @@ public class TeamRepositorySupport {
 				.where(qUserTeam.team.id.eq(teamId)))
 				)
 		.where(qTeam.id.eq(teamId))
-		.execute()
-		;
+		.execute();
 		
 	}
 	
@@ -283,7 +287,6 @@ public class TeamRepositorySupport {
 		
 		// Serach User Id
 		Long userId = teamFilterReqDto.getUserId();
-		
 		int stageCode = ((teamFilterReqDto.getStudentNumber().charAt(0) - '0') * 10 + teamFilterReqDto.getStudentNumber().charAt(1) - '0') + 100;
 		int projectCode = teamFilterReqDto.getProject();
 		
@@ -292,16 +295,10 @@ public class TeamRepositorySupport {
 			StringBuilder skillFilter = new StringBuilder();
 			StringBuilder trackFilter = new StringBuilder();
 			
-			// skillsFilter
-			List<SkillResDto> skills = teamFilterReqDto.getFilteredSkills();
-			int skillsSize =skills.size();
-			
-			// trackFilter
-			List<TrackReqDto> tracks = teamFilterReqDto.getFilteredTracks();
-			int tracksSize = tracks.size();
 			String asc = (teamFilterReqDto.isSortAsc())? "asc" : "desc";
 			String sortType = teamFilterReqDto.getSortBy();
 			String sort = "id";
+			
 			if(sortType.equals("numberOfMembers")) {
 				sort = "nowMember";
 			}
@@ -309,6 +306,11 @@ public class TeamRepositorySupport {
 				sort = "name";
 			}
 			String orderBy = " team." + sort + " " + asc;
+			
+
+			// skillsFilter
+			List<SkillResDto> skills = teamFilterReqDto.getFilteredSkills();
+			int skillsSize =skills.size();
 			
 			for(int i = 0; i<skillsSize; i++) {
 				if(i == 0) {
@@ -322,9 +324,11 @@ public class TeamRepositorySupport {
 					skillFilter.append(", ");
 				}
 			}
-//			System.out.println(skillFilter.toString());
 			
-			//tracks Filter
+			// trackFilter
+			List<TrackReqDto> tracks = teamFilterReqDto.getFilteredTracks();
+			int tracksSize = tracks.size();
+
 			for(int i = 0; i<tracksSize; i++) {
 				if(i == 0) {
 					trackFilter.append("in (\"");
@@ -337,7 +341,6 @@ public class TeamRepositorySupport {
 					trackFilter.append("\", \"");
 				}
 			}
-//			System.out.println(trackFilter.toString());
 			
 			jqpl = 
 					"select distinct team.id\r\n" + 
@@ -372,17 +375,64 @@ public class TeamRepositorySupport {
 		
 		String search = teamAutoCorrectReqDto.getSearch();
 		String stage = teamAutoCorrectReqDto.getStudentNumber().substring(0, 2) + "%";
-		
-		System.out.println("TeamRepositorySupport : " + search);
-		System.out.println("TeamRepositorySupport : " + stage);
-		
+
 		return jpaQueryFactory
 				.select(Projections.constructor(TeamAutoCorrectResDto.class, qUser.id, qUser.name, qUser.email))
 				.from(qUser)
-				.where(qUser.email.contains(search)
-						.or(qUser.name.contains(search))
+				.where((qUser.email.contains(search)
+						.or(qUser.name.contains(search)))
 						.and(qUser.studentNumber.like(stage)))
 				.fetch();
+	}
+	
+	// Check Team Leader
+	public Boolean checkTeamLeader(Long userId, int projectCode) {
+		// TODO Auto-generated method stub
+		String studentNumber = jpaQueryFactory
+		.select(qUser.studentNumber)
+		.from(qUser)
+		.where(qUser.id.eq(userId))
+		.fetchOne();
+		System.out.println(studentNumber);
+		if(studentNumber == null) return false;
+		int stageCode = ((studentNumber.charAt(0) - '0') * 10 + studentNumber.charAt(1) - '0') + 100;
+//		select leader_id from team
+//		where mapping_id in (select id from mapping where project_code = 101 
+//		and stage_code = 105)
+//		and id in (select team_id from user_team where user_id = 9);
+//		select * from user_team where user_id = 9
+		
+//		jpaQueryFactory
+//		.update(qTeam)
+//		.set(qTeam.nowMember,  (JPAExpressions
+//				.select(qUser.id.count().intValue())
+//				.from(qUserTeam)
+//				.where(qUserTeam.team.id.eq(teamId)))
+//				)
+//		.where(qTeam.id.eq(teamId))
+//		.execute();
+		
+		Long leaderId = 
+		jpaQueryFactory
+		.select(qTeam.user.id)
+		.from(qTeam)
+		.where(qTeam.mapping.id.in(JPAExpressions
+				.select(qMapping.id)
+				.from(qMapping)
+				.where(qMapping.projectCode.eq(projectCode)
+						.and(qMapping.stageCode.eq(stageCode))))
+				.and(qTeam.id.in(JPAExpressions
+						.select(qUserTeam.team.id)
+						.from(qUserTeam)
+						.where(qUserTeam.user.id.eq(userId)))))
+		.fetchOne().longValue();
+		
+		System.out.println(leaderId +" / " + userId );
+		
+		if(leaderId == userId)
+			return true;
+		else 
+			return false;
 	}
 
 //	public void createTeam(TeamListResDto teamListResDto) {
@@ -406,4 +456,5 @@ public class TeamRepositorySupport {
 //				.fetch();
 //		
 //	}
+	
 }

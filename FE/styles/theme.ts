@@ -112,7 +112,7 @@ const theme: DefaultTheme = {
     n10m: css`
       font-weight: ${fontWeight.medium};
       font-size: 10px;
-      line-height: 20px;
+      line-height: 12px;
     `,
     ellipse: (wrap = 'nowrap') => css`
       text-overflow: ellipsis;

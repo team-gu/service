@@ -23,7 +23,7 @@ const Wrapper = styled.div<{ isMe: boolean }>`
   ${({ theme: { flexRow }, isMe }) =>
     flexRow(isMe ? 'flex-end' : 'flex-start', isMe ? 'flex-end' : 'flex-start')}
 
-  margin: 25px 0;
+  margin-bottom: 25px;
 
   > div {
     ${({ isMe }) => !isMe && 'margin-right: 15px;'}
@@ -85,7 +85,7 @@ export default function ChatBubble({
       <div className="chat">
         <div className="chat-info">
           {!isMe && <Text text={userName} fontSetting="n14b" />}
-          <Text text={time} fontSetting="n12m" />
+          <Text text={time} fontSetting="n10m" />
         </div>
         <div className="chat-message">
           {/* {message.includes('{%') && message.includes('%}') ? (
@@ -140,7 +140,7 @@ export default function ChatBubble({
               ),
             }[type]
           ) : (
-            <Text text={message} fontSetting="n16m" isLineBreak />
+            <Text text={message} fontSetting="n12m" isLineBreak />
           )}
         </div>
       </div>

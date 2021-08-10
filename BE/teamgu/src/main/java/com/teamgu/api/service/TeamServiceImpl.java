@@ -366,8 +366,6 @@ public class TeamServiceImpl implements TeamService {
 		}
 		else {
 			Long teamId = teamIds.get(0).longValue();
-			System.out.println(teamId + " / " + teamId.getClass());
-			System.out.println("TeamServiceImple : 팀이 있음");
 			teamIsCreateResDto.setHasTeam(true);
 			teamIsCreateResDto.setTeam(getTeamInfobyTeamId(teamId));
 			return teamIsCreateResDto;
@@ -385,6 +383,10 @@ public class TeamServiceImpl implements TeamService {
 		return teamRepositorySupport.getUserAutoCorrect(teamAutoCorrectReqDto);
 	}
 
-	
+	@Override
+	public Boolean checkTeamLeader(Long userId, int projectCode) {
+		// TODO Auto-generated method stub
+		return teamRepositorySupport.checkTeamLeader(userId, projectCode);
+	}
 	
 }
