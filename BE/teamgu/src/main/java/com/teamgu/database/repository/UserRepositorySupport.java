@@ -2,6 +2,7 @@ package com.teamgu.database.repository;
 
 import java.util.List;
 
+import com.teamgu.api.dto.UserProfileImgDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,12 +53,18 @@ public class UserRepositorySupport {
   
 	// User Detail Info 수정
 	@Transactional
-	public Long updateUserDetailInfo(UserInfoReqDto userInfoReqDto) {
+	public Long updateUserDetailInfo(UserInfoReqDto userInfoReqDto, UserProfileImgDto userProfileImgDto) {
 
 		int positionCode = codeDetailRepositorySupport.findPositionCode(userInfoReqDto.getWishPosition());
 
 		return jpaQueryFactory.update(qUser).where(qUser.id.eq(userInfoReqDto.getId()))
-				.set(qUser.introduce, userInfoReqDto.getIntroduce()).set(qUser.wishPositionCode, positionCode)
+				.set(qUser.introduce, userInfoReqDto.getIntroduce())
+				.set(qUser.wishPositionCode, positionCode)
+				.set(qUser.introduce, userInfoReqDto.getIntroduce())
+				.set(qUser.wishPositionCode, positionCode)
+				.set(qUser.profileOriginName, userProfileImgDto.getOriginName())
+				.set(qUser.profileServerName, userProfileImgDto.getServerName())
+				.set(qUser.profileExtension, userProfileImgDto.getExtension())
 				.execute();
 
 	}

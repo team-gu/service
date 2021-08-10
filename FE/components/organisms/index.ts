@@ -9,18 +9,20 @@ import LookupLayout from './LookupLayout';
 import UserDetail from './UserDetail';
 import OtherUserDetail from './OtherUserDetail';
 import LineBackground from './LineBackground';
-import LoginComponent from './LoginComponent';
+import Main from './Main';
 import ModalWrapper from './Modal/ModalWrapper';
 import RegisterComponent from './RegisterComponent';
 import TeamStatusCard from './TeamStatusCard';
 import TeamStatus from './TeamStatus';
 import TeamManageModal from './TeamManageModal';
+import UserStatus from './UserStatus';
+import UserStatusCard from './UserStatusCard';
+
+import AdminLayout from './AdminLayout';
 import AdminMenuSidebarLeft from './AdminMenuSidebarLeft';
 import AdminProjectManage from './AdminProjectManage';
 import AdminProjectManageModal from './AdminProjectManageModal';
-import AdminLayout from './AdminLayout';
-import UserStatus from './UserStatus';
-import UserStatusCard from './UserStatusCard';
+import AdminDashboard from './AdminDashboard';
 
 export {
   ChatList,
@@ -34,7 +36,7 @@ export {
   UserDetail,
   OtherUserDetail,
   LineBackground,
-  LoginComponent,
+  Main,
   ModalWrapper,
   RegisterComponent,
   TeamStatusCard,
@@ -46,4 +48,5 @@ export {
   UserStatusCard,
   AdminProjectManage,
   AdminProjectManageModal,
+  AdminDashboard,
 };

@@ -19,10 +19,7 @@ export interface Team {
   id: number;
   name: string;
   introduce: string;
-
   completeYn: number;
-  nowNumber: number;
-  maxNumber: number;
 
   leaderId: number;
   track: { code: number; codeName: string };

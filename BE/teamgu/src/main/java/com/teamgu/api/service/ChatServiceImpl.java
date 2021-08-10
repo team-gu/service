@@ -201,4 +201,35 @@ public class ChatServiceImpl implements ChatService{
 	public long countTotalUnreadMessage(long user_id) {
 		return userChatRoomRepositorySupport.countUnreadMessageByUserId(user_id);
 	}
+	
+	@Override
+	public long checkNRoom(List<Long> users) { 		
+		return chatRoomRepositorySupport.checkNRoom(users);
+	}
+	
+	@Override
+	public long registNRoom(List<Long> users, String title) {
+		log.info("ChatService registNRoom 진입");
+		return chatRoomRepositorySupport.registNRoom(users, title);
+	}
+	
+	@Override
+	public List<Long> getRoomUserList(long room_id) {		
+		return userChatRoomRepositorySupport.getRoomUserList(room_id);
+	}
+	
+	@Override
+	public boolean inviteNUsers(List<Long> users, long room_id) {
+		return chatRoomRepositorySupport.inviteNUsers(users, room_id);
+	}
+	
+	@Override
+	public boolean leaveRoom(long room_id, long user_id) {
+		return chatRoomRepositorySupport.leaveRoom(room_id, user_id);
+	}
+	
+	@Override
+	public boolean modifyRoomName(String title, long room_id) {		
+		return chatRoomRepositorySupport.modifyRoomName(title, room_id);
+	}	
 }

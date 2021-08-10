@@ -4,7 +4,6 @@ import { Story } from '@storybook/react';
 import TeamManageModal from './TeamManageModal';
 import { Button } from '@molecules';
 import { Team } from '@utils/type';
-import { getTeams } from '@repository/teamRepository';
 
 export default {
   title: 'Organisms/Team Manage Modal',
@@ -17,9 +16,7 @@ const Template: Story = () => {
   const [showUpdate, setShowUpdate] = useState(false);
 
   useEffect(() => {
-    getTeams('createAt', true).then((data) => {
-      setDefaultValue(data[0]);
-    });
+    setDefaultValue(DUMMY);
   }, []);
 
   return (
@@ -30,13 +27,67 @@ const Template: Story = () => {
         <TeamManageModal
           handleClickClose={() => setShowUpdate(false)}
           defaultValue={defaultValue}
+          fetchTeams={() => {}}
         />
       )}
       {showCreate && (
-        <TeamManageModal handleClickClose={() => setShowCreate(false)} />
+        <TeamManageModal
+          handleClickClose={() => setShowCreate(false)}
+          fetchTeams={() => {}}
+        />
       )}
     </>
   );
 };
 
 export const teamManageModal = Template.bind({});
+
+const DUMMY: Team = {
+  id: 45,
+  name: '2021년 8월 9일 18시',
+  introduce: '2021년 8월 9일 18시',
+  completeYn: 0,
+  leaderId: 7,
+  track: {
+    code: 102,
+    codeName: '웹 디자인',
+  },
+  teamMembers: [
+    {
+      id: 7,
+      name: '안석현',
+      img: null,
+      email: 'naannaan@naver.com',
+    },
+  ],
+  skills: [
+    {
+      code: 101,
+      codeName: 'Java',
+    },
+    {
+      code: 102,
+      codeName: 'Python',
+    },
+    {
+      code: 103,
+      codeName: 'C',
+    },
+    {
+      code: 104,
+      codeName: 'C++',
+    },
+    {
+      code: 105,
+      codeName: 'C#',
+    },
+    {
+      code: 106,
+      codeName: 'Vue',
+    },
+    {
+      code: 107,
+      codeName: 'React',
+    },
+  ],
+};

@@ -78,17 +78,31 @@ export default function Navbar(): ReactElement {
   return (
     <Wrapper isShowByScroll={hideOnScroll}>
       <div className="logo">
-        <Link href="/">
-          <a>
-            <Image
-              className="fixed-logo"
-              alt="팀구"
-              src="/logo.png"
-              width={120}
-              height={50}
-            />
-          </a>
-        </Link>
+        {user.name ? (
+          <Link href="/humanpool">
+            <a>
+              <Image
+                className="fixed-logo"
+                alt="팀구"
+                src="/logo.png"
+                width={120}
+                height={50}
+              />
+            </a>
+          </Link>
+        ) : (
+          <Link href="/">
+            <a>
+              <Image
+                className="fixed-logo"
+                alt="팀구"
+                src="/logo.png"
+                width={120}
+                height={50}
+              />
+            </a>
+          </Link>
+        )}
       </div>
       <ul>
         {user.name ? (
@@ -120,7 +134,7 @@ export default function Navbar(): ReactElement {
           </>
         ) : (
           <li>
-            <Link href="/login">
+            <Link href="/">
               <a>로그인</a>
             </Link>
           </li>
