@@ -1,11 +1,12 @@
 import { ReactElement, useState, useEffect } from 'react';
 import Select, { OptionsType } from 'react-select';
-import { postAllUserList } from '@repository/chatRepository';
+import { postAllUserList, getRoomUserList } from '@repository/chatRepository';
 import { MemberOption } from '@utils/type';
 import { useAuthState } from '@store';
 
 interface UserSelectChatAutoCompleteProps {
   handleChangeUserSelect: (newValue: MemberOption[] | null) => void;
+  roomId: number;
 }
 
 interface UserList {
@@ -16,32 +17,46 @@ interface UserList {
 
 export default function UserSelectChatAutoComplete({
   handleChangeUserSelect,
+  roomId,
 }: UserSelectChatAutoCompleteProps): ReactElement {
   const {
     user: { id, projectCode, studentNumber },
   } = useAuthState();
 
-  const [userList, setUserList] = useState();
+  const [userList, setUserList] = useState<UserList[]>([]);
 
   useEffect(() => {
     (async () => {
-      const {
-        data: { data },
-      } = await postAllUserList({
-        myid: id,
-        project_code: (projectCode && projectCode[0]) || 101,
-        studentNumber,
-      });
+      try {
+        const {
+          data: { data },
+        } = await postAllUserList({
+          myid: id,
+          project_code: (projectCode && projectCode[0]) || 101,
+          studentNumber,
+        });
 
-      setUserList(
-        data.map(({ name, email, user_id }: UserList) => {
-          return {
+        await setUserList(
+          data.map(({ name, email, user_id }: UserList) => ({
             label: `${name} (${email})`,
             value: name,
             user_id,
-          };
-        }),
-      );
+          })),
+        );
+
+        if (roomId) {
+          const {
+            data: { data: users },
+          } = await getRoomUserList(roomId);
+          setUserList((prev) =>
+            prev.filter(
+              ({ user_id }) => !users.find((each) => each.user_id === user_id),
+            ),
+          );
+        }
+      } catch (error) {
+        console.error(error);
+      }
     })();
   }, []);
 

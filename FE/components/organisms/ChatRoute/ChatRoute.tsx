@@ -157,20 +157,20 @@ export default function ChatRoute(): ReactElement {
     if (selectedUser && selectedUser.length > 0) {
       try {
         if (route === CHAT_LIST) {
-        const {
-          data: {
-            data: { chat_room_id, room_name },
-          },
-        } = await postCreateRoom({
+          const {
+            data: {
+              data: { chat_room_id, room_name },
+            },
+          } = await postCreateRoom({
             userids: [
-            id,
-            ...selectedUser.reduce((acc, cur) => [...acc, cur.user_id], []),
-          ],
-        });
+              id,
+              ...selectedUser.reduce((acc, cur) => [...acc, cur.user_id], []),
+            ],
+          });
 
-        handleToChatRoom(chat_room_id, room_name);
-        return handleGetChatLists();
-      }
+          handleToChatRoom(chat_room_id, room_name);
+          return handleGetChatLists();
+        }
 
         return await postInviteRoom({
           room_id,
@@ -208,6 +208,7 @@ export default function ChatRoute(): ReactElement {
         <div className="upper">
           <UserSelectChatAutoComplete
             handleChangeUserSelect={handleChangeUserSelect}
+            roomId={room_id}
           />
           <div className="button-container">
             <Button
