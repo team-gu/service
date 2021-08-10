@@ -15,6 +15,10 @@ import RegisterComponent from './RegisterComponent';
 import TeamStatusCard from './TeamStatusCard';
 import TeamStatus from './TeamStatus';
 import TeamManageModal from './TeamManageModal';
+import AdminMenuSidebarLeft from './AdminMenuSidebarLeft';
+import AdminProjectManage from './AdminProjectManage';
+import AdminProjectManageModal from './AdminProjectManageModal';
+import AdminLayout from './AdminLayout';
 import UserStatus from './UserStatus';
 import UserStatusCard from './UserStatusCard';
 
@@ -36,6 +40,10 @@ export {
   TeamStatusCard,
   TeamStatus,
   TeamManageModal,
+  AdminMenuSidebarLeft,
+  AdminLayout,
   UserStatus,
   UserStatusCard,
+  AdminProjectManage,
+  AdminProjectManageModal,
 };
