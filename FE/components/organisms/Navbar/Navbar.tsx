@@ -120,7 +120,7 @@ export default function Navbar(): ReactElement {
           </>
         ) : (
           <li>
-            <Link href="/login">
+            <Link href="/">
               <a>로그인</a>
             </Link>
           </li>
