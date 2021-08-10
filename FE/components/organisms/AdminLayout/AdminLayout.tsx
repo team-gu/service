@@ -5,6 +5,7 @@ import { Project } from '@utils/type';
 import { ADMIN_MENU_CONTENT } from '@utils/constants';
 import { AdminProjectManage } from '@organisms';
 import { DUMMY_PROJECTS } from '@utils/dummy';
+import AdminDashboard from '../AdminDashboard';
 
 const Wrapper = styled.div`
   display: flex;
@@ -62,7 +63,7 @@ export default function AdminLayout(): ReactElement {
                 fetchProjects={fetchProjects}
               />
             ),
-            [ADMIN_MENU_CONTENT[1]]: <div>대시보드</div>,
+            [ADMIN_MENU_CONTENT[1]]: (<AdminDashboard />),
             [ADMIN_MENU_CONTENT[2]]: <div>회원 관리</div>,
             [ADMIN_MENU_CONTENT[3]]: <div>팀 관리</div>,
             [ADMIN_MENU_CONTENT[4]]: <div>공지사항 관리</div>,
