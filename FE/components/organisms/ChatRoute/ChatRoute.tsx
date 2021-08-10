@@ -212,7 +212,7 @@ export default function ChatRoute(): ReactElement {
           />
           <div className="button-container">
             <Button
-              title="생성"
+              title={route === CHAT_LIST ? '생성' : '초대'}
               width="100%"
               func={() => {
                 handleCreateOrInviteRoom();
