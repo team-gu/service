@@ -13,10 +13,17 @@ export const getChatRoomMessages = async (param: string | number) =>
   });
 
 export const postAllUserList = async (param: any) =>
-  await api ({
+  await api({
     url: '/api/auto/chat',
     type: 'post',
-    param
+    param,
+  });
+
+export const postCheckRoom = async (param: any) =>
+  await api({
+    url: '/api/chat/room/check',
+    type: 'post',
+    param,
   });
 
 export const postCreateRoom = async (param: any) =>
