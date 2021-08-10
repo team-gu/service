@@ -14,7 +14,7 @@ interface ProfileContainerProps {
   func?: MouseEventHandler<HTMLSpanElement>;
 }
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<{ isAlertExist: boolean }>`
   width: 90%;
   height: 70px;
 
@@ -35,7 +35,7 @@ const Wrapper = styled.div`
     width: 85%;
 
     .container-content {
-      width: 80%;
+      width: 70%;
       ${({ theme: { flexCol } }) => flexCol('center', 'flex-start')}
       padding-left: 5%;
     }
@@ -46,14 +46,17 @@ const Wrapper = styled.div`
     width: 100px;
     text-align: right;
     .notification {
+      ${({ isAlertExist }) =>
+        isAlertExist && 'background-color: transparent; color: transparent;'}
       ${({ theme: { flexCol } }) => flexCol('center')}
       min-width: 10px;
       height: 20px;
       padding: 0 5px;
       border-radius: 20px;
-      background-color: red;
-      font-family: system-ui;
-      color: white;
+      background-color: ${({ isAlertExist }) =>
+        isAlertExist ? 'red' : 'transparent'};
+      font-family: monospace;
+      color: ${({ isAlertExist }) => (isAlertExist ? 'white' : 'transparent')};
       margin-top: 5px;
     }
   }
@@ -71,17 +74,24 @@ export default function ProfileContainer({
   func,
 }: ProfileContainerProps): ReactElement {
   return (
-    <Wrapper onClick={func}>
+    <Wrapper onClick={func} isAlertExist={alertNumber > 0}>
       <div className="container">
-        <ProfileImage src={src} isActive={isActive} />
+        <ProfileImage src={src} isActive={isActive} size={40} />
         <div className="container-content">
           <Text text={name} fontSetting="n14b" />
           <Text text={content} />
         </div>
       </div>
       <div className="time">
-        <Text text={DateTime.fromISO(time).toRelative() || ''} />
-        {alertNumber > 0 && <div className="notification">{alertNumber}</div>}
+        <Text
+          text={
+            DateTime.now().diff(DateTime.fromISO(time)).toMillis() < 60000
+              ? '지금 막'
+              : DateTime.fromISO(time).setLocale('ko').toRelative()
+          }
+          fontSetting="n10m"
+        />
+        <div className="notification">{alertNumber}</div>
       </div>
     </Wrapper>
   );

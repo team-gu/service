@@ -16,8 +16,8 @@ interface ChatListProps {
 interface UserList {
   chat_room_id: number;
   room_name: string;
-  message: string;
-  create_date_time: string;
+  last_chat_message: string;
+  send_date_time: string;
   unread_message_count: number | string;
 }
 
@@ -71,6 +71,11 @@ export default function ChatList({
 
   useEffect(() => {
     handleGetChatLists();
+    const interval = setInterval(() => {
+      handleGetChatLists();
+    }, 5000);
+
+    return () => clearInterval(interval);
   }, []);
 
   const handleChangeUserSelect = async (selected: MemberOption | null) => {
@@ -123,15 +128,15 @@ export default function ChatList({
           ({
             chat_room_id,
             room_name,
-            message,
-            create_date_time,
+            last_chat_message,
+            send_date_time,
             unread_message_count,
           }: UserList) => (
             <ProfileContainer
               name={room_name}
-              content={message === null ? '___' : message}
+              content={last_chat_message}
               isActive={false}
-              time={create_date_time}
+              time={send_date_time}
               alertNumber={unread_message_count}
               func={() => handleToChatRoom(chat_room_id, room_name)}
             />

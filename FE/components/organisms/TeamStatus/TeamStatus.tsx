@@ -4,7 +4,7 @@ import { OptionsType, OptionTypeBase } from 'react-select';
 import { Icon } from '@atoms';
 import {
   Filter,
-  UserSelectAutoComplete,
+  UserSelectTeamAutoComplete,
   Button,
   SimpleSelect,
 } from '@molecules';
@@ -14,7 +14,10 @@ import { FILTER_TITLE } from '@utils/constants';
 import { MemberOption, Team } from '@utils/type';
 import { useAuthState, useAppDispatch, setLoading } from '@store';
 import { getEachFiltersCodeList } from '@repository/filterRepository';
-import { getTeams, getUserHasTeam } from '@repository/teamRepository';
+import {
+  getTeamsFiltered,
+  getUserHasTeam,
+} from '@repository/teamRepository';
 
 const sortByOptions: OptionsType<OptionTypeBase> = [
   {
@@ -31,12 +34,19 @@ const sortByOptions: OptionsType<OptionTypeBase> = [
   },
 ];
 
+interface Payload {
+  project?: number;
+  skills?: number[];
+  studentNumber?: string;
+  track?: number[];
+}
+
 export default function TeamStatus(): ReactElement {
   const {
     user: { id: userId, projectCode, studentNumber },
   } = useAuthState();
   const [filterContents, setFilterContents] = useState<any>({});
-  const [payload, setPayload] = useState({});
+  const [payload, setPayload] = useState<Payload>({});
   const [showTeamManageModal, setShowTeamManageModal] = useState(false);
   const [selectedTeamInfo, setSelectedTeaminfo] = useState<Team>();
   const [teams, setTeams] = useState<Team[]>([]);
@@ -45,7 +55,10 @@ export default function TeamStatus(): ReactElement {
   const [sortAsc, setSortAsc] = useState(true);
   const [containsUserId, setContainsUserId] = useState<number>();
   const [userHasTeam, setUserHasTeam] = useState<boolean>();
-  const [filterClear, setFilterClear] = useState(false);
+  const [searchWhat, setSearchWhat] = useState(false);
+
+  const SERACH_BY_FILTER = true;
+  const SEARCH_BY_USERID = false;
 
   const dispatch = useAppDispatch();
 
@@ -79,27 +92,33 @@ export default function TeamStatus(): ReactElement {
   }, []);
 
   useEffect(() => {
-    setFilterClear(false);
-    renderTeams();
+    renderTeams(SERACH_BY_FILTER);
+    setSearchWhat(SERACH_BY_FILTER);
   }, [sortBy, sortAsc, payload]);
 
   useEffect(() => {
-    if (containsUserId) {
-      setFilterClear(true);
-      setContainsUserId(undefined);
-      renderTeams();
-    }
+    renderTeams(SEARCH_BY_USERID);
+    setSearchWhat(SEARCH_BY_USERID);
   }, [containsUserId]);
 
-  const renderTeams = () => {
+  const renderTeams = (by?: boolean) => {
     let payloadTemp = {
-      ...payload,
+      project: payload.project,
+      filteredSkills:
+        by === SEARCH_BY_USERID
+          ? []
+          : payload.skills?.map((s) => ({ code: s })) || [],
+      filteredTracks:
+        by === SEARCH_BY_USERID
+          ? []
+          : payload.track?.map((t) => ({ code: t })) || [],
       sortBy,
       sortAsc,
-      containsUserId,
+      userId: by === SERACH_BY_FILTER ? 0 : containsUserId || 0,
+      studentNumber,
     };
 
-    getTeams(payloadTemp).then(({ data: { data } }) => {
+    getTeamsFiltered(payloadTemp).then(({ data: { data } }) => {
       setTeams(data);
     });
   };
@@ -183,7 +202,7 @@ export default function TeamStatus(): ReactElement {
                   contents={filterContents[each]}
                   func={handleFilter}
                   key={index}
-                  clear={filterClear}
+                  clear={searchWhat === SEARCH_BY_USERID}
                 />
               ) : (
                 <Filter
@@ -191,15 +210,16 @@ export default function TeamStatus(): ReactElement {
                   contents={filterContents[each]}
                   func={handleFilterArray}
                   key={index}
-                  clear={filterClear}
+                  clear={searchWhat === SEARCH_BY_USERID}
                 />
               )),
           )}
       </div>
       <div className="team-status-list-container">
         <div className="team-status-header">
-          <UserSelectAutoComplete
+          <UserSelectTeamAutoComplete
             handleChangeUserSelect={handleChangeUserSelect}
+            clear={searchWhat === SERACH_BY_FILTER}
           />
           <div className="sort-container">
             <div className="sort-select">

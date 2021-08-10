@@ -5,6 +5,7 @@ import { Session } from 'openvidu-browser';
 
 import { ChatInput, ChatBubble } from '@molecules';
 
+import { postExitRoom } from '@repository/chatRepository';
 import { Chat, ChatNormal } from '@types/chat-type';
 import { useAuthState } from '@store';
 
@@ -58,12 +59,14 @@ export default function ChatRoom({
     chatBoxRef.current.scrollTo({
       top: chatBoxRef.current.scrollHeight - chatBoxRef.current.clientHeight,
       left: 0,
-      behavior: 'smooth',
     });
   };
 
   useEffect(() => {
-    return () => setMessageList([]);
+    return () => {
+      setMessageList([]);
+      postExitRoom({ room_id: roomId, user_id: id });
+    };
   }, []);
 
   useEffect(() => {
@@ -104,44 +107,48 @@ export default function ChatRoom({
                   profileSrc={profileSrc ? profileSrc : '/profile.png'}
                   time={
                     DateTime.now().diff(createAt).toMillis() < 60000
-                      ? 'just now'
-                      : createAt.toRelative()
+                      ? '지금 막'
+                      : createAt.setLocale('ko').toRelative()
                   }
                   message={message}
                   isMe={connectionId === session.connection.connectionId}
                 />
               ),
             )
-          : messageList?.map(
-              (
-                {
-                  create_date_time,
-                  message,
-                  sender_id,
-                  sender_name,
-                  type,
-                }: ChatNormal,
-                index: number,
-              ) => (
-                <ChatBubble
-                  key={index}
-                  userName={sender_name}
-                  profileSrc="/profile.png"
-                  time={
-                    Number(DateTime.now()) -
-                      Number(DateTime.fromISO(create_date_time)) <
-                    60000
-                      ? 'just now'
-                      : DateTime.fromISO(create_date_time).toRelative()
-                  }
-                  message={message}
-                  isMe={sender_id === id}
-                  func={sendMessage}
-                  type={type}
-                  roomId={roomId}
-                />
-              ),
-            )}
+          : messageList
+              .slice(-30)
+              ?.map(
+                (
+                  {
+                    create_date_time,
+                    message,
+                    sender_id,
+                    sender_name,
+                    type,
+                  }: ChatNormal,
+                  index: number,
+                ) => (
+                  <ChatBubble
+                    key={index}
+                    userName={sender_name}
+                    profileSrc="/profile.png"
+                    time={
+                      DateTime.now()
+                        .diff(DateTime.fromISO(create_date_time))
+                        .toMillis() < 60000
+                        ? '지금 막'
+                        : DateTime.fromISO(create_date_time)
+                            .setLocale('ko')
+                            .toRelative()
+                    }
+                    message={message}
+                    isMe={sender_id === id}
+                    func={sendMessage}
+                    type={type}
+                    roomId={roomId}
+                  />
+                ),
+              )}
       </div>
       <div className="chat-input">
         <ChatInput func={sendMessage} />

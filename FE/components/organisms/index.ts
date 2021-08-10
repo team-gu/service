@@ -18,6 +18,12 @@ import TeamManageModal from './TeamManageModal';
 import UserStatus from './UserStatus';
 import UserStatusCard from './UserStatusCard';
 
+import AdminLayout from './AdminLayout';
+import AdminMenuSidebarLeft from './AdminMenuSidebarLeft';
+import AdminProjectManage from './AdminProjectManage';
+import AdminProjectManageModal from './AdminProjectManageModal';
+import AdminDashboard from './AdminDashboard';
+
 export {
   ChatList,
   ChatRoom,
@@ -36,6 +42,11 @@ export {
   TeamStatusCard,
   TeamStatus,
   TeamManageModal,
+  AdminMenuSidebarLeft,
+  AdminLayout,
   UserStatus,
   UserStatusCard,
+  AdminProjectManage,
+  AdminProjectManageModal,
+  AdminDashboard,
 };

@@ -10,6 +10,7 @@ const Wrapper = styled.div`
   border-radius: 5%;
   box-shadow: 0px 0px 5px 2px rgba(55, 53, 47, 0.2);
   width: 240px;
+  height: fit-content;
 
   .project-name-container {
     margin-bottom: 20px;
@@ -44,7 +45,7 @@ const Wrapper = styled.div`
       flex-wrap: wrap;
       > div {
         word-spacing: -2px;
-        margin-right: 20px;
+        margin-right: 10px;
       }
     }
   }
@@ -112,8 +113,8 @@ export default function ProjectCard({
       <div className="project-tracks-container">
         <Text text="트랙" color="gray" fontSetting="n12m" />
         <div>
-          {project.track.map((v) => (
-            <Text text={v} fontSetting="n18m" isLineBreak />
+          {project.track.map((v, i) => (
+            <Text key={i} text={v} fontSetting="n18m" isLineBreak />
           ))}
         </div>
       </div>
@@ -142,7 +143,7 @@ export default function ProjectCard({
       </div>
 
       <div className="project-card-footer">
-        <Icon iconName="edit" color="seagreen" func={onClickEdit} />
+        <Icon iconName="edit" color="green" func={onClickEdit} />
         <Icon iconName="delete" color="tomato" func={onClickDelete} />
       </div>
     </Wrapper>
