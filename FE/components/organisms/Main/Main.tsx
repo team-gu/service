@@ -10,8 +10,8 @@ const Wrapper = styled.div<{ img: string }>`
   background-image: url(${(props) => props.img});
   background-repeat: no-repeat;
   background-size: cover;
-  margin-left: 38vw;
-  width: 62vw;
+  margin-left: 32vw;
+  width: 68vw;
   height: 100vh;
   font-size: 16px;
   font-weight: 300;
@@ -30,6 +30,10 @@ const Wrapper = styled.div<{ img: string }>`
     background: #fff;
     z-index: 100;
     color: black;
+
+    .tmp {
+      ${({ theme: { flexRow } }) => flexRow()};
+    }
 
     @media only all and (max-width: 768px) {
       margin-top: 100px;
@@ -123,13 +127,13 @@ export default function Home(): ReactElement {
     <Wrapper img={'/mainPage_background.png'}>
       <form onSubmit={handleLogin}>
         <div className="login-area">
-          <div>
+          <div className="tmp">
             <Image
               className="fixed-logo"
               alt="팀구"
               src="/teamgu_logo.png"
               width={250}
-              height={120}
+              height={150}
             />
           </div>
           <div>
