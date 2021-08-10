@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.teamgu.api.dto.UserProfileImgDto;
+import com.teamgu.handler.ProfileImageHandler;
 import lombok.extern.log4j.Log4j2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,6 +94,9 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	JwtUserDetailsService userDetailsService;
+
+	@Autowired
+	ProfileImageHandler profileImageHandler;
 
 	Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
@@ -200,11 +205,14 @@ public class UserServiceImpl implements UserService {
 
 		Long userId = userInfoReqDto.getId();			
 		User user = getUserById(userId).get();
+		//프로필 이미지 서버 내 저장 및 파일명 파싱처리
+		UserProfileImgDto userProfileImgDto = profileImageHandler.parseFileInfo(userInfoReqDto.getProfileImage());
+
 		int stageCode = (user.getStudentNumber().charAt(0) - '0') * 10
 				+ user.getStudentNumber().charAt(1) - '0' + 100;
 
 		// Wish Position, Introduce 수정
-		userRepositorySupport.updateUserDetailInfo(userInfoReqDto);
+		userRepositorySupport.updateUserDetailInfo(userInfoReqDto, userProfileImgDto);
 		
 		/*
 		 * Wish Track 수정

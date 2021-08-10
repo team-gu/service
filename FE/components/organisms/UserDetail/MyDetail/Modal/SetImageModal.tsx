@@ -7,6 +7,7 @@ import { Icon, Input } from '@atoms';
 import { Button } from '@molecules';
 import getCroppedImg from '@utils/cropImage';
 import { dataURLtoFile } from '@utils/dataURLtoFile';
+import { useAuthState } from '@store';
 
 const Wrapper = styled.div`
   width: 50vw;
@@ -59,6 +60,8 @@ export default function RenderCropper({
   setSubmitImage,
   changeImageMode,
 }: any) {
+  const { user } = useAuthState();
+
   const inputRef = useRef();
 
   const triggerFileSelectPopup = () => inputRef?.current?.click();
@@ -93,7 +96,7 @@ export default function RenderCropper({
     setImage(canvasDataUrl);
     const convertedUrlToFile = dataURLtoFile(
       canvasDataUrl,
-      'cropped-image.jpeg',
+      `${user.studentNumber}_profile.jpeg`,
     );
     // 실제 제출하는 파일은 아래 파일이 될 것이다.
     setSubmitImage(convertedUrlToFile);
