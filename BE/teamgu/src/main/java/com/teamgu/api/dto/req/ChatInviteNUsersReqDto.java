@@ -18,5 +18,5 @@ public class ChatInviteNUsersReqDto {
 	@ApiModelProperty(name = "방 id")
 	long room_id;
 	@ApiModelProperty(name = "초대할 유저들의 id 목록")
-	List<Long> users;
+	List<Long> userids;
 }

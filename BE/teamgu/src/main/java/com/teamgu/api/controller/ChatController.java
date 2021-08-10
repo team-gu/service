@@ -223,7 +223,7 @@ public class ChatController {
 	@PostMapping("/room/invite/users")
 	@ApiOperation(value="N명을 대화방에 초대합니다")
 	public ResponseEntity<? extends BasicResponse> inviteNUsers(@RequestBody ChatInviteNUsersReqDto chatInviteNUsersReqDto){
-		List<Long> users = chatInviteNUsersReqDto.getUsers();
+		List<Long> users = chatInviteNUsersReqDto.getUserids();
 		long room_id = chatInviteNUsersReqDto.getRoom_id();
 		if(chatService.inviteNUsers(users, room_id)==false) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR) 
