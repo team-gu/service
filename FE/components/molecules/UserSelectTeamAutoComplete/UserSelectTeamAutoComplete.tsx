@@ -1,22 +1,25 @@
-import { ReactElement, useEffect } from 'react';
+import { ReactElement, useState } from 'react';
 import AsyncSelect from 'react-select/async';
 import { getUserListByNameContains } from '@repository/teamRepository';
 import { MemberOption } from '@utils/type';
 import { useAuthState } from '@store';
-import { isRejectedWithValue } from '@reduxjs/toolkit';
 
 interface UserSelectTeamAutoCompleteProps {
   handleChangeUserSelect: (newValue: MemberOption | null) => void;
+  clear?: boolean;
 }
 
 export default function UserSelectTeamAutoComplete({
   handleChangeUserSelect,
+  clear,
 }: UserSelectTeamAutoCompleteProps): ReactElement {
   const {
     user: { studentNumber },
   } = useAuthState();
 
+  const [selcetedMember, setSelectedMember] = useState<MemberOption | null>();
   const handleSelectChange = (newValue: MemberOption | null) => {
+    setSelectedMember(newValue);
     handleChangeUserSelect(newValue);
   };
 
@@ -77,6 +80,7 @@ export default function UserSelectTeamAutoComplete({
         onChange={handleSelectChange}
         isClearable
         styles={customStyles}
+        value={clear ? null : selcetedMember}
       />
     </>
   );

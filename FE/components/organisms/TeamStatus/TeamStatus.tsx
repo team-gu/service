@@ -55,6 +55,7 @@ export default function TeamStatus(): ReactElement {
   const [containsUserId, setContainsUserId] = useState<number>();
   const [userHasTeam, setUserHasTeam] = useState<boolean>();
   const [filterClear, setFilterClear] = useState(false);
+  const [userFilterClear, setUserFilterClear] = useState(false);
 
   const dispatch = useAppDispatch();
 
@@ -89,32 +90,32 @@ export default function TeamStatus(): ReactElement {
 
   useEffect(() => {
     setFilterClear(false);
-    renderTeams();
+    setUserFilterClear(true);
+    setContainsUserId(undefined);
+    renderTeams(true);
   }, [sortBy, sortAsc, payload]);
 
   useEffect(() => {
     if (containsUserId) {
       setFilterClear(true);
-      setContainsUserId(undefined);
-      renderTeams();
+      setUserFilterClear(false);
     }
+    
+    renderTeams(false);
   }, [containsUserId]);
 
-  const renderTeams = () => {
+  const renderTeams = (byFilters?: boolean) => {
     let payloadTemp = {
       project: payload.project,
       filteredSkills: payload.skills?.map((s) => ({ code: s })) || [],
       filteredTracks: payload.track?.map((t) => ({ code: t })) || [],
       sortBy,
       sortAsc,
-      userId: containsUserId || 0,
+      userId: byFilters ? 0 : containsUserId || 0,
       studentNumber,
     };
-    console.log(payloadTemp);
 
     getTeamsFiltered(payloadTemp).then(({ data: { data } }) => {
-      console.log('RESULT getTeamsFiltered');
-      console.log(data);
       setTeams(data);
     });
   };
@@ -215,6 +216,7 @@ export default function TeamStatus(): ReactElement {
         <div className="team-status-header">
           <UserSelectTeamAutoComplete
             handleChangeUserSelect={handleChangeUserSelect}
+            clear={userFilterClear}
           />
           <div className="sort-container">
             <div className="sort-select">
