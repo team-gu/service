@@ -215,14 +215,6 @@ const getStudentRegion = (ID: string) => {
   return regions[Number(ID[2]) - 1];
 };
 
-const getSkills = (skills: string[]) => {
-  return skills.map((skill) => {
-    return {
-      name: skill,
-    };
-  });
-};
-
 const getDate = (date: Date) => {
   return date
     ? JSON.stringify(date).split('').slice(1, 11).join('')
@@ -243,7 +235,6 @@ export default function OtherUserDetail(): ReactElement {
     (async () => {
       try {
         const { data } = await getUserDetail(id);
-        console.log(data);
         setOtherUser(data);
       } catch (error) {
         console.error(error);
@@ -251,7 +242,7 @@ export default function OtherUserDetail(): ReactElement {
         dispatch(setLoading({ isLoading: false }));
       }
     })();
-  }, [id]);
+  }, []);
 
   if (!otherUser.name) return <div>존재하지 않는 사용자입니다.</div>;
   return (
@@ -267,14 +258,13 @@ export default function OtherUserDetail(): ReactElement {
             otherUser.studentNumber,
           )}기 ${otherUser.name}`}</p>
           <div>
-            <p className="track">{otherUser.wishTrack.join(', ')}</p>
+            <p className="track">
+              {otherUser.wishTrack.map((track) => track.codeName).join(', ')}
+            </p>
             <p>{otherUser.wishPositionCode}</p>
           </div>
           <SkillSet>
-            <SkillSelectAutoComplete
-              value={getSkills(otherUser.skills)}
-              disabled={true}
-            />
+            <SkillSelectAutoComplete value={otherUser.skills} disabled={true} />
           </SkillSet>
           <p>{otherUser.introduce}</p>
         </Manifesto>

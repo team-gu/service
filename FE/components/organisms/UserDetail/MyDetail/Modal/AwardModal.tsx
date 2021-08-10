@@ -137,7 +137,7 @@ export default function AwardModal(): ReactElement {
             <div>
               <StyledTextarea
                 onChange={handleIntroduce}
-                maxlength={100}
+                maxLength={100}
                 value={introduce}
               />
               <Text
@@ -184,7 +184,7 @@ export default function AwardModal(): ReactElement {
               <StyledTextarea
                 placeholder={content.introduce}
                 onChange={handleIntroduce}
-                maxlength={100}
+                maxLength={100}
               />
               <Text
                 text={introduce.length + ' / 100'}

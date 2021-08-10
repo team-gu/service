@@ -243,7 +243,7 @@ export default function MyDetail({ changeEditMode }: any): ReactElement {
           </div>
           <div className="track">
             <Label text="트랙">
-              <p>{user.wishTrack.join(', ')}</p>
+              <p>{user.wishTrack.map((track) => track.codeName).join(', ')}</p>
             </Label>
           </div>
           <div className="position">
@@ -253,10 +253,7 @@ export default function MyDetail({ changeEditMode }: any): ReactElement {
           </div>
           <div className="skills">
             <Label text="사용 기술">
-              <SkillSelectAutoComplete
-                value={getSkills(user.skills)}
-                disabled={true}
-              />
+              <SkillSelectAutoComplete value={user.skills} disabled={true} />
             </Label>
           </div>
           <div className="introduce">
