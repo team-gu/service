@@ -1,10 +1,11 @@
 import { ReactElement, useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { Text } from '@atoms';
-import { BigDonutChart, DonutChart } from '@molecules';
 import CountUp from 'react-countup';
 
-import { ADMIN_TEAM_DATA, ADMIN_TRACK_DATA } from '@utils/dummy';
+import { Text } from '@atoms';
+import { BigDonutChart, DonutChart, Table } from '@molecules';
+
+import { ADMIN_TEAM_DATA, ADMIN_TRACK_DATA, DUMMY_TABLE_COLUMNS, DUMMY_TABLE_DATA } from '@utils/dummy';
 
 const BLUE = '#0088FE';
 const RED = '#FF8042';
@@ -69,22 +70,48 @@ const Wrapper = styled.div`
   }
 
   .team-status-table {
-    display: flex;
     margin-top: 30px;
 
-    .table-container {
-      flex: 1;
+    .table-header {
+      margin-bottom: 20px;
+    }
+  }
+`;
 
-      .table-header {
-        margin-bottom: 20px;
-      }
+const TableWrapper = styled.div`
+  display: block;
+  max-width: 100%;
 
-      .table-region-container {
-        flex 1;
-      }
+  .tableWrap {
+    display: block;
+    max-width: 100%;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    border-bottom: 1px solid black;
+  }
 
-      .table-track-container {
-        flex: 1;
+  table {
+    border-spacing: 0;
+    border: 1px solid gainsboro;
+    
+    th {
+      border-bottom: 1px solid black;
+    }
+    tr {
+      // border-bottom: 1px solid gainsboro;
+    }
+
+    th,
+    td {
+      margin: 0;
+      padding: 10px;
+      border-bottom: 1px solid gainsboro;
+      border-right: 1px solid gainsboro;
+
+      // Each cell should grow equally
+      width: 1%;
+      &.collapse {
+        width: 0.0000000001%;
       }
     }
   }
@@ -149,18 +176,12 @@ export default function AdminDashboard(): ReactElement {
           </div>
         </div>
         <div className="team-status-table">
-          <div className="table-container">
-            <div className="table-header">
-              <Text text="지역에 대한 팀 구성 현황표" fontSetting="n22m" />
-            </div>
-            <div className="table-region-container">팀 구성 현황 테이블 1</div>
+          <div className="table-header">
+            <Text text="지역에 대한 팀 구성 현황표" fontSetting="n22m" />
           </div>
-          <div className="table-container">
-            <div className="table-header">
-              <Text text="트랙에 대한 팀 구성 현황표" fontSetting="n22m" />
-            </div>
-            <div className="table-region-container">팀 구성 현황 테이블 2</div>
-          </div>
+          <TableWrapper>
+            <Table data={DUMMY_TABLE_DATA} columns={DUMMY_TABLE_COLUMNS} />
+          </TableWrapper>
         </div>
       </div>
     </Wrapper>
