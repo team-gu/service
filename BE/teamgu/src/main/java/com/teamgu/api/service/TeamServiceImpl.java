@@ -7,10 +7,12 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.teamgu.api.dto.req.TeamAutoCorrectReqDto;
 import com.teamgu.api.dto.req.TeamFilterReqDto;
 import com.teamgu.api.dto.req.TeamMemberReqDto;
 import com.teamgu.api.dto.req.TrackReqDto;
 import com.teamgu.api.dto.res.SkillResDto;
+import com.teamgu.api.dto.res.TeamAutoCorrectResDto;
 import com.teamgu.api.dto.res.TeamIsCreateResDto;
 import com.teamgu.api.dto.res.TeamListResDto;
 import com.teamgu.api.dto.res.TeamMemberInfoResDto;
@@ -124,6 +126,8 @@ public class TeamServiceImpl implements TeamService {
 			Long userId = member.getId();
 			teamRepositorySupport.addMember(teamId, userId);
 		}
+		
+		teamRepositorySupport.updateTeamBuildMemberCount(teamId);
 		
 	}
 	/*
@@ -278,6 +282,7 @@ public class TeamServiceImpl implements TeamService {
 		Long userId = teamMemberReqDto.getUserId();
 		
 		teamRepositorySupport.addMember(teamId, userId);
+		teamRepositorySupport.updateTeamBuildMemberCount(teamId);
 	}
 
 	/*
@@ -305,6 +310,7 @@ public class TeamServiceImpl implements TeamService {
 		Long userId = teamMemberReqDto.getUserId();
 		
 		teamRepositorySupport.deleteMember(teamId, userId);
+		teamRepositorySupport.updateTeamBuildMemberCount(teamId);
 		
 	}
 
@@ -360,8 +366,6 @@ public class TeamServiceImpl implements TeamService {
 		}
 		else {
 			Long teamId = teamIds.get(0).longValue();
-			System.out.println(teamId + " / " + teamId.getClass());
-			System.out.println("TeamServiceImple : 팀이 있음");
 			teamIsCreateResDto.setHasTeam(true);
 			teamIsCreateResDto.setTeam(getTeamInfobyTeamId(teamId));
 			return teamIsCreateResDto;
@@ -369,17 +373,20 @@ public class TeamServiceImpl implements TeamService {
 		
 	}
 
+	/*
+	 * Team User Auto Correct
+	 */	
+	
+	@Override
+	public List<TeamAutoCorrectResDto> getUserAutoCorrect(TeamAutoCorrectReqDto teamAutoCorrectReqDto) {
+		// TODO Auto-generated method stub
+		return teamRepositorySupport.getUserAutoCorrect(teamAutoCorrectReqDto);
+	}
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	@Override
+	public Boolean checkTeamLeader(Long userId, int projectCode) {
+		// TODO Auto-generated method stub
+		return teamRepositorySupport.checkTeamLeader(userId, projectCode);
+	}
 	
 }

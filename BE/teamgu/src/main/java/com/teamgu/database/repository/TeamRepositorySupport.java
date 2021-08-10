@@ -11,14 +11,18 @@ import javax.persistence.PersistenceUnit;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 
+import org.hibernate.sql.Select;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.teamgu.api.dto.req.TeamAutoCorrectReqDto;
 import com.teamgu.api.dto.req.TeamFilterReqDto;
 import com.teamgu.api.dto.req.TrackReqDto;
 import com.teamgu.api.dto.res.SkillResDto;
+import com.teamgu.api.dto.res.TeamAutoCorrectResDto;
 import com.teamgu.api.dto.res.TeamListResDto;
 import com.teamgu.api.dto.res.TeamMemberInfoResDto;
 import com.teamgu.database.entity.QCodeDetail;
@@ -43,6 +47,7 @@ public class TeamRepositorySupport {
 	QUser qUser = QUser.user;
 	QUserTeam qUserTeam = QUserTeam.userTeam;
 	QTeam qTeam = QTeam.team;
+	QMapping qMapping = QMapping.mapping;
 
 	// Team Skill 조회
 	public List<SkillResDto> getTeamSkillsByTeamId(Long teamId) {
@@ -218,13 +223,16 @@ public class TeamRepositorySupport {
 				+		"and stage_code in "
 				+			"(select distinct stage_code from mapping where track_code = (select code_detail from code_detail where name = ?2))))"
 				+	"and user_id = ?1";
+		
 		Query query = em.createNativeQuery(jpql)
 		.setParameter(1, userId)
-		.setParameter(2, trackName)
-		;
+		.setParameter(2, trackName);
+		
 		List<Long> chk = query.getResultList();
 		int size = chk.size();
+		
 		em.close();
+		
 		if(size == 0) {
 			return true;
 		}
@@ -236,82 +244,195 @@ public class TeamRepositorySupport {
 	
 	// Team 생성 가능 여부 체크
 	public List<BigInteger> checkTeamBuilding(Long userId, int projectCode) {
+		
 		EntityManager em = emf.createEntityManager();
 		
 		String jpql = "select team_id from user_team where team_id in \r\n" + 
 				"(select id from team where team.mapping_id in \r\n" + 
 				"(select mapping.id from mapping where mapping.project_code = ?1))" +
 				" and user_id = ?2";
+		
 		Query query = em.createNativeQuery(jpql)
 		.setParameter(1, projectCode)
-		.setParameter(2, userId)
-		;
+		.setParameter(2, userId);
+		
 		List<BigInteger> result = query.getResultList();
 		
 		return result;
 
 	}
 	
+	// Team Id Now Member 업데이트
+	@Transactional
+	public void updateTeamBuildMemberCount(Long teamId){
+
+		jpaQueryFactory
+		.update(qTeam)
+		.set(qTeam.nowMember,  (JPAExpressions
+				.select(qUser.id.count().intValue())
+				.from(qUserTeam)
+				.where(qUserTeam.team.id.eq(teamId)))
+				)
+		.where(qTeam.id.eq(teamId))
+		.execute();
+		
+	}
 	
 	// Team Id Filter
 	public List<Long> getTeamIdbyFilter(TeamFilterReqDto teamFilterReqDto) {
 		
 		EntityManager em = emf.createEntityManager();
+		List<Long> list = null;
+		String jqpl = null;
 		
-		StringBuilder skillFilter = new StringBuilder();
-		StringBuilder trackFilter = new StringBuilder();
+		// Serach User Id
+		Long userId = teamFilterReqDto.getUserId();
+		int stageCode = ((teamFilterReqDto.getStudentNumber().charAt(0) - '0') * 10 + teamFilterReqDto.getStudentNumber().charAt(1) - '0') + 100;
+		int projectCode = teamFilterReqDto.getProject();
 		
-		// skillsFilter
-		List<SkillResDto> skills = teamFilterReqDto.getFilteredSkills();
-		int skillsSize =skills.size();
-		
-		List<TrackReqDto> tracks = teamFilterReqDto.getFilteredTracks();
-		int tracksSize = tracks.size();
-		
-		for(int i = 0; i<skillsSize; i++) {
-			if(i == 0) {
-				skillFilter.append("in (");
+		if(userId == 0) { // filter 인경우
+			
+			StringBuilder skillFilter = new StringBuilder();
+			StringBuilder trackFilter = new StringBuilder();
+			
+			String asc = (teamFilterReqDto.isSortAsc())? "asc" : "desc";
+			String sortType = teamFilterReqDto.getSortBy();
+			String sort = "id";
+			
+			if(sortType.equals("numberOfMembers")) {
+				sort = "nowMember";
 			}
-			skillFilter.append(skills.get(i).getCode());
-			if(i == (skillsSize -1)) {
-				skillFilter.append(")\n");
+			else if(sortType.equals("teamName")) {
+				sort = "name";
 			}
-			else {
-				skillFilter.append(", ");
+			String orderBy = " team." + sort + " " + asc;
+			
+
+			// skillsFilter
+			List<SkillResDto> skills = teamFilterReqDto.getFilteredSkills();
+			int skillsSize =skills.size();
+			
+			for(int i = 0; i<skillsSize; i++) {
+				if(i == 0) {
+					skillFilter.append("in (");
+				}
+				skillFilter.append(skills.get(i).getCode());
+				if(i == (skillsSize -1)) {
+					skillFilter.append(")\n");
+				}
+				else {
+					skillFilter.append(", ");
+				}
 			}
+			
+			// trackFilter
+			List<TrackReqDto> tracks = teamFilterReqDto.getFilteredTracks();
+			int tracksSize = tracks.size();
+
+			for(int i = 0; i<tracksSize; i++) {
+				if(i == 0) {
+					trackFilter.append("in (\"");
+				}
+				trackFilter.append(tracks.get(i).getCodeName());
+				if(i == (tracksSize -1)) {
+					trackFilter.append("\")\n");
+				}
+				else {
+					trackFilter.append("\", \"");
+				}
+			}
+			
+			jqpl = 
+					"select distinct team.id\r\n" + 
+					"from team left outer join team_skill\r\n" + 
+					"on team.id = team_skill.team_id\r\n" + 
+					"left outer join mapping\r\n" + 
+					"on team.mapping_id = mapping.id\r\n" + 
+					"where team_skill.skill_code " + skillFilter.toString() + "\r\n" + 
+					"and mapping_id in\r\n" + 
+					"(select id from mapping where stage_code = "+stageCode+" and track_code in \r\n" + 
+					"(select code_detail from code_detail where name " + trackFilter.toString()  +"))\r\n" + 
+					"order by team.complete_yn, " + orderBy;
+			
 		}
-		System.out.println(skillFilter.toString());
-		
-		//tracks Filter
-		for(int i = 0; i<tracksSize; i++) {
-			if(i == 0) {
-				trackFilter.append("in (\"");
-			}
-			trackFilter.append(tracks.get(i).getCodeName());
-			if(i == (tracksSize -1)) {
-				trackFilter.append("\")\n");
-			}
-			else {
-				trackFilter.append("\", \"");
-			}
+		else { // 검색 인 경우
+			
+			jqpl = 
+					"select team_id from user_team where team_id in \r\n" +
+					"(select id from team where team.mapping_id in \r\n" +
+					"(select mapping.id from mapping where mapping.project_code = " + projectCode + " and stage_code = " + stageCode +")) and user_id = " + userId;
 		}
-		System.out.println(trackFilter.toString());
 		
-		String jqpl = 
-				"select distinct team.id\r\n" + 
-				"from team left outer join team_skill\r\n" + 
-				"on team.id = team_skill.team_id\r\n" + 
-				"left outer join mapping\r\n" + 
-				"on team.mapping_id = mapping.id\r\n" + 
-				"where team_skill.skill_code " + skillFilter.toString() + "\r\n" + 
-				"and mapping_id in\r\n" + 
-				"(select id from mapping where stage_code = 105 and track_code in \r\n" + 
-				"(select code_detail from code_detail where name " + trackFilter.toString()  +"))\r\n" + 
-				"order by team.id asc";
-		List<Long> list = em.createNativeQuery(jqpl).getResultList();
+		list = em.createNativeQuery(jqpl).getResultList();
+		
 		em.close();
 
 		return list;
+	}
+	
+	// Team Auto Correct
+	public List<TeamAutoCorrectResDto> getUserAutoCorrect(TeamAutoCorrectReqDto teamAutoCorrectReqDto){
+		
+		String search = teamAutoCorrectReqDto.getSearch();
+		String stage = teamAutoCorrectReqDto.getStudentNumber().substring(0, 2) + "%";
+
+		return jpaQueryFactory
+				.select(Projections.constructor(TeamAutoCorrectResDto.class, qUser.id, qUser.name, qUser.email))
+				.from(qUser)
+				.where((qUser.email.contains(search)
+						.or(qUser.name.contains(search)))
+						.and(qUser.studentNumber.like(stage)))
+				.fetch();
+	}
+	
+	// Check Team Leader
+	public Boolean checkTeamLeader(Long userId, int projectCode) {
+		// TODO Auto-generated method stub
+		String studentNumber = jpaQueryFactory
+		.select(qUser.studentNumber)
+		.from(qUser)
+		.where(qUser.id.eq(userId))
+		.fetchOne();
+		System.out.println(studentNumber);
+		if(studentNumber == null) return false;
+		int stageCode = ((studentNumber.charAt(0) - '0') * 10 + studentNumber.charAt(1) - '0') + 100;
+//		select leader_id from team
+//		where mapping_id in (select id from mapping where project_code = 101 
+//		and stage_code = 105)
+//		and id in (select team_id from user_team where user_id = 9);
+//		select * from user_team where user_id = 9
+		
+//		jpaQueryFactory
+//		.update(qTeam)
+//		.set(qTeam.nowMember,  (JPAExpressions
+//				.select(qUser.id.count().intValue())
+//				.from(qUserTeam)
+//				.where(qUserTeam.team.id.eq(teamId)))
+//				)
+//		.where(qTeam.id.eq(teamId))
+//		.execute();
+		
+		Long leaderId = 
+		jpaQueryFactory
+		.select(qTeam.user.id)
+		.from(qTeam)
+		.where(qTeam.mapping.id.in(JPAExpressions
+				.select(qMapping.id)
+				.from(qMapping)
+				.where(qMapping.projectCode.eq(projectCode)
+						.and(qMapping.stageCode.eq(stageCode))))
+				.and(qTeam.id.in(JPAExpressions
+						.select(qUserTeam.team.id)
+						.from(qUserTeam)
+						.where(qUserTeam.user.id.eq(userId)))))
+		.fetchOne().longValue();
+		
+		System.out.println(leaderId +" / " + userId );
+		
+		if(leaderId == userId)
+			return true;
+		else 
+			return false;
 	}
 
 //	public void createTeam(TeamListResDto teamListResDto) {
@@ -335,4 +456,5 @@ public class TeamRepositorySupport {
 //				.fetch();
 //		
 //	}
+	
 }

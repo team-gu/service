@@ -21,6 +21,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @ApiModel("ChatMessageResponse")
 public class ChatMessageResDto {
+	@ApiModelProperty(name="채팅의 고유 id")
+	long chat_id;
+	
 	@ApiModelProperty(name="보내는 사람의 아이디")
 	long sender_id;
 	

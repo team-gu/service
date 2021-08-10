@@ -309,8 +309,6 @@ export default function TeamManageModal({
     }
 
     getEachFiltersCodeList(user.studentNumber).then(({ data }) => {
-      console.log(data);
-
       setSkillOptions(
         data.data['스킬'].reduce(
           (acc: Skill[], cur: any) => [
@@ -444,8 +442,6 @@ export default function TeamManageModal({
   };
 
   const handleCreateTeamConfirm: MouseEventHandler = (event) => {
-    console.log(user);
-
     if (!user) {
       return;
     }

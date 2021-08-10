@@ -1,5 +1,6 @@
 package com.teamgu.database.repository;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -59,18 +60,85 @@ public class UserChatRoomRepositorySupport {
 		}
 		return ucrList.get(0).longValue();
 	}
-	
-	public void insertUser(long user_id,long room_id) {
+	/**
+	 * 기존의 방에 새로운 유저를 초대한다 그리고 채팅방 명에 유저를 추가한다
+	 * @param user_id
+	 * @param room_id
+	 */
+	public boolean insertUser(long user_id,long room_id, String new_room_name) {
 		EntityManager em = emf.createEntityManager();
 		EntityTransaction et = em.getTransaction();
-		et.begin();
-		String jpql = "INSERT INTO user_chat_room(chat_room_id,user_id) "
-					+ "VALUES(?1,?2)";
-		em.createNativeQuery(jpql)
-			.setParameter(1, room_id)
-			.setParameter(2, user_id)
-			.executeUpdate();
-		et.commit();
+		try {
+			et.begin();
+			String jpql = "INSERT INTO user_chat_room(chat_room_id,user_id) "
+						+ "VALUES(?1,?2)";
+			em.createNativeQuery(jpql)
+				.setParameter(1, room_id)
+				.setParameter(2, user_id)
+				.executeUpdate();
+			
+			jpql ="UPDATE chat_room SET title = :new_room_name WHERE id = :room_id";
+			em.createNativeQuery(jpql)
+				.setParameter("new_room_name", new_room_name)
+				.setParameter("room_id", room_id)
+				.executeUpdate();
+			et.commit();
+			return true;
+		}catch(Exception e) {
+			log.error("채팅방에 이미 해당 유저가 존재합니다");
+			et.rollback();			
+		}finally {
+			em.close();			
+		}
+		return false;
+	}
+	
+	/**
+	 * 특정 채팅 방의 unread 메세지를 반환한다
+	 * @param user_id
+	 * @param room_id
+	 * @return
+	 */
+	public long countUnreadMessageByUserIdAndRoomId(long user_id,long room_id) {
+		EntityManager em = emf.createEntityManager();
+		String jpql = 	"select ifnull(count(*),0) unread_message\r\n" + 
+						"from chat c \r\n" + 
+						"where c.receive_room_id= :room_id and c.id > (select ifnull(ucr.last_chat_id,0) \r\n" + 
+																"from user_chat_room ucr \r\n" + 
+																"where ucr.user_id=:user_id and ucr.chat_room_id=:room_id)\r\n" + 
+						"group by c.receive_room_id\r\n" + 
+						"union all\r\n" + 
+						"select 0 as unread_message\r\n" + 
+						"from dual\r\n" + 
+						"limit 1";
+		List<BigInteger> res = em.createNativeQuery(jpql)
+							.setParameter("user_id", user_id)
+							.setParameter("room_id", room_id)
+							.getResultList();
 		em.close();
+		return res.get(0).longValue();
+	}
+	
+	/**
+	 * 특정 유저의 전체 메세지 목록 중 unread 메세지를 반환한다
+	 * @param user_id
+	 * @return
+	 */
+	public long countUnreadMessageByUserId(long user_id) {
+		EntityManager em = emf.createEntityManager();
+		String jpql = 	"SELECT count(*) res\r\n" + 
+				"FROM chat c\r\n" + 
+				"LEFT JOIN (SELECT chat_room_id , IFNULL(last_chat_id,0) last_chat_id\r\n" + 
+							"FROM user_chat_room\r\n" + 
+							"WHERE user_id=:user_id) ucr\r\n" + 
+				"ON ucr.chat_room_id=c.receive_room_id\r\n" + 
+				"WHERE c.id > ucr.last_chat_id";
+		List<BigInteger> res = em.createNativeQuery(jpql)
+				.setParameter("user_id", user_id)
+				.getResultList();
+		log.info(user_id+" 조회된 unread total : "+res.get(0).longValue());
+		em.close();
+		return res.get(0).longValue();
+		
 	}
 }

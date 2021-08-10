@@ -99,6 +99,7 @@ export default function UserStatus(): ReactElement {
 
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [invitedUser, setInvitedUser] = useState<Users>();
+  const [isLeader, setIsLeader] = useState(false);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -115,6 +116,21 @@ export default function UserStatus(): ReactElement {
         projectCode?.length > 1 ? projectCode[projectCode.length - 1] : 101,
       studentNumber,
       sort: 'asc',
+    });
+
+    const project =
+      projectCode && projectCode.length > 0
+        ? projectCode[projectCode.length - 1]
+        : 101;
+    getUserHasTeam({
+      userId: id,
+      project: { code: project },
+    }).then(({ data: { data } }) => {
+      if (data.hasTeam) {
+        if (data.team.leaderId === id) {
+          setIsLeader(true);
+        }
+      }
     });
   }, []);
 
@@ -337,6 +353,7 @@ export default function UserStatus(): ReactElement {
               filterContents={filterContents}
               id={id}
               onClickInviteIcon={() => handleClickInviteIcon(each)}
+              currentUserIsLeader={isLeader}
             />
           ))
         )}

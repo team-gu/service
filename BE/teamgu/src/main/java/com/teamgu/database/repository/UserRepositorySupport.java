@@ -9,7 +9,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.teamgu.api.dto.req.TrackReqDto;
 import com.teamgu.api.dto.req.UserInfoReqDto;
+import com.teamgu.api.dto.res.SkillResDto;
 import com.teamgu.api.dto.res.UserClassResDto;
 import com.teamgu.api.dto.res.UserInfoAwardResDto;
 import com.teamgu.api.dto.res.UserInfoProjectResDto;
@@ -61,9 +63,9 @@ public class UserRepositorySupport {
 	}
 
 	// User 기술 스택 조회
-	public List<String> selectUserSkillByUserId(Long userId) {
+	public List<SkillResDto> selectUserSkillByUserId(Long userId) {
 		return jpaQueryFactory
-				.select(qCodeDetail.Name)
+				.select(Projections.constructor(SkillResDto.class, qCodeDetail.codeDetail, qCodeDetail.Name))
 				.from(qSkill)
 				.join(qCodeDetail)
 				.on(qCodeDetail.codeDetail.eq(qSkill.skillCode))
@@ -164,8 +166,8 @@ public class UserRepositorySupport {
 	}
 
 	// User Wish Track 조회
-	public List<String> selectUserWishTrackByUserId(Long userId) {
-		return jpaQueryFactory.select(qCodeDetail.Name).from(qWishTrack).leftJoin(qWishTrack.mapping, qMapping)
+	public List<TrackReqDto> selectUserWishTrackByUserId(Long userId) {
+		return jpaQueryFactory.select(Projections.constructor(TrackReqDto.class, qCodeDetail.codeDetail, qCodeDetail.Name)).from(qWishTrack).leftJoin(qWishTrack.mapping, qMapping)
 				.join(qCodeDetail).on(qMapping.trackCode.eq(qCodeDetail.codeDetail))
 				.where(qWishTrack.user.id.eq(userId).and(qCodeDetail.code.code.eq("TR"))).fetch();
 	}

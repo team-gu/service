@@ -4,8 +4,10 @@ import java.util.List;
 
 import com.teamgu.api.dto.req.TeamFilterReqDto;
 import com.teamgu.api.dto.req.TeamMemberReqDto;
+import com.teamgu.api.dto.req.TeamAutoCorrectReqDto;
 import com.teamgu.api.dto.res.TeamIsCreateResDto;
 import com.teamgu.api.dto.res.TeamListResDto;
+import com.teamgu.api.dto.res.TeamAutoCorrectResDto;
 
 public interface TeamService {
 
@@ -47,5 +49,10 @@ public interface TeamService {
 
 	// Check Team Building
 	TeamIsCreateResDto checkTeamBuilding(Long userId, int projectCode);
+	
+	// Check Team Leader
+	Boolean checkTeamLeader(Long userId, int projectCode);	
+	// Auto complete
+	List<TeamAutoCorrectResDto> getUserAutoCorrect(TeamAutoCorrectReqDto teamSearchReqDto);
 	
 }
