@@ -53,7 +53,7 @@ public class UserController {
 	@ApiOperation(value = "사용자 상세정보 입력/ 수정", notes = "사용자 상세정보를 입력, 수정한다.")
 	@PutMapping("/userInfo")
 	public ResponseEntity<String> updateUserDetailInfo(
-			@RequestBody @ApiParam(value = "마이페이지 정보", required = true) UserInfoReqDto userInfoReq) {
+			@ApiParam(value = "마이페이지 정보", required = true) UserInfoReqDto userInfoReq) {
 		userService.updateUserDetailInfo(userInfoReq);
 		return new ResponseEntity<String>("SUCCESS", HttpStatus.OK);
 	}

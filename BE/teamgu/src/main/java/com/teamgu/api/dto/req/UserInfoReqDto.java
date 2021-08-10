@@ -4,10 +4,12 @@ import java.util.List;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
+@Data
 @Getter
 @Setter
 @ApiModel(description = "사용자 정보 요청 모델")

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.teamgu.api.dto.UserProfileImgDto;
+import com.teamgu.handler.ProfileImageHandler;
 import lombok.extern.log4j.Log4j2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +45,8 @@ import com.teamgu.database.repository.UserRepositorySupport;
 import com.teamgu.database.repository.UserRepository;
 import com.teamgu.database.repository.WishTrackRepository;
 import com.teamgu.database.repository.WishTrackRepositorySupport;
+
+import javax.transaction.Transactional;
 
 @Service("userService")
 @Log4j2
@@ -90,6 +94,9 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	JwtUserDetailsService userDetailsService;
+
+	@Autowired
+	ProfileImageHandler profileImageHandler;
 
 	Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
@@ -196,11 +203,26 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public void updateUserDetailInfo(UserInfoReqDto userInfoReqDto) {
 
-		Long userId = userInfoReqDto.getId();			
-		User user = getUserById(userId).get();
+		log.info(userInfoReqDto);
 
-		// Wish Position, Introduce 수정
-		//userRepositorySupport.updateUserDetailInfo(userInfoReqDto);
+		Long userId = null;
+		int stageCode = 0; //mapping 테이블 조작시에 필요한 값, mapping테이블에는 기수별로 동일한 트랙코드가 존재하기때문
+		// ex) 101(프로젝트 코드), 105(기수), 101(트랙 코드) / 101, 104, 101
+		//deleteMapping, selectMapping에서 사용된다
+
+		try {
+			userId = userInfoReqDto.getId();
+			stageCode = Integer.parseInt(userInfoReqDto.getStudentNumber().substring(0, 2)) + 100;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+
+		//프로필 이미지 서버 내 저장 및 파일명 파싱처리
+		UserProfileImgDto userProfileImgDto = profileImageHandler.parseFileInfo(userInfoReqDto.getProfileImage());
+
+		// Wish Position, Introduce, Profile 수정
+		userRepositorySupport.updateUserDetailInfo(userInfoReqDto, userProfileImgDto);
 		
 		/*
 		 * Wish Track 수정
@@ -212,10 +234,10 @@ public class UserServiceImpl implements UserService {
 
 		int updateWishTracksSize = updateWishTracks.size();
 		int originWishTracksSize = originWishTracks.size();
-		
+
 		boolean updateWishTracksCheck[] = new boolean[updateWishTracksSize];
 		boolean originWishTracksCheck[] = new boolean[originWishTracksSize];
-		
+
 		// 추가, 삭제 체크
 		for(int i = 0; i<updateWishTracksSize; i++) {
 			for(int j = 0; j<originWishTracksSize; j++) {
@@ -225,27 +247,27 @@ public class UserServiceImpl implements UserService {
 				}
 			}
 		}
-		
+
 		// updateWishTracksCheck가 false 이면 추가된 Track
 		for(int i = 0; i<updateWishTracksSize; i++) {
 			if(updateWishTracksCheck[i]) continue;
 			int trackCode = codeDetailRepositorySupport.findTtrackCode(updateWishTracks.get(i));
 			WishTrack wishTrack = new WishTrack();
-			Mapping mapping = mappingRepositorySupport.selectMapping(trackCode);
+			Mapping mapping = mappingRepositorySupport.selectMapping(stageCode, trackCode);
 			//Mapping mapping = mappingRepository.findByTrackCode(trackCode).get();
 			wishTrackRepositorySupport.insertWishTrack(userId, mapping.getId());
 			//wishTrackRepository.save(wishTrack);
-			
+
 		}
-		
+
 		// originWishTracksCheck가 false이면 삭제된 Track
 		for(int i = 0; i<originWishTracksSize; i++) {
 			if(originWishTracksCheck[i]) continue;
 			int trackCode = codeDetailRepositorySupport.findTtrackCode(originWishTracks.get(i));
-			userRepositorySupport.deleteUserWishTrack(userId, trackCode);
+			userRepositorySupport.deleteUserWishTrack(userId, stageCode, trackCode);
 		}
-		
-		
+
+
 		/*
 		 * Skill 수정
 		 */
@@ -253,13 +275,13 @@ public class UserServiceImpl implements UserService {
 		List<String> updateSkills = userInfoReqDto.getSkills();
 		// 기존 Skills
 		List<String> originSkills = userRepositorySupport.selectUserSkillByUserId(userInfoReqDto.getId());
-				
+
 		int updateSkillsSize = updateSkills.size();
 		int originSkillsSize = originSkills.size();
-		
+
 		boolean updateSkillsCheck[] = new boolean[updateSkillsSize];
 		boolean originSkillsCheck[] = new boolean[originSkillsSize];
-		
+
 		// 추가, 삭제 체크
 		for(int i = 0; i<updateSkillsSize; i++) {
 			for(int j = 0; j<originSkillsSize; j++) {
@@ -269,7 +291,7 @@ public class UserServiceImpl implements UserService {
 				}
 			}
 		}
-		
+
 		// updateSkillsCheck가 false 이면 추가된 Skill
 		for(int i = 0; i<updateSkillsSize; i++) {
 			if(updateSkillsCheck[i]) continue;
@@ -277,49 +299,13 @@ public class UserServiceImpl implements UserService {
 			userSkillRepositorySupport.insertSkiil(userId, skillCode);
 			//skillRepository.save(skill);
 		}
-		
+
 		// originSkillsCheck가 false 이면 삭제된 Skill
 		for(int i = 0; i<originSkillsSize; i++) {
 			if(originSkillsCheck[i]) continue;
 			int skillCode = codeDetailRepositorySupport.findSkillCode(originSkills.get(i));
 			userRepositorySupport.deleteUserSkill(userId, skillCode);
 		}
-		
-		
-//		User user = getUserByEmail(userInfoReq.getEmail()).get();
-//		user.setStudentNumber(userInfoReq.getStudentNumber());
-//		user.setWishPositionCode(userInfoReq.getWishPosition());
-//		System.out.println(userInfoReq.getStudentNumber().substring(1, 2) + "기");
-//		// 학번 입력 받아서 project
-//		int stageCode = codeDetailRepositorySupport.finStageCode(userInfoReq.getStudentNumber().substring(1, 2) + "기");
-//
-//		int projegtCode = projectDetailRepositorySuport.findProjectCode();
-//
-//		// 선호 트랙 저장
-//		List<String> wishTracks = userInfoReq.getWishTrack();
-//		WishTrack wishTrack = new WishTrack();
-//		for (String name : wishTracks) {
-//			wishTrack.setUser(user);
-//			// string to int
-//			int code = codeDetailRepositorySupport.findTtrackCode(name);
-//			wishTrack.setMapping(
-//					Mapping.builder().stageCode(stageCode).projectCode(projegtCode).trackCode(code).build());
-//			wishTrackRepository.save(wishTrack);
-//		}
-//
-//		user.setIntroduce(userInfoReq.getIntroduce());
-//
-//		// 기술 스택 저장
-//		List<String> skills = userInfoReq.getSkill();
-//		Skill skill = new Skill();
-//		for (String name : skills) {
-//			int code = codeDetailRepositorySupport.findSkillCode(name);
-//			skill.setUser(user);
-//			skill.setSkillCode(code);
-//			skillRepository.save(skill);
-//		}
-//
-//		userRepository.save(user);
 	}
 
 	/**
