@@ -1,29 +1,22 @@
 import { ReactElement, useState, useEffect } from 'react';
-import AsyncSelect from 'react-select/async';
+import Select, { OptionsType } from 'react-select';
 import { postAllUserList } from '@repository/chatRepository';
 import { MemberOption } from '@utils/type';
 import { useAuthState } from '@store';
 
-const customStyles = {
-  control: (base: any) => ({
-    ...base,
-    height: 45,
-  }),
-  singleValue: (provided: any) => {
-    const height = '35px';
-    const lineHeight = '35px';
+interface UserSelectChatAutoCompleteProps {
+  handleChangeUserSelect: (newValue: MemberOption[] | null) => void;
+}
 
-    return { ...provided, height, lineHeight };
-  },
-};
-
-interface UserSelectChatAutoCompletePorps {
-  handleChangeUserSelect: (newValue: MemberOption | null) => void;
+interface UserList {
+  name: string;
+  email: string;
+  user_id: number;
 }
 
 export default function UserSelectChatAutoComplete({
   handleChangeUserSelect,
-}: UserSelectChatAutoCompletePorps): ReactElement {
+}: UserSelectChatAutoCompleteProps): ReactElement {
   const {
     user: { id, projectCode, studentNumber },
   } = useAuthState();
@@ -41,7 +34,7 @@ export default function UserSelectChatAutoComplete({
       });
 
       setUserList(
-        data.map(({ name, email, user_id }) => {
+        data.map(({ name, email, user_id }: UserList) => {
           return {
             label: `${name} (${email})`,
             value: name,
@@ -52,20 +45,17 @@ export default function UserSelectChatAutoComplete({
     })();
   }, []);
 
-  const handleSelectChange = (newValue: MemberOption | null) => {
+  const handleSelectChange = (newValue: OptionsType<MemberOption> | null) => {
     handleChangeUserSelect(newValue);
   };
 
   return (
     <>
-      <AsyncSelect
-        cacheOptions
-        // loadOptions={promiseOptions}
-        defaultOptions={userList}
+      <Select
+        isMulti
+        options={userList}
         onChange={handleSelectChange}
-        isClearable
-        styles={customStyles}
-        isSearchable={false}
+        placeholder="선택해 주세요"
       />
     </>
   );
