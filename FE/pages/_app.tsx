@@ -17,9 +17,12 @@ function MyApp({ Component, pageProps }: AppProps) {
         <Layout>
           <Component {...pageProps} />
         </Layout>
-        {Object.keys(MODALS).map((each, idx) => (
-          <Modal modalName={MODALS[each]} key={idx} />
-        ))}
+        {Object.keys(MODALS).map(
+          (each, idx) =>
+            each !== 'HOC_MODAL' && (
+              <Modal modalName={MODALS[each]} key={idx} />
+            ),
+        )}
         <Spinner />
       </ThemeProvider>
     </Provider>
