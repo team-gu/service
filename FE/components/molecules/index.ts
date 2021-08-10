@@ -16,6 +16,7 @@ import SimpleSelect from './SimpleSelect';
 import UserSelectAutoComplete from './UserSelectAutoComplete';
 import UserSelectChatAutoComplete from './UserSelectChatAutoComplete';
 import SkillSelectAutoComplete from './SkillSelectAutoComplete';
+import ProjectCard from './ProjectCard';
 
 export {
   Button,
@@ -36,4 +37,5 @@ export {
   UserSelectAutoComplete,
   UserSelectChatAutoComplete,
   SkillSelectAutoComplete,
+  ProjectCard,
 };

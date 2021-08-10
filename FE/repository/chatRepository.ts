@@ -39,3 +39,10 @@ export const postInviteRoom = async (param: any) =>
     type: 'post',
     param,
   });
+
+export const postExitRoom = async (param: any) =>
+  await api({
+    url: '/api/chat/room/out',
+    type: 'post',
+    param,
+  });

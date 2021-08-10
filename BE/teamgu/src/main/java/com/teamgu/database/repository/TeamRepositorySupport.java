@@ -319,7 +319,7 @@ public class TeamRepositorySupport {
 			String sort = "id";
 			
 			if(sortType.equals("numberOfMembers")) {
-				sort = "nowMember";
+				sort = "now_member";
 			}
 			else if(sortType.equals("teamName")) {
 				sort = "name";
@@ -357,7 +357,7 @@ public class TeamRepositorySupport {
 					trackFilter.append(")\n");
 				}
 				else {
-					trackFilter.append("\", \"");
+					trackFilter.append(", ");
 				}
 			}
 			
@@ -371,7 +371,6 @@ public class TeamRepositorySupport {
 					"and mapping_id in\r\n" + 
 					"(select id from mapping where project_code = " + projectCode + " and stage_code = "+stageCode+" and track_code " + trackFilter.toString()  +")\r\n" + 
 					"order by team.complete_yn, " + orderBy;
-			
 		}
 		else { // 검색 인 경우
 			

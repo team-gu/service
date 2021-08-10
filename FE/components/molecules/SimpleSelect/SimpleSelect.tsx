@@ -13,6 +13,7 @@ interface SimpleSelectProps {
   placeholder?: string;
   value?: OptionTypeBase | null;
   customStyles?: Partial<Styles<any, false, GroupTypeBase<any>>> | undefined;
+  autofocus?: boolean | undefined;
   isDisabled?: boolean | undefined;
 }
 
@@ -23,6 +24,7 @@ export default function SimpleSelect({
   onBlur,
   value,
   customStyles,
+  autofocus,
   isDisabled,
 }: SimpleSelectProps): ReactElement {
   const styles = {
@@ -47,6 +49,7 @@ export default function SimpleSelect({
       placeholder={placeholder}
       defaultValue={value}
       onBlur={onBlur}
+      autoFocus={autofocus}
       styles={styles}
       isDisabled={isDisabled}
     />
