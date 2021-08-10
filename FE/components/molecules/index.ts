@@ -6,6 +6,7 @@ import Checkbox from './Checkbox';
 import Filter from './Filter';
 import FloatingButton from './FloatingButton';
 import Label from './Label';
+import Notification from './Notification';
 import ProfileContainer from './ProfileContainer';
 import ProfileImage from './ProfileImage';
 import RadioButton from './RadioButton';
@@ -27,6 +28,7 @@ export {
   Filter,
   FloatingButton,
   Label,
+  Notification,
   ProfileContainer,
   ProfileImage,
   RadioButton,
