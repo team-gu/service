@@ -1,12 +1,7 @@
 import { useState, ReactElement, useCallback } from 'react';
-
 import { PieChart, Pie, Sector } from 'recharts';
-const data = [
-  { name: '팀 완성', value: 400, color: '#0088FE' },
-  { name: '팀 미완성', value: 300, color: '#FF8042' },
-];
 
-const renderActiveShape = (props: any) => {
+const renderActiveShape = (props: any, title?: string) => {
   const {
     cx,
     cy,
@@ -19,6 +14,15 @@ const renderActiveShape = (props: any) => {
   } = props;
   return (
     <g>
+      <Sector
+        cx={cx}
+        cy={cy}
+        innerRadius={0}
+        outerRadius={outerRadius + 10}
+        startAngle={startAngle}
+        endAngle={endAngle}
+        fill="#fff"
+      />
       <text
         x={cx}
         y={cy}
@@ -47,31 +51,56 @@ const renderActiveShape = (props: any) => {
         endAngle={endAngle}
         fill={payload.color}
       />
+      {title && (
+        <text
+          x={cx}
+          y={cy}
+          dy={100}
+          textAnchor="middle"
+          fill="#000"
+          fontSize={18}
+        >
+          {title}
+        </text>
+      )}
     </g>
   );
 };
-export default function DonutChart(): ReactElement {
+
+interface DonutChart {
+  data: any[];
+  title?: string;
+}
+
+export default function DonutChart({ data, title }: DonutChart): ReactElement {
   const [activeIndex, setActiveIndex] = useState(0);
   const onPieEnter = useCallback(
     (_, index) => {
-      setActiveIndex(index);
+      setActiveIndex(1);
+    },
+    [setActiveIndex],
+  );
+  const onPieLeave = useCallback(
+    (_, index) => {
+      setActiveIndex(0);
     },
     [setActiveIndex],
   );
 
   return (
-    <PieChart width={250} height={250}>
+    <PieChart width={200} height={200}>
       <Pie
         activeIndex={activeIndex}
-        activeShape={renderActiveShape}
+        activeShape={(props) => renderActiveShape(props, title)}
         data={data}
-        cx={125}
-        cy={125}
-        innerRadius={60}
-        outerRadius={80}
+        cx={100}
+        cy={80}
+        innerRadius={55}
+        outerRadius={70}
         fill="#dcdcdc"
         dataKey="value"
         onMouseEnter={onPieEnter}
+        onMouseLeave={onPieLeave}
       />
     </PieChart>
   );

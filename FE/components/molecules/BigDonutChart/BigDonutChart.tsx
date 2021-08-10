@@ -1,12 +1,8 @@
 import { useState, ReactElement, useCallback } from 'react';
 
 import { PieChart, Pie, Sector } from 'recharts';
-const data = [
-  { name: '팀 완성', value: 400, color: '#0088FE' },
-  { name: '팀 미완성', value: 300, color: '#FF8042' },
-];
 
-const renderActiveShape = (props: any) => {
+const renderActiveShape = (props: any, title?: string) => {
   const {
     cx,
     cy,
@@ -19,6 +15,15 @@ const renderActiveShape = (props: any) => {
   } = props;
   return (
     <g>
+      <Sector
+        cx={cx}
+        cy={cy}
+        innerRadius={0}
+        outerRadius={outerRadius + 10}
+        startAngle={startAngle}
+        endAngle={endAngle}
+        fill='#fff'
+      />
       <text
         x={cx}
         y={cy}
@@ -31,7 +36,7 @@ const renderActiveShape = (props: any) => {
       <text
         x={cx}
         y={cy}
-        dy={32}
+        dy={40}
         textAnchor="middle"
         fill={payload.color}
         fontSize={26}
@@ -56,31 +61,59 @@ const renderActiveShape = (props: any) => {
         outerRadius={outerRadius + 10}
         fill={payload.color}
       />
+      {title && (
+        <text
+          x={cx}
+          y={cy}
+          dy={160}
+          textAnchor="middle"
+          fill="#000"
+          fontSize={18}
+        >
+          {title}
+        </text>
+      )}
     </g>
   );
 };
-export default function DonutChart(): ReactElement {
+
+interface BigDonutChartProps {
+  data: any[];
+  title?: string;
+}
+
+export default function BigDonutChart({
+  data,
+  title,
+}: BigDonutChartProps): ReactElement {
   const [activeIndex, setActiveIndex] = useState(0);
   const onPieEnter = useCallback(
     (_, index) => {
-      setActiveIndex(index);
+      setActiveIndex(1);
+    },
+    [setActiveIndex],
+  );
+  const onPieLeave = useCallback(
+    (_, index) => {
+      setActiveIndex(0);
     },
     [setActiveIndex],
   );
 
   return (
-    <PieChart width={400} height={400}>
+    <PieChart width={300} height={320}>
       <Pie
         activeIndex={activeIndex}
-        activeShape={renderActiveShape}
+        activeShape={(props) => renderActiveShape(props, title)}
         data={data}
-        cx={200}
-        cy={200}
-        innerRadius={120}
-        outerRadius={160}
+        cx={150}
+        cy={150}
+        innerRadius={90}
+        outerRadius={120}
         fill="#dcdcdc"
         dataKey="value"
         onMouseEnter={onPieEnter}
+        onMouseLeave={onPieLeave}
       />
     </PieChart>
   );
