@@ -84,6 +84,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/api/chat/**",//sockjs jwt allowed
                         "/receive/chat/**",
                         "/stomp/**",
+                        "/api/**",
                         "/api/display/**",
                         "/api/download/**"
                        )
