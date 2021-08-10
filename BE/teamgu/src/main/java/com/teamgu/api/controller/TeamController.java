@@ -58,6 +58,19 @@ public class TeamController {
 
 		return ResponseEntity.ok(new CommonResponse<TeamIsCreateResDto>(teamIsCreateResDto));
 	}
+	
+	@ApiOperation(value = "팀장 여부 조회")
+	@PostMapping("/leader")
+	public ResponseEntity<? extends BasicResponse> checkTeamLeader(@RequestBody TeamIsCreateReqDto checkTeamLeader){
+		
+		Long userId = checkTeamLeader.getUserId();
+		int projectCode = checkTeamLeader.getProject().getCode();
+		
+		
+		
+		return ResponseEntity.ok(new CommonResponse<Boolean>(teamService.checkTeamLeader(userId, projectCode)));
+	}
+
 
 	// 추후 필터 완성시 삭제될 메서드
 	@ApiOperation(value = "팀 리스트 조회")

@@ -21,10 +21,12 @@ import com.teamgu.api.dto.req.ChatReqDto;
 import com.teamgu.api.dto.req.UserInviteTeamReqDto;
 import com.teamgu.api.dto.req.UserRoomCheckDto;
 import com.teamgu.api.dto.req.UserRoomInviteReqDto;
+import com.teamgu.api.dto.req.UserRoomOutCheckReqDto;
 import com.teamgu.api.dto.res.BaseResDto;
 import com.teamgu.api.dto.res.BasicResponse;
 import com.teamgu.api.dto.res.ChatMessageResDto;
 import com.teamgu.api.dto.res.ChatRoomResDto;
+import com.teamgu.api.dto.res.ChatTotalUnreadResDto;
 import com.teamgu.api.dto.res.CommonResponse;
 import com.teamgu.api.dto.res.ErrorResponse;
 import com.teamgu.api.dto.res.LoginResDto;
@@ -33,6 +35,7 @@ import com.teamgu.api.service.ChatServiceImpl;
 import com.teamgu.api.service.UserServiceImpl;
 import com.teamgu.api.vo.MessageTemplate;
 import com.teamgu.database.entity.Chat;
+import com.teamgu.database.repository.TeamRepositorySupport;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -53,6 +56,9 @@ public class ChatController {
 	
 	@Autowired
 	UserServiceImpl userService;
+	
+	@Autowired 
+	TeamRepositorySupport teamRepositorySupport;
 	
 	@Autowired
 	MessageTemplate simpMessagingTemplate;
@@ -161,6 +167,22 @@ public class ChatController {
 		return ResponseEntity.noContent().build();
 	}
 	
+	@PostMapping("/room/out")
+	@ApiOperation(value="특정 유저가 채팅방을 닫았을 때, 마지막 채팅 내역이 무엇인지 기록한다")
+	public ResponseEntity<? extends BasicResponse> roomOutCheck(@RequestBody UserRoomOutCheckReqDto userRoomOutCheckReqDto){
+		long room_id = userRoomOutCheckReqDto.getRoom_id();
+		long user_id = userRoomOutCheckReqDto.getUser_id();
+		long last_chat_id = chatService.findLastChatId(room_id);
+		chatService.writeLastChatId(room_id, user_id, last_chat_id);		
+		return ResponseEntity.noContent().build();
+	}
+	
+	@GetMapping("/unread/{userid}")
+	@ApiOperation(value="특정 유저의 읽지 않은 메세지 총 갯수를 반환한다")
+	public ResponseEntity<? extends BasicResponse> getUnreadMessageByUserId(@PathVariable("userid") @ApiParam(value ="조회하고자 하는 유저의 id 값",required=true) long user_id){
+		long unreadCount = chatService.countTotalUnreadMessage(user_id);
+		return ResponseEntity.ok(new CommonResponse<ChatTotalUnreadResDto>(ChatTotalUnreadResDto.builder().unreadcount(unreadCount).build()));		
+	}
 //	@PostMapping("/rtc/user-invite")
 //	@ApiOperation(value="채팅을 통해 1:1 RTC 세션으로 초대합니다")
 //	@ApiResponses({

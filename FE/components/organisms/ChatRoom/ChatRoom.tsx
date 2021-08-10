@@ -58,7 +58,6 @@ export default function ChatRoom({
     chatBoxRef.current.scrollTo({
       top: chatBoxRef.current.scrollHeight - chatBoxRef.current.clientHeight,
       left: 0,
-      behavior: 'smooth',
     });
   };
 
@@ -112,36 +111,40 @@ export default function ChatRoom({
                 />
               ),
             )
-          : messageList?.map(
-              (
-                {
-                  create_date_time,
-                  message,
-                  sender_id,
-                  sender_name,
-                  type,
-                }: ChatNormal,
-                index: number,
-              ) => (
-                <ChatBubble
-                  key={index}
-                  userName={sender_name}
-                  profileSrc="/profile.png"
-                  time={
-                    Number(DateTime.now()) -
-                      Number(DateTime.fromISO(create_date_time)) <
-                    60000
-                      ? 'just now'
-                      : DateTime.fromISO(create_date_time).toRelative()
-                  }
-                  message={message}
-                  isMe={sender_id === id}
-                  func={sendMessage}
-                  type={type}
-                  roomId={roomId}
-                />
-              ),
-            )}
+          : messageList
+              .slice(-30)
+              ?.map(
+                (
+                  {
+                    create_date_time,
+                    message,
+                    sender_id,
+                    sender_name,
+                    type,
+                  }: ChatNormal,
+                  index: number,
+                ) => (
+                  <ChatBubble
+                    key={index}
+                    userName={sender_name}
+                    profileSrc="/profile.png"
+                    time={
+                      DateTime.now()
+                        .diff(DateTime.fromISO(create_date_time))
+                        .toMillis() < 60000
+                        ? 'just now'
+                        : DateTime.fromISO(create_date_time)
+                            .setLocale('ko')
+                            .toRelative()
+                    }
+                    message={message}
+                    isMe={sender_id === id}
+                    func={sendMessage}
+                    type={type}
+                    roomId={roomId}
+                  />
+                ),
+              )}
       </div>
       <div className="chat-input">
         <ChatInput func={sendMessage} />
