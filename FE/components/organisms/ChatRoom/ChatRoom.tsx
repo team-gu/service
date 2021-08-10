@@ -129,11 +129,13 @@ export default function ChatRoom({
                     userName={sender_name}
                     profileSrc="/profile.png"
                     time={
-                      Number(DateTime.now()) -
-                        Number(DateTime.fromISO(create_date_time)) <
-                      60000
+                      DateTime.now()
+                        .diff(DateTime.fromISO(create_date_time))
+                        .toMillis() < 60000
                         ? 'just now'
-                        : DateTime.fromISO(create_date_time).toRelative()
+                        : DateTime.fromISO(create_date_time)
+                            .setLocale('ko')
+                            .toRelative()
                     }
                     message={message}
                     isMe={sender_id === id}
