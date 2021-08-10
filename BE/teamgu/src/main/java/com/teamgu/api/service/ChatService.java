@@ -86,4 +86,20 @@ public interface ChatService {
 	 * @return
 	 */
 	long countTotalUnreadMessage(long user_id);
+	
+	/**
+	 * N 명이 동시에 존재하는 채팅방이 존재하는지 확인하고 이미 있다면 방 번호를 반환한다
+	 * 없다면 0을 반환한다
+	 * @param users
+	 * @return
+	 */
+	long checkNRoom(List<Long> users);
+	
+	/**
+	 * N 명이 있는 단톡방을 생성한다
+	 * @param users
+	 * @param title
+	 * @return
+	 */
+	long registNRoom(List<Long> users,String title);
 }

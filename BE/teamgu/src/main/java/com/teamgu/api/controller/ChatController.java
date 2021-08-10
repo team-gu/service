@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.teamgu.api.dto.req.ChatReqDto;
+import com.teamgu.api.dto.req.ChatRoomRegistReqDto;
 import com.teamgu.api.dto.req.UserInviteTeamReqDto;
 import com.teamgu.api.dto.req.UserRoomCheckDto;
 import com.teamgu.api.dto.req.UserRoomInviteReqDto;
@@ -182,6 +183,34 @@ public class ChatController {
 	public ResponseEntity<? extends BasicResponse> getUnreadMessageByUserId(@PathVariable("userid") @ApiParam(value ="조회하고자 하는 유저의 id 값",required=true) long user_id){
 		long unreadCount = chatService.countTotalUnreadMessage(user_id);
 		return ResponseEntity.ok(new CommonResponse<ChatTotalUnreadResDto>(ChatTotalUnreadResDto.builder().unreadcount(unreadCount).build()));		
+	}
+	
+	@PostMapping("/room/regist")
+	@ApiOperation(value="N명의 대화방을 생성한다")
+	public ResponseEntity<? extends BasicResponse> registNRoom(@RequestBody ChatRoomRegistReqDto chatRoomRegistReqDto){
+		List<Long> users = chatRoomRegistReqDto.getUserids();
+		long room_id = 0; 
+		try {
+			room_id = chatService.checkNRoom(users);
+			if(room_id==0) {//생성된 방이 없다면 새롭게 생성한다
+				String title = "의 방";
+				for(int i = 0;i<users.size();i++) {				
+					long user_id = users.get(i);
+					String name = userService.getUserById(user_id).get().getName();
+					if(i!=0)name=", "+name;
+					title = title.replace("의 방",name+"의 방");				
+				}
+				log.info("단톡명 :"+title);
+				room_id = chatService.registNRoom(users, title);
+			}	
+		}catch(Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR) 
+					.body(new ErrorResponse("단톡 만들기에 실패했습니다."));
+		}
+		if(room_id==0)
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR) 
+					.body(new ErrorResponse("단톡 만들기에 실패했습니다."));
+		return ResponseEntity.ok(new CommonResponse<Long>(room_id));
 	}
 //	@PostMapping("/rtc/user-invite")
 //	@ApiOperation(value="채팅을 통해 1:1 RTC 세션으로 초대합니다")

@@ -1,10 +1,12 @@
 package com.teamgu.database.repository;
 
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,5 +81,86 @@ public class ChatRoomRepositorySupport {
 			return nullchat;
 		}		
 		return chat;
+	}
+	
+	/**
+	 * N 명이 동시에 존재하는 채팅방이 존재하는지 확인하고 방 번호를 반환한다
+	 * 방이 존재하지 않으면 0을 반환한다
+	 * @param users
+	 * @return
+	 */
+	public long checkNRoom(List<Long> users) {
+		EntityManager em = emf.createEntityManager();
+		List<BigInteger> res = null;
+		try {
+			int alpha = 65;
+			String jpql = "SELECT IFNULL(A.chat_room_id,0)\r\n"
+						+ "FROM user_chat_room as A";
+			for(int i =0;i<users.size();i++) {
+				long user_id = users.get(i);
+				String body = "\r\nINNER JOIN (SELECT ucr.chat_room_id\r\n"
+							+ "FROM user_chat_room ucr\r\n"
+							+ "WHERE ucr.user_id = "+user_id+") AS "+Character.toString((char)(++alpha))+"\r\n"
+							+ "ON "+Character.toString((char)(alpha-1))+".chat_room_id = "+Character.toString((char)alpha)+".chat_room_id";
+				jpql+=body;
+			}
+			String tail = "\r\nGROUP BY A.chat_room_id\r\n"
+						+ "HAVING COUNT(*)="+users.size()+"\r\n"
+						+ "UNION ALL\r\n"
+						+ "SELECT 0 FROM dual LIMIT 1";
+			jpql+=tail;
+			log.debug(jpql);
+			res = em.createNativeQuery(jpql).getResultList();			
+		}catch(Exception e) {
+			e.printStackTrace();
+		}finally {
+			em.close();
+		}
+		return res.get(0).longValue();
+	}
+	
+	/**
+	 * 초대하려는 유저들의 id와 방 제목을 입력하면 채팅방 생성이 된다.
+	 * @param users
+	 * @param title
+	 */
+	public long registNRoom(List<Long> users, String title) {
+		EntityManager em = emf.createEntityManager();
+		EntityTransaction et = em.getTransaction();
+		log.debug("트랜잭션 시작 완료");
+		long room_id = 0;
+		try {
+			et.begin();
+			//1. 채팅방 생성
+			String jpql = "INSERT INTO chat_room(created_date,title)\r\n"
+						+ "VALUES(current_timestamp(), :title)";
+			log.debug(jpql);
+			em.createNativeQuery(jpql).setParameter("title", title).executeUpdate();
+			//2. 방금 생성한 채팅방 id값 반환
+			jpql = "SELECT id FROM chat_room WHERE title=:title";
+			log.debug(jpql);
+			List<BigInteger> res = em.createNativeQuery(jpql).setParameter("title", title).getResultList();
+			room_id = res.get(0).longValue();
+			
+			//3. 채팅방에 인원 초대
+			jpql = "INSERT INTO user_chat_room(chat_room_id,user_id,last_chat_id)";
+			for(int i = 0; i<users.size();i++) {
+				long user_id = users.get(i);
+				if(i==0) jpql+="\r\nVALUES";			
+				if(i>0) jpql+=",";
+				jpql+="\r\n("+room_id+","+user_id+",null)";
+			}			
+			log.debug(jpql);
+			em.createNativeQuery(jpql).executeUpdate();
+			et.commit();
+		}catch(Exception e) {
+			log.error("N명 방 생성에 실패");
+//			e.printStackTrace();
+			et.rollback();
+			return 0;
+		}finally {
+			em.close();
+		}
+		return room_id;
 	}
 }
