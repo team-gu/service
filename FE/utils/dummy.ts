@@ -75,3 +75,75 @@ export const ADMIN_TRACK_DATA = [
     data: 9,
   },
 ];
+
+export const DUMMY_TABLE_COLUMNS = [
+  {
+    Header: 'First Name',
+    accessor: 'firstName',
+  },
+  {
+    Header: 'Last Name',
+    accessor: 'lastName',
+  },
+  {
+    Header: 'Age',
+    accessor: 'age',
+  },
+  {
+    Header: 'Visits',
+    accessor: 'visits',
+    aggregate: 'count',
+    Aggregated: ({ value }) => `${value} (count)`,
+  },
+  {
+    Header: 'Status',
+    accessor: 'status',
+  },
+  {
+    Header: 'Profile Progress',
+    accessor: 'progress',
+  },
+];
+
+export const DUMMY_TABLE_DATA = [
+  {
+    firstName: 'Ant',
+    lastName: 'Bare',
+    age: 24,
+    visits: 45,
+    progress: 21,
+    status: 'complicated',
+  },
+  {
+    firstName: 'Ant',
+    lastName: 'Bare',
+    age: 24,
+    visits: 45,
+    progress: 21,
+    status: 'complicated',
+  },
+  {
+    firstName: 'Ant',
+    lastName: 'Bare',
+    age: 24,
+    visits: 45,
+    progress: 21,
+    status: 'complicated',
+  },
+  {
+    firstName: 'Ant',
+    lastName: 'Bare',
+    age: 24,
+    visits: 45,
+    progress: 21,
+    status: 'complicated',
+  },
+  {
+    firstName: 'Ant',
+    lastName: 'Bare',
+    age: 24,
+    visits: 45,
+    progress: 21,
+    status: 'complicated',
+  },
+];
