@@ -217,7 +217,7 @@ public class ChatController {
 		if(room_id==0)
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR) 
 					.body(new ErrorResponse("단톡 만들기에 실패했습니다."));
-		return ResponseEntity.ok(new CommonResponse<Long>(room_id));
+		return ResponseEntity.ok(new CommonResponse<ChatRoomResDto>(chatService.getChatRoomInfo(room_id)));
 	}
 	
 	@PostMapping("/room/invite/users")
@@ -274,6 +274,18 @@ public class ChatController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR) 
 					.body(new ErrorResponse("방 나가기에 실패했습니다"));
 		}
+		return ResponseEntity.ok(new CommonResponse<Boolean>(true));
+	}
+	
+	/**
+	 * RESTAPI Controller에서도 convertandsend가 작동하는지 테스트하는 메서드입니다
+	 * @param chatRoomLeaveReqDto
+	 * @return
+	 */
+	@PostMapping("/team/invite/test") 
+	public ResponseEntity<? extends BasicResponse> teamInviteTest(){
+		log.info("invite 테스팅");
+		simpMessagingTemplate.getTemplate().convertAndSend("/receive/chat/room/"+125,ChatMessageResDto.builder().message("test"));
 		return ResponseEntity.ok(new CommonResponse<Boolean>(true));
 	}
 }
