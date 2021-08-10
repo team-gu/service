@@ -8,6 +8,7 @@ import {
   useAppDispatch,
   setChatOpen,
   displayModal,
+  removeModal,
 } from '@store';
 import useSockStomp from '@hooks/useSockStomp';
 
@@ -152,15 +153,16 @@ export default function ChatRoute(): ReactElement {
     }
   };
 
-  const handleCreateRoom = async () => {
+  const handleCreateOrInviteRoom = async () => {
     if (selectedUser && selectedUser.length > 0) {
       try {
+        if (route === CHAT_LIST) {
         const {
           data: {
             data: { chat_room_id, room_name },
           },
         } = await postCreateRoom({
-          user_id: [
+            userids: [
             id,
             ...selectedUser.reduce((acc, cur) => [...acc, cur.user_id], []),
           ],
@@ -168,24 +170,11 @@ export default function ChatRoute(): ReactElement {
 
         handleToChatRoom(chat_room_id, room_name);
         return handleGetChatLists();
-      } catch (error) {
-        return console.error(error);
       }
-    }
-    dispatch(
-      displayModal({
-        modalName: MODALS.ALERT_MODAL,
-        content: '유저를 선택해주세요!.',
-      }),
-    );
-  };
 
-  const handleInviteRoom = async () => {
-    if (selectedUser && selectedUser.length > 0) {
-      try {
-        await postInviteRoom({
-          user_id: [
-            id,
+        return await postInviteRoom({
+          room_id,
+          userids: [
             ...selectedUser.reduce((acc, cur) => [...acc, cur.user_id], []),
           ],
         });
@@ -224,9 +213,10 @@ export default function ChatRoute(): ReactElement {
             <Button
               title="생성"
               width="100%"
-              func={() =>
-                route === CHAT_LIST ? handleCreateRoom() : handleInviteRoom()
-              }
+              func={() => {
+                handleCreateOrInviteRoom();
+                dispatch(removeModal({ modalName: MODALS.HOC_MODAL }));
+              }}
             />
           </div>
         </div>
