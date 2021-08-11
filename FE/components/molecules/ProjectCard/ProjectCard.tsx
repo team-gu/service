@@ -94,27 +94,27 @@ export default function ProjectCard({
   return (
     <Wrapper>
       <div className="project-name-container">
-        <Text text="프로젝트 이름" color="gray" fontSetting="n12m" />
-        <Text text={project.name} fontSetting="n26b" isLineBreak />
+        <Text text="프로젝트" color="gray" fontSetting="n12m" />
+        <Text text={`${project.stage.codeName} ${project.category.codeName} 프로젝트`} fontSetting="n26b" isLineBreak />
       </div>
 
       <div className="flex-container">
         <div className="project-stage-container">
           <Text text="기수" color="gray" fontSetting="n12m" />
-          <Text text={project.stage} fontSetting="n22m" isLineBreak />
+          <Text text={project.stage.codeName} fontSetting="n22m" isLineBreak />
         </div>
 
         <div className="project-category-container">
-          <Text text="분류" color="gray" fontSetting="n12m" />
-          <Text text={project.category} fontSetting="n22m" isLineBreak />
+          <Text text="구분" color="gray" fontSetting="n12m" />
+          <Text text={project.category.codeName} fontSetting="n22m" isLineBreak />
         </div>
       </div>
 
       <div className="project-tracks-container">
         <Text text="트랙" color="gray" fontSetting="n12m" />
         <div>
-          {project.track.map((v, i) => (
-            <Text key={i} text={v} fontSetting="n18m" isLineBreak />
+          {project.tracks.map((v, i) => (
+            <Text key={i} text={v.codeName} fontSetting="n18m" isLineBreak />
           ))}
         </div>
       </div>
