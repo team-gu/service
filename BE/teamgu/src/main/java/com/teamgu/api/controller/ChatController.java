@@ -306,9 +306,10 @@ public class ChatController {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("팀 초대 상태가 만료되었습니다"));
 		}
 		//3. 문제 없다면 팀 초대
-		TeamMemberReqDto teamMemberReqDto = new TeamMemberReqDto();
-		teamMemberReqDto.setTeamId(team_id);
-		teamMemberReqDto.setUserId(invitee_id);
+		TeamMemberReqDto teamMemberReqDto = TeamMemberReqDto.builder()
+												.teamId(team_id)
+												.userId(invitee_id)
+												.build();
 		teamService.addMember(teamMemberReqDto);
 		TeamListResDto team = teamService.getTeamInfobyTeamId(team_id);
 		chatService.changeType(message_id, messageTypeVo.getInviteAccepted());
