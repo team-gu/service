@@ -40,7 +40,27 @@ public class AdminController {
 		List<ProjectInfoResDto> list = adminService.getProjectInfo();
 		return ResponseEntity.ok(new CommonResponse<List<ProjectInfoResDto>>(list));
 	}
+	
+	@ApiOperation(value = "프로젝트 추가")
+	@PostMapping("/project")
+	public ResponseEntity<? extends BasicResponse> createProject(@RequestBody ProjectInfoResDto projectInfoResDto){
+		
+		int stageCode = projectInfoResDto.getStage().getCode();
+		int projectCode = projectInfoResDto.getProject().getCode();
+		if(adminService.checkProjectDuplication(stageCode, projectCode)) {
+			adminService.createProject(projectInfoResDto);
+			return ResponseEntity.status(HttpStatus.OK).build();	
+		}
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+	}
 
+//	@ApiOperation(value = "프로젝트 삭제")
+//	@DeleteMapping("/project/{projectId}")
+//	public ResponseEntity<? extends BasicResponse> deleteProject(@PathVariable Long projectId){
+//
+//		return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+//	}
+	
 	@ApiOperation(value = "코드 조회")
 	@PostMapping("/project/code")
 	public ResponseEntity<? extends BasicResponse> getCodeList(@RequestBody ProjectCodeReqDto projectCodeReqDto) {
@@ -60,10 +80,11 @@ public class AdminController {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 		}
 		
-		if (adminService.checkInsertable(codeId, codeName)) {
+		if (adminService.checkCodeDuplication(codeId, codeName)) {
 
 			adminService.insertCode(codeId, codeName);
-			return ResponseEntity.status(HttpStatus.OK).build();
+			List<CodeResDto> list = adminService.selectCode(codeId);
+			return ResponseEntity.ok(new CommonResponse<List<CodeResDto>>(list));
 		} else {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 
@@ -78,9 +99,10 @@ public class AdminController {
 		String codeId = projectCodeReqDto.getCodeId();
 		int code = projectCodeReqDto.getCode();
 		
-		if (adminService.checkDeleteable(codeId, code)) {
+		if (adminService.checkCodeDeletion(codeId, code)) {
 			adminService.deleteCode(codeId, code);
-			return ResponseEntity.status(HttpStatus.OK).build();
+			List<CodeResDto> list = adminService.selectCode(codeId);
+			return ResponseEntity.ok(new CommonResponse<List<CodeResDto>>(list));
 
 		} else {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
