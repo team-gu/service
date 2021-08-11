@@ -54,6 +54,6 @@ public class Chat extends BaseEntity{
 	@OneToMany(mappedBy = "chat")
 	List<UserChatRoom> userChatRoom = new ArrayList<>();
 	
-	@Column(nullable = true)
+	@Nullable
 	long teamId;
 }
