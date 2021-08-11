@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nullable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -52,4 +53,7 @@ public class Chat extends BaseEntity{
 
 	@OneToMany(mappedBy = "chat")
 	List<UserChatRoom> userChatRoom = new ArrayList<>();
+	
+	@Nullable
+	Long teamId;
 }

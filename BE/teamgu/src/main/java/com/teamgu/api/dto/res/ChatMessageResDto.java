@@ -33,6 +33,9 @@ public class ChatMessageResDto {
 	@ApiModelProperty(name="채팅 타입")
 	String type;
 	
+	@ApiModelProperty(name="팀 id")
+	long team_id;
+	
 	@ApiModelProperty(name="채팅 메세지")
 	String message;
 	

@@ -117,7 +117,7 @@ export default function UserStatusCard({
             <div className="items">
               <Text text="트랙" color="gray" />
               <div className="items-tags">
-                {trackList.map((each) => (
+                {trackList.map((each, index) => (
                   <>
                     <Tag
                       text={
@@ -125,7 +125,7 @@ export default function UserStatusCard({
                         filterContents['트랙'].find(({ code }) => code == each)
                           ?.codeName
                       }
-                      key={each}
+                      key={`track-${index}`}
                     />
                   </>
                 ))}
@@ -134,14 +134,14 @@ export default function UserStatusCard({
             <div className="items">
               <Text text="기술" color="gray" />
               <div className="items-tags">
-                {skillList.map((each) => (
+                {skillList.map((each, index) => (
                   <Tag
                     text={
                       filterContents &&
                       filterContents['스킬'].find(({ code }) => code == each)
                         ?.codeName
                     }
-                    key={each}
+                    key={`skill-${index}`}
                   />
                 ))}
               </div>

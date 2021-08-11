@@ -2,10 +2,12 @@ export const MODALS: {
   ALERT_MODAL: string;
   PROJECT_MODAL: string;
   AWARD_MODAL: string;
+  HOC_MODAL: string;
 } = {
   ALERT_MODAL: 'alertModal',
   PROJECT_MODAL: 'projectModal',
   AWARD_MODAL: 'awardModal',
+  HOC_MODAL: 'hocModal',
 };
 
 export const PROJECT_CODE: any = {

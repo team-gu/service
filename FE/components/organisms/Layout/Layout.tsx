@@ -14,9 +14,13 @@ interface LayoutProps {
 
 const Wrapper = styled(motion.div)`
   min-height: calc(100vh - 150px);
-  margin-top: 100px;
+  margin-top: 130px;
 `;
 
+const Narrow = styled.div`
+  width: 70%;
+  margin-left: 15%;
+`;
 export default function Layout({ children }: LayoutProps) {
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -47,7 +51,7 @@ export default function Layout({ children }: LayoutProps) {
   return (
     <>
       {router.pathname.startsWith(VIDEO_CHAT_PATH_PREFIX) ? (
-        <>{children}</>
+        <Narrow>{children}</Narrow>
       ) : (
         <>
           <Navbar />
@@ -64,11 +68,12 @@ export default function Layout({ children }: LayoutProps) {
               },
             }}
           >
-            {children}
+            <Narrow>{children}</Narrow>
             {isChatOpen && id !== 0 && <ChatRoute />}
             {id !== 0 && (
               <FloatingButton
                 func={() => dispatch(setChatOpen({ isChatOpen: true }))}
+                id={id}
               />
             )}
           </Wrapper>

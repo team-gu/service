@@ -9,7 +9,7 @@ import LookupLayout from './LookupLayout';
 import UserDetail from './UserDetail';
 import OtherUserDetail from './OtherUserDetail';
 import LineBackground from './LineBackground';
-import LoginComponent from './LoginComponent';
+import Main from './Main';
 import ModalWrapper from './Modal/ModalWrapper';
 import RegisterComponent from './RegisterComponent';
 import TeamStatusCard from './TeamStatusCard';
@@ -36,7 +36,7 @@ export {
   UserDetail,
   OtherUserDetail,
   LineBackground,
-  LoginComponent,
+  Main,
   ModalWrapper,
   RegisterComponent,
   TeamStatusCard,
