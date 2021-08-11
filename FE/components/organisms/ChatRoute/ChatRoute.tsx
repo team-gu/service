@@ -23,6 +23,7 @@ import {
   postCreateRoom,
   postInviteRoom,
   postModifyRoomName,
+  getRoomUserList,
 } from '@repository/chatRepository';
 import { MemberOption } from '@utils/type';
 
@@ -132,10 +133,9 @@ export default function ChatRoute(): ReactElement {
   const [selectedUser, setSelectedUser] =
     useState<OptionsType<MemberOption> | null>();
   const [userList, setUserList] = useState([]);
+  const [roomUserList, setRoomUserList] = useState([]);
 
   const [route, setRoute] = useState(CHAT_LIST);
-
-  const [isEdit, setIsEdit] = useState(!IS_EDIT);
 
   const {
     handleSendMessage,
@@ -166,6 +166,10 @@ export default function ChatRoute(): ReactElement {
     await setRoomId(id);
     setRoomName(room_name);
     setRoute(CHAT_ROOM);
+    const {
+      data: { data },
+    } = await getRoomUserList(id);
+    setRoomUserList(data);
   };
 
   const handleClickSend = async (msg: string) => {
@@ -316,12 +320,9 @@ export default function ChatRoute(): ReactElement {
               </>
 
               <div className="fixed-two">
-                <Icon
-                  iconName="support_agent"
-                  color="white"
-                  size="30"
-                  func={() => handleSendRtcLink(id, room_id, true)}
-                />
+                <DropdownMenu roomUserList={roomUserList}>
+                  <Icon iconName="supervisor_account" color="white" size="30" />
+                </DropdownMenu>
               </div>
             </>
           )}
