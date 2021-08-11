@@ -55,5 +55,5 @@ public class Chat extends BaseEntity{
 	List<UserChatRoom> userChatRoom = new ArrayList<>();
 	
 	@Nullable
-	long teamId;
+	Long teamId;
 }
