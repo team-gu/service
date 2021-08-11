@@ -1,11 +1,11 @@
 import { ReactElement } from 'react';
 import AsyncSelect from 'react-select/async';
-import { getUserListByNameContains } from '@repository/baseRepository';
+import { getUserListByNameContains } from '@repository/teamRepository';
 import { MemberOption } from '@utils/type';
 
 const promiseOptions = (inputValue: string) =>
   new Promise<MemberOption[]>((resolve) => {
-    getUserListByNameContains(inputValue).then((data) => {
+    getUserListByNameContains(inputValue).then(({data : {data}}) => {
       resolve(data);
     });
   });
