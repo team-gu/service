@@ -20,7 +20,6 @@ import com.teamgu.api.service.UserServiceImpl;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.springframework.web.multipart.MultipartFile;
 
 @Api(value = "마이페이지 정보 입력", tags = {"User."})
 @RestController
