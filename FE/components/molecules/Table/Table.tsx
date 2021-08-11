@@ -1,5 +1,5 @@
 import { ReactElement } from 'react';
-import { useTable, useGroupBy, useExpanded } from 'react-table';
+import { useTable, useGroupBy, useSortBy, useExpanded } from 'react-table';
 
 interface TableProps {
   columns: any[];
@@ -13,13 +13,14 @@ export default function Table({ columns, data }: TableProps): ReactElement {
     headerGroups,
     rows,
     prepareRow,
-    state: { groupBy, expanded },
+    state: { groupBy, expanded, sortBy },
   } = useTable(
     {
       columns,
       data,
     },
     useGroupBy,
+    useSortBy,
     useExpanded, 
   );
 
@@ -27,16 +28,16 @@ export default function Table({ columns, data }: TableProps): ReactElement {
 
   return (
     <>
-      <pre>
-        <code>{JSON.stringify({ groupBy, expanded }, null, 2)}</code>
-      </pre>
       {/* <Legend /> */}
       <table {...getTableProps()}>
         <thead>
           {headerGroups.map((headerGroup) => (
             <tr {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map((column) => (
-                <th {...column.getHeaderProps()}>
+                <th
+                  {...column.getHeaderProps()}
+                  {...column.getHeaderProps(column.getSortByToggleProps())}
+                >
                   {column.canGroupBy ? (
                     // If the column can be grouped, let's add a toggle
                     <span {...column.getGroupByToggleProps()}>
@@ -44,6 +45,13 @@ export default function Table({ columns, data }: TableProps): ReactElement {
                     </span>
                   ) : null}
                   {column.render('Header')}
+                  <span>
+                    {column.isSorted
+                      ? column.isSortedDesc
+                        ? ' 🔽'
+                        : ' 🔼'
+                      : ''}
+                  </span>
                 </th>
               ))}
             </tr>
@@ -95,6 +103,9 @@ export default function Table({ columns, data }: TableProps): ReactElement {
           })}
         </tbody>
       </table>
+      <pre>
+        <code>{JSON.stringify({ sortBy, groupBy, expanded }, null, 2)}</code>
+      </pre>
     </>
   );
 }
