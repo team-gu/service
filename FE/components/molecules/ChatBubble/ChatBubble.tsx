@@ -23,7 +23,9 @@ const Wrapper = styled.div<{ isMe: boolean }>`
   ${({ theme: { flexRow }, isMe }) =>
     flexRow(isMe ? 'flex-end' : 'flex-start', isMe ? 'flex-end' : 'flex-start')}
 
-  margin-bottom: 25px;
+  :not(:last-child) {
+    margin-bottom: 25px;
+  }
 
   > div {
     ${({ isMe }) => !isMe && 'margin-right: 15px;'}

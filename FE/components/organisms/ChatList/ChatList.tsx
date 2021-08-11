@@ -21,7 +21,7 @@ const Wrapper = styled.div`
 
   .user-list {
     overflow-y: auto;
-    height: calc(100% - 100px);
+    height: calc(100% - 40px);
   }
 `;
 
