@@ -58,3 +58,10 @@ export const getNotificationNumber = async (param: any) =>
     url: `/api/chat/unread/${param}`,
     type: 'get',
   });
+
+export const postModifyRoomName = async (param: any) =>
+  await api({
+    url: '/api/chat/room/modify',
+    type: 'post',
+    param,
+  });
