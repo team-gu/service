@@ -2,6 +2,7 @@ package com.teamgu.api.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -99,6 +100,96 @@ public class AdminServiceImpl implements AdminService {
 	}
 
 	/*
+	 * Update Project
+	 */
+
+	@Override
+	public void updateProject(ProjectInfoResDto projectInfoResDto) {
+		
+		adminRepositorySupport.updateProject(projectInfoResDto);
+
+		int stageCode = projectInfoResDto.getStage().getCode();
+		int projectCode = projectInfoResDto.getProject().getCode();
+
+		List<CodeResDto> updateTracks = projectInfoResDto.getTrack();
+		List<CodeResDto> originTracks = adminRepositorySupport.getTrackList(stageCode, projectCode);
+		
+		int updateTrackSize = updateTracks.size();
+		int originTrackSize = originTracks.size();
+		
+		boolean updateTrack[] = new boolean[updateTrackSize];
+		boolean originTrack[] = new boolean[originTrackSize];
+		
+		for(int i = 0; i<originTrackSize; i++) {
+			
+			int originTrackCode = originTracks.get(i).getCode();
+
+			for(int j = 0; j<updateTrackSize; j++) {
+			
+				int updateTrackCode = updateTracks.get(j).getCode();
+				
+				if(originTrackCode == updateTrackCode) {
+
+					updateTrack[i] = true;
+					originTrack[j] = true;
+				
+				}
+				
+			}
+			
+			if(!originTrack[i]) {
+				
+				adminRepositorySupport.deleteMappingCode(stageCode, projectCode, originTrackCode);
+			
+			}
+			
+		}
+		
+		for(int i = 0; i<updateTrackSize; i++) {
+	
+			if(updateTrack[i]) continue;
+			
+			int trackCode = updateTracks.get(i).getCode();
+			
+			Mapping mapping = new Mapping();
+			
+			mapping.setProjectCode(projectCode);
+			mapping.setStageCode(stageCode);
+			mapping.setTrackCode(trackCode);
+			
+			if (adminRepositorySupport.checkMappingDuplication(stageCode, projectCode, trackCode))
+				mappingRepository.save(mapping);
+			
+		}
+		
+	}
+
+	@Override
+	public void deleteProject(Long projectId) {
+		
+		Optional<ProjectDetail> projectDetail = projectDetailRepository.findById(projectId);
+
+		if(!projectDetail.isPresent()) return;
+		
+		ProjectDetail project = projectDetail.get();
+
+		int stageCode = project.getStageCode();
+		int projectCode = project.getProjectCode();
+		
+		List<CodeResDto> tracks = adminRepositorySupport.getTrackList(stageCode, projectCode);
+		
+		for(CodeResDto track : tracks) {
+			
+			int trackCode = track.getCode();
+			
+			adminRepositorySupport.deleteMappingCode(stageCode, projectCode, trackCode);
+			
+		}
+		
+		adminRepositorySupport.deleteProject(projectId);
+	}
+	
+	/*
 	 * Select Code
 	 */
 
@@ -125,6 +216,10 @@ public class AdminServiceImpl implements AdminService {
 		adminRepositorySupport.deleteCode(codeId, code);
 	}
 
+	/*
+	 * Check Methods
+	 */
+
 	// Check Insertable
 	@Override
 	public boolean checkCodeDuplication(String codeId, String codeName) {
@@ -142,5 +237,12 @@ public class AdminServiceImpl implements AdminService {
 	public boolean checkProjectDuplication(int stageCode, int projectCode) {
 		return adminRepositorySupport.checkProjectDuplication(stageCode, projectCode);
 	}
+
+	// Check Project Deletion
+	@Override
+	public boolean checkProjectDeletion(Long projectCode) {
+		return adminRepositorySupport.checkProjectDeletion(projectCode);
+	}
+
 
 }
