@@ -55,7 +55,7 @@ public class UserController {
         userService.updateUserDetailInfo(userInfoReq);
         UserInfoResDto ret = userService.getUserDetailInfo(userInfoReq.getId());
 
-        log.info(ret);
+        log.info(ret.toString());
 
         return ResponseEntity.ok(ret);
     }
