@@ -24,6 +24,7 @@ import {
   postInviteRoom,
   postModifyRoomName,
   getRoomUserList,
+  postLeaveChatRoom,
 } from '@repository/chatRepository';
 import { MemberOption } from '@utils/type';
 
@@ -310,12 +311,12 @@ export default function ChatRoute(): ReactElement {
                   </Form>
                 </ReactTooltip>
                 <a data-tip data-for="clickme" data-event="click">
-                <Text
-                  className="header-title"
-                  text={roomName}
-                  fontSetting="n16b"
-                  color="white"
-                />
+                  <Text
+                    className="header-title"
+                    text={roomName}
+                    fontSetting="n16b"
+                    color="white"
+                  />
                 </a>
               </>
 
@@ -327,14 +328,46 @@ export default function ChatRoute(): ReactElement {
             </>
           )}
           <div className="fixed-one">
-            <Icon
-              iconName="person_add"
-              color="white"
-              size="30"
-              func={() =>
-                dispatch(displayModal({ modalName: MODALS.HOC_MODAL }))
+            <DropdownMenu
+              items={
+                route === CHAT_LIST
+                  ? [
+                      {
+                        id: 1,
+                        title: '방 만들기',
+                        func: () =>
+                          dispatch(
+                            displayModal({ modalName: MODALS.HOC_MODAL }),
+                          ),
+                      },
+                    ]
+                  : [
+                      {
+                        id: 1,
+                        title: '팀원 초대',
+                        func: () =>
+                          dispatch(
+                            displayModal({ modalName: MODALS.HOC_MODAL }),
+                          ),
+                      },
+                      {
+                        id: 2,
+                        title: '전화 걸기',
+                        func: () => handleSendRtcLink(id, room_id, true),
+                      },
+                      {
+                        id: 3,
+                        title: '방 나가기',
+                        func: () => {
+                          postLeaveChatRoom({ room_id, user_id: id });
+                          setRoute(CHAT_LIST);
+                        },
+                      },
+                    ]
               }
-            />
+            >
+              <Icon iconName="menu" color="white" size="30" />
+            </DropdownMenu>
           </div>
 
           <Icon
