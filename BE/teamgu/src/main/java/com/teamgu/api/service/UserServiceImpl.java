@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import com.teamgu.api.dto.UserProfileImgDto;
 import com.teamgu.handler.ProfileImageHandler;
+import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.log4j.Log4j2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,344 +52,350 @@ import com.teamgu.database.repository.WishTrackRepositorySupport;
 @Log4j2
 public class UserServiceImpl implements UserService {
 
-	@Autowired
-	private JwtTokenUtil jwtTokenUtil;
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
 
-	@Autowired
-	PasswordEncoder passwordEncoder;
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
-	@Autowired
-	UserRepository userRepository;
+    @Autowired
+    UserRepository userRepository;
 
-	@Autowired
-	WishTrackRepository wishTrackRepository;
-	@Autowired
-	UserSkillRepository skillRepository;
-	@Autowired
-	UserInfoProjectRepository projectRepository;
-	@Autowired
-	UserInfoAwardRepository awardRepository;
+    @Autowired
+    WishTrackRepository wishTrackRepository;
+    @Autowired
+    UserSkillRepository skillRepository;
+    @Autowired
+    UserInfoProjectRepository projectRepository;
+    @Autowired
+    UserInfoAwardRepository awardRepository;
 
-	@Autowired
-	MappingRepository mappingRepository;
-	
-	@Autowired
-	MappingRepositorySupport mappingRepositorySupport;
-	
-	@Autowired
-	UserRepositorySupport userRepositorySupport;
-	
-	@Autowired
-	UserSkillRepositorySupport userSkillRepositorySupport;
-	
-	@Autowired
-	WishTrackRepositorySupport wishTrackRepositorySupport;
+    @Autowired
+    MappingRepository mappingRepository;
 
-	@Autowired
-	ProjectDetailRepository projectDetailRepository;
-	@Autowired
-	ProjectDetailRepositorySuport projectDetailRepositorySuport;
-	@Autowired
-	CodeDetailRepositorySupport codeDetailRepositorySupport;
+    @Autowired
+    MappingRepositorySupport mappingRepositorySupport;
 
-	@Autowired
-	JwtUserDetailsService userDetailsService;
+    @Autowired
+    UserRepositorySupport userRepositorySupport;
 
-	@Autowired
-	ProfileImageHandler profileImageHandler;
+    @Autowired
+    UserSkillRepositorySupport userSkillRepositorySupport;
 
-	Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
+    @Autowired
+    WishTrackRepositorySupport wishTrackRepositorySupport;
 
-	// email을 통한 User Entity 조회
-	@Override
-	public Optional<User> getUserByEmail(String email) {
-		logger.info(email);
-		Optional<User> user = userRepository.findByEmail(email);
-		if (user.isPresent()) {// Optional의 null 체크(값ㅇ ㅣ있는 경우)
-			logger.info(user.get().getEmail());
-		} else {// 없는 경우
-			logger.info("user가 비었습니다.");
-		}
-		return user;
-	}
+    @Autowired
+    ProjectDetailRepository projectDetailRepository;
 
-	// id를 통한 User Entity 조회
-	@Override
-	public Optional<User> getUserById(Long id) {
-		Optional<User> user = userRepository.findById(id);
-		if (user.isPresent()) {// Optional의 null 체크(값ㅇ ㅣ있는 경우)
-			logger.info(user.get().getEmail());
-		} else {// 없는 경우
-			logger.info("user가 비었습니다.");
-		}
-		return user;
-	}
+    @Autowired
+    ProjectDetailRepositorySuport projectDetailRepositorySuport;
 
-	@Override
-	public boolean save(User user) {
-		user.setPassword(passwordEncoder.encode(user.getPassword()));
-		if (userRepository.save(user) == null)
-			return false;
-		return true;
-	}
+    @Autowired
+    CodeDetailRepositorySupport codeDetailRepositorySupport;
 
-	/**
-	 * refresh 토큰 저장 함수
-	 */
-	@Override
-	public void setRefreshToken(String refreshToken, User user) {
-		user.setRefreshToken(refreshToken);
-		userRepository.save(user);
-	}
+    @Autowired
+    JwtUserDetailsService userDetailsService;
 
-	/**
-	 * login 함수
-	 */
-	@Override
-	public LoginResDto login(LoginReqDto loginReq, User user) {
-		// 1) accessToken 생성
-		String accessToken = jwtTokenUtil.getAccessToken(user);
-		// 2) refreshToken 생성, 저장
-		String refreshToken = jwtTokenUtil.getRefreshToken();
-		setRefreshToken(refreshToken, user);
-		// 3) user정보
-		LoginResDto loginRes = new LoginResDto();
-		loginRes.setStatusCode(200);
-		loginRes.setMessage("Success");
-		loginRes.setAccessToken(accessToken);
-		loginRes.setUserInfo(getUserDetailInfo(user.getId()));
-		return loginRes;
-	}
+    @Autowired
+    ProfileImageHandler profileImageHandler;
 
-	/**
-	 * 토큰 재생성 함수
-	 */
-	@Override
-	public TokenResDto reissue(TokenReqDto tokenReq) {
+    Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
-		// 1) refresh toekn 검증
-		if (!jwtTokenUtil.validateToken(tokenReq.getRefreshToken())) {
-			throw new RuntimeException("Refresh Token이 만료되었습니다.");
-		}
+    // email을 통한 User Entity 조회
+    @Override
+    public Optional<User> getUserByEmail(String email) {
+        logger.info(email);
+        Optional<User> user = userRepository.findByEmail(email);
+        if (user.isPresent()) {// Optional의 null 체크(값ㅇ ㅣ있는 경우)
+            logger.info(user.get().getEmail());
+        } else {// 없는 경우
+            logger.info("user가 비었습니다.");
+        }
+        return user;
+    }
 
-		// 2) 권한(member id)가져오기
-		Authentication authentication = jwtTokenUtil.getAuthentication(tokenReq.getAccessToken());
+    // id를 통한 User Entity 조회
+    @Override
+    public Optional<User> getUserById(Long id) {
+        Optional<User> user = userRepository.findById(id);
+        if (user.isPresent()) {// Optional의 null 체크(값ㅇ ㅣ있는 경우)
+            logger.info(user.get().getEmail());
+        } else {// 없는 경우
+            logger.info("user가 비었습니다.");
+        }
+        return user;
+    }
 
-		// 3.Member ID 로 Refresh Token 값 가져오기
-		User user = userRepository.findByEmail(authentication.getName()).get();
-		String refreshToken = user.getRefreshToken();
-		if (refreshToken == null)
-			new RuntimeException("로그아웃 된 사용자입니다.");
+    @Override
+    public boolean save(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        if (userRepository.save(user) == null)
+            return false;
+        return true;
+    }
 
-		// 4. Refresh Token 일치하는지 검사
-		if (!refreshToken.equals(tokenReq.getRefreshToken())) {
-			throw new RuntimeException("토큰의 유저 정보가 일치하지 않습니다.");
-		}
-		// 5. 새로운 토큰 생성
-		TokenResDto tokenDto = new TokenResDto();
-		tokenDto.setAccessToken(jwtTokenUtil.getAccessToken(user));
-		String newRefreshToken = jwtTokenUtil.getRefreshToken();
-		tokenDto.setRefreshToken(newRefreshToken);
-		// 6. 저장소 정보 업데이트
-		setRefreshToken(newRefreshToken, user);
+    /**
+     * refresh 토큰 저장 함수
+     */
+    @Override
+    public void setRefreshToken(String refreshToken, User user) {
+        user.setRefreshToken(refreshToken);
+        userRepository.save(user);
+    }
 
-		// 토큰 발급
-		return tokenDto;
-	}
+    /**
+     * login 함수
+     */
+    @Override
+    public LoginResDto login(LoginReqDto loginReq, User user) {
 
-	/**
-	 * 마이페이지 데이터 입력, 수정 함수
-	 */
-	@Override
-	public UserInfoResDto updateUserDetailInfo(UserInfoReqDto userInfoReqDto) {
-		UserInfoResDto userInfoResDto = null;
-		Long userId = userInfoReqDto.getId();			
-		User user = getUserById(userId).get();
-		//프로필 이미지 서버 내 저장 및 파일명 파싱처리
-		UserProfileImgDto userProfileImgDto = profileImageHandler.parseFileInfo(userInfoReqDto.getProfileImage());
+        // 1) accessToken 생성
+        String accessToken = jwtTokenUtil.getAccessToken(user);
 
-		int stageCode = (user.getStudentNumber().charAt(0) - '0') * 10
-				+ user.getStudentNumber().charAt(1) - '0' + 100;
+        // 2) refreshToken 생성, 저장
+        String refreshToken = jwtTokenUtil.getRefreshToken();
+        setRefreshToken(refreshToken, user);
 
-		// Wish Position, Introduce 수정
-		userRepositorySupport.updateUserDetailInfo(userInfoReqDto, userProfileImgDto);
-		
-		/*
-		 * Wish Track 수정
-		 */
-		// 수정할 WishTrack
-		List<TrackReqDto> updateWishTracks = userInfoReqDto.getWishTracks();
-		// 기존 WishTrack
-		List<TrackReqDto> originWishTracks = userRepositorySupport.selectUserWishTrackByUserId(userId);
+        // 3) user정보
+        LoginResDto loginRes = new LoginResDto();
+        loginRes.setStatusCode(200);
+        loginRes.setMessage("Success");
+        loginRes.setAccessToken(accessToken);
+        loginRes.setUserInfo(getUserDetailInfo(user.getId()));
 
-		int updateWishTracksSize = updateWishTracks.size();
-		int originWishTracksSize = originWishTracks.size();
-		
-		boolean updateWishTracksCheck[] = new boolean[updateWishTracksSize];
-		boolean originWishTracksCheck[] = new boolean[originWishTracksSize];
-		
-		// 추가, 삭제 체크
-		for(int i = 0; i<updateWishTracksSize; i++) {
-			for(int j = 0; j<originWishTracksSize; j++) {
-				if(updateWishTracks.get(i).getCodeName().equals(originWishTracks.get(j).getCodeName())) {
-					updateWishTracksCheck[i] = true;
-					originWishTracksCheck[j] = true;
-				}
-			}
-		}
-		
-		// updateWishTracksCheck가 false 이면 추가된 Track
-		for(int i = 0; i<updateWishTracksSize; i++) {
-			if(updateWishTracksCheck[i]) continue;
-			Mapping mapping = mappingRepositorySupport.selectMapping(updateWishTracks.get(i).getCode(), stageCode);
-			wishTrackRepositorySupport.insertWishTrack(userId, mapping.getId());
-			
-		}
-		
-		// originWishTracksCheck가 false이면 삭제된 Track
-		for(int i = 0; i<originWishTracksSize; i++) {
-			if(originWishTracksCheck[i]) continue;
-			Mapping mapping = mappingRepositorySupport.selectMapping(originWishTracks.get(i).getCode(), stageCode);
+        return loginRes;
+    }
 
-			userRepositorySupport.deleteUserWishTrack(userId, mapping.getId());
-		}
-		
-		
-		/*
-		 * Skill 수정
-		 */
-		// 업데이트 Skills
-		List<SkillResDto> updateSkills = userInfoReqDto.getSkills();
-		// 기존 Skills
-		List<SkillResDto> originSkills = userRepositorySupport.selectUserSkillByUserId(userInfoReqDto.getId());
-				
-		int updateSkillsSize = updateSkills.size();
-		int originSkillsSize = originSkills.size();
-		
-		boolean updateSkillsCheck[] = new boolean[updateSkillsSize];
-		boolean originSkillsCheck[] = new boolean[originSkillsSize];
-		
-		// 추가, 삭제 체크
-		for(int i = 0; i<updateSkillsSize; i++) {
-			for(int j = 0; j<originSkillsSize; j++) {
-				if(updateSkills.get(i).getCodeName().equals(originSkills.get(j).getCodeName())) {
-					updateSkillsCheck[i] = true;
-					originSkillsCheck[j] = true;
-				}
-			}
-		}
-		
-		// updateSkillsCheck가 false 이면 추가된 Skill
-		for(int i = 0; i<updateSkillsSize; i++) {
-			if(updateSkillsCheck[i]) continue;
-			userSkillRepositorySupport.insertSkiil(userId, updateSkills.get(i).getCode());
-		}
-		
-		// originSkillsCheck가 false 이면 삭제된 Skill
-		for(int i = 0; i<originSkillsSize; i++) {
-			if(originSkillsCheck[i]) continue;
-			userRepositorySupport.deleteUserSkill(userId, originSkills.get(i).getCode());
-		}
+    /**
+     * 토큰 재생성 함수
+     */
+    @Override
+    public TokenResDto reissue(TokenReqDto tokenReq) {
 
-		//복잡한 트랜잭션의 결과 select로 가져온 결과가 updated이전의 값들
-		//때문에 업데이트 내용을 직접 Dto에 삽입
-		userInfoResDto = getUserDetailInfo(userId);
-		userInfoResDto.setEmail(userInfoReqDto.getEmail());
-		userInfoResDto.setStudentNumber(userInfoReqDto.getStudentNumber());
-		userInfoResDto.setWishPositionCode(userInfoReqDto.getWishPosition());
-		userInfoResDto.setWishTrack(userInfoReqDto.getWishTracks());
-		userInfoResDto.setIntroduce(userInfoReqDto.getIntroduce());
-		userInfoResDto.setSkills(userInfoReqDto.getSkills());
-		userInfoResDto.setImg(userProfileImgDto.getServerName() + "." + userProfileImgDto.getExtension());
+        // 1) refresh toekn 검증
+        if (!jwtTokenUtil.validateToken(tokenReq.getRefreshToken())) {
+            throw new RuntimeException("Refresh Token이 만료되었습니다.");
+        }
 
-		return userInfoResDto;
-	}
+        // 2) 권한(member id)가져오기
+        Authentication authentication = jwtTokenUtil.getAuthentication(tokenReq.getAccessToken());
 
-	/**
-	 * 비밀번호 변경함수
-	 */
-	@Override
-	public void setPassward(PasswordReqDto passwordReq) {
-		User user = getUserByEmail(passwordReq.getEmail()).get();
-		user.setPassword(passwordEncoder.encode(passwordReq.getPassword()));
-		userRepository.save(user);
-	}
+        // 3.Member ID 로 Refresh Token 값 가져오기
+        User user = userRepository.findByEmail(authentication.getName()).get();
+        String refreshToken = user.getRefreshToken();
+        if (refreshToken == null)
+            new RuntimeException("로그아웃 된 사용자입니다.");
 
-	/**
-	 * 마이페이지 데이터 조회 함수
-	 */
-	@Override
-	public UserInfoResDto getUserDetailInfo(Long userId) {
-		User user = userRepository.getOne(userId);
-		UserInfoResDto userInfoRes = new UserInfoResDto();
+        // 4. Refresh Token 일치하는지 검사
+        if (!refreshToken.equals(tokenReq.getRefreshToken())) {
+            throw new RuntimeException("토큰의 유저 정보가 일치하지 않습니다.");
+        }
+        // 5. 새로운 토큰 생성
+        TokenResDto tokenDto = new TokenResDto();
+        tokenDto.setAccessToken(jwtTokenUtil.getAccessToken(user));
+        String newRefreshToken = jwtTokenUtil.getRefreshToken();
+        tokenDto.setRefreshToken(newRefreshToken);
+        // 6. 저장소 정보 업데이트
+        setRefreshToken(newRefreshToken, user);
 
-		Long id = user.getId();
-		String studentNumber = user.getStudentNumber();
+        // 토큰 발급
+        return tokenDto;
+    }
 
-		// User Index Number
-		userInfoRes.setId(id);
+    /**
+     * 마이페이지 데이터 입력, 수정 함수
+     */
+    @Override
+    public UserInfoResDto updateUserDetailInfo(UserInfoReqDto userInfoReqDto) {
+        UserInfoResDto userInfoResDto = null;
+        Long userId = userInfoReqDto.getId();
+        User user = getUserById(userId).get();
+        //프로필 이미지 서버 내 저장 및 파일명 파싱처리
+        UserProfileImgDto userProfileImgDto = profileImageHandler.parseFileInfo(userInfoReqDto.getProfileImage());
 
-		// User 이름
-		userInfoRes.setName(user.getName());
+        int stageCode = (user.getStudentNumber().charAt(0) - '0') * 10
+                + user.getStudentNumber().charAt(1) - '0' + 100;
 
-		String profileServerName = user.getProfileServerName();
-		String profileExtension = user.getProfileExtension();
-		String profilePath = profileServerName + "." + profileExtension;
-		short userRole = user.getRole();
-		userInfoRes.setImg(profilePath);
+        // Wish Position, Introduce 수정
+        userRepositorySupport.updateUserDetailInfo(userInfoReqDto, userProfileImgDto);
 
-		// User Role
-		userInfoRes.setRole(userRole);
+        /*
+         * Wish Track 수정
+         */
+        // 수정할 WishTrack
+        List<TrackReqDto> updateWishTracks = userInfoReqDto.getWishTracks();
+        // 기존 WishTrack
+        List<TrackReqDto> originWishTracks = userRepositorySupport.selectUserWishTrackByUserId(userId);
 
-		// User 이메일
-		userInfoRes.setEmail(user.getEmail());
+        int updateWishTracksSize = updateWishTracks.size();
+        int originWishTracksSize = originWishTracks.size();
 
-		// 교육생일 경우만 조회
-		if (userRole == 1) {
-			
-			// User 전공
-			userInfoRes.setMajor(user.getMajor());
+        boolean updateWishTracksCheck[] = new boolean[updateWishTracksSize];
+        boolean originWishTracksCheck[] = new boolean[originWishTracksSize];
 
-			// User 학번
-			userInfoRes.setStudentNumber(studentNumber);
+        // 추가, 삭제 체크
+        for (int i = 0; i < updateWishTracksSize; i++) {
+            for (int j = 0; j < originWishTracksSize; j++) {
+                if (updateWishTracks.get(i).getCodeName().equals(originWishTracks.get(j).getCodeName())) {
+                    updateWishTracksCheck[i] = true;
+                    originWishTracksCheck[j] = true;
+                }
+            }
+        }
 
-			// User 기술 스택 조회
-			List<SkillResDto> skills = userRepositorySupport.selectUserSkillByUserId(id);
-			userInfoRes.setSkills(skills);
+        // updateWishTracksCheck가 false 이면 추가된 Track
+        for (int i = 0; i < updateWishTracksSize; i++) {
+            if (updateWishTracksCheck[i]) continue;
+            Mapping mapping = mappingRepositorySupport.selectMapping(updateWishTracks.get(i).getCode(), stageCode);
+            wishTrackRepositorySupport.insertWishTrack(userId, mapping.getId());
 
-			// User Position 조회
-			String position = codeDetailRepositorySupport.findPositionName(user.getWishPositionCode());
-			userInfoRes.setWishPositionCode(position);
-			
-			// User Introduce 조회
-			userInfoRes.setIntroduce(user.getIntroduce());
+        }
 
-			// User 프로젝트 경력 조회
-			List<UserInfoProjectResDto> projects = userRepositorySupport.selectUserProjectByUserId(id);
-			userInfoRes.setProjects(projects);
+        // originWishTracksCheck가 false이면 삭제된 Track
+        for (int i = 0; i < originWishTracksSize; i++) {
+            if (originWishTracksCheck[i]) continue;
+            Mapping mapping = mappingRepositorySupport.selectMapping(originWishTracks.get(i).getCode(), stageCode);
 
-			// User 수상 경력 조회
-			List<UserInfoAwardResDto> awards = userRepositorySupport.selectUserAwardByUserId(id);
-			userInfoRes.setAwards(awards);
+            userRepositorySupport.deleteUserWishTrack(userId, mapping.getId());
+        }
 
-			// User Wish Track 조회
-			List<TrackReqDto> tracks = userRepositorySupport.selectUserWishTrackByUserId(id);
-			userInfoRes.setWishTrack(tracks);
 
-			// User Class 조회
-			int stage = studentNumber.charAt(1) - '0';
-			UserClassResDto userClass = userRepositorySupport.selectUserClassByUserId(id, stage);
-			userInfoRes.setUserClass(userClass);
-      
-      //User ProjectCodes 조회
-		  List<Integer> projectCodes = userRepositorySupport.selectUserProjectCodes(id);
-		  userInfoRes.setProjectCodes(projectCodes);
+        /*
+         * Skill 수정
+         */
+        // 업데이트 Skills
+        List<SkillResDto> updateSkills = userInfoReqDto.getSkills();
+        // 기존 Skills
+        List<SkillResDto> originSkills = userRepositorySupport.selectUserSkillByUserId(userInfoReqDto.getId());
 
-		}
+        int updateSkillsSize = updateSkills.size();
+        int originSkillsSize = originSkills.size();
 
-		return userInfoRes;
+        boolean updateSkillsCheck[] = new boolean[updateSkillsSize];
+        boolean originSkillsCheck[] = new boolean[originSkillsSize];
 
-	}
+        // 추가, 삭제 체크
+        for (int i = 0; i < updateSkillsSize; i++) {
+            for (int j = 0; j < originSkillsSize; j++) {
+                if (updateSkills.get(i).getCodeName().equals(originSkills.get(j).getCodeName())) {
+                    updateSkillsCheck[i] = true;
+                    originSkillsCheck[j] = true;
+                }
+            }
+        }
+
+        // updateSkillsCheck가 false 이면 추가된 Skill
+        for (int i = 0; i < updateSkillsSize; i++) {
+            if (updateSkillsCheck[i]) continue;
+            userSkillRepositorySupport.insertSkiil(userId, updateSkills.get(i).getCode());
+        }
+
+        // originSkillsCheck가 false 이면 삭제된 Skill
+        for (int i = 0; i < originSkillsSize; i++) {
+            if (originSkillsCheck[i]) continue;
+            userRepositorySupport.deleteUserSkill(userId, originSkills.get(i).getCode());
+        }
+
+        //복잡한 트랜잭션의 결과 select로 가져온 결과가 updated이전의 값들
+        //때문에 업데이트 내용을 직접 Dto에 삽입
+        userInfoResDto = getUserDetailInfo(userId);
+        userInfoResDto.setEmail(userInfoReqDto.getEmail());
+        userInfoResDto.setStudentNumber(userInfoReqDto.getStudentNumber());
+        userInfoResDto.setWishPositionCode(userInfoReqDto.getWishPosition());
+        userInfoResDto.setWishTrack(userInfoReqDto.getWishTracks());
+        userInfoResDto.setIntroduce(userInfoReqDto.getIntroduce());
+        userInfoResDto.setSkills(userInfoReqDto.getSkills());
+        userInfoResDto.setImg(userProfileImgDto.getServerName() + "." + userProfileImgDto.getExtension());
+
+        return userInfoResDto;
+    }
+
+    /**
+     * 비밀번호 변경함수
+     */
+    @Override
+    public void setPassward(PasswordReqDto passwordReq) {
+        User user = getUserByEmail(passwordReq.getEmail()).get();
+        user.setPassword(passwordEncoder.encode(passwordReq.getPassword()));
+        userRepository.save(user);
+    }
+
+    /**
+     * 마이페이지 데이터 조회 함수
+     */
+    @Override
+    public UserInfoResDto getUserDetailInfo(Long userId) {
+        User user = userRepository.getOne(userId);
+        UserInfoResDto userInfoRes = new UserInfoResDto();
+
+        Long id = user.getId();
+        String studentNumber = user.getStudentNumber();
+
+        // User Index Number
+        userInfoRes.setId(id);
+
+        // User 이름
+        userInfoRes.setName(user.getName());
+
+        String profileServerName = user.getProfileServerName();
+        String profileExtension = user.getProfileExtension();
+        String profilePath = profileServerName + "." + profileExtension;
+        short userRole = user.getRole();
+        userInfoRes.setImg(profilePath);
+
+        // User Role
+        userInfoRes.setRole(userRole);
+
+        // User 이메일
+        userInfoRes.setEmail(user.getEmail());
+
+        // 교육생일 경우만 조회
+        if (userRole == 1) {
+
+            // User 전공
+            userInfoRes.setMajor(user.getMajor());
+
+            // User 학번
+            userInfoRes.setStudentNumber(studentNumber);
+
+            // User 기술 스택 조회
+            List<SkillResDto> skills = userRepositorySupport.selectUserSkillByUserId(id);
+            userInfoRes.setSkills(skills);
+
+            // User Position 조회
+            String position = codeDetailRepositorySupport.findPositionName(user.getWishPositionCode());
+            userInfoRes.setWishPositionCode(position);
+
+            // User Introduce 조회
+            userInfoRes.setIntroduce(user.getIntroduce());
+
+            // User 프로젝트 경력 조회
+            List<UserInfoProjectResDto> projects = userRepositorySupport.selectUserProjectByUserId(id);
+            userInfoRes.setProjects(projects);
+
+            // User 수상 경력 조회
+            List<UserInfoAwardResDto> awards = userRepositorySupport.selectUserAwardByUserId(id);
+            userInfoRes.setAwards(awards);
+
+            // User Wish Track 조회
+            List<TrackReqDto> tracks = userRepositorySupport.selectUserWishTrackByUserId(id);
+            userInfoRes.setWishTrack(tracks);
+
+            // User Class 조회
+            int stage = studentNumber.charAt(1) - '0';
+            UserClassResDto userClass = userRepositorySupport.selectUserClassByUserId(id, stage);
+            userInfoRes.setUserClass(userClass);
+
+            //User ProjectCodes 조회
+            List<Integer> projectCodes = userRepositorySupport.selectUserProjectCodes(id);
+            userInfoRes.setProjectCodes(projectCodes);
+
+        }
+
+        return userInfoRes;
+
+    }
 
 //	/**
 //	 * 프로젝트 데이터 입력, 수정 함수
@@ -415,42 +422,42 @@ public class UserServiceImpl implements UserService {
 //		}
 //	}
 
-	/*
-	 * User Info Project 입력
-	 */
+    /*
+     * User Info Project 입력
+     */
 
-	@Override
-	public List<UserInfoProjectResDto> insertUserInfoProject(UserInfoProjectResDto userInfoProjectResDto) {
-		User user = getUserById(userInfoProjectResDto.getUserId()).get();
-		UserInfoProject userProject = new UserInfoProject();
-		userProject.setIntroduce(userInfoProjectResDto.getIntroduce());
-		userProject.setName(userInfoProjectResDto.getName());
-		userProject.setPositionCode(codeDetailRepositorySupport.findPositionCode(userInfoProjectResDto.getPosition()));
-		userProject.setUrl(userInfoProjectResDto.getUrl());
-		userProject.setUser(user);
-		projectRepository.save(userProject);
-		return userRepositorySupport.selectUserProjectByUserId(userInfoProjectResDto.getUserId());
-	}
+    @Override
+    public List<UserInfoProjectResDto> insertUserInfoProject(UserInfoProjectResDto userInfoProjectResDto) {
+        User user = getUserById(userInfoProjectResDto.getUserId()).get();
+        UserInfoProject userProject = new UserInfoProject();
+        userProject.setIntroduce(userInfoProjectResDto.getIntroduce());
+        userProject.setName(userInfoProjectResDto.getName());
+        userProject.setPositionCode(codeDetailRepositorySupport.findPositionCode(userInfoProjectResDto.getPosition()));
+        userProject.setUrl(userInfoProjectResDto.getUrl());
+        userProject.setUser(user);
+        projectRepository.save(userProject);
+        return userRepositorySupport.selectUserProjectByUserId(userInfoProjectResDto.getUserId());
+    }
 
-	/*
-	 * User Info Project 수정
-	 */
-	@Override
-	public List<UserInfoProjectResDto> updateUserInfoProject(UserInfoProjectResDto userInfoProjectResDto) {
+    /*
+     * User Info Project 수정
+     */
+    @Override
+    public List<UserInfoProjectResDto> updateUserInfoProject(UserInfoProjectResDto userInfoProjectResDto) {
 
-		int positionCode = codeDetailRepositorySupport.findPositionCode(userInfoProjectResDto.getPosition());
-		userRepositorySupport.updateUserInfoProject(userInfoProjectResDto, positionCode);
-		return userRepositorySupport.selectUserProjectByUserId(userInfoProjectResDto.getUserId());
-	}
+        int positionCode = codeDetailRepositorySupport.findPositionCode(userInfoProjectResDto.getPosition());
+        userRepositorySupport.updateUserInfoProject(userInfoProjectResDto, positionCode);
+        return userRepositorySupport.selectUserProjectByUserId(userInfoProjectResDto.getUserId());
+    }
 
-	/*
-	 * User Info Project 삭제
-	 */
-	@Override
-	public void deleteUserInfoProject(Long id) {
-		// TODO Auto-generated method stub
-		userRepositorySupport.deleteUserInfoProject(id);
-	}
+    /*
+     * User Info Project 삭제
+     */
+    @Override
+    public void deleteUserInfoProject(Long id) {
+        // TODO Auto-generated method stub
+        userRepositorySupport.deleteUserInfoProject(id);
+    }
 
 //	/**
 //	 * 수상내역 데이터 입력, 수정 함수
@@ -474,39 +481,64 @@ public class UserServiceImpl implements UserService {
 //		}
 //	}
 
-	/*
-	 * User Info Award 입력
-	 */
-	@Override
-	public List<UserInfoAwardResDto> insertUserInfoAward(UserInfoAwardResDto userInfoAwardResDto) {
-		UserInfoAward userAward = new UserInfoAward();
-		User user = getUserById(userInfoAwardResDto.getUserId()).get();
-		userAward.setAgency(userInfoAwardResDto.getAgency());
-		userAward.setDate(userInfoAwardResDto.getDate());
-		userAward.setIntroduce(userInfoAwardResDto.getIntroduce());
-		userAward.setName(userInfoAwardResDto.getName());
-		userAward.setUser(user);
-		awardRepository.save(userAward);
-		return userRepositorySupport.selectUserAwardByUserId(userInfoAwardResDto.getUserId());
-	}
+    /*
+     * User Info Award 입력
+     */
+    @Override
+    public List<UserInfoAwardResDto> insertUserInfoAward(UserInfoAwardResDto userInfoAwardResDto) {
+        UserInfoAward userAward = new UserInfoAward();
+        User user = getUserById(userInfoAwardResDto.getUserId()).get();
+        userAward.setAgency(userInfoAwardResDto.getAgency());
+        userAward.setDate(userInfoAwardResDto.getDate());
+        userAward.setIntroduce(userInfoAwardResDto.getIntroduce());
+        userAward.setName(userInfoAwardResDto.getName());
+        userAward.setUser(user);
+        awardRepository.save(userAward);
+        return userRepositorySupport.selectUserAwardByUserId(userInfoAwardResDto.getUserId());
+    }
 
-	/*
-	 * User Info Award 수정
-	 */
-	@Override
-	public List<UserInfoAwardResDto> updateUserInfoAward(UserInfoAwardResDto userInfoAwardResDto) {
-		// TODO Auto-generated method stub
-		userRepositorySupport.updateUserInfoAward(userInfoAwardResDto);
-		return userRepositorySupport.selectUserAwardByUserId(userInfoAwardResDto.getUserId());
-	}
+    /*
+     * User Info Award 수정
+     */
+    @Override
+    public List<UserInfoAwardResDto> updateUserInfoAward(UserInfoAwardResDto userInfoAwardResDto) {
+        // TODO Auto-generated method stub
+        userRepositorySupport.updateUserInfoAward(userInfoAwardResDto);
+        return userRepositorySupport.selectUserAwardByUserId(userInfoAwardResDto.getUserId());
+    }
 
-	/*
-	 * User Info Award 삭제
-	 */
-	@Override
-	public void deleteUserInfoAward(Long id) {
-		// TODO Auto-generated method stub
-		userRepositorySupport.deleteUserInfoAward(id);
-	}
+    /*
+     * User Info Award 삭제
+     */
+    @Override
+    public void deleteUserInfoAward(Long id) {
+        // TODO Auto-generated method stub
+        userRepositorySupport.deleteUserInfoAward(id);
+    }
+
+    @Override
+    public LoginResDto reqInfo(String auth) {
+
+        log.info(auth);
+
+        if (StringUtils.isEmpty(auth)) {
+            throw new RuntimeException("Access Token이 존재하지 않습니다");
+        }
+
+        String token = auth.substring(7);
+
+        // 1) access toekn 검증
+        if (!jwtTokenUtil.validateToken(token)) {
+            throw new RuntimeException("Access Token이 만료되었습니다.");
+        }
+
+        // 2) Auth 가져온다
+        Authentication authentication = jwtTokenUtil.getAuthentication(token);
+
+        // 3. 토큰에 존재하는 email을 기반으로 유저 정보 조회
+        User user = userRepository.findByEmail(authentication.getName()).get();
+
+        return login(null, user);
+    }
 
 }
