@@ -3,6 +3,7 @@ import ChatBubble from './ChatBubble';
 import ChatBubbleSelect from './ChatBubbleSelect';
 import ChatInput from './ChatInput';
 import Checkbox from './Checkbox';
+import DropdownMenu from './DropdownMenu';
 import Filter from './Filter';
 import FloatingButton from './FloatingButton';
 import Label from './Label';
@@ -28,6 +29,7 @@ export {
   ChatBubbleSelect,
   ChatInput,
   Checkbox,
+  DropdownMenu,
   Filter,
   FloatingButton,
   Label,
