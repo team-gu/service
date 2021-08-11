@@ -9,6 +9,38 @@ export const getAdminProject = async () => {
   })
 }
 
+export const createAdminProject = async (param: any) => {
+  console.log('createAdminProject');
+  console.log(param);
+
+  return await api({
+    url: `/api/admin/project`,
+    type: 'post',
+    param,
+  });
+};
+
+export const updateAdminProject = async (param: any) => {
+  console.log('updateAdminProject');
+  console.log(param);
+
+  return await api({
+    url: `/api/admin/project/${param.projectId}`,
+    type: 'put',
+    param: param.project,
+  });
+};
+
+export const deleteAdminProject = async (param: any) => {
+  console.log('deleteAdminProject');
+  console.log(param);
+
+  return await api({
+    url: `/api/admin/project/${param.projectId}`,
+    type: 'delete',
+  });
+};
+
 export const getAdminProjectCode = async (param: any) => {
   console.log('getAdminProjectCode');
   console.log(param);

@@ -1,6 +1,5 @@
 import { ReactElement, useRef, useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { DateTime } from 'luxon';
 import { OptionTypeBase, ActionMeta, OptionsType } from 'react-select';
 import CreatableSelect from 'react-select/creatable';
 
@@ -13,6 +12,8 @@ import {
   getAdminProjectCode,
   createAdminProjectOption,
   deleteAdminProjectOption,
+  createAdminProject,
+  updateAdminProject,
 } from '@repository/adminRepository';
 
 const Wrapper = styled.div`
@@ -324,9 +325,9 @@ export default function ProjectManageModal({
       return;
     }
 
-    // TODO API call
-    console.log('CREATE PROJECT', project);
-    closeModalAndRerender();
+    createAdminProject(project).then(() => {
+      closeModalAndRerender();
+    });
   };
 
   const handleUpdateProject = () => {
@@ -335,9 +336,9 @@ export default function ProjectManageModal({
       return;
     }
 
-    // TODO API call
-    console.log('UPDATE PROJECT', project);
-    closeModalAndRerender();
+    updateAdminProject({ project, projectId: project.id }).then(() => {
+      closeModalAndRerender();
+    });
   };
 
   const validateAndMakeProject = () => {
@@ -376,20 +377,12 @@ export default function ProjectManageModal({
     }
 
     return {
+      id: defaultValue ? defaultValue.id : 1,
       stage,
-      category,
-      activeDate: DateTime.fromFormat(
-        'yyyy-MM-dd',
-        projcetActiveDateInputRef.current.value,
-      ),
-      startDate: DateTime.fromFormat(
-        'yyyy-MM-dd',
-        projcetStartDateInputRef.current.value,
-      ),
-      endDate: DateTime.fromFormat(
-        'yyyy-MM-dd',
-        projcetEndDateInputRef.current.value,
-      ),
+      project: category,
+      activeDate: projcetActiveDateInputRef.current.value,
+      startDate: projcetStartDateInputRef.current.value,
+      endDate: projcetEndDateInputRef.current.value,
       track: tracks,
     };
   };
@@ -477,7 +470,7 @@ export default function ProjectManageModal({
       console.log('CREATE TRACK:', data);
       setTrackOptions(codesToOption(data));
       setIsLoadingTrack(false);
-      setTracks([...tracks, data.find((c: Code) => c.codeName === inputValue)])
+      setTracks([...tracks, data.find((c: Code) => c.codeName === inputValue)]);
     });
   };
 
@@ -651,7 +644,7 @@ export default function ProjectManageModal({
                 ref={projcetActiveDateInputRef}
                 refValue={
                   defaultValue && defaultValue.activeDate
-                    ? defaultValue.activeDate.toFormat('yyyy-MM-dd')
+                    ? defaultValue.activeDate
                     : ''
                 }
               />
@@ -668,7 +661,7 @@ export default function ProjectManageModal({
                   ref={projcetStartDateInputRef}
                   refValue={
                     defaultValue && defaultValue.startDate
-                      ? defaultValue.startDate.toFormat('yyyy-MM-dd')
+                      ? defaultValue.startDate
                       : ''
                   }
                 />
@@ -680,7 +673,7 @@ export default function ProjectManageModal({
                   ref={projcetEndDateInputRef}
                   refValue={
                     defaultValue && defaultValue.endDate
-                      ? defaultValue.endDate.toFormat('yyyy-MM-dd')
+                      ? defaultValue.endDate
                       : ''
                   }
                 />
@@ -708,6 +701,7 @@ export default function ProjectManageModal({
                 <Text
                   text={`삭제하면 이전에 선택한 [${showEditOptionsModal}] 옵션이 초기화됩니다.`}
                   fontSetting="n12m"
+                  color="crimson"
                 />
                 <div className="close-btn">
                   <Icon iconName="close" func={handleCloseEditOptionModal} />
