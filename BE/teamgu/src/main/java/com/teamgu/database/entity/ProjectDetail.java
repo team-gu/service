@@ -15,7 +15,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @IdClass(ProjectDetailPK.class)
-public class ProjectDetail{
+public class ProjectDetail extends BaseEntity {
 	@Id
 	int stageCode;
 	@Id
