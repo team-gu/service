@@ -18,6 +18,8 @@ import com.teamgu.api.dto.res.CodeResDto;
 import com.teamgu.api.dto.res.ProjectInfoResDto;
 import com.teamgu.database.entity.QCodeDetail;
 import com.teamgu.database.entity.QMapping;
+import com.teamgu.database.entity.QProjectDetail;
+import com.teamgu.database.entity.QUserProjectDetail;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,24 +34,9 @@ public class AdminRepositorySupport {
 	EntityManagerFactory emf;
 	
 	QCodeDetail qCodeDetail = QCodeDetail.codeDetail1;
+	QProjectDetail qProjectDetail = QProjectDetail.projectDetail;
+	QUserProjectDetail qUserProjectDetail = QUserProjectDetail.userProjectDetail;
 	QMapping qMapping = QMapping.mapping;
-	
-	// Select Project Track
-	public List<CodeResDto> getTrackList(int stageCode, int projectCode){
-		
-		List<CodeResDto> list = jpaQueryFactory
-		.select(Projections.constructor(CodeResDto.class, qMapping.trackCode, qCodeDetail.Name ))
-		.from(qMapping)
-		.leftJoin(qCodeDetail)
-		.on(qMapping.trackCode.eq(qCodeDetail.codeDetail))
-		.where(qCodeDetail.code.code.eq("TR")
-				.and(qMapping.stageCode.eq(stageCode))
-				.and(qMapping.projectCode.eq(projectCode)))
-		.fetch();
-		
-		
-		return list;
-	}
 	
 	// Select Code
 	public List<CodeResDto> selectCode(String codeId){
@@ -103,10 +90,124 @@ public class AdminRepositorySupport {
 		.execute();
 		
 	}
-
-	// Check Insertable
 	
-	public boolean checkInsertable(String codeId, String codeName) {
+	// Create Project
+	public void createProject(ProjectInfoResDto projectInfoResDto) {
+
+		EntityManager em = emf.createEntityManager();
+		EntityTransaction et = em.getTransaction();
+
+		et.begin();
+
+		String jpql = "INSERT INTO project_detail(project_code, stage_code, active_date, end_date, start_date) values(?1, ?2, ?3, ?4, ?5)";
+
+		em.createNativeQuery(jpql)
+		.setParameter(1, projectInfoResDto.getProject().getCode())
+		.setParameter(2, projectInfoResDto.getStage().getCode())
+		.setParameter(3, projectInfoResDto.getActiveDate())
+		.setParameter(4, projectInfoResDto.getStartDate())
+		.setParameter(5, projectInfoResDto.getEndDate())
+		.executeUpdate();
+
+		et.commit();
+		em.close();
+		
+	}
+	
+	// Update Project
+	@Transactional
+	public void updateProject(ProjectInfoResDto projectInfoResDto) {
+		
+		jpaQueryFactory
+		.update(qProjectDetail)
+		.set(qProjectDetail.activeDate, projectInfoResDto.getActiveDate())
+		.set(qProjectDetail.startDate, projectInfoResDto.getStartDate())
+		.set(qProjectDetail.endDate, projectInfoResDto.getEndDate())
+		.execute();
+		
+	}
+	
+	// Project 삭제
+	@Transactional
+	public void deleteProject(Long projectId) {
+
+		jpaQueryFactory
+		.delete(qProjectDetail)
+		.where(qProjectDetail.id.eq(projectId))
+		.execute();
+		
+	}
+
+	// Project의 Track 가져오기
+	public List<CodeResDto> getTrackList(int stageCode, int projectCode){
+		
+		List<CodeResDto> list = jpaQueryFactory
+		.select(Projections.constructor(CodeResDto.class, qMapping.trackCode, qCodeDetail.Name ))
+		.from(qMapping)
+		.leftJoin(qCodeDetail)
+		.on(qMapping.trackCode.eq(qCodeDetail.codeDetail))
+		.where(qCodeDetail.code.code.eq("TR")
+				.and(qMapping.stageCode.eq(stageCode))
+				.and(qMapping.projectCode.eq(projectCode)))
+		.fetch();
+		
+		
+		return list;
+	}
+	
+	// Mapping Table Code 삭제
+	@Transactional
+	public void deleteMappingCode(int stageCode, int projectCode, int trackCode) {
+		
+		jpaQueryFactory
+		.delete(qMapping)
+		.where(qMapping.stageCode.eq(stageCode)
+				.and(qMapping.projectCode.eq(projectCode))
+				.and(qMapping.trackCode.eq(trackCode)))
+		.execute();
+		
+	}
+
+	// Mapping Table 중복 체크
+	public boolean checkMappingDuplication(int stageCode, int projectCode, int trackCode) {
+		
+		List<Long> list = 
+				jpaQueryFactory
+				.select(qMapping.id)
+				.from(qMapping)
+				.where(qMapping.stageCode.eq(stageCode)
+						.and(qMapping.projectCode.eq(projectCode))
+						.and(qMapping.trackCode.eq(trackCode)))
+				.fetch();
+
+		if(list.size() == 0)
+			return true;
+		else
+			return false;
+		
+	}
+	
+	// 프로젝트 중복 체크
+	public boolean checkProjectDuplication(int stageCode, int projectCode){
+		
+		List<Long> list =
+				jpaQueryFactory
+				.select(qProjectDetail.id)
+				.from(qProjectDetail)
+				.where(qProjectDetail.stageCode.eq(stageCode)
+						.and(qProjectDetail.projectCode.eq(projectCode)))
+				.fetch();
+
+		if(list.size() == 0)
+			return true;
+		else
+			return false;
+		
+	}
+
+	// 코드 중복 체크
+	
+	public boolean checkCodeDuplication(String codeId, String codeName) {
 		
 		BooleanBuilder builder = new BooleanBuilder();
 
@@ -129,8 +230,23 @@ public class AdminRepositorySupport {
 		
 	}
 	
-	// Check Deleteable 
-	public boolean checkDeleteable(String codeName, int code) {
+	// 프로젝트 삭제 가능 여부 체크
+	public boolean checkProjectDeletion(Long projectCode) {
+		List<Long> list = jpaQueryFactory
+		.select(qUserProjectDetail.user.id)
+		.from(qUserProjectDetail)
+		.where(qUserProjectDetail.projectDetail.id.eq(projectCode))
+		.fetch();
+
+		if(list.size() == 0)
+			return true;
+		else
+			return false;
+		
+	}
+	
+	// 코드 삭제 가능 여부 체크
+	public boolean checkCodeDeletion(String codeName, int code) {
 
 		BooleanBuilder builder = new BooleanBuilder();
 		
