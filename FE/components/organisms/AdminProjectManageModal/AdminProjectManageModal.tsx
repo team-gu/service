@@ -8,7 +8,13 @@ import { Project } from '@utils/type';
 import { Input, Text, Icon } from '@atoms';
 import { Label, Button } from '@molecules';
 import { ModalWrapper } from '@organisms';
+import { CODE_ID } from '@utils/constants';
 import { DUMMY_CATEGORY, DUMMY_STAGE, DUMMY_TRACK } from '@utils/dummy';
+import {
+  getAdminProjectOptions,
+  createAdminProjectOption,
+  deleteAdminProjectOption,
+} from '@repository/adminRepository';
 
 const Wrapper = styled.div`
   input {
@@ -64,6 +70,7 @@ const Wrapper = styled.div`
   }
 
   .project-stage-container {
+    position: relative;
     input {
       padding-left: 10px;
       font-size: 15px;
@@ -71,6 +78,7 @@ const Wrapper = styled.div`
   }
 
   .project-category-container {
+    position: relative;
     input {
       padding-left: 10px;
       font-size: 15px;
@@ -103,6 +111,7 @@ const Wrapper = styled.div`
   }
 
   .project-track-container {
+    position: relative;
     grid-column: 1 / 3;
 
     .input {
@@ -193,6 +202,69 @@ const Wrapper = styled.div`
       margin-left: 0rem;
     }
   }
+
+  .setting-icon {
+    position: absolute;
+    top: 3px;
+    right: 4px;
+    display: inline-block;
+    cursor: pointer;
+
+    i {
+      font-size: 16px;
+      cursor: pointer;
+    }
+  }
+`;
+
+const EditOptionModal = styled.div`
+  position: relative;
+  padding: 40px;
+
+  .modal-header {
+    text-align: center;
+    margin-bottom: 20px;
+
+    .close-btn {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+
+      i {
+        font-size: 30px;
+        cursor: pointer;
+      }
+    }
+  }
+
+  .modal-content {
+    width: 200px;
+    max-height: 150px;
+    overflow: auto;
+    box-shadow: 0 0 5px 0 rgba(4, 4, 161, 0.1);
+
+    .option-item {
+      display: flex;
+      justify-content: space-between;
+      margin: 10px 0;
+      padding-bottom: 5px;
+      border-bottom: 1px solid gainsboro;
+
+      :last-child {
+        margin-bottom: 0;
+        border-bottom: none;
+      }
+      > span {
+        margin-left: 10px;
+      }
+      > i {
+        margin-right: 10px;
+        font-size: 18px;
+        color: crimson;
+        cursor: pointer;
+      }
+    }
+  }
 `;
 
 const customStyles = {
@@ -241,19 +313,24 @@ export default function ProjectManageModal({
   const [category, setCategory] = useState(
     defaultValue ? defaultValue.category : null,
   );
-  const [activateDateString, setActivateDateString] = useState(
-    defaultValue ? defaultValue.activateDate.toFormat('yyyy-MM-dd') : '',
-  );
-  const [startDateString, setStartDateString] = useState(
-    defaultValue ? defaultValue.startDate.toFormat('yyyy-MM-dd') : '',
-  );
-  const [endDateString, setEndDateString] = useState(
-    defaultValue ? defaultValue.endDate.toFormat('yyyy-MM-dd') : '',
-  );
+  // const [activateDateString, setActivateDateString] = useState(
+  //   defaultValue ? defaultValue.activateDate.toFormat('yyyy-MM-dd') : '',
+  // );
+  // const [startDateString, setStartDateString] = useState(
+  //   defaultValue ? defaultValue.startDate.toFormat('yyyy-MM-dd') : '',
+  // );
+  // const [endDateString, setEndDateString] = useState(
+  //   defaultValue ? defaultValue.endDate.toFormat('yyyy-MM-dd') : '',
+  // );
   const [tracks, setTracks] = useState(defaultValue ? defaultValue.tracks : []);
+
   const [isLoadingStage, setIsLoadingStage] = useState(false);
   const [isLoadingCategory, setIsLoadingCategory] = useState(false);
   const [isLoadingTrack, setIsLoadingTrack] = useState(false);
+
+  const [showEditOptionsModal, setShowEditOptionsModal] = useState<
+    '기수' | '구분' | '트랙' | ''
+  >('');
 
   const projcetActivateDateInputRef = useRef<HTMLInputElement>(null);
   const projcetStartDateInputRef = useRef<HTMLInputElement>(null);
@@ -294,15 +371,24 @@ export default function ProjectManageModal({
       console.log('트랙 없음');
       return;
     }
-    if (activateDateString === '') {
+    if (
+      !projcetActivateDateInputRef.current ||
+      projcetActivateDateInputRef.current.value === ''
+    ) {
       console.log('활성화 날짜 없음');
       return;
     }
-    if (startDateString === '') {
+    if (
+      !projcetStartDateInputRef.current ||
+      projcetStartDateInputRef.current.value === ''
+    ) {
       console.log('프로젝트 시작 날짜 없음');
       return;
     }
-    if (endDateString === '') {
+    if (
+      !projcetEndDateInputRef.current ||
+      projcetEndDateInputRef.current.value === ''
+    ) {
       console.log('프로젝트 종료 날짜 없음');
       return;
     }
@@ -310,9 +396,18 @@ export default function ProjectManageModal({
     return {
       stage,
       category,
-      activateDate: DateTime.fromFormat('yyyy-MM-dd', activateDateString),
-      startDate: DateTime.fromFormat('yyyy-MM-dd', startDateString),
-      endDate: DateTime.fromFormat('yyyy-MM-dd', endDateString),
+      activateDate: DateTime.fromFormat(
+        'yyyy-MM-dd',
+        projcetActivateDateInputRef.current.value,
+      ),
+      startDate: DateTime.fromFormat(
+        'yyyy-MM-dd',
+        projcetStartDateInputRef.current.value,
+      ),
+      endDate: DateTime.fromFormat(
+        'yyyy-MM-dd',
+        projcetEndDateInputRef.current.value,
+      ),
       track: tracks,
     };
   };
@@ -343,8 +438,23 @@ export default function ProjectManageModal({
       console.log('CREATE STAGE:', selectedValue);
 
       setIsLoadingStage(true);
+      // TODO: 기수 생성 API call.
+      // createAdminProjectOption({
+      //   codeId: CODE_ID['기수'],
+      //   codeName: selectedValue.value,
+      // }).then(({ data: { data } }) => {
+      //   console.log(data);
+      //   // TODO: data 전처리
+      //   setStageOptions(data);
+      //   setIsLoadingStage(false);
+      //   setStage({
+      //     code: selectedValue.value,
+      //     codeName: selectedValue.label,
+      //   });
+      // });
+
+      // API 연동 전 임시 코드
       setTimeout(() => {
-        // TODO: 기수 생성 API call. 지금은 단순히 추가하지만, API call 결과를 넣어주어야한다.
         setStageOptions([...stageOptions, selectedValue]);
         setIsLoadingStage(false);
         setStage({
@@ -370,8 +480,24 @@ export default function ProjectManageModal({
       console.log('CREATE CATEGORY:', selectedValue);
 
       setIsLoadingCategory(true);
+
+      // TODO: 구분 생성 API call.
+      // createAdminProjectOption({
+      //   codeId: CODE_ID['구분'],
+      //   codeName: selectedValue.value,
+      // }).then(({ data: { data } }) => {
+      //   console.log(data);
+      //   // TODO: data 전처리
+      //   setCategoryOptions(data);
+      //   setIsLoadingCategory(false);
+      //   setCategory({
+      //     code: selectedValue.value,
+      //     codeName: selectedValue.label,
+      //   });
+      // });
+
+      // API 연동 전 임시 코드
       setTimeout(() => {
-        // TODO: 구분 생성 API call. 지금은 단순히 추가하지만, API call 결과를 넣어주어야한다.
         setCategoryOptions([...categoryOptions, selectedValue]);
         setIsLoadingCategory(false);
         setCategory({
@@ -400,8 +526,26 @@ export default function ProjectManageModal({
       if (newValue) {
         setIsLoadingTrack(true);
         delete newValue['__isNew__'];
+
+        // TODO: 구분 생성 API call.
+        // createAdminProjectOption({
+        //   codeId: CODE_ID['트랙'],
+        //   codeName: newValue.value,
+        // }).then(({ data: { data } }) => {
+        //   console.log(data);
+        //   // TODO: data 전처리
+        //   setTrackOptions(data);
+        //   setIsLoadingTrack(false);
+        //   setTracks(
+        //     selectedValue.map((i) => ({
+        //       code: i.value,
+        //       codeName: i.label,
+        //     })),
+        //   );
+        // });
+
+        // API 얀동 전 임시 코드
         setTimeout(() => {
-          // TODO: 트랙 생성 API call. 지금은 단순히 추가하지만, API call 결과를 넣어주어야한다.
           setTrackOptions([...trackOptions, newValue]);
           setIsLoadingTrack(false);
           setTracks(
@@ -428,111 +572,212 @@ export default function ProjectManageModal({
     }
   };
 
+  const handleShowEditModal = (type: '' | '기수' | '구분' | '트랙') => {
+    setShowEditOptionsModal(type);
+  };
+
+  const handleCloseEditOptionModal = () => {
+    setShowEditOptionsModal('');
+  };
+
+  const handleOptionDelete = (data: any, codeId: string) => {
+    // TODO: API call
+    // deleteAdminProjectOption({
+    //   codeId,
+    //   code: data.codeId,
+    // }).then(({ data: { data } }) => {
+    //   console.log(data);
+    //   // TODO: data 전처리
+    //   if (data === CODE_ID['기수']) {
+    //     setStageOptions(data);
+    //   } else if (data === CODE_ID['구분']) {
+    //     setCategoryOptions(data);
+    //   } else if (data === CODE_ID['트랙']) {
+    //     setTrackOptions(data);
+    //   }
+    // });
+
+    // API 연동 전 임시 코드
+    console.log('handleOptionDelete');
+    console.log(data);
+    console.log(codeId);
+  };
+
   return (
-    <ModalWrapper modalName="projectManageModal">
-      <Wrapper>
-        <div className="modal-header">
-          <Text
-            text={defaultValue ? '프로젝트 수정하기' : '프로젝트 추가하기'}
-            fontSetting="n26b"
-          />
-          <div className="close-btn">
-            <Icon iconName="close" func={handleClickClose} />
+    <ModalWrapper modalName="projectManageModal" zIndex={900}>
+      <>
+        <Wrapper>
+          <div className="modal-header">
+            <Text
+              text={defaultValue ? '프로젝트 수정하기' : '프로젝트 추가하기'}
+              fontSetting="n26b"
+            />
+            <div className="close-btn">
+              <Icon iconName="close" func={handleClickClose} />
+            </div>
           </div>
-        </div>
 
-        <div className="project-stage-container">
-          <Label text="기수">
-            <CreatableSelect
-              isClearable
-              isDisabled={isLoadingStage}
-              isLoading={isLoadingStage}
-              cacheOptions
-              defaultOptions
-              options={stageOptions}
-              onChange={onChangeStageOption}
-              defaultValue={findDefaultStage()}
-              styles={customStyles}
-            />
-          </Label>
-        </div>
-
-        <div className="project-category-container">
-          <Label text="구분">
-            <CreatableSelect
-              isClearable
-              isDisabled={isLoadingCategory}
-              isLoading={isLoadingCategory}
-              cacheOptions
-              defaultOptions
-              options={categoryOptions}
-              onChange={onChangeCategoryOption}
-              defaultValue={findDefaultCategory()}
-              styles={customStyles}
-            />
-          </Label>
-        </div>
-
-        <div className="project-track-container">
-          <Label text="트랙">
-            <CreatableSelect
-              isMulti
-              isClearable
-              isDisabled={isLoadingTrack}
-              isLoading={isLoadingTrack}
-              cacheOptions
-              defaultOptions
-              options={trackOptions}
-              onChange={onChangeTrackOption}
-              defaultValue={findDefaultTracks()}
-              styles={customStyles}
-            />
-          </Label>
-        </div>
-
-        <div className="project-activate-date-container">
-          <Label text="활성화 날짜">
-            <Input
-              type="date"
-              width="100%"
-              height="40px"
-              ref={projcetActivateDateInputRef}
-              refValue={activateDateString}
-            />
-          </Label>
-        </div>
-
-        <div className="project-date-container">
-          <Label text="프로젝트 기간">
-            <div className="flex-container">
-              <Input
-                type="date"
-                width="100%"
-                height="40px"
-                ref={projcetStartDateInputRef}
-                refValue={startDateString}
+          <div className="project-stage-container">
+            <Label text="기수">
+              <CreatableSelect
+                isClearable
+                isDisabled={isLoadingStage}
+                isLoading={isLoadingStage}
+                cacheOptions
+                defaultOptions
+                options={stageOptions}
+                onChange={onChangeStageOption}
+                defaultValue={findDefaultStage()}
+                styles={customStyles}
               />
+            </Label>
+            <div
+              className="setting-icon"
+              onClick={() => handleShowEditModal('기수')}
+            >
+              <Icon iconName="settings" />
+            </div>
+          </div>
 
+          <div className="project-category-container">
+            <Label text="구분">
+              <CreatableSelect
+                isClearable
+                isDisabled={isLoadingCategory}
+                isLoading={isLoadingCategory}
+                cacheOptions
+                defaultOptions
+                options={categoryOptions}
+                onChange={onChangeCategoryOption}
+                defaultValue={findDefaultCategory()}
+                styles={customStyles}
+              />
+            </Label>
+            <div
+              className="setting-icon"
+              onClick={() => handleShowEditModal('구분')}
+            >
+              <Icon iconName="settings" />
+            </div>
+          </div>
+
+          <div className="project-track-container">
+            <Label text="트랙">
+              <CreatableSelect
+                isMulti
+                isClearable
+                isDisabled={isLoadingTrack}
+                isLoading={isLoadingTrack}
+                cacheOptions
+                defaultOptions
+                options={trackOptions}
+                onChange={onChangeTrackOption}
+                defaultValue={findDefaultTracks()}
+                styles={customStyles}
+              />
+            </Label>
+            <div
+              className="setting-icon"
+              onClick={() => handleShowEditModal('트랙')}
+            >
+              <Icon iconName="settings" />
+            </div>
+          </div>
+
+          <div className="project-activate-date-container">
+            <Label text="활성화 날짜">
               <Input
                 type="date"
                 width="100%"
                 height="40px"
-                ref={projcetEndDateInputRef}
-                refValue={endDateString}
+                ref={projcetActivateDateInputRef}
+                refValue={
+                  defaultValue
+                    ? defaultValue.activateDate.toFormat('yyyy-MM-dd')
+                    : ''
+                }
+              />
+            </Label>
+          </div>
+
+          <div className="project-date-container">
+            <Label text="프로젝트 기간">
+              <div className="flex-container">
+                <Input
+                  type="date"
+                  width="100%"
+                  height="40px"
+                  ref={projcetStartDateInputRef}
+                  refValue={
+                    defaultValue
+                      ? defaultValue.startDate.toFormat('yyyy-MM-dd')
+                      : ''
+                  }
+                />
+
+                <Input
+                  type="date"
+                  width="100%"
+                  height="40px"
+                  ref={projcetEndDateInputRef}
+                  refValue={
+                    defaultValue
+                      ? defaultValue.endDate.toFormat('yyyy-MM-dd')
+                      : ''
+                  }
+                />
+              </div>
+            </Label>
+          </div>
+
+          <div className="modal-footer">
+            <div>
+              <Button
+                title={defaultValue ? '저장' : '생성'}
+                func={defaultValue ? handleUpdateProject : handleCreateProject}
               />
             </div>
-          </Label>
-        </div>
-
-        <div className="modal-footer">
-          <div>
-            <Button
-              title={defaultValue ? '저장' : '생성'}
-              func={defaultValue ? handleUpdateProject : handleCreateProject}
-            />
           </div>
-        </div>
-      </Wrapper>
+        </Wrapper>
+        {showEditOptionsModal !== '' && (
+          <ModalWrapper modalName="editOptionsModal" zIndex={910}>
+            <EditOptionModal>
+              <div className="modal-header">
+                <Text
+                  text={`[${showEditOptionsModal}] 옵션 리스트 삭제`}
+                  fontSetting="n16b"
+                />
+                <div className="close-btn">
+                  <Icon iconName="close" func={handleCloseEditOptionModal} />
+                </div>
+              </div>
+              <div className="modal-content">
+                {(showEditOptionsModal === '기수'
+                  ? stageOptions
+                  : showEditOptionsModal === '구분'
+                  ? categoryOptions
+                  : showEditOptionsModal === '트랙'
+                  ? trackOptions
+                  : []
+                ).map((option, i) => (
+                  <div className="option-item" key={i}>
+                    <span>{option.label}</span>
+                    <Icon
+                      iconName="delete"
+                      func={() =>
+                        handleOptionDelete(
+                          option,
+                          CODE_ID[showEditOptionsModal],
+                        )
+                      }
+                    />
+                  </div>
+                ))}
+              </div>
+            </EditOptionModal>
+          </ModalWrapper>
+        )}
+      </>
     </ModalWrapper>
   );
 }
