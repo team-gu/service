@@ -130,12 +130,8 @@ export default function ProjectCard({
       <div className="project-activate-date-container">
         <Text text="활성화 시작 날짜" color="gray" fontSetting="n12m" />
         <Text
-          text={
-            project.activeDate
-              ? project.activeDate.toFormat('yyyy-MM-dd')
-              : '미정'
-          }
-          fontSetting="n22m"
+          text={project.activeDate ? project.activeDate : '미정'}
+          fontSetting="n18m"
           isLineBreak
         />
       </div>
@@ -144,16 +140,11 @@ export default function ProjectCard({
         <Text text="프로젝트 기간" color="gray" fontSetting="n12m" />
         <Text
           text={
-            (project.startDate
-              ? project.startDate.toFormat('yyyy-MM-dd')
-              : '미정') + ' ~'
+            (project.startDate ? project.startDate : '미정') +
+            ' ~ ' +
+            (project.endDate ? project.endDate : '미정')
           }
-          fontSetting="n22m"
-          isLineBreak
-        />
-        <Text
-          text={project.endDate ? project.endDate.toFormat('yyyy-MM-dd') : '미정'}
-          fontSetting="n22m"
+          fontSetting="n18m"
           isLineBreak
         />
       </div>
