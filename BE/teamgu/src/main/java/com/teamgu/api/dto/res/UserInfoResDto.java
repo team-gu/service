@@ -7,11 +7,11 @@ import com.teamgu.database.entity.UserInfoAward;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
-@Setter
+@Data
 @ApiModel(description = "사용자 정보 응답 모델")
 public class UserInfoResDto {
 	@ApiModelProperty(name = "user index number")
