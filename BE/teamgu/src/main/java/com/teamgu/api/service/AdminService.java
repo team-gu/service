@@ -13,6 +13,12 @@ public interface AdminService {
 	// Create Project
 	public void createProject(ProjectInfoResDto projectInfoResDto);
 	
+	// Update Project
+	public void updateProject(ProjectInfoResDto projectInfoResDto);
+	
+	// Delete Project
+	public void deleteProject(Long projectId);
+	
 	// Select Code
 	public List<CodeResDto> selectCode(String codeId);
 
@@ -30,5 +36,8 @@ public interface AdminService {
 	
 	// Check Deleteable 
 	public boolean checkCodeDeletion(String codeId, int code);
+	
+	// Check Deleteable
+	public boolean checkProjectDeletion(Long projectId);
 	
 }

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -53,13 +54,37 @@ public class AdminController {
 		}
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 	}
+	
+	@ApiOperation(value = "프로젝트 수정")
+	@PutMapping("/project/{projectId}")
+	public ResponseEntity<? extends BasicResponse> updateProject(@RequestBody ProjectInfoResDto projectInfoResDto){
 
-//	@ApiOperation(value = "프로젝트 삭제")
-//	@DeleteMapping("/project/{projectId}")
-//	public ResponseEntity<? extends BasicResponse> deleteProject(@PathVariable Long projectId){
-//
-//		return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-//	}
+		int stageCode = projectInfoResDto.getStage().getCode();
+		int projectCode = projectInfoResDto.getProject().getCode();
+		
+		if(!adminService.checkProjectDuplication(stageCode, projectCode)) {
+
+			adminService.updateProject(projectInfoResDto);
+
+			return ResponseEntity.status(HttpStatus.OK).build();	
+
+		}
+
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+	}
+
+	@ApiOperation(value = "프로젝트 삭제")
+	@DeleteMapping("/project/{projectId}")
+	public ResponseEntity<? extends BasicResponse> deleteProject(@PathVariable Long projectId){
+		
+		if(adminService.checkProjectDeletion(projectId)) {
+			adminService.deleteProject(projectId);
+			return ResponseEntity.status(HttpStatus.OK).build();
+		}
+
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+	
+	}
 	
 	@ApiOperation(value = "코드 조회")
 	@PostMapping("/project/code")
