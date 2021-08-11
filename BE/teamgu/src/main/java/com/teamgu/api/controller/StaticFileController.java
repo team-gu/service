@@ -28,7 +28,7 @@ import java.util.HashMap;
 
 @Api(value = "File Download API", tags = {"File Download."})
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/file")
 @Log4j2
 public class StaticFileController {
 
