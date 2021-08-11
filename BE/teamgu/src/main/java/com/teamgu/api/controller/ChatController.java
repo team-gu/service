@@ -329,14 +329,11 @@ public class ChatController {
 		long team_id = teamInviteResponseReqDto.getTeam_id();
 		long message_id = teamInviteResponseReqDto.getMessage_id();
 		
-		TeamMemberReqDto teamMemberReqDto = new TeamMemberReqDto();
-		teamMemberReqDto.setTeamId(team_id);
-		teamMemberReqDto.setUserId(invitee_id);
-		TeamListResDto team = teamService.getTeamInfobyTeamId(team_id);
-		
-		chatService.changeType(message_id, messageTypeVo.getInviteRejected());
+		boolean res = chatService.changeType(message_id, messageTypeVo.getInviteRejected());
+		if(!res)
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("유효한 메세지를 찾을 수 없습니다"));
 		log.info(invitee_id+"유저는 "+team_id+"의 초대를 거절했습니다");
 
-		return ResponseEntity.ok(new CommonResponse<TeamListResDto>(team));	
+		return ResponseEntity.ok(new CommonResponse<String>("정상적으로 거절 되었습니다"));
 	}
 }
