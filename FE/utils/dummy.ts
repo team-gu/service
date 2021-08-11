@@ -1,12 +1,32 @@
 import { DateTime } from 'luxon';
+import { Code, Project } from '@utils/type';
 
-export const DUMMY_PROJECTS = [
+export const DUMMY_PROJECTS: Project[] = [
   {
     id: 1,
     name: '5기 공통 프로젝트',
-    stage: '5기',
-    category: '공통',
-    track: ['웹 기술', '웹 디자인', '웹 IoT'],
+    stage: {
+      code: 105,
+      codeName: '5기',
+    },
+    category: {
+      code: 101,
+      codeName: '공통',
+    },
+    tracks: [
+      {
+        code: 101,
+        codeName: '웹 기술',
+      },
+      {
+        code: 102,
+        codeName: '웹 디자인',
+      },
+      {
+        code: 103,
+        codeName: '웹 IoT',
+      },
+    ],
     activateDate: DateTime.fromISO('2021-07-28T17:41:27.699+09:00'),
     startDate: DateTime.fromISO('2021-08-02T00:00:00.000+09:00'),
     endDate: DateTime.fromISO('2021-08-30T00:00:00.000+09:00'),
@@ -14,9 +34,28 @@ export const DUMMY_PROJECTS = [
   {
     id: 2,
     name: '5기 특화 프로젝트',
-    stage: '5기',
-    category: '특화',
-    track: ['인공지능', '빅데이터', '블록체인'],
+    stage: {
+      code: 105,
+      codeName: '5기',
+    },
+    category: {
+      code: 102,
+      codeName: '특화',
+    },
+    tracks: [
+      {
+        code: 104,
+        codeName: '인공지능',
+      },
+      {
+        code: 105,
+        codeName: '빅데이터',
+      },
+      {
+        code: 106,
+        codeName: '블록체인',
+      },
+    ],
     activateDate: DateTime.fromISO('2021-08-28T09:00:00.000+09:00'),
     startDate: DateTime.fromISO('2021-09-10T09:00:00.000+09:00'),
     endDate: DateTime.fromISO('2021-10-30T23:59:59.000+09:00'),
@@ -73,5 +112,74 @@ export const ADMIN_TRACK_DATA = [
   {
     title: '웹 IoT',
     data: 9,
+  },
+];
+
+export const DUMMY_STAGE: Code[] = [
+  {
+    code: 101,
+    codeName: '1기',
+  },
+  {
+    code: 102,
+    codeName: '2기',
+  },
+  {
+    code: 103,
+    codeName: '3기',
+  },
+  {
+    code: 104,
+    codeName: '4기',
+  },
+  {
+    code: 105,
+    codeName: '5기',
+  },
+];
+
+export const DUMMY_CATEGORY: Code[] = [
+  {
+    code: 101,
+    codeName: '공통',
+  },
+  {
+    code: 102,
+    codeName: '특화',
+  },
+  {
+    code: 103,
+    codeName: '필드',
+  },
+  {
+    code: 104,
+    codeName: '자율',
+  },
+];
+
+export const DUMMY_TRACK: Code[] = [
+  {
+    code: 101,
+    codeName: '웹 기술',
+  },
+  {
+    code: 102,
+    codeName: '웹 디자인',
+  },
+  {
+    code: 103,
+    codeName: '웹 IoT',
+  },
+  {
+    code: 104,
+    codeName: '인공지능',
+  },
+  {
+    code: 105,
+    codeName: '빅데이터',
+  },
+  {
+    code: 106,
+    codeName: '블록체인',
   },
 ];
