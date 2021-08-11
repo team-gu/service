@@ -2,6 +2,7 @@ import { ReactElement, useState, useRef } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { OptionsType } from 'react-select';
+import ReactTooltip from 'react-tooltip';
 
 import {
   useAuthState,
@@ -13,7 +14,7 @@ import {
 import useSockStomp from '@hooks/useSockStomp';
 
 import { ChatList, ChatRoom, Modal } from '@organisms';
-import { UserSelectChatAutoComplete, Button } from '@molecules';
+import { UserSelectChatAutoComplete, Button, DropdownMenu } from '@molecules';
 import { Text, Icon } from '@atoms';
 import { MODALS } from '@utils/constants';
 
@@ -21,6 +22,7 @@ import {
   getChatLists,
   postCreateRoom,
   postInviteRoom,
+  postModifyRoomName,
 } from '@repository/chatRepository';
 import { MemberOption } from '@utils/type';
 
@@ -55,12 +57,22 @@ const Wrapper = styled(motion.div)`
 
     border-radius: 10px 10px 0px 0px;
 
+    > a {
+      > div {
+        ${({ theme: { flexRow } }) => flexRow()}
+      }
+    }
+
     i {
       cursor: pointer;
     }
 
+    .customTheme {
+      box-shadow: 0 6px 12px 0 rgba(4, 4, 161, 0.04);
+    }
+
     .header-title {
-      cursor: default;
+      cursor: pointer;
       user-select: none;
       width: 200px;
     }
@@ -94,9 +106,19 @@ const Wrapper = styled(motion.div)`
   }
 `;
 
+const Form = styled.form`
+  ${({ theme: { flexRow } }) => flexRow()}
+  input {
+    height: 100%;
+  }
+
+  button {
+    height: 100%;
+  }
+`;
+
 const CHAT_LIST = 0;
 const CHAT_ROOM = 1;
-const IS_EDIT = true;
 
 export default function ChatRoute(): ReactElement {
   const dispatch = useAppDispatch();
@@ -125,6 +147,7 @@ export default function ChatRoute(): ReactElement {
   });
 
   const wrapperRef: any = useRef<HTMLInputElement>(null);
+  const editRef: any = useRef<string>('');
 
   // function handleClickOutside({ target }: ChangeEvent<HTMLInputElement>) {
   //   if (!wrapperRef.current?.contains(target)) {
@@ -248,16 +271,49 @@ export default function ChatRoute(): ReactElement {
                 color="white"
                 func={() => setRoute(CHAT_LIST)}
               />
-              {isEdit === IS_EDIT ? (
+              <>
+                <ReactTooltip
+                  className="customTheme"
+                  id="clickme"
+                  place="right"
+                  effect="solid"
+                  clickable={true}
+                  arrowColor="white"
+                  backgroundColor="white"
+                >
+                  <Form
+                    onSubmit={async (e) => {
+                      e.preventDefault();
+
+                      try {
+                        await postModifyRoomName({
+                          room_id,
+                          title: editRef.current.value,
+                        });
+                        setRoomName(editRef.current.value);
+                      } catch (error) {
+                        console.error(error);
+                      }
+                    }}
+                  >
+                    <input
+                      ref={editRef}
+                      type="text"
+                      placeholder="변경할 방 제목을 입력해주세요"
+                    />
+                    <button type="submit">EDIT</button>
+                  </Form>
+                </ReactTooltip>
+                <a data-tip data-for="clickme" data-event="click">
                 <Text
                   className="header-title"
                   text={roomName}
                   fontSetting="n16b"
                   color="white"
                 />
-              ) : (
-                <></>
-              )}
+                </a>
+              </>
+
               <div className="fixed-two">
                 <Icon
                   iconName="support_agent"
