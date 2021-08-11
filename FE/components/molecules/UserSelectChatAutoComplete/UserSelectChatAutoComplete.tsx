@@ -1,71 +1,76 @@
 import { ReactElement, useState, useEffect } from 'react';
-import AsyncSelect from 'react-select/async';
-import { postAllUserList } from '@repository/chatRepository';
+import Select, { OptionsType } from 'react-select';
+import { postAllUserList, getRoomUserList } from '@repository/chatRepository';
 import { MemberOption } from '@utils/type';
 import { useAuthState } from '@store';
 
-const customStyles = {
-  control: (base: any) => ({
-    ...base,
-    height: 45,
-  }),
-  singleValue: (provided: any) => {
-    const height = '35px';
-    const lineHeight = '35px';
+interface UserSelectChatAutoCompleteProps {
+  handleChangeUserSelect: (newValue: MemberOption[] | null) => void;
+  roomId: number;
+}
 
-    return { ...provided, height, lineHeight };
-  },
-};
-
-interface UserSelectChatAutoCompletePorps {
-  handleChangeUserSelect: (newValue: MemberOption | null) => void;
+interface UserList {
+  name: string;
+  email: string;
+  user_id: number;
 }
 
 export default function UserSelectChatAutoComplete({
   handleChangeUserSelect,
-}: UserSelectChatAutoCompletePorps): ReactElement {
+  roomId,
+}: UserSelectChatAutoCompleteProps): ReactElement {
   const {
     user: { id, projectCode, studentNumber },
   } = useAuthState();
 
-  const [userList, setUserList] = useState();
+  const [userList, setUserList] = useState<UserList[]>([]);
 
   useEffect(() => {
     (async () => {
-      const {
-        data: { data },
-      } = await postAllUserList({
-        myid: id,
-        project_code: (projectCode && projectCode[0]) || 101,
-        studentNumber,
-      });
+      try {
+        const {
+          data: { data },
+        } = await postAllUserList({
+          myid: id,
+          project_code: (projectCode && projectCode[0]) || 101,
+          studentNumber,
+        });
 
-      setUserList(
-        data.map(({ name, email, user_id }) => {
-          return {
+        await setUserList(
+          data.map(({ name, email, user_id }: UserList) => ({
             label: `${name} (${email})`,
             value: name,
             user_id,
-          };
-        }),
-      );
+          })),
+        );
+
+        if (roomId) {
+          const {
+            data: { data: users },
+          } = await getRoomUserList(roomId);
+          setUserList((prev) =>
+            prev.filter(
+              ({ user_id }) => !users.find((each) => each.user_id === user_id),
+            ),
+          );
+        }
+      } catch (error) {
+        console.error(error);
+      }
     })();
   }, []);
 
-  const handleSelectChange = (newValue: MemberOption | null) => {
+  const handleSelectChange = (newValue: OptionsType<MemberOption> | null) => {
     handleChangeUserSelect(newValue);
   };
 
   return (
     <>
-      <AsyncSelect
-        cacheOptions
-        // loadOptions={promiseOptions}
-        defaultOptions={userList}
+      <Select
+        isMulti
+        options={userList}
         onChange={handleSelectChange}
-        isClearable
-        styles={customStyles}
-        isSearchable={false}
+        placeholder="선택해 주세요"
       />
     </>
   );

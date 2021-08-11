@@ -6,6 +6,7 @@ interface ModalState {
   [MODALS.ALERT_MODAL]: boolean;
   [MODALS.PROJECT_MODAL]: boolean;
   [MODALS.AWARD_MODAL]: boolean;
+  [MODALS.HOC_MODAL]: boolean;
   content?: any;
 }
 
@@ -13,6 +14,7 @@ const initialState: ModalState = {
   [MODALS.ALERT_MODAL]: false,
   [MODALS.PROJECT_MODAL]: false,
   [MODALS.AWARD_MODAL]: false,
+  [MODALS.HOC_MODAL]: false,
   content: '',
 };
 
@@ -26,7 +28,7 @@ const modalReducer = createSlice({
         payload: { modalName, content },
       }: PayloadAction<{
         modalName: string;
-        content: any;
+        content?: any;
       }>,
     ) {
       // TODO: 타입 정의

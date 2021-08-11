@@ -4,10 +4,7 @@ import Stomp from 'stompjs';
 import { useRouter } from 'next/router';
 
 import { useAuthState } from '@store';
-import {
-  getChatRoomMessages,
-  postCreateRoom,
-} from '@repository/chatRepository';
+import { getChatRoomMessages, postCheckRoom } from '@repository/chatRepository';
 import { ChatNormal } from '@types/chat-type';
 
 interface useSockStompProps {
@@ -54,7 +51,7 @@ export default function useSockStomp({ room_id }: useSockStompProps) {
           data: {
             data: { chat_room_id },
           },
-        } = await postCreateRoom({
+        } = await postCheckRoom({
           user_id1: from,
           user_id2: target,
         });

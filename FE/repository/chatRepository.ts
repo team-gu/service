@@ -19,9 +19,23 @@ export const postAllUserList = async (param: any) =>
     param,
   });
 
-export const postCreateRoom = async (param: any) =>
+export const postCheckRoom = async (param: any) =>
   await api({
     url: '/api/chat/room/check',
+    type: 'post',
+    param,
+  });
+
+export const postCreateRoom = async (param: any) =>
+  await api({
+    url: '/api/chat/room/regist',
+    type: 'post',
+    param,
+  });
+
+export const postInviteRoom = async (param: any) =>
+  await api({
+    url: '/api/chat/room/invite/users',
     type: 'post',
     param,
   });
@@ -31,4 +45,16 @@ export const postExitRoom = async (param: any) =>
     url: '/api/chat/room/out',
     type: 'post',
     param,
+  });
+
+export const getRoomUserList = async (param: any) =>
+  await api({
+    url: `/api/chat/room/show/${param}`,
+    type: 'get',
+  });
+
+export const getNotificationNumber = async (param: any) =>
+  await api({
+    url: `/api/chat/unread/${param}`,
+    type: 'get',
   });
