@@ -1,6 +1,5 @@
 package com.teamgu.api.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -201,8 +200,8 @@ public class UserServiceImpl implements UserService {
 	 * 마이페이지 데이터 입력, 수정 함수
 	 */
 	@Override
-	public void updateUserDetailInfo(UserInfoReqDto userInfoReqDto) {
-
+	public UserInfoResDto updateUserDetailInfo(UserInfoReqDto userInfoReqDto) {
+		UserInfoResDto userInfoResDto = null;
 		Long userId = userInfoReqDto.getId();			
 		User user = getUserById(userId).get();
 		//프로필 이미지 서버 내 저장 및 파일명 파싱처리
@@ -290,6 +289,19 @@ public class UserServiceImpl implements UserService {
 			if(originSkillsCheck[i]) continue;
 			userRepositorySupport.deleteUserSkill(userId, originSkills.get(i).getCode());
 		}
+
+		//복잡한 트랜잭션의 결과 select로 가져온 결과가 updated이전의 값들
+		//때문에 업데이트 내용을 직접 Dto에 삽입
+		userInfoResDto = getUserDetailInfo(userId);
+		userInfoResDto.setEmail(userInfoReqDto.getEmail());
+		userInfoResDto.setStudentNumber(userInfoReqDto.getStudentNumber());
+		userInfoResDto.setWishPositionCode(userInfoReqDto.getWishPosition());
+		userInfoResDto.setWishTrack(userInfoReqDto.getWishTracks());
+		userInfoResDto.setIntroduce(userInfoReqDto.getIntroduce());
+		userInfoResDto.setSkills(userInfoReqDto.getSkills());
+		userInfoResDto.setImg(userProfileImgDto.getServerName() + "." + userProfileImgDto.getExtension());
+
+		return userInfoResDto;
 	}
 
 	/**

@@ -41,7 +41,7 @@ public interface UserService {
 	UserInfoResDto getUserDetailInfo(Long userId);
 
 	// 교육생의 개인 세부 이력 수정
-	void updateUserDetailInfo(UserInfoReqDto userInfoReq);
+	UserInfoResDto updateUserDetailInfo(UserInfoReqDto userInfoReq);
 
 	// 교육생의 개인 프로젝트 이력을 입력
 	List<UserInfoProjectResDto> insertUserInfoProject(UserInfoProjectResDto userInfoProjectResDto);

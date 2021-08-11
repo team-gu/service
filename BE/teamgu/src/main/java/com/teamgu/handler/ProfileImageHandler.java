@@ -45,6 +45,11 @@ public class ProfileImageHandler {
             }
 
             try {
+                //파일명 비어있는 경우에는 없는거니까 처리 x
+                if(ObjectUtils.isEmpty(multipartFile.getOriginalFilename())) {
+                    return null;
+                }
+
                 String[] dotSplitArr = multipartFile.getOriginalFilename().split("\\.");
                 int size = dotSplitArr.length;
                 StringBuilder originalName = new StringBuilder();
