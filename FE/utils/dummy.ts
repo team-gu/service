@@ -64,36 +64,36 @@ export const ADMIN_TEAM_DATA = [
   {
     title: '전체',
     data: [
-      { name: '팀 완성', value: 31 },
-      { name: '팀 미완성', value: 71 },
+      { name: '완성', value: 31 },
+      { name: '미완성', value: 71 },
     ],
   },
   {
     title: '서울',
     data: [
-      { name: '팀 완성', value: 5 },
-      { name: '팀 미완성', value: 22 },
+      { name: '완성', value: 5 },
+      { name: '미완성', value: 22 },
     ],
   },
   {
     title: '대전',
     data: [
-      { name: '팀 완성', value: 1 },
-      { name: '팀 미완성', value: 12 },
+      { name: '완성', value: 1 },
+      { name: '미완성', value: 12 },
     ],
   },
   {
     title: '구미',
     data: [
-      { name: '팀 완성', value: 2 },
-      { name: '팀 미완성', value: 5 },
+      { name: '완성', value: 2 },
+      { name: '미완성', value: 5 },
     ],
   },
   {
     title: '광주',
     data: [
-      { name: '팀 완성', value: 2 },
-      { name: '팀 미완성', value: 7 },
+      { name: '완성', value: 2 },
+      { name: '미완성', value: 7 },
     ],
   },
 ];
