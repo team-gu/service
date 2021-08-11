@@ -1,17 +1,18 @@
-import {
-  ReactElement,
-  MouseEventHandler,
-  KeyboardEventHandler,
-  useRef,
-  useState,
-  RefObject,
-} from 'react';
+import { ReactElement, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { DateTime } from 'luxon';
+import {
+  OptionTypeBase,
+  ActionMeta,
+  OptionsType,
+} from 'react-select';
+import CreatableSelect from 'react-select/creatable';
+
 import { Project } from '@utils/type';
 import { Input, Text, Icon } from '@atoms';
 import { Label, Button } from '@molecules';
 import { ModalWrapper } from '@organisms';
+import { DUMMY_CATEGORY, DUMMY_STAGE, DUMMY_TRACK } from '@utils/dummy';
 
 const Wrapper = styled.div`
   input {
@@ -52,6 +53,7 @@ const Wrapper = styled.div`
     grid-column: 1 / 3;
     text-align: center;
     padding-top: 40px;
+    margin-bottom: 20px;
 
     .close-btn {
       position: absolute;
@@ -62,14 +64,6 @@ const Wrapper = styled.div`
         font-size: 30px;
         cursor: pointer;
       }
-    }
-  }
-
-  .project-name-container {
-    grid-column: 1 / 3;
-    input {
-      padding-left: 10px;
-      font-size: 15px;
     }
   }
 
@@ -205,6 +199,27 @@ const Wrapper = styled.div`
   }
 `;
 
+const customStyles = {
+  menuList: (base: any) => ({
+    ...base,
+    paddingTop: 0,
+    paddingBottom: 0,
+    maxHeight: '120px',
+  }),
+  menu: (base: any) => ({
+    ...base,
+    marginTop: 0,
+  }),
+};
+
+const codeToOption = (data: any[]) => {
+  return data.map((i) => ({
+    ...i,
+    label: i.codeName,
+    value: i.code,
+  }));
+};
+
 interface ProjectManageModalProps {
   defaultValue?: Project;
   handleClickClose: () => void;
@@ -216,16 +231,35 @@ export default function ProjectManageModal({
   handleClickClose,
   closeModalAndRerender,
 }: ProjectManageModalProps): ReactElement {
-  const projectNameInputRef = useRef<HTMLInputElement>(null);
-  const projectStageInputRef = useRef<HTMLInputElement>(null);
-  const projectCategoryInputRef = useRef<HTMLInputElement>(null);
+  const [stageOptions, setStageOptions] = useState<OptionTypeBase[]>(
+    codeToOption(DUMMY_STAGE),
+  );
+  const [categoryOptions, setCategoryOptions] = useState<OptionTypeBase[]>(
+    codeToOption(DUMMY_CATEGORY),
+  );
+  const [trackOptions, setTrackOptions] = useState<OptionTypeBase[]>(
+    codeToOption(DUMMY_TRACK),
+  );
+
+  const [stage, setStage] = useState(defaultValue ? defaultValue.stage : null);
+  const [category, setCategory] = useState(
+    defaultValue ? defaultValue.category : null,
+  );
+  const [activateDateString, setActivateDateString] = useState(
+    defaultValue ? defaultValue.activateDate.toFormat('yyyy-MM-dd') : '',
+  );
+  const [startDateString, setStartDateString] = useState(
+    defaultValue ? defaultValue.startDate.toFormat('yyyy-MM-dd') : '',
+  );
+  const [endDateString, setEndDateString] = useState(
+    defaultValue ? defaultValue.endDate.toFormat('yyyy-MM-dd') : '',
+  );
+  const [tracks, setTracks] = useState(defaultValue ? defaultValue.tracks : []);
+  const [isLoading, setIsLoading] = useState(false);
+
   const projcetActivateDateInputRef = useRef<HTMLInputElement>(null);
   const projcetStartDateInputRef = useRef<HTMLInputElement>(null);
   const projcetEndDateInputRef = useRef<HTMLInputElement>(null);
-  const projectTrackInputRef = useRef<HTMLInputElement>(null);
-  const projectTrackBtnRef = useRef<HTMLInputElement>(null);
-
-  const [tracks, setTracks] = useState(defaultValue ? defaultValue.track : []);
 
   const handleCreateProject = () => {
     const project = validateAndMakeProject();
@@ -249,101 +283,122 @@ export default function ProjectManageModal({
     closeModalAndRerender();
   };
 
-  const handleEnterInInput: KeyboardEventHandler<HTMLInputElement> = (
-    event,
-  ) => {
-    if (event.key === 'Enter') {
-      addTrack();
-    }
-  };
-
-  const handleClickAddTrack: MouseEventHandler<HTMLSpanElement> = () => {
-    addTrack();
-  };
-
-  const addTrack = () => {
-    if (
-      projectTrackInputRef.current &&
-      projectTrackInputRef.current.value !== ''
-    ) {
-      setTracks([...tracks, projectTrackInputRef.current.value]);
-      projectTrackInputRef.current.value = '';
-    }
-  };
-
-  const deleteTrackItem = (idx: number) => {
-    const tracksTmp = tracks;
-    tracksTmp.splice(idx, 1);
-    setTracks([...tracksTmp]);
-  };
-
   const validateAndMakeProject = () => {
-    if (isNotValidate(projectNameInputRef)) {
-      addClassNotValidateInput(projectNameInputRef);
-      return false;
+    if (!stage) {
+      console.log('기수 없음');
+      return;
     }
-    if (isNotValidate(projectStageInputRef)) {
-      addClassNotValidateInput(projectStageInputRef);
-      return false;
+    if (!category) {
+      console.log('구분 없음');
+      return;
     }
-    if (isNotValidate(projectCategoryInputRef)) {
-      addClassNotValidateInput(projectCategoryInputRef);
-      return false;
+    if (tracks.length == 0) {
+      console.log('트랙 없음');
+      return;
     }
-    if (isNotValidate(projcetActivateDateInputRef)) {
-      addClassNotValidateInput(projcetActivateDateInputRef);
-      return false;
+    if (activateDateString === '') {
+      console.log('활성화 날짜 없음');
+      return;
     }
-    if (isNotValidate(projcetStartDateInputRef)) {
-      addClassNotValidateInput(projcetStartDateInputRef);
-      return false;
+    if (startDateString === '') {
+      console.log('프로젝트 시작 날짜 없음');
+      return;
     }
-    if (isNotValidate(projcetEndDateInputRef)) {
-      addClassNotValidateInput(projcetEndDateInputRef);
-      return false;
-    }
-    if (!tracks || tracks.length === 0) {
-      addClassNotValidateInput(projectTrackInputRef);
-      projectTrackBtnRef.current?.classList.add('incorrect-track-add-btn');
-      setTimeout(() => {
-        projectTrackBtnRef.current?.classList.remove('incorrect-track-add-btn');
-      }, 1000);
-      return false;
+    if (endDateString === '') {
+      console.log('프로젝트 종료 날짜 없음');
+      return;
     }
 
     return {
-      name: projectNameInputRef.current?.value,
-      stage: projectStageInputRef.current?.value,
-      category: projectCategoryInputRef.current?.value,
-      activateDate: DateTime.fromFormat(
-        'yyyy-MM-dd',
-        projcetActivateDateInputRef.current?.value || '',
-      ),
-      startDate: DateTime.fromFormat(
-        'yyyy-MM-dd',
-        projcetStartDateInputRef.current?.value || '',
-      ),
-      endDate: DateTime.fromFormat(
-        'yyyy-MM-dd',
-        projcetEndDateInputRef.current?.value || '',
-      ),
+      stage,
+      category,
+      activateDate: DateTime.fromFormat('yyyy-MM-dd', activateDateString),
+      startDate: DateTime.fromFormat('yyyy-MM-dd', startDateString),
+      endDate: DateTime.fromFormat('yyyy-MM-dd', endDateString),
       track: tracks,
     };
   };
 
-  const isNotValidate = (ref: RefObject<HTMLInputElement>) => {
-    if (ref.current && ref.current.value && ref.current.value !== '') {
-      return false;
+  const findDefaultStage = () => {
+    if (stage) {
+      return stageOptions.find((i) => stage.code === i.code);
     }
-    return true;
   };
 
-  const addClassNotValidateInput = (ref: RefObject<HTMLInputElement>) => {
-    ref.current?.focus();
-    ref.current?.classList.add('incorrect-select-shake');
-    setTimeout(() => {
-      ref.current?.classList.remove('incorrect-select-shake');
-    }, 1000);
+  const findDefaultCategory = () => {
+    if (category) {
+      return categoryOptions.find((i) => category.code === i.code);
+    }
+  };
+
+  const findDefaultTracks = () => {
+    if (tracks && tracks.length > 0) {
+      return trackOptions.filter((i) => tracks.find((t) => t.code === i.code));
+    }
+  };
+
+  const onChangeStageOption = (
+    selectedValue: OptionTypeBase | null,
+    action: ActionMeta<OptionTypeBase>,
+  ) => {
+    if (action.action === 'create-option' && selectedValue) {
+      // TODO: 기수 생성 API call. 지금은 단순히 추가하지만, API call 결과를 넣어주어야한다.
+      console.log('CREATE STAGE:', selectedValue);
+      setStageOptions([...stageOptions, selectedValue]);
+    } else if (action.action === 'select-option' && selectedValue) {
+      setStage({ code: selectedValue.code, codeName: selectedValue.codeName });
+    } else if (action.action === 'clear') {
+      setStage(null);
+    }
+  };
+
+  const onChangeCategoryOption = (
+    selectedValue: OptionTypeBase | null,
+    action: ActionMeta<OptionTypeBase>,
+  ) => {
+    if (action.action === 'create-option' && selectedValue) {
+      // TODO: 구분 생성 API call. 지금은 단순히 추가하지만, API call 결과를 넣어주어야한다.
+      console.log('CREATE CATEGORY:', selectedValue);
+      setStageOptions([...categoryOptions, selectedValue]);
+    } else if (action.action === 'select-option' && selectedValue) {
+      setCategory({
+        code: selectedValue.code,
+        codeName: selectedValue.codeName,
+      });
+    } else if (action.action === 'clear') {
+      setCategory(null);
+    }
+  };
+
+  const onChangeTrackOption = (
+    selectedValue: OptionsType<OptionTypeBase>,
+    action: ActionMeta<OptionTypeBase>,
+  ) => {
+    console.log('트랙');
+    console.log('SELECTED:', selectedValue);
+    console.log('ACTION:', action);
+
+    if (action.action === 'create-option' && selectedValue) {
+      const newValue = selectedValue.find((i: any) => i.__isNew__);
+      console.log('CREATE TRACK:', newValue);
+      if (newValue) {
+        delete newValue['__isNew__'];
+        // TODO: 트랙 생성 API call. 지금은 단순히 추가하지만, API call 결과를 넣어주어야한다.
+        setTrackOptions([...trackOptions, newValue]);
+      }
+    } else if (
+      action.action === 'select-option' ||
+      action.action === 'pop-value' ||
+      action.action === 'remove-value'
+    ) {
+      const newTracks = selectedValue.map((i) => ({
+        code: i.code,
+        codeName: i.codeName,
+      }));
+      setTracks(newTracks);
+    } else if (action.action === 'clear') {
+      setTracks([]);
+    }
   };
 
   return (
@@ -359,38 +414,45 @@ export default function ProjectManageModal({
           </div>
         </div>
 
-        <div className="project-name-container">
-          <Label text="이름">
-            <Input
-              width="100%"
-              height="40px"
-              refValue={defaultValue ? defaultValue.name : undefined}
-              ref={projectNameInputRef}
-              placeHolder="예) 5기 공통 프로젝트"
-            />
-          </Label>
-        </div>
-
         <div className="project-stage-container">
           <Label text="기수">
-            <Input
-              width="100%"
-              height="40px"
-              refValue={defaultValue ? defaultValue.stage : undefined}
-              ref={projectStageInputRef}
-              placeHolder="예) 5기"
+            <CreatableSelect
+              isClearable
+              cacheOptions
+              defaultOptions
+              options={stageOptions}
+              onChange={onChangeStageOption}
+              defaultValue={findDefaultStage()}
+              styles={customStyles}
             />
           </Label>
         </div>
 
         <div className="project-category-container">
           <Label text="구분">
-            <Input
-              width="100%"
-              height="40px"
-              refValue={defaultValue ? defaultValue.category : undefined}
-              ref={projectCategoryInputRef}
-              placeHolder="예) 공통"
+            <CreatableSelect
+              isClearable
+              cacheOptions
+              defaultOptions
+              options={categoryOptions}
+              onChange={onChangeCategoryOption}
+              defaultValue={findDefaultCategory()}
+              styles={customStyles}
+            />
+          </Label>
+        </div>
+
+        <div className="project-track-container">
+          <Label text="트랙">
+            <CreatableSelect
+              isMulti
+              isClearable
+              cacheOptions
+              defaultOptions
+              options={trackOptions}
+              onChange={onChangeTrackOption}
+              defaultValue={findDefaultTracks()}
+              styles={customStyles}
             />
           </Label>
         </div>
@@ -402,11 +464,7 @@ export default function ProjectManageModal({
               width="100%"
               height="40px"
               ref={projcetActivateDateInputRef}
-              refValue={
-                defaultValue
-                  ? defaultValue.activateDate.toFormat('yyyy-MM-dd')
-                  : undefined
-              }
+              refValue={activateDateString}
             />
           </Label>
         </div>
@@ -419,11 +477,7 @@ export default function ProjectManageModal({
                 width="100%"
                 height="40px"
                 ref={projcetStartDateInputRef}
-                refValue={
-                  defaultValue
-                    ? defaultValue.startDate.toFormat('yyyy-MM-dd')
-                    : undefined
-                }
+                refValue={startDateString}
               />
 
               <Input
@@ -431,47 +485,9 @@ export default function ProjectManageModal({
                 width="100%"
                 height="40px"
                 ref={projcetEndDateInputRef}
-                refValue={
-                  defaultValue
-                    ? defaultValue.endDate.toFormat('yyyy-MM-dd')
-                    : undefined
-                }
+                refValue={endDateString}
               />
             </div>
-          </Label>
-        </div>
-
-        <div className="project-track-container">
-          <Label text="트랙">
-            <>
-              <div className="flex-container">
-                <Input
-                  width="100%"
-                  height="40px"
-                  ref={projectTrackInputRef}
-                  onKeyPress={handleEnterInInput}
-                />
-                <div className="add-btn" ref={projectTrackBtnRef}>
-                  <Icon
-                    iconName="add"
-                    color="white"
-                    func={handleClickAddTrack}
-                  />
-                </div>
-              </div>
-
-              <div className="tracks-container">
-                {tracks.map((t, i) => (
-                  <div key={i} className="track-item">
-                    <Icon
-                      iconName="remove_circle"
-                      func={() => deleteTrackItem(i)}
-                    />
-                    <span>{t}</span>
-                  </div>
-                ))}
-              </div>
-            </>
           </Label>
         </div>
 
