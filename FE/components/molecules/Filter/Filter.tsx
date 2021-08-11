@@ -79,7 +79,11 @@ export default function Filter({
           {contents.length < 5 ? (
             contents?.map(({ codeName, code }) =>
               isRadioButton ? (
-                <RadioButton func={() => func(title, code)} name={title}>
+                <RadioButton
+                  func={() => func(title, code)}
+                  name={title}
+                  key={code}
+                >
                   <Text text={codeName} fontSetting={'n14m'} />
                 </RadioButton>
               ) : (

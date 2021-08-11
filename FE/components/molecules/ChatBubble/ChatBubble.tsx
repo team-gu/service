@@ -78,7 +78,7 @@ export default function ChatBubble({
   roomId,
 }: ChatBubbleProps): ReactElement {
   const router = useRouter();
-  console.log(type);
+
   return (
     <Wrapper isMe={isMe}>
       {!isMe && <ProfileImage src={profileSrc} />}

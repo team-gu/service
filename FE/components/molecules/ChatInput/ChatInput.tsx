@@ -28,8 +28,6 @@ const Wrapper = styled.div`
     > textarea {
       width: calc(100% - 15px);
 
-      z-index: 0;
-
       padding: 5px 5px;
 
       white-space: pre;
@@ -71,7 +69,6 @@ const Wrapper = styled.div`
         }) => n10m}
       }
 
-      z-index: 1;
       box-shadow: none;
       border-radius: 5px;
     }
@@ -91,8 +88,6 @@ export default function ChatInput({ func }: ChatInputProps): ReactElement {
   useEffect(() => {
     chatInputRef.current.focus();
   }, []);
-
-  console.log(message);
 
   return (
     <Wrapper>

@@ -1,7 +1,7 @@
 import { ReactElement, MouseEventHandler } from 'react';
 import styled from 'styled-components';
 import { DateTime } from 'luxon';
-import { ProfileImage } from '@molecules';
+import { ProfileImage, Notification } from '@molecules';
 import { Text } from '@atoms';
 
 interface ProfileContainerProps {
@@ -14,7 +14,7 @@ interface ProfileContainerProps {
   func?: MouseEventHandler<HTMLSpanElement>;
 }
 
-const Wrapper = styled.div<{ isAlertExist: boolean }>`
+const Wrapper = styled.div`
   width: 90%;
   height: 70px;
 
@@ -46,17 +46,6 @@ const Wrapper = styled.div<{ isAlertExist: boolean }>`
     width: 100px;
     text-align: right;
     .notification {
-      ${({ isAlertExist }) =>
-        isAlertExist && 'background-color: transparent; color: transparent;'}
-      ${({ theme: { flexCol } }) => flexCol('center')}
-      min-width: 10px;
-      height: 20px;
-      padding: 0 5px;
-      border-radius: 20px;
-      background-color: ${({ isAlertExist }) =>
-        isAlertExist ? 'red' : 'transparent'};
-      font-family: monospace;
-      color: ${({ isAlertExist }) => (isAlertExist ? 'white' : 'transparent')};
       margin-top: 5px;
     }
   }
@@ -74,7 +63,7 @@ export default function ProfileContainer({
   func,
 }: ProfileContainerProps): ReactElement {
   return (
-    <Wrapper onClick={func} isAlertExist={alertNumber > 0}>
+    <Wrapper onClick={func}>
       <div className="container">
         <ProfileImage src={src} isActive={isActive} size={40} />
         <div className="container-content">
@@ -91,7 +80,7 @@ export default function ProfileContainer({
           }
           fontSetting="n10m"
         />
-        <div className="notification">{alertNumber}</div>
+        <Notification alertNumber={alertNumber} />
       </div>
     </Wrapper>
   );

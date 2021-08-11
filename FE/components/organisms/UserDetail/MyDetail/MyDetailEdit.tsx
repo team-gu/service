@@ -391,10 +391,11 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
         email: user.email,
         id: user.id,
         introduce: introduce,
-        stidentNumber: user.studentNumber,
+        studentNumber: user.studentNumber,
         wishTracks: [track],
         wishPosition: position,
         skills: useableSkills,
+        profileImage: submitImage,
       };
       await updateDetailInformation(data);
       await dispatch(

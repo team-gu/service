@@ -32,4 +32,6 @@ public class ChatReqDto {
 	 */
 	@JsonProperty("type")
 	String type;
+	@JsonProperty("teamid")
+	long team_id;
 }
