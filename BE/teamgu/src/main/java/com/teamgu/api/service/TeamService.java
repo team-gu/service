@@ -55,4 +55,12 @@ public interface TeamService {
 	// Auto complete
 	List<TeamAutoCorrectResDto> getUserAutoCorrect(TeamAutoCorrectReqDto teamSearchReqDto);
 	
+	/**
+	 * 리더id와 팀id를 대조하여 유효한 팀 초대인지 확인한다
+	 * @param leader_id
+	 * @param team_id
+	 * @return
+	 */
+	boolean checkTeamBetweenLeader(long leader_id, long team_id);
+	
 }

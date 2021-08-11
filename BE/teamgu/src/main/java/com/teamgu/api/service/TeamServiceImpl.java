@@ -389,4 +389,8 @@ public class TeamServiceImpl implements TeamService {
 		return teamRepositorySupport.checkTeamLeader(userId, projectCode);
 	}
 	
+	@Override
+	public boolean checkTeamBetweenLeader(long leader_id, long team_id) {	
+		return teamRepositorySupport.checkTeamBetweenLeader(leader_id, team_id);
+	}
 }
