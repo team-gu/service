@@ -56,7 +56,7 @@ public class UserController {
         UserInfoResDto ret = userService.getUserDetailInfo(userInfoReq.getId());
 
         log.info(ret);
-        
+
         return ResponseEntity.ok(ret);
     }
 
