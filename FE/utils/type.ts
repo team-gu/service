@@ -22,7 +22,7 @@ export interface Team {
   completeYn: number;
 
   leaderId: number;
-  track: { code: number; codeName: string };
+  track: Code;
 
   skills: Skill[];
   teamMembers: Member[];
@@ -32,12 +32,17 @@ export interface SkillOption extends OptionTypeBase, Skill {}
 
 export interface MemberOption extends OptionTypeBase, Member {}
 
+export interface Code {
+  code: number;
+  codeName: string;
+}
+
 export interface Project {
   name: string;
   id: number;
-  stage: string;
-  category: string;
-  track: string[];
+  stage: Code;
+  category: Code;
+  tracks: Code[];
   activateDate: DateTime;
   startDate: DateTime;
   endDate: DateTime;
