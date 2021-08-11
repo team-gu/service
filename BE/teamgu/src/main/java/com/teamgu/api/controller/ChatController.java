@@ -178,10 +178,15 @@ public class ChatController {
 	@PostMapping("/room/out")
 	@ApiOperation(value="특정 유저가 채팅방을 닫았을 때, 마지막 채팅 내역이 무엇인지 기록한다")
 	public ResponseEntity<? extends BasicResponse> roomOutCheck(@RequestBody UserRoomOutCheckReqDto userRoomOutCheckReqDto){
-		long room_id = userRoomOutCheckReqDto.getRoom_id();
-		long user_id = userRoomOutCheckReqDto.getUser_id();
-		long last_chat_id = chatService.findLastChatId(room_id);
-		chatService.writeLastChatId(room_id, user_id, last_chat_id);		
+		try {
+			long room_id = userRoomOutCheckReqDto.getRoom_id();
+			long user_id = userRoomOutCheckReqDto.getUser_id();
+			long last_chat_id = chatService.findLastChatId(room_id);
+			chatService.writeLastChatId(room_id, user_id, last_chat_id);
+		}catch(Exception e) {
+			log.error("마지막 채팅 내역 기록 에러(채팅방에 아무런 메세지가 없어서 나는 에러)");
+			return ResponseEntity.noContent().build();
+		}
 		return ResponseEntity.noContent().build();
 	}
 	

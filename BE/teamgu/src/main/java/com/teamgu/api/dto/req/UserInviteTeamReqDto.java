@@ -13,6 +13,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @ApiModel(description = "팀장이 사용자에게 팀원 초대 요청 모델")
 public class UserInviteTeamReqDto {
+	@ApiModelProperty(name="초대 될 팀의 id")
+	long team_id;
 	@ApiModelProperty(name="초대를 하는 팀장의 id")
 	long leader_id;
 	@ApiModelProperty(name="초대를 받는 유저의 id")
