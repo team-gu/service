@@ -8,6 +8,7 @@ import com.teamgu.mapper.NoticeFileMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -55,6 +56,10 @@ public class NoticeFileHandler {
 
             try {
                 for (MultipartFile multipartFile : multipartFiles) {
+
+                    //파일명 비어있는 경우 없는거니까 처리 x
+                    if(ObjectUtils.isEmpty(multipartFile.getOriginalFilename())) continue;
+
                     String[] dotSplitArr = multipartFile.getOriginalFilename().split("\\.");
                     int size = dotSplitArr.length;
                     StringBuilder originalName = new StringBuilder();
