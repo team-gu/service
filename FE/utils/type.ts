@@ -41,9 +41,9 @@ export interface Project {
   name: string;
   id: number;
   stage: Code;
-  category: Code;
-  tracks: Code[];
-  activateDate: DateTime;
+  project: Code;
+  track: Code[];
+  activeDate: DateTime;
   startDate: DateTime;
   endDate: DateTime;
 }

@@ -4,16 +4,15 @@ import { Code, Project } from '@utils/type';
 export const DUMMY_PROJECTS: Project[] = [
   {
     id: 1,
-    name: '5기 공통 프로젝트',
     stage: {
       code: 105,
       codeName: '5기',
     },
-    category: {
+    project: {
       code: 101,
       codeName: '공통',
     },
-    tracks: [
+    track: [
       {
         code: 101,
         codeName: '웹 기술',
@@ -27,22 +26,21 @@ export const DUMMY_PROJECTS: Project[] = [
         codeName: '웹 IoT',
       },
     ],
-    activateDate: DateTime.fromISO('2021-07-28T17:41:27.699+09:00'),
+    activeDate: DateTime.fromISO('2021-07-28T17:41:27.699+09:00'),
     startDate: DateTime.fromISO('2021-08-02T00:00:00.000+09:00'),
     endDate: DateTime.fromISO('2021-08-30T00:00:00.000+09:00'),
   },
   {
     id: 2,
-    name: '5기 특화 프로젝트',
     stage: {
       code: 105,
       codeName: '5기',
     },
-    category: {
+    project: {
       code: 102,
       codeName: '특화',
     },
-    tracks: [
+    track: [
       {
         code: 104,
         codeName: '인공지능',
@@ -56,7 +54,7 @@ export const DUMMY_PROJECTS: Project[] = [
         codeName: '블록체인',
       },
     ],
-    activateDate: DateTime.fromISO('2021-08-28T09:00:00.000+09:00'),
+    activeDate: DateTime.fromISO('2021-08-28T09:00:00.000+09:00'),
     startDate: DateTime.fromISO('2021-09-10T09:00:00.000+09:00'),
     endDate: DateTime.fromISO('2021-10-30T23:59:59.000+09:00'),
   },
