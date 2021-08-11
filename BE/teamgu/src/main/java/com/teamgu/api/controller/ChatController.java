@@ -281,6 +281,10 @@ public class ChatController {
 	 */
 	@PostMapping("/message/team/invite/accept")
 	@ApiOperation(value="팀 초대 메세지를 수락한다")
+	@ApiResponses({
+		@ApiResponse(code = 200, message = "팀 가입 성공"),
+		@ApiResponse(code = 400, message = "팀 가입 실패",response = BaseResDto.class)
+	})
 	public ResponseEntity<? extends BasicResponse> teamInviteAccept(@RequestBody TeamInviteResponseReqDto teamInviteResponseReqDto){
 		long leader_id = teamInviteResponseReqDto.getLeader_id();
 		long invitee_id = teamInviteResponseReqDto.getInvitee_id();
