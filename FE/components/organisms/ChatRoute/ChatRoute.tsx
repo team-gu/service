@@ -299,6 +299,7 @@ export default function ChatRoute(): ReactElement {
                 isConnectStomp={isConnectStomp}
                 messageList={messageList}
                 setMessageList={setMessageList}
+                setRoomId={setRoomId}
                 handleClickSend={handleClickSend}
                 roomId={room_id}
               />

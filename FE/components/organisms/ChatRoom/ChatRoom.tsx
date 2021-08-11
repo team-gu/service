@@ -15,6 +15,7 @@ interface ChatRoomProps {
   session?: Session | undefined;
   messageList: Chat[] & ChatNormal[] & any;
   setMessageList: any; // TODO: 추후 타입 정의
+  setRoomId: any;
   handleClickSend: (msg: string) => Promise<void>;
   roomId?: number;
 }
@@ -45,6 +46,7 @@ export default function ChatRoom({
   isConnectStomp = false,
   session,
   messageList,
+  setRoomId,
   setMessageList,
   handleClickSend,
   roomId,
@@ -63,9 +65,10 @@ export default function ChatRoom({
   };
 
   useEffect(() => {
-    return () => {
+    return async () => {
       setMessageList([]);
-      postExitRoom({ room_id: roomId, user_id: id });
+      await postExitRoom({ room_id: roomId, user_id: id });
+      setRoomId(0);
     };
   }, []);
 
