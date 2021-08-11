@@ -130,8 +130,8 @@ export default function Navbar(): ReactElement {
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (!menuRef.current.contains(e.target)) {
-        setShow(!show);
+      if (!menuRef.current.contains(e.target) && show) {
+        setShow(false);
       }
     };
 
