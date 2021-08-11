@@ -1,11 +1,7 @@
 import { ReactElement, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { DateTime } from 'luxon';
-import {
-  OptionTypeBase,
-  ActionMeta,
-  OptionsType,
-} from 'react-select';
+import { OptionTypeBase, ActionMeta, OptionsType } from 'react-select';
 import CreatableSelect from 'react-select/creatable';
 
 import { Project } from '@utils/type';
@@ -255,7 +251,9 @@ export default function ProjectManageModal({
     defaultValue ? defaultValue.endDate.toFormat('yyyy-MM-dd') : '',
   );
   const [tracks, setTracks] = useState(defaultValue ? defaultValue.tracks : []);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingStage, setIsLoadingStage] = useState(false);
+  const [isLoadingCategory, setIsLoadingCategory] = useState(false);
+  const [isLoadingTrack, setIsLoadingTrack] = useState(false);
 
   const projcetActivateDateInputRef = useRef<HTMLInputElement>(null);
   const projcetStartDateInputRef = useRef<HTMLInputElement>(null);
@@ -342,11 +340,23 @@ export default function ProjectManageModal({
     action: ActionMeta<OptionTypeBase>,
   ) => {
     if (action.action === 'create-option' && selectedValue) {
-      // TODO: 기수 생성 API call. 지금은 단순히 추가하지만, API call 결과를 넣어주어야한다.
       console.log('CREATE STAGE:', selectedValue);
-      setStageOptions([...stageOptions, selectedValue]);
+
+      setIsLoadingStage(true);
+      setTimeout(() => {
+        // TODO: 기수 생성 API call. 지금은 단순히 추가하지만, API call 결과를 넣어주어야한다.
+        setStageOptions([...stageOptions, selectedValue]);
+        setIsLoadingStage(false);
+        setStage({
+          code: selectedValue.value,
+          codeName: selectedValue.label,
+        });
+      }, 1000);
     } else if (action.action === 'select-option' && selectedValue) {
-      setStage({ code: selectedValue.code, codeName: selectedValue.codeName });
+      setStage({
+        code: selectedValue.value,
+        codeName: selectedValue.label,
+      });
     } else if (action.action === 'clear') {
       setStage(null);
     }
@@ -357,13 +367,22 @@ export default function ProjectManageModal({
     action: ActionMeta<OptionTypeBase>,
   ) => {
     if (action.action === 'create-option' && selectedValue) {
-      // TODO: 구분 생성 API call. 지금은 단순히 추가하지만, API call 결과를 넣어주어야한다.
       console.log('CREATE CATEGORY:', selectedValue);
-      setStageOptions([...categoryOptions, selectedValue]);
+
+      setIsLoadingCategory(true);
+      setTimeout(() => {
+        // TODO: 구분 생성 API call. 지금은 단순히 추가하지만, API call 결과를 넣어주어야한다.
+        setCategoryOptions([...categoryOptions, selectedValue]);
+        setIsLoadingCategory(false);
+        setCategory({
+          code: selectedValue.value,
+          codeName: selectedValue.label,
+        });
+      }, 1000);
     } else if (action.action === 'select-option' && selectedValue) {
       setCategory({
-        code: selectedValue.code,
-        codeName: selectedValue.codeName,
+        code: selectedValue.value,
+        codeName: selectedValue.label,
       });
     } else if (action.action === 'clear') {
       setCategory(null);
@@ -374,28 +393,36 @@ export default function ProjectManageModal({
     selectedValue: OptionsType<OptionTypeBase>,
     action: ActionMeta<OptionTypeBase>,
   ) => {
-    console.log('트랙');
-    console.log('SELECTED:', selectedValue);
-    console.log('ACTION:', action);
-
     if (action.action === 'create-option' && selectedValue) {
       const newValue = selectedValue.find((i: any) => i.__isNew__);
       console.log('CREATE TRACK:', newValue);
+
       if (newValue) {
+        setIsLoadingTrack(true);
         delete newValue['__isNew__'];
-        // TODO: 트랙 생성 API call. 지금은 단순히 추가하지만, API call 결과를 넣어주어야한다.
-        setTrackOptions([...trackOptions, newValue]);
+        setTimeout(() => {
+          // TODO: 트랙 생성 API call. 지금은 단순히 추가하지만, API call 결과를 넣어주어야한다.
+          setTrackOptions([...trackOptions, newValue]);
+          setIsLoadingTrack(false);
+          setTracks(
+            selectedValue.map((i) => ({
+              code: i.value,
+              codeName: i.label,
+            })),
+          );
+        }, 1000);
       }
     } else if (
       action.action === 'select-option' ||
       action.action === 'pop-value' ||
       action.action === 'remove-value'
     ) {
-      const newTracks = selectedValue.map((i) => ({
-        code: i.code,
-        codeName: i.codeName,
-      }));
-      setTracks(newTracks);
+      setTracks(
+        selectedValue.map((i) => ({
+          code: i.value,
+          codeName: i.label,
+        })),
+      );
     } else if (action.action === 'clear') {
       setTracks([]);
     }
@@ -418,6 +445,8 @@ export default function ProjectManageModal({
           <Label text="기수">
             <CreatableSelect
               isClearable
+              isDisabled={isLoadingStage}
+              isLoading={isLoadingStage}
               cacheOptions
               defaultOptions
               options={stageOptions}
@@ -432,6 +461,8 @@ export default function ProjectManageModal({
           <Label text="구분">
             <CreatableSelect
               isClearable
+              isDisabled={isLoadingCategory}
+              isLoading={isLoadingCategory}
               cacheOptions
               defaultOptions
               options={categoryOptions}
@@ -447,6 +478,8 @@ export default function ProjectManageModal({
             <CreatableSelect
               isMulti
               isClearable
+              isDisabled={isLoadingTrack}
+              isLoading={isLoadingTrack}
               cacheOptions
               defaultOptions
               options={trackOptions}
