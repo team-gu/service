@@ -65,3 +65,13 @@ export const postModifyRoomName = async (param: any) =>
     type: 'post',
     param,
   });
+
+export const postLeaveChatRoom = async (param: {
+  room_id: number;
+  user_id: number;
+}) =>
+  await api({
+    url: '/api/chat/room/leave',
+    type: 'post',
+    param,
+  });
