@@ -45,9 +45,10 @@ const Wrapper = styled(motion.div)`
   .header {
     ${({ theme: { flexRow } }) => flexRow('space-between')}
 
-    padding: 0 20px;
+    padding: 0 10px;
 
-    width: calc(100% - 40px);
+    width: calc(100% - 20px);
+
     height: 40px;
     background-color: ${({
       theme: {
@@ -79,12 +80,12 @@ const Wrapper = styled(motion.div)`
 
     .fixed-one {
       position: absolute;
-      right: 50px;
+      right: 40px;
     }
 
     .fixed-two {
       position: absolute;
-      right: 80px;
+      right: 70px;
     }
   }
 
