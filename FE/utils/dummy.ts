@@ -26,9 +26,9 @@ export const DUMMY_PROJECTS: Project[] = [
         codeName: '웹 IoT',
       },
     ],
-    activeDate: DateTime.fromISO('2021-07-28T17:41:27.699+09:00'),
-    startDate: DateTime.fromISO('2021-08-02T00:00:00.000+09:00'),
-    endDate: DateTime.fromISO('2021-08-30T00:00:00.000+09:00'),
+    activeDate: '2021-07-28',
+    startDate: '2021-08-02',
+    endDate: '2021-08-30',
   },
   {
     id: 2,
@@ -54,9 +54,9 @@ export const DUMMY_PROJECTS: Project[] = [
         codeName: '블록체인',
       },
     ],
-    activeDate: DateTime.fromISO('2021-08-28T09:00:00.000+09:00'),
-    startDate: DateTime.fromISO('2021-09-10T09:00:00.000+09:00'),
-    endDate: DateTime.fromISO('2021-10-30T23:59:59.000+09:00'),
+    activeDate: '2021-08-28',
+    startDate: '2021-09-10',
+    endDate: '2021-10-30',
   },
 ];
 

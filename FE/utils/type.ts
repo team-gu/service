@@ -38,14 +38,14 @@ export interface Code {
 }
 
 export interface Project {
-  name: string;
-  id: number;
+  name?: string;
+  id?: number;
   stage: Code;
   project: Code;
   track: Code[];
-  activeDate: DateTime;
-  startDate: DateTime;
-  endDate: DateTime;
+  activeDate: string;
+  startDate: string;
+  endDate: string;
 }
 
 export interface ProjectModalType {

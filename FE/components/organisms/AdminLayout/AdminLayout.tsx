@@ -49,9 +49,15 @@ export default function AdminLayout(): ReactElement {
       setProjects(
         data.map((p: any) => ({
           ...p,
-          activeDate: p.activeDate ? DateTime.fromISO(p.activeDate) : null,
-          startDate: p.startDate ? DateTime.fromISO(p.startDate) : null,
-          endDate: p.endDate ? DateTime.fromISO(p.endDate) : null,
+          activeDate: p.activeDate
+            ? DateTime.fromISO(p.activeDate).toFormat('yyyy-MM-dd')
+            : null,
+          startDate: p.startDate
+            ? DateTime.fromISO(p.startDate).toFormat('yyyy-MM-dd')
+            : null,
+          endDate: p.endDate
+            ? DateTime.fromISO(p.endDate).toFormat('yyyy-MM-dd')
+            : null,
           name: `${p.stage.codeName} ${p.project.codeName} 프로젝트`,
         })),
       );
