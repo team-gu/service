@@ -44,3 +44,9 @@ export const SSAFY_CLASS = ['미정', '1', '2', '3', '4', '5', '6'];
 export const SSAFY_TRACK = ['웹 기술', '웹 디자인', '웹 IoT'];
 
 export const VIDEO_CHAT_PATH_PREFIX = '/rtc';
+
+export const CODE_ID = {
+  기수: 'ST',
+  트랙: 'TR',
+  구분: 'PR'
+}
