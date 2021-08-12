@@ -234,4 +234,9 @@ public class ChatServiceImpl implements ChatService{
 	public boolean modifyRoomName(String title, long room_id) {		
 		return chatRoomRepositorySupport.modifyRoomName(title, room_id);
 	}	
+	
+	@Override
+	public boolean changeType(long chat_id, String type) {
+		return chatRepositorySupport.changeType(chat_id, type);
+	}
 }

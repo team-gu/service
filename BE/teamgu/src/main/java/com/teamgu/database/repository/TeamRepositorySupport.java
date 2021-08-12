@@ -33,6 +33,9 @@ import com.teamgu.database.entity.QUser;
 import com.teamgu.database.entity.QUserTeam;
 import com.teamgu.database.entity.Team;
 
+import lombok.extern.log4j.Log4j2;
+
+@Log4j2
 @Repository
 public class TeamRepositorySupport {
 
@@ -433,5 +436,28 @@ public class TeamRepositorySupport {
 			return true;
 		else 
 			return false;
+	}
+	/**
+	 * 리더id와 팀id를 대조하여 유효한 초대인지 확인한다	
+	 * 유효하면 양의 정수, 아니라면 0을 반환 
+	 * @param leader_id
+	 * @return
+	 */
+	public boolean checkTeamBetweenLeader(long leader_id,long team_id) {
+		EntityManager em = emf.createEntityManager();
+		try {
+			String jpql = "SELECT IFNULL(id,0) FROM team WHERE id=:team_id AND leader_id=:leader_id\r\n"
+						+ "UNION ALL\r\n"
+						+ "SELECT 0 FROM dual LIMIT 1";
+			List<BigInteger> res = em.createNativeQuery(jpql).setParameter("team_id", team_id).setParameter("leader_id", leader_id).getResultList();
+			long id = res.get(0).longValue();
+			if(id>0)return true;
+		}catch(Exception e) {
+			log.error("팀과 팀장 확인에 실패했습니다");
+			return false;
+		}finally {
+			em.close();
+		}
+		return false;
 	}
 }

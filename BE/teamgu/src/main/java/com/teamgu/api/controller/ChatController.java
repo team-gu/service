@@ -24,6 +24,8 @@ import com.teamgu.api.dto.req.ChatReqDto;
 import com.teamgu.api.dto.req.ChatRoomLeaveReqDto;
 import com.teamgu.api.dto.req.ChatRoomModifyReqDto;
 import com.teamgu.api.dto.req.ChatRoomRegistReqDto;
+import com.teamgu.api.dto.req.TeamInviteResponseReqDto;
+import com.teamgu.api.dto.req.TeamMemberReqDto;
 import com.teamgu.api.dto.req.UserInviteTeamReqDto;
 import com.teamgu.api.dto.req.UserRoomCheckDto;
 import com.teamgu.api.dto.req.UserRoomInviteReqDto;
@@ -36,11 +38,14 @@ import com.teamgu.api.dto.res.ChatTotalUnreadResDto;
 import com.teamgu.api.dto.res.CommonResponse;
 import com.teamgu.api.dto.res.ErrorResponse;
 import com.teamgu.api.dto.res.LoginResDto;
+import com.teamgu.api.dto.res.TeamListResDto;
 import com.teamgu.api.dto.res.UserChatSearchResDto;
 import com.teamgu.api.service.ChatService;
 import com.teamgu.api.service.ChatServiceImpl;
+import com.teamgu.api.service.TeamServiceImpl;
 import com.teamgu.api.service.UserServiceImpl;
 import com.teamgu.api.vo.MessageTemplate;
+import com.teamgu.api.vo.MessageTypeVo;
 import com.teamgu.database.entity.Chat;
 import com.teamgu.database.entity.User;
 import com.teamgu.database.repository.TeamRepositorySupport;
@@ -70,6 +75,12 @@ public class ChatController {
 	
 	@Autowired
 	MessageTemplate simpMessagingTemplate;
+	
+	@Autowired
+	TeamServiceImpl teamService;
+	
+	@Autowired
+	MessageTypeVo messageTypeVo;
 	/**
 	 * 특정 유저의 채팅방 목록을 가져온다
 	 */
@@ -115,37 +126,6 @@ public class ChatController {
 					.body(new ErrorResponse("채팅 메세지 저장에 실패했습니다."));
 		}
 		return ResponseEntity.noContent().build();
-	}
-	
-	/**
-	 * 
-	 * @param users
-	 * @return
-	 */
-	@PostMapping("/message/team/invite")
-	@ApiOperation(value="특정 유저에게 팀원 초대 요청을 보낸다")
-	public ResponseEntity<? extends BasicResponse> sendTeamInviteMessage(@RequestBody UserInviteTeamReqDto userInviteTeamReqDto){
-		long result = chatService.roomCheck(userInviteTeamReqDto.getLeader_id(), userInviteTeamReqDto.getInvitee_id());
-		if(result==0) {//존재하지 않는 경우 방을 생성하고 방 번호를 반환한다.
-			long user_id1 = userInviteTeamReqDto.getLeader_id();
-			long user_id2 = userInviteTeamReqDto.getInvitee_id();
-			String name1 = userService.getUserById(user_id1).get().getName();
-			String name2 = userService.getUserById(user_id2).get().getName();
-			//미구현
-//			result = chatService.createRoom(name1+", "+name2+"의 방");
-//			log.info(result+"방이 생성되었습니다");
-//			
-//			chatService.inviteUser(userInviteTeamReqDto.getLeader_id(), result);
-//			chatService.inviteUser(userInviteTeamReqDto.getInvitee_id(), result);
-			//여기서 해당 채팅방에 leader to invitee로 팀원 초대 메세지를 보낸다.
-			
-			//1. DB에 먼저 저장
-			
-			//2. Receive로 메세지 보내기
-			
-			//3. 팀으로 초대하기 위해선 팀 코드가 필요
-		}
-		return ResponseEntity.ok(new CommonResponse<Long>(result));	
 	}
 	
 	@PostMapping("/room/check")
@@ -292,5 +272,68 @@ public class ChatController {
 		log.info("invite 테스팅");
 		simpMessagingTemplate.getTemplate().convertAndSend("/receive/chat/room/"+125,ChatMessageResDto.builder().message("test"));
 		return ResponseEntity.ok(new CommonResponse<Boolean>(true));
+	}
+
+	/**
+	 * 팀초대 메세지에 대한 수락 응답을 처리한다
+	 * @param teamInviteResponseReqDto
+	 * @return
+	 */
+	@PostMapping("/message/team/invite/accept")
+	@ApiOperation(value="팀 초대 메세지를 수락한다")
+	@ApiResponses({
+		@ApiResponse(code = 200, message = "팀 가입 성공"),
+		@ApiResponse(code = 400, message = "팀 가입 실패",response = BaseResDto.class)
+	})
+	public ResponseEntity<? extends BasicResponse> teamInviteAccept(@RequestBody TeamInviteResponseReqDto teamInviteResponseReqDto){
+		long leader_id = teamInviteResponseReqDto.getLeader_id();
+		long invitee_id = teamInviteResponseReqDto.getInvitee_id();
+		long team_id = teamInviteResponseReqDto.getTeam_id();
+		long message_id = teamInviteResponseReqDto.getMessage_id();
+		TeamListResDto teamListResDto = teamService.getTeamInfobyTeamId(team_id);
+		String trackName = teamListResDto.getTrack().getCodeName();
+		
+		//오류 대상
+		//1. 팀에 들어갈 수 있는 상태인가? = 이미 존재하는 멤버를 검증할 필요가 없음 (이미존재하는 멤버 = 팀이 있음)
+		boolean visibleTeam = teamService.checkTeamBuilding(invitee_id, trackName);
+		if(!visibleTeam)
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("팀에 들어갈 수 없는 상태입니다"));
+		//2. 팀의 리더가 바뀐 후의 수락상태
+		boolean visibleInvite = teamService.checkTeamBetweenLeader(leader_id, team_id);
+		if(!visibleInvite) {//만료된 초대, 팀의 정보가 온전하지 않을 때
+			//update expired로 변경
+			chatService.changeType(message_id, messageTypeVo.getInviteExpired());
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("팀 초대 상태가 만료되었습니다"));
+		}
+		//3. 문제 없다면 팀 초대
+		TeamMemberReqDto teamMemberReqDto = TeamMemberReqDto.builder()
+												.teamId(team_id)
+												.userId(invitee_id)
+												.build();
+		teamService.addMember(teamMemberReqDto);
+		TeamListResDto team = teamService.getTeamInfobyTeamId(team_id);
+		chatService.changeType(message_id, messageTypeVo.getInviteAccepted());
+		log.info(invitee_id+"유저는 "+team_id+"로 팀 초대가 이루어졌습니다.");
+		return ResponseEntity.ok(new CommonResponse<TeamListResDto>(team));	
+	}
+	
+	/**
+	 * 팀초대 메세지에 대한 거절 응답을 처리한다
+	 * @param teamInviteResponseReqDto
+	 * @return
+	 */
+	@PostMapping("/message/team/invite/reject")
+	@ApiOperation(value="팀 초대 메세지를 거절한다")
+	public ResponseEntity<? extends BasicResponse> teamInviteReject(@RequestBody TeamInviteResponseReqDto teamInviteResponseReqDto){
+		long invitee_id = teamInviteResponseReqDto.getInvitee_id();
+		long team_id = teamInviteResponseReqDto.getTeam_id();
+		long message_id = teamInviteResponseReqDto.getMessage_id();
+		
+		boolean res = chatService.changeType(message_id, messageTypeVo.getInviteRejected());
+		if(!res)
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("유효한 메세지를 찾을 수 없습니다"));
+		log.info(invitee_id+"유저는 "+team_id+"의 초대를 거절했습니다");
+
+		return ResponseEntity.ok(new CommonResponse<String>("정상적으로 거절 되었습니다"));
 	}
 }

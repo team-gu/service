@@ -79,4 +79,26 @@ public class ChatRepositorySupport {
 			em.close();
 		}
 	}
+	
+	/**
+	 * 특정 채팅의 Type을 변경한다
+	 */
+	public boolean changeType(long chat_id,String type) {		
+		EntityManager em = emf.createEntityManager();
+		EntityTransaction et = em.getTransaction();
+		int res = 0;
+		try {
+			String jpql = "UPDATE chat SET type = :type WHERE id = :chat_id";
+			et.begin();
+			res = em.createNativeQuery(jpql).setParameter("type", type).setParameter("chat_id", chat_id).executeUpdate();					
+			et.commit();
+		}catch(Exception e) {
+			et.rollback();
+			log.error("타입 변경에 실패했습니다");
+		}finally {
+			em.close();
+		}
+		if(res>0)return true;
+		return false;
+	}
 }

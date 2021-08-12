@@ -34,7 +34,7 @@ public class UserPoolRepositoryImpl implements UserPoolRepositoryCustom {
             prjCode = userPoolReqDto.getProject(); //무조건 들어와야하는 값
             stage = userPoolReqDto.getStudentNumber().substring(0, 2); //무조건 들어와야하는 값
         } catch (Exception e) {
-            e.printStackTrace();
+            log.info("substring 에러");
         }
 
 
