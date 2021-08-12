@@ -1,6 +1,8 @@
 package com.teamgu.api.service;
 
+import com.teamgu.api.dto.req.UserPoolNameReqDto;
 import com.teamgu.api.dto.req.UserPoolReqDto;
+import com.teamgu.api.dto.res.UserPoolNameResDto;
 import com.teamgu.api.dto.res.UserPoolResDto;
 import com.teamgu.database.repository.UserPoolRepository;
 import lombok.extern.log4j.Log4j2;
@@ -9,7 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service("userPoolService")
 @Log4j2
@@ -65,5 +69,10 @@ public class UserPoolServiceImpl implements UserPoolService {
         }
 
         return retList;
+    }
+
+    @Override
+    public List<UserPoolNameResDto> findUsersBySimName(UserPoolNameReqDto userPoolNameReqDto) {
+        return userPoolRepository.findUsersBySimName(userPoolNameReqDto);
     }
 }
