@@ -5,6 +5,7 @@ import { useRouter } from 'next/router';
 import {
   postTeamInviteAccept,
   postTeamInviteReject,
+  getChatRoomMessages,
 } from '@repository/chatRepository';
 import { ProfileImage, ChatBubbleSelect } from '@molecules';
 import { Text } from '@atoms';
@@ -15,6 +16,7 @@ interface ChatBubbleProps {
   // TODO: 추후 타입 정의
   time: string | any;
   message: string;
+  setMessageList: any;
   isMe?: boolean;
   // TODO: 추후 타입 정의
   func?: any;
@@ -82,16 +84,25 @@ export default function ChatBubble({
   userName = '',
   time,
   message,
+  setMessageList,
   isMe = false,
   // func,
   type = 'NORMAL',
-  roomId,
+  roomId = 0,
   opponentId = 0,
   chatId = 0,
   teamId = 0,
   id = 0,
 }: ChatBubbleProps): ReactElement {
   const router = useRouter();
+
+  const handleGetChatRoomMessages = async () => {
+    const {
+      data: { data },
+    } = await getChatRoomMessages(roomId);
+
+    await setMessageList(data);
+  };
 
   return (
     <Wrapper isMe={isMe}>
@@ -119,22 +130,24 @@ export default function ChatBubble({
               ) : (
                 <ChatBubbleSelect
                   text="팀원초대 요청"
-                  funcAccept={() =>
-                    postTeamInviteAccept({
+                  funcAccept={async () => {
+                    await postTeamInviteAccept({
                       invitee_id: id,
                       leader_id: opponentId,
                       message_id: chatId,
                       team_id: teamId,
-                    })
-                  }
-                  funcDecline={() =>
-                    postTeamInviteReject({
+                    });
+                    handleGetChatRoomMessages();
+                  }}
+                  funcDecline={async () => {
+                    await postTeamInviteReject({
                       invitee_id: id,
                       leader_id: opponentId,
                       message_id: chatId,
                       team_id: teamId,
-                    })
-                  }
+                    });
+                    handleGetChatRoomMessages();
+                  }}
                   isTeamInvite
                 />
               ),

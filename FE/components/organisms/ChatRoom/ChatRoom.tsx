@@ -103,7 +103,6 @@ export default function ChatRoom({
     }
   }, [session]);
 
-  // type 때문에 억지로 Promise 반환
   const sendMessage = async (msg: string) => {
     await handleClickSend(msg);
     handleScrollToEnd();
@@ -161,6 +160,7 @@ export default function ChatRoom({
                             .toRelative()
                     }
                     message={message}
+                    setMessageList={setMessageList}
                     isMe={sender_id === id}
                     func={sendMessage}
                     type={type}
