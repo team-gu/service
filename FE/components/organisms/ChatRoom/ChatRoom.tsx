@@ -64,12 +64,18 @@ export default function ChatRoom({
     });
   };
 
-  useEffect(() => {
-    return async () => {
-      setMessageList([]);
+  const handleUnmount = async () => {
+    setMessageList([]);
+    setRoomId(0);
+    try {
       await postExitRoom({ room_id: roomId, user_id: id });
-      setRoomId(0);
-    };
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    return () => handleUnmount();
   }, []);
 
   useEffect(() => {
