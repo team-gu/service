@@ -1,4 +1,4 @@
-import { ReactElement, useState, useRef } from 'react';
+import { ReactElement, useState, useRef, KeyboardEvent } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { OptionsType } from 'react-select';
@@ -109,7 +109,7 @@ const Wrapper = styled(motion.div)`
   }
 `;
 
-const Form = styled.form`
+const Form = styled.div`
   ${({ theme: { flexRow } }) => flexRow()}
   input {
     height: 100%;
@@ -234,6 +234,18 @@ export default function ChatRoute(): ReactElement {
     }
   };
 
+  const handleChangeTitle = async () => {
+    try {
+      await postModifyRoomName({
+        room_id,
+        title: editRef.current.value,
+      });
+      setRoomName(editRef.current.value);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <>
       <Modal modalName={MODALS.HOC_MODAL}>
@@ -287,27 +299,21 @@ export default function ChatRoute(): ReactElement {
                   arrowColor="white"
                   backgroundColor="white"
                 >
-                  <Form
-                    onSubmit={async (e) => {
-                      e.preventDefault();
-
-                      try {
-                        await postModifyRoomName({
-                          room_id,
-                          title: editRef.current.value,
-                        });
-                        setRoomName(editRef.current.value);
-                      } catch (error) {
-                        console.error(error);
-                      }
-                    }}
-                  >
+                  <Form>
                     <input
                       ref={editRef}
                       type="text"
                       placeholder="변경할 방 제목을 입력해주세요"
+                      onKeyPress={(e: KeyboardEvent<HTMLDivElement>) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          handleChangeTitle();
+                        }
+                      }}
                     />
-                    <button type="submit">EDIT</button>
+                    <button type="button" onClick={handleChangeTitle}>
+                      EDIT
+                    </button>
                   </Form>
                 </ReactTooltip>
                 <a data-tip data-for="clickme" data-event="click">
