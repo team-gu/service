@@ -1,11 +1,11 @@
-import { ReactElement, useRef, useEffect, MouseEventHandler } from 'react';
+import { ReactElement, useRef, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { DateTime } from 'luxon';
 import { Session } from 'openvidu-browser';
 
 import { ChatInput, ChatBubble } from '@molecules';
 
-import { postExitRoom } from '@repository/chatRepository';
+import { postExitRoom, getRoomUserList } from '@repository/chatRepository';
 import { Chat, ChatNormal } from '@types/chat-type';
 import { useAuthState } from '@store';
 
@@ -55,6 +55,8 @@ export default function ChatRoom({
     user: { id },
   } = useAuthState();
 
+  const [opponentId, setOpponentId] = useState(0);
+
   const chatBoxRef: any = useRef<HTMLInputElement>(null);
 
   const handleScrollToEnd = () => {
@@ -75,6 +77,12 @@ export default function ChatRoom({
   };
 
   useEffect(() => {
+    (async () => {
+      const {
+        data: { data },
+      } = await getRoomUserList(roomId);
+      setOpponentId(data.filter(({ user_id }) => id !== user_id)[0].user_id);
+    })();
     return () => handleUnmount();
   }, []);
 
@@ -134,6 +142,8 @@ export default function ChatRoom({
                     sender_id,
                     sender_name,
                     type,
+                    chat_id,
+                    team_id,
                   }: ChatNormal,
                   index: number,
                 ) => (
@@ -155,6 +165,10 @@ export default function ChatRoom({
                     func={sendMessage}
                     type={type}
                     roomId={roomId}
+                    opponentId={opponentId}
+                    chatId={chat_id}
+                    teamId={team_id}
+                    id={id}
                   />
                 ),
               )}
