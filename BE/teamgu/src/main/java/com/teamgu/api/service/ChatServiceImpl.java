@@ -118,6 +118,7 @@ public class ChatServiceImpl implements ChatService{
 													.sender_id(chat.getUser().getId())
 													.sender_name(chat.getUser().getName())
 													.type(chat.getType())
+													.team_id(chat.getTeamId())
 													.create_date_time(chat.getSendDateTime())
 													.unread_user_count(0)//읽지 않은 유저를 관리해야한다
 													.build();
@@ -158,14 +159,17 @@ public class ChatServiceImpl implements ChatService{
 		chatRoom.setTitle(title);
 		LocalDateTime localDateTime = LocalDateTime.now();
 		chatRoom.setCreatedDate(localDateTime);
-		ChatRoom res = chatRoomRepository.save(chatRoom);
+		ChatRoom res = chatRoomRepository.save(chatRoom);//방 생성을 위한 저장
+		
 		long chatroomid = chatRoom.getId();
-		ChatRoomResDto crrd = new ChatRoomResDto();
-		crrd.setChat_room_id(chatroomid);
-		crrd.setRoom_name(chatRoomRepository.findById(chatroomid).get().getTitle());//채팅방 이름을 가져온다
 		Chat lastchat = chatRoomRepositorySupport.getLastMessage(chatroomid);
-		crrd.setLast_chat_message(lastchat.getMessage());//해당 채팅방의 마지막 메세지를 가져온다.
-		crrd.setSend_date_time(lastchat.getSendDateTime());//해당 채팅방의 마지막 전송 시간을 가져온다.			
+		log.info("새롭게 생성된 자동 채팅방명 : "+title);
+		ChatRoomResDto crrd = ChatRoomResDto.builder()
+								.chat_room_id(chatroomid)
+								.room_name(title)
+								.last_chat_message(lastchat.getMessage())
+								.unread_message_count(0)
+								.send_date_time(lastchat.getSendDateTime()).build();			
 		return crrd;
 	}
 	

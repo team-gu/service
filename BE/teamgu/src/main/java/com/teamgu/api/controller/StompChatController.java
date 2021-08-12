@@ -132,9 +132,9 @@ public class StompChatController {
 		//1. 해당 유저와 채팅방이 생성되어 있는지 체크하고 없다면 생성한다
 		long chat_room_id = chatService.roomCheck(leader_id, invitee_id);
 		if(chat_room_id==0) {//존재하지 않는 경우 방을 생성하고 방 번호를 반환한다.
-			String name1 = userService.getUserById(leader_id).get().getName();
+//			String name1 = userService.getUserById(leader_id).get().getName(); //name변수와 동일한 처리이므로 주석처리
 			String name2 = userService.getUserById(invitee_id).get().getName();			
-			ChatRoomResDto chatRoomResDto = chatService.createRoom(name1+", "+name2+"의 방");
+			ChatRoomResDto chatRoomResDto = chatService.createRoom(name+", "+name2+"의 방");
 			chat_room_id = chatRoomResDto.getChat_room_id();
 			
 			log.info(chat_room_id+"방이 생성되었습니다");
