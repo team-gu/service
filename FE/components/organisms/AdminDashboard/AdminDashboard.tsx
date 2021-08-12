@@ -1,11 +1,16 @@
-import { ReactElement, useEffect, useState } from 'react';
+import { ReactElement, useEffect, useState, useMemo } from 'react';
 import styled from 'styled-components';
 import CountUp from 'react-countup';
 
 import { Text } from '@atoms';
-import { BigDonutChart, DonutChart, Table } from '@molecules';
+import { BigDonutChart, DonutChart, DashboardTable } from '@molecules';
 
-import { ADMIN_TEAM_DATA, ADMIN_TRACK_DATA, DUMMY_TABLE_COLUMNS, DUMMY_TABLE_DATA } from '@utils/dummy';
+import {
+  ADMIN_TEAM_DATA,
+  ADMIN_TRACK_DATA,
+  DUMMY_TABLE_COLUMNS,
+  DUMMY_TABLE_DATA,
+} from '@utils/dummy';
 
 const BLUE = '#0088FE';
 const RED = '#FF8042';
@@ -28,10 +33,12 @@ const Wrapper = styled.div`
     .chart-container {
       display: grid;
       grid-template-rows: auto auto;
-      grid-template-columns: auto 1fr;
+      grid-template-columns: 1fr 3fr;
 
       .entire-chart {
         grid-row: 1 / 3;
+        display: flex;
+        justify-content: center;
       }
 
       .region-chart {
@@ -79,8 +86,7 @@ const Wrapper = styled.div`
 `;
 
 const TableWrapper = styled.div`
-  display: block;
-  max-width: 100%;
+  margin-top: 50px;
 
   .tableWrap {
     display: block;
@@ -93,12 +99,15 @@ const TableWrapper = styled.div`
   table {
     border-spacing: 0;
     border: 1px solid gainsboro;
-    
+
     th {
       border-bottom: 1px solid black;
     }
-    tr {
-      // border-bottom: 1px solid gainsboro;
+
+    tr:hover {
+      td {
+        background-color: #fafafa !important;
+      }
     }
 
     th,
@@ -107,12 +116,13 @@ const TableWrapper = styled.div`
       padding: 10px;
       border-bottom: 1px solid gainsboro;
       border-right: 1px solid gainsboro;
+      vertical-align: middle;
 
       // Each cell should grow equally
-      width: 1%;
-      &.collapse {
-        width: 0.0000000001%;
-      }
+      // width: 1%;
+      // &.collapse {
+      //   width: 0.0000000001%;
+      // }
     }
   }
 `;
@@ -135,8 +145,24 @@ export default function AdminDashboard(): ReactElement {
     setTrackTeamData(ADMIN_TRACK_DATA);
   }, []);
 
-  const [selectedRegion, setSelectedRegion] = useState();
-  const [selectedTrack, setSelectedTrack] = useState();
+  const tableData = useMemo(() => {
+    // TODO: 팀 테이블 정보 서버에서 받기
+    return DUMMY_TABLE_DATA;
+  }, []);
+
+  const tableColumns = useMemo(() => {
+    // TODO: 팀 테이블 칼럼 정보 서버에서 받기?
+    const data = DUMMY_TABLE_COLUMNS.map((col) => {
+      if (col.accessor === 'region') {
+        return {
+          ...col,
+        };
+      } else {
+        return col;
+      }
+    });
+    return data;
+  }, []);
 
   return (
     <Wrapper>
@@ -176,11 +202,8 @@ export default function AdminDashboard(): ReactElement {
           </div>
         </div>
         <div className="team-status-table">
-          <div className="table-header">
-            <Text text="지역에 대한 팀 구성 현황표" fontSetting="n22m" />
-          </div>
           <TableWrapper>
-            <Table data={DUMMY_TABLE_DATA} columns={DUMMY_TABLE_COLUMNS} />
+            <DashboardTable data={tableData} columns={tableColumns} />
           </TableWrapper>
         </div>
       </div>
