@@ -33,7 +33,7 @@ public class UserPoolController {
      * @param userPoolReqDto
      */
     @PostMapping("/search")
-    @ApiOperation(value = "")
+    @ApiOperation(value = "필터를 기반으로 하여 원하는 유저 목록을 가져올 수 있는 Api")
     public ResponseEntity<? extends BasicResponse> searchUserPool(
             @RequestBody @ApiParam(value = "검색 필터 데이터", required = true) UserPoolReqDto userPoolReqDto
     ) {
@@ -60,7 +60,7 @@ public class UserPoolController {
      * @param projectCode
      */
     @GetMapping("/search/{name}")
-    @ApiOperation(value = "")
+    @ApiOperation(value = "사용자 검색시 이름 or 이메일 기반으로 자동완성 가능하게 하는 Api")
     public ResponseEntity<? extends BasicResponse> findUserBySimName(
             @RequestParam @ApiParam(value = "검색 대상 이름 or 이메일", required = true) String target,
             @RequestParam @ApiParam(value = "검색하는 사람의 학번", required = true) String studentNumber,
