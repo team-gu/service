@@ -237,16 +237,20 @@ export default function ChatRoute(): ReactElement {
     }
   };
 
-  const handleChangeTitle = async () => {
-    try {
-      await postModifyRoomName({
-        room_id,
-        title: editRef.current.value,
-      });
-      setRoomName(editRef.current.value);
-      setShowTooltip(false);
-    } catch (error) {
-      console.error(error);
+  const handleChangeTitle = async (e: SyntheticEvent) => {
+    e.preventDefault();
+
+    if (editRef.current.value.length > 0) {
+      try {
+        await postModifyRoomName({
+          room_id,
+          title: editRef.current.value,
+        });
+        setRoomName(editRef.current.value);
+        setShowTooltip(false);
+      } catch (error) {
+        console.error(error);
+      }
     }
   };
 
