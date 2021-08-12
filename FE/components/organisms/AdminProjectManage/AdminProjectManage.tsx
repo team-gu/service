@@ -1,10 +1,12 @@
 import { ReactElement, useState } from 'react';
 import styled from 'styled-components';
-import { Project } from '@utils/type';
+
 import { Text, Icon } from '@atoms';
 import { Button, ProjectCard } from '@molecules';
 import { AdminProjectManageModal } from '@organisms';
-import ModalWrapper from '../Modal/ModalWrapper';
+import { ModalWrapper } from '@organisms';
+import { deleteAdminProject } from '@repository/adminRepository';
+import { Project } from '@utils/type';
 
 const Wrapper = styled.div`
   i {
@@ -98,9 +100,11 @@ export default function AdminProjectManage({
     setShowDeleteModal(false);
     setSelectedProject(undefined);
 
-    // TODO API call
-    console.log('DELETE PROJECT', selectedProject);
-    fetchProjects();
+    if (selectedProject && selectedProject.id) {
+      deleteAdminProject({ projectId: selectedProject.id }).then(() => {
+        fetchProjects();
+      });
+    }
   };
 
   return (
@@ -127,7 +131,7 @@ export default function AdminProjectManage({
         />
       )}
       {showDeleteModal && selectedProject && (
-        <ModalWrapper modalName="deleteAdminProjectModal" zIndex={90}>
+        <ModalWrapper modalName="deleteAdminProjectModal" zIndex={101}>
           <div className="delete-modal-container">
             <div className="delete-text">
               <Text

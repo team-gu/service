@@ -8,12 +8,15 @@ export default {
 };
 
 const Template: Story = () => {
-  const [show, setShow] = useState(false);
+  const [show, setShow] = useState(true);
   return (
     <>
       <button onClick={() => setShow(true)}>모달</button>
       {show && (
-        <AdminProjectManageModal handleClickClose={() => setShow(false)} />
+        <AdminProjectManageModal
+          handleClickClose={() => setShow(false)}
+          closeModalAndRerender={() => {}}
+        />
       )}
     </>
   );

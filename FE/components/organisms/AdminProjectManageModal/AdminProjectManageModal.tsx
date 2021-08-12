@@ -1,17 +1,20 @@
-import {
-  ReactElement,
-  MouseEventHandler,
-  KeyboardEventHandler,
-  useRef,
-  useState,
-  RefObject,
-} from 'react';
+import { ReactElement, useRef, useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { DateTime } from 'luxon';
-import { Project } from '@utils/type';
+import { OptionTypeBase, ActionMeta, OptionsType } from 'react-select';
+import CreatableSelect from 'react-select/creatable';
+
+import { Project, Code } from '@utils/type';
 import { Input, Text, Icon } from '@atoms';
 import { Label, Button } from '@molecules';
 import { ModalWrapper } from '@organisms';
+import { CODE_ID } from '@utils/constants';
+import {
+  getAdminProjectCode,
+  createAdminProjectOption,
+  deleteAdminProjectOption,
+  createAdminProject,
+  updateAdminProject,
+} from '@repository/adminRepository';
 
 const Wrapper = styled.div`
   input {
@@ -46,12 +49,12 @@ const Wrapper = styled.div`
   }
 
   grid-template-columns: 1fr 1fr;
-  gap: 20px;
 
   .modal-header {
     grid-column: 1 / 3;
     text-align: center;
     padding-top: 40px;
+    margin-bottom: 40px;
 
     .close-btn {
       position: absolute;
@@ -65,15 +68,9 @@ const Wrapper = styled.div`
     }
   }
 
-  .project-name-container {
-    grid-column: 1 / 3;
-    input {
-      padding-left: 10px;
-      font-size: 15px;
-    }
-  }
-
   .project-stage-container {
+    position: relative;
+    margin-right: 10px;
     input {
       padding-left: 10px;
       font-size: 15px;
@@ -81,14 +78,45 @@ const Wrapper = styled.div`
   }
 
   .project-category-container {
+    position: relative;
+    margin-left: 10px;
     input {
       padding-left: 10px;
       font-size: 15px;
     }
   }
 
+  .project-stage-category-message {
+    grid-column: 1 / 3;
+    margin-bottom: 20px;
+  }
+
+  .project-track-container {
+    grid-column: 1 / 3;
+    position: relative;
+    margin-bottom: 20px;
+
+    .input {
+      margin: 0;
+      > input {
+        padding: 0 60px 0 10px;
+        height: 40px;
+      }
+    }
+
+    .flex-container {
+      display: flex;
+
+      > div:nth-child(2) {
+        flex-grow: 0;
+        flex-shrink: 0;
+      }
+    }
+  }
+
   .project-activate-date-container {
     grid-column: 1 / 3;
+    margin-bottom: 20px;
 
     input {
       padding: 0 10px;
@@ -107,64 +135,6 @@ const Wrapper = styled.div`
         flex: 1;
         > input {
           padding: 0 10px;
-        }
-      }
-    }
-  }
-
-  .project-track-container {
-    grid-column: 1 / 3;
-
-    .input {
-      margin: 0;
-      > input {
-        padding: 0 60px 0 10px;
-        height: 40px;
-      }
-    }
-
-    .flex-container {
-      display: flex;
-
-      > div:nth-child(2) {
-        flex-grow: 0;
-        flex-shrink: 0;
-      }
-    }
-
-    .add-btn {
-      font-size: 35px;
-      text-align: center;
-
-      position: relative;
-      z-index: 1;
-
-      margin-left: -50px;
-      width: 50px;
-      height: 40px;
-      background-color: darkblue;
-      border-radius: 0 5% 5% 0;
-
-      cursor: pointer;
-      i {
-        cursor: pointer;
-      }
-    }
-
-    .tracks-container {
-      .track-item {
-        margin: 15px 0 10px 10px;
-        font-size: 18px;
-        line-height: 18px;
-
-        > span {
-          margin-left: 5px;
-        }
-
-        i {
-          font-size: 16px;
-          color: crimson;
-          cursor: pointer;
         }
       }
     }
@@ -203,7 +173,100 @@ const Wrapper = styled.div`
       margin-left: 0rem;
     }
   }
+
+  .setting-icon {
+    position: absolute;
+    top: 3px;
+    right: 4px;
+    display: inline-block;
+    cursor: pointer;
+
+    i {
+      font-size: 16px;
+      cursor: pointer;
+    }
+  }
 `;
+
+const EditOptionModal = styled.div`
+  position: relative;
+  padding: 40px;
+
+  .modal-header {
+    text-align: center;
+    margin-bottom: 20px;
+
+    .close-btn {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+
+      i {
+        font-size: 30px;
+        cursor: pointer;
+      }
+    }
+  }
+
+  .modal-content {
+    max-height: 150px;
+    overflow: auto;
+    box-shadow: 0 0 5px 0 rgba(4, 4, 161, 0.1);
+
+    .option-item {
+      display: flex;
+      justify-content: space-between;
+      margin: 10px 0;
+      padding-bottom: 5px;
+      border-bottom: 1px solid gainsboro;
+
+      :last-child {
+        margin-bottom: 0;
+        border-bottom: none;
+      }
+      > span {
+        margin-left: 10px;
+      }
+      > i {
+        margin-right: 10px;
+        font-size: 18px;
+        color: crimson;
+        cursor: pointer;
+      }
+    }
+  }
+`;
+
+const customStyles = {
+  menuList: (base: any) => ({
+    ...base,
+    paddingTop: 0,
+    paddingBottom: 0,
+    maxHeight: '120px',
+  }),
+  menu: (base: any) => ({
+    ...base,
+    marginTop: 0,
+  }),
+};
+
+const codesToOption = (data: any[]) => {
+  return data.map((i) => ({
+    ...i,
+    label: i.codeName,
+    value: i.code,
+  }));
+};
+
+const codeToOption = (data: any) => {
+  if (data) {
+    return {
+      ...data,
+      label: data.codeName,
+      value: data.code,
+    };
+  }
+};
 
 interface ProjectManageModalProps {
   defaultValue?: Project;
@@ -216,16 +279,45 @@ export default function ProjectManageModal({
   handleClickClose,
   closeModalAndRerender,
 }: ProjectManageModalProps): ReactElement {
-  const projectNameInputRef = useRef<HTMLInputElement>(null);
-  const projectStageInputRef = useRef<HTMLInputElement>(null);
-  const projectCategoryInputRef = useRef<HTMLInputElement>(null);
-  const projcetActivateDateInputRef = useRef<HTMLInputElement>(null);
+  const [stageOptions, setStageOptions] = useState<OptionTypeBase[]>([]);
+  const [categoryOptions, setCategoryOptions] = useState<OptionTypeBase[]>([]);
+  const [trackOptions, setTrackOptions] = useState<OptionTypeBase[]>([]);
+
+  useEffect(() => {
+    getAdminProjectCode({ codeId: CODE_ID['기수'] }).then(
+      ({ data: { data } }) => {
+        setStageOptions(codesToOption(data));
+      },
+    );
+    getAdminProjectCode({ codeId: CODE_ID['구분'] }).then(
+      ({ data: { data } }) => {
+        setCategoryOptions(codesToOption(data));
+      },
+    );
+    getAdminProjectCode({ codeId: CODE_ID['트랙'] }).then(
+      ({ data: { data } }) => {
+        setTrackOptions(codesToOption(data));
+      },
+    );
+  }, []);
+
+  const [stage, setStage] = useState(defaultValue ? defaultValue.stage : null);
+  const [category, setCategory] = useState(
+    defaultValue ? defaultValue.project : null,
+  );
+  const [tracks, setTracks] = useState(defaultValue ? defaultValue.track : []);
+
+  const [isLoadingStage, setIsLoadingStage] = useState(false);
+  const [isLoadingCategory, setIsLoadingCategory] = useState(false);
+  const [isLoadingTrack, setIsLoadingTrack] = useState(false);
+
+  const [showEditOptionsModal, setShowEditOptionsModal] = useState<
+    '기수' | '구분' | '트랙' | ''
+  >('');
+
+  const projcetActiveDateInputRef = useRef<HTMLInputElement>(null);
   const projcetStartDateInputRef = useRef<HTMLInputElement>(null);
   const projcetEndDateInputRef = useRef<HTMLInputElement>(null);
-  const projectTrackInputRef = useRef<HTMLInputElement>(null);
-  const projectTrackBtnRef = useRef<HTMLInputElement>(null);
-
-  const [tracks, setTracks] = useState(defaultValue ? defaultValue.track : []);
 
   const handleCreateProject = () => {
     const project = validateAndMakeProject();
@@ -233,9 +325,9 @@ export default function ProjectManageModal({
       return;
     }
 
-    // TODO API call
-    console.log('CREATE PROJECT', project);
-    closeModalAndRerender();
+    createAdminProject(project).then(() => {
+      closeModalAndRerender();
+    });
   };
 
   const handleUpdateProject = () => {
@@ -244,246 +336,404 @@ export default function ProjectManageModal({
       return;
     }
 
-    // TODO API call
-    console.log('UPDATE PROJECT', project);
-    closeModalAndRerender();
-  };
-
-  const handleEnterInInput: KeyboardEventHandler<HTMLInputElement> = (
-    event,
-  ) => {
-    if (event.key === 'Enter') {
-      addTrack();
-    }
-  };
-
-  const handleClickAddTrack: MouseEventHandler<HTMLSpanElement> = () => {
-    addTrack();
-  };
-
-  const addTrack = () => {
-    if (
-      projectTrackInputRef.current &&
-      projectTrackInputRef.current.value !== ''
-    ) {
-      setTracks([...tracks, projectTrackInputRef.current.value]);
-      projectTrackInputRef.current.value = '';
-    }
-  };
-
-  const deleteTrackItem = (idx: number) => {
-    const tracksTmp = tracks;
-    tracksTmp.splice(idx, 1);
-    setTracks([...tracksTmp]);
+    updateAdminProject({ project, projectId: project.id }).then(() => {
+      closeModalAndRerender();
+    });
   };
 
   const validateAndMakeProject = () => {
-    if (isNotValidate(projectNameInputRef)) {
-      addClassNotValidateInput(projectNameInputRef);
-      return false;
+    if (!stage) {
+      console.log('기수 없음');
+      return;
     }
-    if (isNotValidate(projectStageInputRef)) {
-      addClassNotValidateInput(projectStageInputRef);
-      return false;
+    if (!category) {
+      console.log('구분 없음');
+      return;
     }
-    if (isNotValidate(projectCategoryInputRef)) {
-      addClassNotValidateInput(projectCategoryInputRef);
-      return false;
+    if (tracks.length == 0) {
+      console.log('트랙 없음');
+      return;
     }
-    if (isNotValidate(projcetActivateDateInputRef)) {
-      addClassNotValidateInput(projcetActivateDateInputRef);
-      return false;
+    if (
+      !projcetActiveDateInputRef.current ||
+      projcetActiveDateInputRef.current.value === ''
+    ) {
+      console.log('활성화 날짜 없음');
+      return;
     }
-    if (isNotValidate(projcetStartDateInputRef)) {
-      addClassNotValidateInput(projcetStartDateInputRef);
-      return false;
+    if (
+      !projcetStartDateInputRef.current ||
+      projcetStartDateInputRef.current.value === ''
+    ) {
+      console.log('프로젝트 시작 날짜 없음');
+      return;
     }
-    if (isNotValidate(projcetEndDateInputRef)) {
-      addClassNotValidateInput(projcetEndDateInputRef);
-      return false;
-    }
-    if (!tracks || tracks.length === 0) {
-      addClassNotValidateInput(projectTrackInputRef);
-      projectTrackBtnRef.current?.classList.add('incorrect-track-add-btn');
-      setTimeout(() => {
-        projectTrackBtnRef.current?.classList.remove('incorrect-track-add-btn');
-      }, 1000);
-      return false;
+    if (
+      !projcetEndDateInputRef.current ||
+      projcetEndDateInputRef.current.value === ''
+    ) {
+      console.log('프로젝트 종료 날짜 없음');
+      return;
     }
 
     return {
-      name: projectNameInputRef.current?.value,
-      stage: projectStageInputRef.current?.value,
-      category: projectCategoryInputRef.current?.value,
-      activateDate: DateTime.fromFormat(
-        'yyyy-MM-dd',
-        projcetActivateDateInputRef.current?.value || '',
-      ),
-      startDate: DateTime.fromFormat(
-        'yyyy-MM-dd',
-        projcetStartDateInputRef.current?.value || '',
-      ),
-      endDate: DateTime.fromFormat(
-        'yyyy-MM-dd',
-        projcetEndDateInputRef.current?.value || '',
-      ),
+      id: defaultValue ? defaultValue.id : 1,
+      stage,
+      project: category,
+      activeDate: projcetActiveDateInputRef.current.value,
+      startDate: projcetStartDateInputRef.current.value,
+      endDate: projcetEndDateInputRef.current.value,
       track: tracks,
     };
   };
 
-  const isNotValidate = (ref: RefObject<HTMLInputElement>) => {
-    if (ref.current && ref.current.value && ref.current.value !== '') {
-      return false;
+  const findDefaultStage = () => {
+    if (stage) {
+      return stageOptions.find((i) => stage.code === i.code);
     }
-    return true;
   };
 
-  const addClassNotValidateInput = (ref: RefObject<HTMLInputElement>) => {
-    ref.current?.focus();
-    ref.current?.classList.add('incorrect-select-shake');
-    setTimeout(() => {
-      ref.current?.classList.remove('incorrect-select-shake');
-    }, 1000);
+  const findDefaultCategory = () => {
+    if (category) {
+      return categoryOptions.find((i) => category.code === i.code);
+    }
+  };
+
+  const findDefaultTracks = () => {
+    if (tracks && tracks.length > 0) {
+      return trackOptions.filter((i) => tracks.find((t) => t.code === i.code));
+    }
+  };
+
+  const handleCreateStageOption = (inputValue: string) => {
+    console.log('handleCreateOption: ', inputValue);
+    setIsLoadingStage(true);
+    createAdminProjectOption({
+      codeId: CODE_ID['기수'],
+      codeName: inputValue,
+    }).then(({ data: { data } }) => {
+      console.log('CREATE STAGE:', data);
+      setStageOptions(codesToOption(data));
+      setIsLoadingStage(false);
+      setStage(data.find((c: Code) => c.codeName === inputValue));
+    });
+  };
+
+  const onChangeStageOption = (
+    selectedValue: OptionTypeBase | null,
+    action: ActionMeta<OptionTypeBase>,
+  ) => {
+    if (action.action === 'select-option' && selectedValue) {
+      setStage({
+        code: selectedValue.value,
+        codeName: selectedValue.label,
+      });
+    } else if (action.action === 'clear') {
+      setStage(null);
+    }
+  };
+
+  const handleCreateCategoryOption = (inputValue: string) => {
+    setIsLoadingCategory(true);
+
+    createAdminProjectOption({
+      codeId: CODE_ID['구분'],
+      codeName: inputValue,
+    }).then(({ data: { data } }) => {
+      console.log('CREATE CATEGORY:', data);
+      setCategoryOptions(codesToOption(data));
+      setIsLoadingCategory(false);
+      setCategory(data.find((c: Code) => c.codeName === inputValue));
+    });
+  };
+
+  const onChangeCategoryOption = (
+    selectedValue: OptionTypeBase | null,
+    action: ActionMeta<OptionTypeBase>,
+  ) => {
+    if (action.action === 'select-option' && selectedValue) {
+      setCategory({
+        code: selectedValue.value,
+        codeName: selectedValue.label,
+      });
+    } else if (action.action === 'clear') {
+      setCategory(null);
+    }
+  };
+
+  const handleCreateTrackOption = (inputValue: string) => {
+    setIsLoadingTrack(true);
+    createAdminProjectOption({
+      codeId: CODE_ID['트랙'],
+      codeName: inputValue,
+    }).then(({ data: { data } }) => {
+      console.log('CREATE TRACK:', data);
+      setTrackOptions(codesToOption(data));
+      setIsLoadingTrack(false);
+      setTracks([...tracks, data.find((c: Code) => c.codeName === inputValue)]);
+    });
+  };
+
+  const onChangeTrackOption = (
+    selectedValue: OptionsType<OptionTypeBase>,
+    action: ActionMeta<OptionTypeBase>,
+  ) => {
+    if (
+      action.action === 'select-option' ||
+      action.action === 'pop-value' ||
+      action.action === 'remove-value'
+    ) {
+      setTracks(
+        selectedValue.map((i) => ({
+          code: i.value,
+          codeName: i.label,
+        })),
+      );
+    } else if (action.action === 'clear') {
+      setTracks([]);
+    }
+  };
+
+  const handleShowEditModal = (type: '' | '기수' | '구분' | '트랙') => {
+    setShowEditOptionsModal(type);
+  };
+
+  const handleCloseEditOptionModal = () => {
+    setShowEditOptionsModal('');
+  };
+
+  const handleOptionDelete = (data: any, codeId: string) => {
+    deleteAdminProjectOption({
+      codeId,
+      code: data.code,
+    }).then(({ data: { data } }) => {
+      if (codeId === CODE_ID['기수']) {
+        setStageOptions(codesToOption(data));
+        setStage(null);
+      } else if (codeId === CODE_ID['구분']) {
+        setCategoryOptions(codesToOption(data));
+        setCategory(null);
+      } else if (codeId === CODE_ID['트랙']) {
+        setTrackOptions(codesToOption(data));
+        setTracks([]);
+      }
+    });
   };
 
   return (
-    <ModalWrapper modalName="projectManageModal">
-      <Wrapper>
-        <div className="modal-header">
-          <Text
-            text={defaultValue ? '프로젝트 수정하기' : '프로젝트 추가하기'}
-            fontSetting="n26b"
-          />
-          <div className="close-btn">
-            <Icon iconName="close" func={handleClickClose} />
-          </div>
-        </div>
-
-        <div className="project-name-container">
-          <Label text="이름">
-            <Input
-              width="100%"
-              height="40px"
-              refValue={defaultValue ? defaultValue.name : undefined}
-              ref={projectNameInputRef}
-              placeHolder="예) 5기 공통 프로젝트"
+    <ModalWrapper modalName="projectManageModal" zIndex={900}>
+      <>
+        <Wrapper>
+          <div className="modal-header">
+            <Text
+              text={defaultValue ? '프로젝트 수정하기' : '프로젝트 추가하기'}
+              fontSetting="n26b"
             />
-          </Label>
-        </div>
-
-        <div className="project-stage-container">
-          <Label text="기수">
-            <Input
-              width="100%"
-              height="40px"
-              refValue={defaultValue ? defaultValue.stage : undefined}
-              ref={projectStageInputRef}
-              placeHolder="예) 5기"
-            />
-          </Label>
-        </div>
-
-        <div className="project-category-container">
-          <Label text="구분">
-            <Input
-              width="100%"
-              height="40px"
-              refValue={defaultValue ? defaultValue.category : undefined}
-              ref={projectCategoryInputRef}
-              placeHolder="예) 공통"
-            />
-          </Label>
-        </div>
-
-        <div className="project-activate-date-container">
-          <Label text="활성화 날짜">
-            <Input
-              type="date"
-              width="100%"
-              height="40px"
-              ref={projcetActivateDateInputRef}
-              refValue={
-                defaultValue
-                  ? defaultValue.activateDate.toFormat('yyyy-MM-dd')
-                  : undefined
-              }
-            />
-          </Label>
-        </div>
-
-        <div className="project-date-container">
-          <Label text="프로젝트 기간">
-            <div className="flex-container">
-              <Input
-                type="date"
-                width="100%"
-                height="40px"
-                ref={projcetStartDateInputRef}
-                refValue={
-                  defaultValue
-                    ? defaultValue.startDate.toFormat('yyyy-MM-dd')
-                    : undefined
-                }
-              />
-
-              <Input
-                type="date"
-                width="100%"
-                height="40px"
-                ref={projcetEndDateInputRef}
-                refValue={
-                  defaultValue
-                    ? defaultValue.endDate.toFormat('yyyy-MM-dd')
-                    : undefined
-                }
-              />
+            <div className="close-btn">
+              <Icon iconName="close" func={handleClickClose} />
             </div>
-          </Label>
-        </div>
+          </div>
 
-        <div className="project-track-container">
-          <Label text="트랙">
-            <>
+          <div className="project-stage-container">
+            {stageOptions.length > 0 && (
+              <>
+                <Label text="기수">
+                  <CreatableSelect
+                    isClearable
+                    value={codeToOption(stage) || ''}
+                    isDisabled={!!defaultValue || isLoadingStage}
+                    isLoading={isLoadingStage}
+                    cacheOptions
+                    defaultOptions
+                    options={stageOptions}
+                    onChange={onChangeStageOption}
+                    defaultValue={findDefaultStage()}
+                    styles={customStyles}
+                    onCreateOption={handleCreateStageOption}
+                    placeholder="예) 5기"
+                  />
+                </Label>
+                {!defaultValue && (
+                  <div
+                    className="setting-icon"
+                    onClick={() => handleShowEditModal('기수')}
+                  >
+                    <Icon iconName="settings" />
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+
+          <div className="project-category-container">
+            {categoryOptions.length > 0 && (
+              <>
+                <Label text="구분">
+                  <CreatableSelect
+                    isClearable
+                    value={codeToOption(category) || ''}
+                    isDisabled={!!defaultValue || isLoadingCategory}
+                    isLoading={isLoadingCategory}
+                    cacheOptions
+                    defaultOptions
+                    options={categoryOptions}
+                    onChange={onChangeCategoryOption}
+                    defaultValue={findDefaultCategory()}
+                    styles={customStyles}
+                    onCreateOption={handleCreateCategoryOption}
+                    placeholder="예) 공통"
+                  />
+                </Label>
+                {!defaultValue && (
+                  <div
+                    className="setting-icon"
+                    onClick={() => handleShowEditModal('구분')}
+                  >
+                    <Icon iconName="settings" />
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+
+          <div className="project-stage-category-message">
+            {!defaultValue && (
+              <Text
+                text="'기수'와 '구분'은 이후에 수정이 불가능합니다."
+                fontSetting="n14m"
+              />
+            )}
+          </div>
+
+          <div className="project-track-container">
+            {trackOptions.length > 0 && (
+              <>
+                <Label text="트랙">
+                  <CreatableSelect
+                    isMulti
+                    isClearable
+                    value={codesToOption(tracks) || ''}
+                    isDisabled={isLoadingTrack}
+                    isLoading={isLoadingTrack}
+                    cacheOptions
+                    defaultOptions
+                    options={trackOptions}
+                    onChange={onChangeTrackOption}
+                    defaultValue={findDefaultTracks()}
+                    styles={customStyles}
+                    onCreateOption={handleCreateTrackOption}
+                    placeholder="예) 웹 기술"
+                  />
+                </Label>
+                <div
+                  className="setting-icon"
+                  onClick={() => handleShowEditModal('트랙')}
+                >
+                  <Icon iconName="settings" />
+                </div>
+              </>
+            )}
+          </div>
+
+          <div className="project-activate-date-container">
+            <Label text="활성화 날짜">
+              <Input
+                type="date"
+                width="100%"
+                height="40px"
+                ref={projcetActiveDateInputRef}
+                refValue={
+                  defaultValue && defaultValue.activeDate
+                    ? defaultValue.activeDate
+                    : ''
+                }
+              />
+            </Label>
+          </div>
+
+          <div className="project-date-container">
+            <Label text="프로젝트 기간">
               <div className="flex-container">
                 <Input
+                  type="date"
                   width="100%"
                   height="40px"
-                  ref={projectTrackInputRef}
-                  onKeyPress={handleEnterInInput}
+                  ref={projcetStartDateInputRef}
+                  refValue={
+                    defaultValue && defaultValue.startDate
+                      ? defaultValue.startDate
+                      : ''
+                  }
                 />
-                <div className="add-btn" ref={projectTrackBtnRef}>
-                  <Icon
-                    iconName="add"
-                    color="white"
-                    func={handleClickAddTrack}
-                  />
+
+                <Input
+                  type="date"
+                  width="100%"
+                  height="40px"
+                  ref={projcetEndDateInputRef}
+                  refValue={
+                    defaultValue && defaultValue.endDate
+                      ? defaultValue.endDate
+                      : ''
+                  }
+                />
+              </div>
+            </Label>
+          </div>
+
+          <div className="modal-footer">
+            <div>
+              <Button
+                title={defaultValue ? '저장' : '생성'}
+                func={defaultValue ? handleUpdateProject : handleCreateProject}
+              />
+            </div>
+          </div>
+        </Wrapper>
+        {showEditOptionsModal !== '' && (
+          <ModalWrapper modalName="editOptionsModal" zIndex={910}>
+            <EditOptionModal>
+              <div className="modal-header">
+                <Text
+                  text={`[${showEditOptionsModal}] 옵션 리스트 삭제`}
+                  fontSetting="n16b"
+                />
+                <Text
+                  text={`삭제하면 이전에 선택한 [${showEditOptionsModal}] 옵션이 초기화됩니다.`}
+                  fontSetting="n12m"
+                  color="crimson"
+                />
+                <div className="close-btn">
+                  <Icon iconName="close" func={handleCloseEditOptionModal} />
                 </div>
               </div>
-
-              <div className="tracks-container">
-                {tracks.map((t, i) => (
-                  <div key={i} className="track-item">
+              <div className="modal-content">
+                {(showEditOptionsModal === '기수'
+                  ? stageOptions
+                  : showEditOptionsModal === '구분'
+                  ? categoryOptions
+                  : showEditOptionsModal === '트랙'
+                  ? trackOptions
+                  : []
+                ).map((option, i) => (
+                  <div className="option-item" key={i}>
+                    <span>{option.label}</span>
                     <Icon
-                      iconName="remove_circle"
-                      func={() => deleteTrackItem(i)}
+                      iconName="delete"
+                      func={() =>
+                        handleOptionDelete(
+                          option,
+                          CODE_ID[showEditOptionsModal],
+                        )
+                      }
                     />
-                    <span>{t}</span>
                   </div>
                 ))}
               </div>
-            </>
-          </Label>
-        </div>
-
-        <div className="modal-footer">
-          <div>
-            <Button
-              title={defaultValue ? '저장' : '생성'}
-              func={defaultValue ? handleUpdateProject : handleCreateProject}
-            />
-          </div>
-        </div>
-      </Wrapper>
+            </EditOptionModal>
+          </ModalWrapper>
+        )}
+      </>
     </ModalWrapper>
   );
 }
