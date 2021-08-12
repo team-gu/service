@@ -1,8 +1,8 @@
 logging:
   level:
     root: INFO
-#    com.zaxxer.hikari.HikariConfig: DEBUG
-#    com.zaxxer.hikari: TRACE
+    com.zaxxer.hikari.HikariConfig: DEBUG
+    com.zaxxer.hikari: TRACE
 server:
   ssl:
     key-alias: tomcat
@@ -33,7 +33,7 @@ spring:
 #      connection-timeout: 10000
 #      validation-timeout: 10000
       maximum-pool-size: 30
-#      leak-detection-threshold: 2000
+      leak-detection-threshold: 2000
   servlet:
     multipart:
       maxFileSize: 30MB
