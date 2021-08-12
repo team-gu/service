@@ -20,7 +20,7 @@ import { setLoading, useAppDispatch, useAuthState, displayModal } from '@store';
 import { FILTER_TITLE, OPTIONS } from '@utils/constants';
 import { MemberOption } from '@utils/type';
 import { ModalWrapper } from '@organisms';
-import { getUserHasTeam, addUserToTeam } from '@repository/teamRepository';
+import { getUserHasTeam } from '@repository/teamRepository';
 import { MODALS } from '@utils/constants';
 
 interface Users {
@@ -267,11 +267,6 @@ export default function UserStatus(): ReactElement {
       );
       return;
     }
-
-    await addUserToTeam({
-      userId: invitedUser.id,
-      teamId: hasTeamResult.data.team.id,
-    });
 
     setShowInviteModal(false);
     setPayload({ ...payload });
