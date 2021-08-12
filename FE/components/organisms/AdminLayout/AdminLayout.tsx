@@ -61,6 +61,7 @@ export default function AdminLayout(): ReactElement {
           name: `${p.stage.codeName} ${p.project.codeName} 프로젝트`,
         })),
       );
+      setSelectedProject(data[data.length - 1].id);
     });
   };
 
