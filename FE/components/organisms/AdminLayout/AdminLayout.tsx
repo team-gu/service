@@ -26,7 +26,7 @@ const Wrapper = styled.div`
 
 export default function AdminLayout(): ReactElement {
   const [selectedMenu, setSelectedMenu] = useState(0);
-  const [selectedProject, setSelectedProject] = useState(0);
+  const [selectedProject, setSelectedProject] = useState<number>();
   const [projects, setProjects] = useState<Project[]>([]);
 
   useEffect(() => {
@@ -42,9 +42,6 @@ export default function AdminLayout(): ReactElement {
   };
 
   const fetchProjects = () => {
-    console.log('fetchProjects');
-
-    // const p = DUMMY_PROJECTS;
     getAdminProject().then(({ data: { data } }) => {
       setProjects(
         data.map((p: any) => ({
@@ -85,7 +82,7 @@ export default function AdminLayout(): ReactElement {
                     fetchProjects={fetchProjects}
                   />
                 ),
-                [ADMIN_MENU_CONTENT[1]]: (
+                [ADMIN_MENU_CONTENT[1]]: selectedProject && (
                   <AdminDashboard projectId={selectedProject} />
                 ),
                 [ADMIN_MENU_CONTENT[2]]: <div>회원 관리</div>,
