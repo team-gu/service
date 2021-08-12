@@ -15,9 +15,11 @@ interface ChatRoomProps {
   session?: Session | undefined;
   messageList: Chat[] & ChatNormal[] & any;
   setMessageList: any; // TODO: 추후 타입 정의
+  handleGetChatRoomMessages: any;
   setRoomId: any;
   handleClickSend: (msg: string) => Promise<void>;
   roomId?: number;
+  opponentId?: number;
 }
 
 const Wrapper = styled.div<{ disabled: boolean }>`
@@ -48,14 +50,14 @@ export default function ChatRoom({
   messageList,
   setRoomId,
   setMessageList,
+  handleGetChatRoomMessages,
   handleClickSend,
   roomId,
+  opponentId,
 }: ChatRoomProps): ReactElement {
   const {
     user: { id },
   } = useAuthState();
-
-  const [opponentId, setOpponentId] = useState(0);
 
   const chatBoxRef: any = useRef<HTMLInputElement>(null);
 
@@ -77,14 +79,8 @@ export default function ChatRoom({
   };
 
   useEffect(() => {
-    (async () => {
-      const {
-        data: { data },
-      } = await getRoomUserList(roomId);
-      setOpponentId(data.filter(({ user_id }) => id !== user_id)[0].user_id);
-    })();
     return () => handleUnmount();
-  }, []);
+  }, [roomId]);
 
   useEffect(() => {
     handleScrollToEnd();
@@ -160,7 +156,7 @@ export default function ChatRoom({
                             .toRelative()
                     }
                     message={message}
-                    setMessageList={setMessageList}
+                    handleGetChatRoomMessages={handleGetChatRoomMessages}
                     isMe={sender_id === id}
                     func={sendMessage}
                     type={type}

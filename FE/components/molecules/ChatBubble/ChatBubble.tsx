@@ -5,7 +5,6 @@ import { useRouter } from 'next/router';
 import {
   postTeamInviteAccept,
   postTeamInviteReject,
-  getChatRoomMessages,
 } from '@repository/chatRepository';
 import { ProfileImage, ChatBubbleSelect } from '@molecules';
 import { Text } from '@atoms';
@@ -16,7 +15,7 @@ interface ChatBubbleProps {
   // TODO: 추후 타입 정의
   time: string | any;
   message: string;
-  setMessageList: any;
+  handleGetChatRoomMessages: any;
   isMe?: boolean;
   // TODO: 추후 타입 정의
   func?: any;
@@ -84,7 +83,7 @@ export default function ChatBubble({
   userName = '',
   time,
   message,
-  setMessageList,
+  handleGetChatRoomMessages,
   isMe = false,
   // func,
   type = 'NORMAL',
@@ -95,14 +94,6 @@ export default function ChatBubble({
   id = 0,
 }: ChatBubbleProps): ReactElement {
   const router = useRouter();
-
-  const handleGetChatRoomMessages = async () => {
-    const {
-      data: { data },
-    } = await getChatRoomMessages(roomId);
-
-    await setMessageList(data);
-  };
 
   return (
     <Wrapper isMe={isMe}>

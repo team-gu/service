@@ -95,6 +95,14 @@ export default function useSockStomp({ room_id = 0 }: useSockStompProps) {
     });
   };
 
+  const handleGetChatRoomMessages = async () => {
+    const {
+      data: { data },
+    } = await getChatRoomMessages(room_id);
+
+    await setMessageList(data);
+  };
+
   useEffect(() => {
     if (room_id !== 0) {
       (async () => {
@@ -103,11 +111,7 @@ export default function useSockStomp({ room_id = 0 }: useSockStompProps) {
         clientRef.current?.connect(
           {},
           async () => {
-            const {
-              data: { data },
-            } = await getChatRoomMessages(room_id);
-
-            await setMessageList(data);
+            await handleGetChatRoomMessages();
             await setIsConnectStomp(true);
 
             clientRef.current?.subscribe(
@@ -152,6 +156,7 @@ export default function useSockStomp({ room_id = 0 }: useSockStompProps) {
     handleSendMessage,
     handleSendRtcLink,
     handleSendInvitation,
+    handleGetChatRoomMessages,
     messageList,
     setMessageList,
     isConnectStomp,

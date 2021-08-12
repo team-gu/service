@@ -135,9 +135,11 @@ export default function ChatRoute(): ReactElement {
 
   const [route, setRoute] = useState(CHAT_LIST);
 
+  const [opponentId, setOpponentId] = useState(0);
   const {
     handleSendMessage,
     handleSendRtcLink,
+    handleGetChatRoomMessages,
     messageList,
     setMessageList,
     isConnectStomp,
@@ -159,6 +161,17 @@ export default function ChatRoute(): ReactElement {
   //   return () =>
   //     document.removeEventListener('click', handleClickOutside, true);
   // }, []);
+
+  useEffect(() => {
+    if (room_id !== 0) {
+      (async () => {
+        const {
+          data: { data },
+        } = await getRoomUserList(room_id);
+        setOpponentId(data.filter(({ user_id }) => id !== user_id)[0].user_id);
+      })();
+    }
+  }, [room_id]);
 
   const handleToChatRoom = async (id: number, room_name: string) => {
     await setRoomId(id);
@@ -387,6 +400,7 @@ export default function ChatRoute(): ReactElement {
                 isConnectStomp={isConnectStomp}
                 messageList={messageList}
                 setMessageList={setMessageList}
+                handleGetChatRoomMessages={handleGetChatRoomMessages}
                 setRoomId={setRoomId}
                 handleClickSend={handleClickSend}
                 roomId={room_id}
