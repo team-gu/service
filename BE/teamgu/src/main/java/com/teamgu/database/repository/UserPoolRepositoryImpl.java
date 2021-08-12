@@ -1,6 +1,10 @@
 package com.teamgu.database.repository;
 
+import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.teamgu.api.dto.req.UserPoolNameReqDto;
 import com.teamgu.api.dto.req.UserPoolReqDto;
+import com.teamgu.api.dto.res.UserPoolNameResDto;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,13 +15,24 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
 import java.util.List;
 
+import com.teamgu.database.entity.QUser;
+import com.teamgu.database.entity.QProjectDetail;
+import com.teamgu.database.entity.QUserProjectDetail;
+
 @Log4j2
 public class UserPoolRepositoryImpl implements UserPoolRepositoryCustom {
+
+    QUser qUser = QUser.user;
+    QProjectDetail qProjectDetail = QProjectDetail.projectDetail;
+    QUserProjectDetail qUserProjectDetail = QUserProjectDetail.userProjectDetail;
 
     private static short majorCode;
     private static int prjCode;
     private static String name, sort, stage, studentNum;
     private static List<Integer> regList, posList, trkList, skList;
+
+    @Autowired
+    JPAQueryFactory jpaQueryFactory;
 
     @Autowired
     CodeDetailRepository codeDetailRepository;
@@ -47,14 +62,46 @@ public class UserPoolRepositoryImpl implements UserPoolRepositoryCustom {
         name = userPoolReqDto.getName();
         sort = userPoolReqDto.getSort();
 
-        String whereStmt = makeWhere();
-        String orderStmt = makeOrder();
-        String havingStmt = makeHaving();
+        String whereStmt = makeFilterWhere();
+        String orderStmt = makeFilterOrder();
+        String havingStmt = makeFilterHaving();
 
-        return getList(whereStmt, orderStmt, havingStmt);
+        return getFilteredList(whereStmt, orderStmt, havingStmt);
     }
 
-    private String makeWhere() {
+    @Override
+    public List<UserPoolNameResDto> findUsersBySimName(UserPoolNameReqDto userPoolNameReqDto) {
+
+        //학번이 비어있을 경우 Exception처리
+        if(StringUtils.isEmpty(userPoolNameReqDto.getStudentNumber())) {
+            throw new RuntimeException("학번이 비어있습니다");
+        }
+
+        //검색하려는 대상의 문자열이 null인 경우(아예 없는 경우) 공백으로 처리
+        String target = StringUtils.isEmpty(userPoolNameReqDto.getTarget()) ? "" : userPoolNameReqDto.getTarget();
+        //학번 처리
+        String stage = userPoolNameReqDto.getStudentNumber().substring(0, 2) + "%";
+
+        return jpaQueryFactory
+                .select(Projections.constructor
+                        (UserPoolNameResDto.class,
+                                qUser.id,
+                                qUser.profileServerName.concat(".").concat(qUser.profileExtension),
+                                qUser.name,
+                                qUser.email))
+                .from(qProjectDetail)
+                .innerJoin(qUserProjectDetail)
+                    .on(qUserProjectDetail.projectDetail.eq(qProjectDetail))
+                .innerJoin(qUser)
+                    .on(qUserProjectDetail.user.eq(qUser))
+                .where(qProjectDetail.projectCode.eq(userPoolNameReqDto.getProjectCode())
+                        .and(qUser.studentNumber.like(stage))
+                        .and((qUser.email.contains(target).or(qUser.name.contains(target)))))
+                .orderBy(qUser.id.asc())
+                .fetch();
+    }
+
+    private String makeFilterWhere() {
         StringBuilder sb = new StringBuilder("where pd.project_code = " + prjCode + " and ut.team_id is null");
 
         sb.append(" and (u.student_number like '" + stage + "%')");
@@ -87,11 +134,11 @@ public class UserPoolRepositoryImpl implements UserPoolRepositoryCustom {
             sb.append(")");
         }
 
-        if(!CollectionUtils.isEmpty(skList)) { //스킬 필터
+        if (!CollectionUtils.isEmpty(skList)) { //스킬 필터
             sb.append(" and (");
             int idx = 0;
-            for(int elem : skList) {
-                if(idx != 0) {
+            for (int elem : skList) {
+                if (idx != 0) {
                     sb.append(" or ");
                 }
                 sb.append("b.gs like '%" + elem + "%'");
@@ -110,11 +157,11 @@ public class UserPoolRepositoryImpl implements UserPoolRepositoryCustom {
         return sb.toString();
     }
 
-    private String makeOrder() {
+    private String makeFilterOrder() {
         return "order by u.name " + sort;
     }
 
-    private String makeHaving() {
+    private String makeFilterHaving() {
         StringBuilder sb = new StringBuilder();
 
         if (!CollectionUtils.isEmpty(trkList)) { //트랙 필터
@@ -133,7 +180,7 @@ public class UserPoolRepositoryImpl implements UserPoolRepositoryCustom {
         return sb.toString();
     }
 
-    private List<Object[]> getList(String whereStmt, String orderStmt, String havingStmt) {
+    private List<Object[]> getFilteredList(String whereStmt, String orderStmt, String havingStmt) {
         StringBuilder jpql = new StringBuilder();
         EntityManager em = emf.createEntityManager();
         List<Object[]> res = null;
@@ -150,7 +197,7 @@ public class UserPoolRepositoryImpl implements UserPoolRepositoryCustom {
         jpql.append("group by u.id, u.name").append(" ");
         jpql.append(havingStmt).append(" ");
         jpql.append(orderStmt);
-        
+
         res = em.createNativeQuery(jpql.toString()).getResultList();
 
         em.close();

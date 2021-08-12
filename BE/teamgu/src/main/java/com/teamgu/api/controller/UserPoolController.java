@@ -1,10 +1,8 @@
 package com.teamgu.api.controller;
 
+import com.teamgu.api.dto.req.UserPoolNameReqDto;
 import com.teamgu.api.dto.req.UserPoolReqDto;
-import com.teamgu.api.dto.res.BasicResponse;
-import com.teamgu.api.dto.res.CommonResponse;
-import com.teamgu.api.dto.res.ErrorResponse;
-import com.teamgu.api.dto.res.UserPoolResDto;
+import com.teamgu.api.dto.res.*;
 import com.teamgu.api.service.UserPoolServiceImpl;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -14,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,17 +33,51 @@ public class UserPoolController {
      * @param userPoolReqDto
      */
     @PostMapping("/search")
-    @ApiOperation(value = "")
+    @ApiOperation(value = "필터를 기반으로 하여 원하는 유저 목록을 가져올 수 있는 Api")
     public ResponseEntity<? extends BasicResponse> searchUserPool(
             @RequestBody @ApiParam(value = "검색 필터 데이터", required = true) UserPoolReqDto userPoolReqDto
     ) {
+        if (ObjectUtils.isEmpty(userPoolReqDto.getStudentNumber())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorResponse("입력값이 정확하지 않습니다"));
+        }
+
         List<UserPoolResDto> oFilteredList = userPoolService.findUsersByFilter(userPoolReqDto);
 
-        if(CollectionUtils.isEmpty(oFilteredList)) {
+        if (CollectionUtils.isEmpty(oFilteredList)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new ErrorResponse("일치하는 유저가 없습니다"));
         }
 
         return ResponseEntity.ok(new CommonResponse<List<UserPoolResDto>>(oFilteredList));
     }
+
+    /**
+     * 인력풀 유저명 자동완성 Api
+     *
+     * @param target
+     * @param studentNumber
+     * @param projectCode
+     */
+    @GetMapping("/search/{name}")
+    @ApiOperation(value = "사용자 검색시 이름 or 이메일 기반으로 자동완성 가능하게 하는 Api")
+    public ResponseEntity<? extends BasicResponse> findUserBySimName(
+            @RequestParam @ApiParam(value = "검색 대상 이름 or 이메일", required = true) String target,
+            @RequestParam @ApiParam(value = "검색하는 사람의 학번", required = true) String studentNumber,
+            @RequestParam @ApiParam(value = "검색하는 사람의 프로젝트 코드", required = true) int projectCode
+    ) {
+        List<UserPoolNameResDto> oSimNameSet = userPoolService.findUsersBySimName(UserPoolNameReqDto.builder()
+                .target(target)
+                .studentNumber(studentNumber)
+                .projectCode(projectCode)
+                .build());
+
+        if (CollectionUtils.isEmpty(oSimNameSet)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ErrorResponse("일치하는 유저가 없습니다"));
+        }
+
+        return ResponseEntity.ok(new CommonResponse<List<UserPoolNameResDto>>(oSimNameSet));
+    }
+
 }

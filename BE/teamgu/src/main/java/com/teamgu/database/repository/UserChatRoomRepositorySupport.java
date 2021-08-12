@@ -63,27 +63,29 @@ public class UserChatRoomRepositorySupport {
 		return ucrList.get(0).longValue();
 	}
 	/**
-	 * 기존의 방에 새로운 유저를 초대한다 그리고 채팅방 명에 유저를 추가한다
+	 * 채팅방에 유저를 초대한다
 	 * @param user_id
 	 * @param room_id
 	 */
-	public boolean insertUser(long user_id,long room_id, String new_room_name) {
+	public boolean insertUser(long user_id,long room_id, String title) {
 		EntityManager em = emf.createEntityManager();
 		EntityTransaction et = em.getTransaction();
 		try {
 			et.begin();
-			String jpql = "INSERT INTO user_chat_room(chat_room_id,user_id) "
-						+ "VALUES(?1,?2)";
+			//초대 되는 유저는 title이 없기 때문에 기존 title을 적용시켜준다
+			String jpql = "INSERT INTO user_chat_room(chat_room_id,user_id,title) "
+						+ "VALUES(?1,?2,?3)";
 			em.createNativeQuery(jpql)
 				.setParameter(1, room_id)
 				.setParameter(2, user_id)
+				.setParameter(3, title)
 				.executeUpdate();
 			
-			jpql ="UPDATE chat_room SET title = :new_room_name WHERE id = :room_id";
-			em.createNativeQuery(jpql)
-				.setParameter("new_room_name", new_room_name)
-				.setParameter("room_id", room_id)
-				.executeUpdate();
+//			jpql ="UPDATE chat_room SET title = :new_room_name WHERE id = :room_id";
+//			em.createNativeQuery(jpql)
+//				.setParameter("new_room_name", new_room_name)
+//				.setParameter("room_id", room_id)
+//				.executeUpdate();
 			et.commit();
 			return true;
 		}catch(Exception e) {

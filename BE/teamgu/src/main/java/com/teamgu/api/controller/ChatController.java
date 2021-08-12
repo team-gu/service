@@ -129,30 +129,25 @@ public class ChatController {
 	}
 	
 	@PostMapping("/room/check")
-	@ApiOperation(value="유저1과 유저2의 1:1 채팅방이 존재하는지 확인하고 없다면 새로 생성해서 채팅방을 추가한다")
+	@ApiOperation(value="2명의 유저 채팅방(개인톡)이 존재하는지 확인하고 없다면 새로 생성해서 채팅방을 추가한다")
 	public ResponseEntity<? extends BasicResponse> checkRoom(@RequestBody UserRoomCheckDto users){
-		long roomid = chatService.roomCheck(users.getUser_id1(), users.getUser_id2());
-		if(roomid==0) {//존재하지 않는 경우 방을 생성하고 방 번호를 반환한다.
+		List<Long> userlists = new ArrayList<Long>();
+		userlists.add(users.getUser_id1());
+		userlists.add(users.getUser_id2());
+		
+		long room_id = chatService.checkNRoom(userlists);
+		
+		if(room_id==0) {//존재하지 않는 경우 방을 생성하고 방 번호를 반환한다.
 			String name1 = userService.getUserById(users.getUser_id1()).get().getName();
 			String name2 = userService.getUserById(users.getUser_id2()).get().getName();			
-			ChatRoomResDto chatRoomResDto = chatService.createRoom(name1+", "+name2+"의 방");
-			roomid = chatRoomResDto.getChat_room_id();
+			ChatRoomResDto chatRoomResDto = chatService.createRoom(name1+", "+name2+"의 방");//공통 방 이름 설정
+			room_id = chatRoomResDto.getChat_room_id();
 			
-			log.info(roomid+"방이 생성되었습니다");
-			chatService.inviteUser(users.getUser_id1(), roomid);//둘 다 초대
-			chatService.inviteUser(users.getUser_id2(), roomid);
+			log.info(room_id+"방이 생성되었습니다");
+			chatService.inviteUserPersonalRoom(users.getUser_id1(), room_id, name2+"님과 개인톡");//둘 다 초대, 개인톡방 이름 지정
+			chatService.inviteUserPersonalRoom(users.getUser_id2(), room_id, name1+"님과 개인톡");
 		}		
-		return ResponseEntity.ok(new CommonResponse<ChatRoomResDto>(chatService.getChatRoomInfo(roomid)));		
-	}
-	
-	@PostMapping("/room/invite")
-	@ApiOperation(value = "이미 존재하는 채팅방에 특정 유저를 초대한다")
-	public ResponseEntity<? extends BasicResponse> inviteUser(@RequestBody UserRoomInviteReqDto userReqDto){
-		if(!chatService.inviteUser(userReqDto.getUser_id(), userReqDto.getRoom_id())) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR) 
-					.body(new ErrorResponse("채팅방 초대에 실패했습니다."));
-		}
-		return ResponseEntity.noContent().build();
+		return ResponseEntity.ok(new CommonResponse<ChatRoomResDto>(chatService.getChatRoomInfo(room_id)));		
 	}
 	
 	@PostMapping("/room/out")
@@ -210,7 +205,9 @@ public class ChatController {
 	public ResponseEntity<? extends BasicResponse> inviteNUsers(@RequestBody ChatInviteNUsersReqDto chatInviteNUsersReqDto){
 		List<Long> users = chatInviteNUsersReqDto.getUserids();
 		long room_id = chatInviteNUsersReqDto.getRoom_id();
-		if(chatService.inviteNUsers(users, room_id)==false) {
+		ChatRoomResDto chatRoomResDto = chatService.getChatRoomInfo(room_id);
+		String init_title = chatRoomResDto.getRoom_name();//최초 채팅방 이름을 가져온다
+		if(chatService.inviteNUsers(users, room_id, init_title)==false) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR) 
 					.body(new ErrorResponse("채팅방 초대에 실패했습니다"));
 		}
@@ -218,11 +215,12 @@ public class ChatController {
 	}
 	
 	@PostMapping("/room/modify")
-	@ApiOperation(value="방 이름을 수정합니다")
+	@ApiOperation(value="특정 유저의 선택한 방 이름을 수정합니다")
 	public ResponseEntity<? extends BasicResponse> modifyRoomName(@RequestBody ChatRoomModifyReqDto chatRoomModifyReqDto){
 		String title = chatRoomModifyReqDto.getTitle();
 		long room_id = chatRoomModifyReqDto.getRoom_id();
-		if(!chatService.modifyRoomName(title, room_id)) {
+		long user_id = chatRoomModifyReqDto.getUser_id();
+		if(!chatService.modifyRoomName(title, room_id,user_id)) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR) 
 					.body(new ErrorResponse("방 이름 수정에 실패했습니다"));
 		}

@@ -17,4 +17,6 @@ public class ChatRoomModifyReqDto {
 	String title;
 	@ApiModelProperty(name = "변경하고 싶은 채팅방의 id")
 	long room_id;
+	@ApiModelProperty(name = "변경을 요청한 유저의 id")
+	long user_id;
 }
