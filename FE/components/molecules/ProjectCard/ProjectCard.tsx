@@ -94,19 +94,27 @@ export default function ProjectCard({
   return (
     <Wrapper>
       <div className="project-name-container">
-        <Text text="프로젝트 이름" color="gray" fontSetting="n12m" />
-        <Text text={project.name} fontSetting="n26b" isLineBreak />
+        <Text text="프로젝트" color="gray" fontSetting="n12m" />
+        <Text
+          text={`${project.stage.codeName} ${project.project.codeName} 프로젝트`}
+          fontSetting="n26b"
+          isLineBreak
+        />
       </div>
 
       <div className="flex-container">
         <div className="project-stage-container">
           <Text text="기수" color="gray" fontSetting="n12m" />
-          <Text text={project.stage} fontSetting="n22m" isLineBreak />
+          <Text text={project.stage.codeName} fontSetting="n22m" isLineBreak />
         </div>
 
         <div className="project-category-container">
-          <Text text="분류" color="gray" fontSetting="n12m" />
-          <Text text={project.category} fontSetting="n22m" isLineBreak />
+          <Text text="구분" color="gray" fontSetting="n12m" />
+          <Text
+            text={project.project.codeName}
+            fontSetting="n22m"
+            isLineBreak
+          />
         </div>
       </div>
 
@@ -114,7 +122,7 @@ export default function ProjectCard({
         <Text text="트랙" color="gray" fontSetting="n12m" />
         <div>
           {project.track.map((v, i) => (
-            <Text key={i} text={v} fontSetting="n18m" isLineBreak />
+            <Text key={i} text={v.codeName} fontSetting="n18m" isLineBreak />
           ))}
         </div>
       </div>
@@ -122,8 +130,8 @@ export default function ProjectCard({
       <div className="project-activate-date-container">
         <Text text="활성화 시작 날짜" color="gray" fontSetting="n12m" />
         <Text
-          text={project.activateDate.toFormat('yyyy-MM-dd')}
-          fontSetting="n22m"
+          text={project.activeDate ? project.activeDate : '미정'}
+          fontSetting="n18m"
           isLineBreak
         />
       </div>
@@ -131,13 +139,12 @@ export default function ProjectCard({
       <div className="project-period-container">
         <Text text="프로젝트 기간" color="gray" fontSetting="n12m" />
         <Text
-          text={project.startDate.toFormat('yyyy-MM-dd') + ' ~'}
-          fontSetting="n22m"
-          isLineBreak
-        />
-        <Text
-          text={project.endDate.toFormat('yyyy-MM-dd')}
-          fontSetting="n22m"
+          text={
+            (project.startDate ? project.startDate : '미정') +
+            ' ~ ' +
+            (project.endDate ? project.endDate : '미정')
+          }
+          fontSetting="n18m"
           isLineBreak
         />
       </div>

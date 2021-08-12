@@ -8,12 +8,12 @@ import { getChatRoomMessages, postCheckRoom } from '@repository/chatRepository';
 import { ChatNormal } from '@types/chat-type';
 
 interface useSockStompProps {
-  room_id?: number | undefined;
+  room_id?: number;
 }
 
 const URL = 'https://i5a202.p.ssafy.io:8080/stomp/chat';
 
-export default function useSockStomp({ room_id }: useSockStompProps) {
+export default function useSockStomp({ room_id = 0 }: useSockStompProps) {
   // TODO: login response에 profileSrc가 추가되면 store에서 가져오도록 변경
   const router = useRouter();
   const {
@@ -74,7 +74,7 @@ export default function useSockStomp({ room_id }: useSockStompProps) {
   };
 
   useEffect(() => {
-    if (room_id) {
+    if (room_id !== 0) {
       (async () => {
         clientRef.current = await Stomp.over(new SockJS(URL));
 

@@ -131,4 +131,9 @@ public interface ChatService {
 	 * @return
 	 */
 	List<Long> getRoomUserList(long room_id);
+	
+	/**
+	 * 특정 채팅의 type을 변경한다
+	 */
+	boolean changeType(long chat_id,String type);	
 }

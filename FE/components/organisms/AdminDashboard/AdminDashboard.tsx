@@ -100,7 +100,7 @@ export default function AdminDashboard(): ReactElement {
       title: d.title,
       data: d.data.map((item) => ({
         ...item,
-        color: item.name === '팀 완성' ? BLUE : RED,
+        color: item.name === '완성' ? BLUE : RED,
       })),
     }));
     setRegionTeamData(tmp);

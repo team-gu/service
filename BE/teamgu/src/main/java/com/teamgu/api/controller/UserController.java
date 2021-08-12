@@ -50,9 +50,10 @@ public class UserController {
     @PutMapping("/userInfo")
     public ResponseEntity<UserInfoResDto> updateUserDetailInfo(
             @ApiParam(value = "마이페이지 정보", required = true) UserInfoReqDto userInfoReq) {
-        log.info(userInfoReq);
-        userService.updateUserDetailInfo(userInfoReq);
-        return ResponseEntity.ok(userService.getUserDetailInfo(userInfoReq.getId()));
+
+        UserInfoResDto ret = userService.updateUserDetailInfo(userInfoReq);
+
+        return ResponseEntity.ok(ret);
     }
 
     @ApiOperation(value = "유저 프로젝트 입력", notes = "사용자 프로젝트를 입력", response = String.class)
