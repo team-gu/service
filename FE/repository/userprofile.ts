@@ -55,3 +55,10 @@ export const getUserDetail = async (id: string | string[] | undefined) => {
     type: 'get',
   });
 };
+
+export const getUserDetailbyRefresh = async () => {
+  return await api({
+    url: '/api/auth/reqInfo',
+    type: 'get',
+  });
+};
