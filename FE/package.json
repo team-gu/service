@@ -28,7 +28,6 @@
     "react-linkify": "^1.0.0-alpha",
     "react-redux": "^7.2.4",
     "react-select": "^4.3.1",
-    "react-tooltip": "^4.2.21",
     "recharts": "^2.0.10",
     "scenejs": "^1.5.0",
     "simple-peer": "^9.11.0",
