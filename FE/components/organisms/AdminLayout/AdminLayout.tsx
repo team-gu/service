@@ -84,7 +84,9 @@ export default function AdminLayout(): ReactElement {
                     fetchProjects={fetchProjects}
                   />
                 ),
-                [ADMIN_MENU_CONTENT[1]]: <AdminDashboard />,
+                [ADMIN_MENU_CONTENT[1]]: (
+                  <AdminDashboard projectId={selectedProject} />
+                ),
                 [ADMIN_MENU_CONTENT[2]]: <div>회원 관리</div>,
                 [ADMIN_MENU_CONTENT[3]]: <div>팀 관리</div>,
                 [ADMIN_MENU_CONTENT[4]]: <div>공지사항 관리</div>,

@@ -4,6 +4,7 @@ import CountUp from 'react-countup';
 
 import { Text } from '@atoms';
 import { BigDonutChart, DonutChart, DashboardTable } from '@molecules';
+import { getChartData } from '@repository/adminRepository';
 
 import {
   ADMIN_TEAM_DATA,
@@ -11,9 +12,13 @@ import {
   DUMMY_TABLE_COLUMNS,
   DUMMY_TABLE_DATA,
 } from '@utils/dummy';
+import { Project } from '@utils/type';
 
-const BLUE = '#0088FE';
-const RED = '#FF8042';
+const COLOR_MAP = {
+  COMPLETE: '#0088FE',
+  NONE: '#FF8042',
+  ONGOING: '#1E90FF',
+};
 
 const Wrapper = styled.div`
   i {
@@ -63,13 +68,19 @@ const Wrapper = styled.div`
         align-items: center;
         justify-content: center;
 
-        .count-up-with-title {
-          font-size: 82px;
-          > span {
-            display: block;
-          }
+        .count-up {
           > div {
             text-align: center;
+          }
+
+          .countup-ongoing {
+            font-size: 52px;
+            color: gainsboro;
+            letter-spacing: -3px;
+          }
+
+          .countup-complete {
+            font-size: 82px;
           }
         }
       }
@@ -127,23 +138,83 @@ const TableWrapper = styled.div`
   }
 `;
 
-export default function AdminDashboard(): ReactElement {
+interface AdminDashboardProps {
+  projectId: number;
+}
+
+interface DashboardData {
+  title: string;
+  data: any;
+}
+
+interface DataItem {
+  name: string;
+  value: any;
+}
+
+export default function AdminDashboard({
+  projectId,
+}: AdminDashboardProps): ReactElement {
   const [regionTeamData, setRegionTeamData] = useState<any[]>();
   const [trackTeamData, setTrackTeamData] = useState<any[]>([]);
 
   // init data
-  useEffect(() => {
-    const tmp = ADMIN_TEAM_DATA.map((d) => ({
-      title: d.title,
-      data: d.data.map((item) => ({
-        ...item,
-        color: item.name === '완성' ? BLUE : RED,
-      })),
-    }));
-    setRegionTeamData(tmp);
+  // useEffect(() => {
 
-    setTrackTeamData(ADMIN_TRACK_DATA);
-  }, []);
+  //   const tmp = ADMIN_TEAM_DATA.map((d) => ({
+  //     title: d.title,
+  //     data: d.data.map((item) => ({
+  //       ...item,
+  //       color: item.name === '완성' ? COLOR_MAP.COMPLETE : COLOR_MAP.NONE,
+  //     })),
+  //   }));
+  //   console.log(tmp);
+  //   setRegionTeamData(tmp);
+  //   setTrackTeamData(ADMIN_TRACK_DATA);
+  // }, []);
+
+  useEffect(() => {
+    if (projectId) {
+      getChartData({ projectId }).then(({ data: { data } }: any) => {
+        const regionData = data.region
+          .sort((a: DashboardData, b: DashboardData) =>
+            a.title === '전국' ? -1 : 1,
+          )
+          .map(({ title, data }: DashboardData) => ({
+            title,
+            data: [
+              {
+                name: '완성',
+                value: data.after,
+                color: COLOR_MAP.COMPLETE,
+              },
+              {
+                name: '진행중',
+                value: data.doing,
+                color: COLOR_MAP.ONGOING,
+              },
+              {
+                name: '미완성',
+                value: data.before,
+                color: COLOR_MAP.NONE,
+              },
+            ],
+          }));
+        const trackData = data.track.map(({ title, data }: DashboardData) => ({
+          title,
+          data: [
+            { name: '완성', value: data.afterTeam },
+            { name: '진행중', value: data.doingTeam },
+          ],
+        }));
+
+        console.log(regionData);
+        console.log(trackData);
+        setRegionTeamData(regionData);
+        setTrackTeamData(trackData);
+      });
+    }
+  }, [projectId]);
 
   const tableData = useMemo(() => {
     // TODO: 팀 테이블 정보 서버에서 받기
@@ -192,8 +263,29 @@ export default function AdminDashboard(): ReactElement {
             {trackTeamData && trackTeamData.length > 0 && (
               <>
                 {trackTeamData.map((each: any, idx: number) => (
-                  <div key={idx} className="count-up-with-title">
-                    <CountUp end={each.data} duration={4} useEasing />
+                  <div key={idx} className="count-up">
+                    <CountUp
+                      end={
+                        each.data.find(({ name }: DataItem) => name === '완성')
+                          .value
+                      }
+                      duration={4}
+                      useEasing
+                      className="countup-complete"
+                    />
+                    <span className="countup-ongoing">
+                      {' + '}
+                      <CountUp
+                        end={
+                          each.data.find(
+                            ({ name }: DataItem) => name === '진행중',
+                          ).value
+                        }
+                        duration={4}
+                        useEasing
+                      />
+                    </span>
+
                     <Text text={each.title} fontSetting="n16m" />
                   </div>
                 ))}
