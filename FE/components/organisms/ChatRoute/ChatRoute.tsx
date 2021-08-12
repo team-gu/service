@@ -2,7 +2,6 @@ import { ReactElement, useState, useRef, KeyboardEvent } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { OptionsType } from 'react-select';
-import ReactTooltip from 'react-tooltip';
 
 import {
   useAuthState,
@@ -14,7 +13,12 @@ import {
 import useSockStomp from '@hooks/useSockStomp';
 
 import { ChatList, ChatRoom, Modal } from '@organisms';
-import { UserSelectChatAutoComplete, Button, DropdownMenu } from '@molecules';
+import {
+  UserSelectChatAutoComplete,
+  Button,
+  DropdownMenu,
+  Tooltip,
+} from '@molecules';
 import { Text, Icon } from '@atoms';
 import { MODALS } from '@utils/constants';
 
@@ -70,11 +74,8 @@ const Wrapper = styled(motion.div)`
       cursor: pointer;
     }
 
-    .customTheme {
-      box-shadow: 0 6px 12px 0 rgba(4, 4, 161, 0.04);
-    }
-
     .header-title {
+      ${({ theme: { flexRow } }) => flexRow()}
       cursor: pointer;
       user-select: none;
       width: 200px;
@@ -135,6 +136,7 @@ export default function ChatRoute(): ReactElement {
     useState<OptionsType<MemberOption> | null>();
   const [userList, setUserList] = useState([]);
   const [roomUserList, setRoomUserList] = useState([]);
+  const [showTooltip, setShowTooltip] = useState(false);
 
   const [route, setRoute] = useState(CHAT_LIST);
 
@@ -241,6 +243,7 @@ export default function ChatRoute(): ReactElement {
         title: editRef.current.value,
       });
       setRoomName(editRef.current.value);
+      setShowTooltip(false);
     } catch (error) {
       console.error(error);
     }
@@ -290,40 +293,34 @@ export default function ChatRoute(): ReactElement {
                 func={() => setRoute(CHAT_LIST)}
               />
               <>
-                <ReactTooltip
-                  className="customTheme"
-                  id="clickme"
-                  place="right"
-                  effect="solid"
-                  clickable={true}
-                  arrowColor="white"
-                  backgroundColor="white"
-                >
-                  <Form>
-                    <input
-                      ref={editRef}
-                      type="text"
-                      placeholder="변경할 방 제목을 입력해주세요"
-                      onKeyPress={(e: KeyboardEvent<HTMLDivElement>) => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault();
-                          handleChangeTitle();
-                        }
-                      }}
-                    />
-                    <button type="button" onClick={handleChangeTitle}>
-                      EDIT
-                    </button>
-                  </Form>
-                </ReactTooltip>
-                <a data-tip data-for="clickme" data-event="click">
+                {showTooltip && (
+                  <Tooltip>
+                    <Form>
+                      <input
+                        ref={editRef}
+                        type="text"
+                        placeholder="변경할 방 제목을 입력해주세요"
+                        onKeyPress={(e: KeyboardEvent<HTMLDivElement>) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            handleChangeTitle();
+                          }
+                        }}
+                      />
+                      <button type="button" onClick={handleChangeTitle}>
+                        EDIT
+                      </button>
+                    </Form>
+                  </Tooltip>
+                )}
+                <span onClick={() => setShowTooltip((prev) => !prev)}>
                   <Text
                     className="header-title"
                     text={roomName}
                     fontSetting="n16b"
                     color="white"
                   />
-                </a>
+                </span>
               </>
 
               <div className="fixed-two">
