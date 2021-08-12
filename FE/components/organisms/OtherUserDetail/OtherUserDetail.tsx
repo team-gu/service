@@ -1,10 +1,12 @@
 import { ReactElement, useState, useEffect } from 'react';
 import styled from 'styled-components';
+import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { Icon } from '@atoms';
 import { SkillSelectAutoComplete } from '@molecules';
 import { useAuthState, useAppDispatch, setLoading } from '@store';
 import { getUserDetail } from '@repository/userprofile';
+import { getImageURL } from '@utils/constants';
 
 interface AuthState {
   awards: object[];
@@ -96,11 +98,10 @@ const Manifesto = styled.div`
 
 const Portrait = styled.div`
   width: 100% auto;
-  text-align: center;
-
+  margin-top: 20vh;
+  margin-right: 15px;
   img {
-    width: 70%;
-    margin-top: 15vh;
+    border-radius: 50%;
   }
 `;
 
@@ -269,10 +270,12 @@ export default function OtherUserDetail(): ReactElement {
           <p>{otherUser.introduce}</p>
         </Manifesto>
         <Portrait>
-          <img
+          <Image
             className="default-image"
             alt="프로필이미지"
-            src="/profile.png"
+            src={getImageURL(otherUser.img)}
+            width={500}
+            height={500}
           />
         </Portrait>
       </Introduction>

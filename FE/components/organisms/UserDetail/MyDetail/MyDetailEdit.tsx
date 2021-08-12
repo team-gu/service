@@ -1,5 +1,6 @@
 import { ReactElement, SyntheticEvent, useState, useEffect } from 'react';
 import styled from 'styled-components';
+import Image from 'next/image';
 import { Icon, Textarea, Text } from '@atoms';
 import {
   Button,
@@ -22,8 +23,9 @@ import {
   updateDetailInformation,
 } from '@repository/userprofile';
 import { getEachFiltersCodeList } from '@repository/filterRepository';
-import { MODALS } from '@utils/constants';
-import { Skill, SkillOption } from '@utils/type';
+import { MODALS, getImageURL } from '@utils/constants';
+import { Skill } from '@utils/type';
+import { urltoFile } from '@utils/dataURLtoFile';
 import SetImageModal from '../MyDetail/Modal/SetImageModal';
 
 const Wrapper = styled.div`
@@ -132,12 +134,10 @@ const StyledTextarea = styled(Textarea)`
 
 const Portrait = styled.div`
   width: 100% auto;
-  text-align: center;
+  margin-top: 20vh;
+  margin-right: 15px;
 
   img {
-    width: 70%;
-    margin-top: 15vh;
-    border: 2px solid gray;
     border-radius: 50%;
   }
 `;
@@ -290,23 +290,18 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
   const dispatch = useAppDispatch();
 
   const [image, setImage] = useState(
-    user.img === 'null.null' ? '/profile.png' : user.img,
+    user.img === 'null.null' || user.img === ''
+      ? '/profile.png'
+      : getImageURL(user.img),
   );
 
-  // 실제 제출하게될 이미지 파일
   const [submitImage, setSubmitImage] = useState<File>();
-  const [useableSkills, setUseableSkills] = useState<
-    { code: number; codeName: string }[]
-  >(user.skills);
+  const [useableSkills, setUseableSkills] = useState<any>(user.skills);
 
   const [introduce, setIntroduce] = useState(user.introduce);
-  // TODO 이거 배열로 들어올지 아니면 문자열 하나로 들어올지 확실히 해야함.
-  const [track, setTrack] = useState<{ code: number; codeName: string }[]>(
-    user.wishTrack[0],
-  );
+  const [track, setTrack] = useState<any>(user.wishTrack[0]);
   const [position, setPosition] = useState<string>(user.wishPositionCode);
   const [showCroppedArea, setShowCroppedArea] = useState(false);
-
   const [trackOptions, setTrackOptions] = useState([]);
   const [positionOptions, setPositionOptions] = useState([]);
 
@@ -317,6 +312,16 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
       } = await getEachFiltersCodeList(user.studentNumber);
       setTrackOptions(data.트랙);
       setPositionOptions(data.역할);
+    })();
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      const res: any =
+        user.img === 'null.null' || user.img === ''
+          ? null
+          : await urltoFile(getImageURL(user.img), user.studentNumber);
+      setSubmitImage(res);
     })();
   }, []);
 
@@ -359,54 +364,42 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
 
   const onSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
-    // const formData = new FormData();
-    // if (descriptionRef.current) {
-    //   console.log(descriptionRef.current.value);
-    //   formData.append('introduce', descriptionRef.current.value);
-    // }
-    // console.log(track);
-    // console.log(position);
-    // console.log(image);
-    // console.log(useableSkills);
-    // formData.append('email', user.email);
-    // formData.append('id', user.id);
-    // formData.append('studentNumber', user.studentNumber);
-    // formData.append('wishTracks', track);
-    // formData.append('wishPosition', position);
-    // // formData.append('image', image);
-    // formData.append('skills', useableSkills);
-    // console.log(formData);
-    if (!introduce || !track || !position || !useableSkills.length) {
-      const message = [];
-      if (!introduce) message.push('자기 소개');
-      if (!track) message.push('트랙');
-      if (!position) message.push('포지션');
-      if (!useableSkills.length) message.push('사용 기술');
 
-      alert(`${message.join(', ')} 값을 입력해주세요.`);
-      return;
-    }
     try {
-      const data = {
-        email: user.email,
-        id: user.id,
-        introduce: introduce,
-        studentNumber: user.studentNumber,
-        wishTracks: [track],
-        wishPosition: position,
-        skills: useableSkills,
-        profileImage: submitImage,
-      };
-      await updateDetailInformation(data);
-      await dispatch(
-        setUserDetail({
-          wishTracks: [track],
-          wishPosition: position,
-          introduce: introduce,
-          skills: useableSkills,
-        }),
-      );
-      // TODO 추후에 모달로
+      const formData = new FormData();
+
+      if (!introduce || !track || !position || !useableSkills.length) {
+        const message = [];
+        if (!introduce) message.push('자기 소개');
+        if (!track) message.push('트랙');
+        if (!position) message.push('포지션');
+        if (!useableSkills.length) message.push('사용 기술');
+
+        alert(`${message.join(', ')} 값을 입력해주세요.`);
+        return;
+      }
+
+      formData.append('email', user.email);
+      formData.append('id', user.id);
+      formData.append('studentNumber', user.studentNumber);
+
+      formData.append('wishTracks[0].code', track.code);
+      formData.append('wishTracks[0].codeName', track.codeName);
+
+      useableSkills.forEach((el, idx) => {
+        formData.append(`skills[${idx}].code`, el.code);
+        formData.append(`skills[${idx}].codeName`, el.codeName);
+      });
+
+      formData.append('wishPosition', position);
+      formData.append('introduce', introduce);
+
+      if (submitImage !== '') {
+        formData.append('profileImage', submitImage);
+      }
+
+      const res = await updateDetailInformation(formData);
+      await dispatch(setUserDetail(res.data));
       alert('수정되었습니다.');
       changeEditMode();
     } catch (e) {
@@ -414,7 +407,6 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
     }
   };
 
-  //TODO 내가 이런식으로 직접 삭제할건지 결과 데이터를 받아와서 넣을 건지에 대한 대화 필요
   const deleteProjectCard = async (id: number) => {
     try {
       await deleteProject(id);
@@ -528,7 +520,13 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
             </div>
           </Manifesto>
           <Portrait>
-            <img className="default-image" alt="프로필이미지" src={image} />
+            <Image
+              className="default-image"
+              alt="프로필이미지"
+              width={500}
+              height={500}
+              src={image}
+            />
             <Icon iconName="photo_camera" func={changeImageMode} />
           </Portrait>
         </Introduction>
