@@ -14,4 +14,6 @@ export interface ChatNormal {
   sender_id?: number;
   sender_name?: string;
   type?: string;
+  chat_id?: number;
+  team_id?: number;
 }
