@@ -63,13 +63,7 @@ const authReducer = createSlice({
       };
     },
     setUserDetail(state, action) {
-      state.user = {
-        ...state.user,
-        wishTrack: action.payload.wishTracks,
-        wishPositionCode: action.payload.wishPosition,
-        introduce: action.payload.introduce,
-        skills: action.payload.skills,
-      };
+      state.user = action.payload;
     },
   },
 });

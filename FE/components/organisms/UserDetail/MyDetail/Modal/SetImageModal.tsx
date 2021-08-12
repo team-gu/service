@@ -62,7 +62,7 @@ export default function RenderCropper({
 }: any) {
   const { user } = useAuthState();
 
-  const inputRef = useRef();
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const triggerFileSelectPopup = () => inputRef?.current?.click();
 
@@ -87,10 +87,15 @@ export default function RenderCropper({
 
   const onClear = () => {
     setImage('/profile.png');
+    setSubmitImage('');
   };
 
   // To upload the edited image
   const onUpload = async () => {
+    if (image === '/profile.png') {
+      changeImageMode();
+      return;
+    }
     const canvas = await getCroppedImg(image, croppedArea);
     const canvasDataUrl = canvas.toDataURL('image/jpeg');
     setImage(canvasDataUrl);

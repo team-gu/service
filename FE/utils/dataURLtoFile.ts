@@ -9,3 +9,12 @@ export const dataURLtoFile = (dataurl: string, filename: string) => {
 
   return new File([u8arr], filename, { type: mime });
 };
+
+export const urltoFile = async (url: string, studentNumber: string) => {
+  const response = await fetch(url);
+  const data = await response.blob();
+  const ext = url.split('.').pop(); // url 구조에 맞게 수정할 것
+  const filename = `${studentNumber}_profile.${ext}`; // url 구조에 맞게 수정할 것
+  const metadata = { type: `image/${ext}` };
+  return new File([data], filename!, metadata);
+};

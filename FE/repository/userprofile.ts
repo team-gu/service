@@ -42,7 +42,7 @@ export const deleteAward = async (id: number) =>
   });
 
 export const updateDetailInformation = async (param: object) => {
-  await api({
+  return await api({
     url: '/api/auth/userInfo',
     type: 'put',
     param,
