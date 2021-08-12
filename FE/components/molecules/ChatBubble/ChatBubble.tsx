@@ -2,6 +2,10 @@ import { ReactElement } from 'react';
 import styled from 'styled-components';
 import { useRouter } from 'next/router';
 
+import {
+  postTeamInviteAccept,
+  postTeamInviteReject,
+} from '@repository/chatRepository';
 import { ProfileImage, ChatBubbleSelect } from '@molecules';
 import { Text } from '@atoms';
 
@@ -16,6 +20,10 @@ interface ChatBubbleProps {
   func?: any;
   type?: string;
   roomId?: number;
+  opponentId?: number;
+  chatId?: number;
+  teamId?: number;
+  id?: number;
 }
 
 const Wrapper = styled.div<{ isMe: boolean }>`
@@ -76,8 +84,12 @@ export default function ChatBubble({
   message,
   isMe = false,
   // func,
-  type,
+  type = 'NORMAL',
   roomId,
+  opponentId = 0,
+  chatId = 0,
+  teamId = 0,
+  id = 0,
 }: ChatBubbleProps): ReactElement {
   const router = useRouter();
 
@@ -90,54 +102,78 @@ export default function ChatBubble({
           <Text text={time} fontSetting="n10m" />
         </div>
         <div className="chat-message">
-          {/* {message.includes('{%') && message.includes('%}') ? (
-            {
-              '{% request_none %}': isMe ? (
-                <ChatBubbleSelect
-                  userName={userName}
-                  funcAccept={() => func('{% request_yes %}')}
-                  funcDecline={() => func('{% request_no %}')}
-                />
-              ) : (
-                <Text
-                  text="상대방에게 초대를 보냈습니다 선택을 기다리고 있습니다"
-                  fontSetting="n16m"
-                  isLineBreak
-                />
-              ),
-              '{% request_yes %}': isMe ? (
-                <Text
-                  text={`${userName} 팀의 초대를 수락했습니다`}
-                  fontSetting="n16m"
-                  isLineBreak
-                />
-              ) : (
-                <Text
-                  text="상대방이 팀 초대를 수락하였습니다"
-                  fontSetting="n16m"
-                  isLineBreak
-                />
-              ),
-              '{% request_no %}': isMe ? (
-                <Text
-                  text={`${userName} 팀의 초대를 거절했습니다`}
-                  fontSetting="n16m"
-                  isLineBreak
-                />
-              ) : (
-                <Text
-                  text="상대방이 팀 초대를 거절했습니다"
-                  fontSetting="n16m"
-                  isLineBreak
-                />
-              ),
-            }[message] */}
-          {type && type !== 'NORMAL' ? (
+          {type !== null && type !== 'NORMAL' ? (
             {
               RTC_INVITE: (
                 <ChatBubbleSelect
                   text={`화상전화 요청`}
                   funcAccept={() => router.push(`rtc/${roomId}`)}
+                />
+              ),
+              TEAM_INVITE_WAITING: isMe ? (
+                <Text
+                  text={`${userName}님이 팀원 초대를 기다리고 있습니다.`}
+                  fontSetting="n16m"
+                  isLineBreak
+                />
+              ) : (
+                <ChatBubbleSelect
+                  text={`화상전화 요청`}
+                  funcAccept={() =>
+                    postTeamInviteAccept({
+                      invitee_id: id,
+                      leader_id: opponentId,
+                      message_id: chatId,
+                      team_id: teamId,
+                    })
+                  }
+                  funcDecline={() =>
+                    postTeamInviteReject({
+                      invitee_id: id,
+                      leader_id: opponentId,
+                      message_id: chatId,
+                      team_id: teamId,
+                    })
+                  }
+                />
+              ),
+              TEAM_INVITE_ACCEPTED: isMe ? (
+                <Text
+                  text={`${userName}님이 팀원 초대를 수락했습니다.`}
+                  fontSetting="n16m"
+                  isLineBreak
+                />
+              ) : (
+                <Text
+                  text="팀 초대를 수락했습니다"
+                  fontSetting="n16m"
+                  isLineBreak
+                />
+              ),
+              TEAM_INVITE_REJECTED: isMe ? (
+                <Text
+                  text={`${userName}님이 팀원 초대를 거절했습니다`}
+                  fontSetting="n16m"
+                  isLineBreak
+                />
+              ) : (
+                <Text
+                  text="팀 초대를 거절했습니다"
+                  fontSetting="n16m"
+                  isLineBreak
+                />
+              ),
+              TEAM_INVITE_EXPIRED: isMe ? (
+                <Text
+                  text="시간이 만료되었습니다. 다시 초대해주세요."
+                  fontSetting="n16m"
+                  isLineBreak
+                />
+              ) : (
+                <Text
+                  text="시간이 만료되었습니다."
+                  fontSetting="n16m"
+                  isLineBreak
                 />
               ),
             }[type]
