@@ -1,4 +1,10 @@
-import { ReactElement, useState, useRef, SyntheticEvent } from 'react';
+import {
+  ReactElement,
+  useState,
+  useRef,
+  SyntheticEvent,
+  KeyboardEvent,
+} from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { OptionsType } from 'react-select';
@@ -225,9 +231,7 @@ export default function ChatRoute(): ReactElement {
     }
   };
 
-  const handleChangeTitle = async (e: SyntheticEvent) => {
-    e.preventDefault();
-
+  const handleChangeTitle = async () => {
     if (editRef.current.value.length > 0) {
       try {
         await postModifyRoomName({
@@ -287,14 +291,22 @@ export default function ChatRoute(): ReactElement {
               <>
                 <Tooltip>
                   <>
-                    <form className="content" onSubmit={handleChangeTitle}>
+                    <div className="content">
                       <input
                         ref={editRef}
                         type="text"
                         placeholder="변경할 방 제목을 입력해주세요"
+                        onKeyPress={(e: KeyboardEvent<HTMLDivElement>) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            handleChangeTitle();
+                          }
+                        }}
                       />
-                      <button type="submit">EDIT</button>
-                    </form>
+                      <button type="button" onClick={handleChangeTitle}>
+                        EDIT
+                      </button>
+                    </div>
                     <Text
                       className="header-title"
                       text={roomName}
