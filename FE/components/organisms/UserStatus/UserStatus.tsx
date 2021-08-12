@@ -12,6 +12,8 @@ import {
 } from '@molecules';
 import { Icon, Text } from '@atoms';
 
+import useSockStomp from '@hooks/useSockStomp';
+
 import {
   getEachFiltersCodeList,
   postByFilteredUsers,
@@ -88,6 +90,10 @@ export default function UserStatus(): ReactElement {
   const {
     user: { id, name: userName, projectCode, studentNumber },
   } = useAuthState();
+
+  const { handleSendInvitation, handleSendRtcLink } = useSockStomp({
+    room_id: 0,
+  });
   const [filterContents, setFilterContents] = useState<any>();
   const [payload, setPayload] = useState({});
 
@@ -100,6 +106,7 @@ export default function UserStatus(): ReactElement {
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [invitedUser, setInvitedUser] = useState<Users>();
   const [isLeader, setIsLeader] = useState(false);
+  const [teamId, setTeamId] = useState(0);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -128,6 +135,7 @@ export default function UserStatus(): ReactElement {
     }).then(({ data: { data } }) => {
       if (data.hasTeam) {
         if (data.team.leaderId === id) {
+          setTeamId(data.team.id);
           setIsLeader(true);
         }
       }
@@ -232,7 +240,6 @@ export default function UserStatus(): ReactElement {
   };
 
   const handleClickInviteIcon = (selectedUser: Users) => {
-    console.log(selectedUser);
     setShowInviteModal(true);
     setInvitedUser(selectedUser);
   };
@@ -248,25 +255,7 @@ export default function UserStatus(): ReactElement {
       return;
     }
 
-    const project =
-      projectCode && projectCode.length > 0
-        ? projectCode[projectCode.length - 1]
-        : 101;
-
-    const { data: hasTeamResult } = await getUserHasTeam({
-      userId: id,
-      project: { code: project },
-    });
-
-    if (!hasTeamResult.data.hasTeam) {
-      dispatch(
-        displayModal({
-          modalName: MODALS.ALERT_MODAL,
-          content: `현재 팀에 소속되어 있지 않습니다. 팀을 생성한 후에 시도해주세요.`,
-        }),
-      );
-      return;
-    }
+    handleSendInvitation(teamId, id, invitedUser.id);
 
     setShowInviteModal(false);
     setPayload({ ...payload });
@@ -349,6 +338,7 @@ export default function UserStatus(): ReactElement {
               id={id}
               onClickInviteIcon={() => handleClickInviteIcon(each)}
               currentUserIsLeader={isLeader}
+              handleSendRtcLink={handleSendRtcLink}
             />
           ))
         )}

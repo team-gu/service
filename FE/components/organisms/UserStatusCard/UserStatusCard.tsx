@@ -78,6 +78,11 @@ interface UserStatusCardProps {
   id: number;
   onClickInviteIcon?: () => void;
   currentUserIsLeader: boolean;
+  handleSendRtcLink: (
+    teamId: number,
+    leaderId: number,
+    inviteeId: number,
+  ) => Promise<void> | any;
 }
 
 export default function UserStatusCard({
@@ -86,9 +91,8 @@ export default function UserStatusCard({
   id,
   onClickInviteIcon,
   currentUserIsLeader,
+  handleSendRtcLink,
 }: UserStatusCardProps): ReactElement {
-  const { handleSendRtcLink } = useSockStomp({ room_id: undefined });
-
   const router = useRouter();
   return (
     <Wrapper>
