@@ -1,6 +1,8 @@
 logging:
   level:
     root: info
+    com.zaxxer.hikari.HikariConfig: DEBUG
+    com.zaxxer.hikari: TRACE
 server:
   ssl:
     key-alias: tomcat
