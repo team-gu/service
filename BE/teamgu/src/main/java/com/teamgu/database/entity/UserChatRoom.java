@@ -21,6 +21,8 @@ import lombok.Setter;
 @Setter
 @IdClass(UserChatRoomPK.class)
 public class UserChatRoom{	
+	String title;
+	
 	@Id
 	@ManyToOne
 	@JoinColumn(name = "userId")
@@ -33,5 +35,5 @@ public class UserChatRoom{
 	
 	@ManyToOne
 	@JoinColumn(name = "lastChatId")
-	Chat chat;
+	Chat chat;	
 }
