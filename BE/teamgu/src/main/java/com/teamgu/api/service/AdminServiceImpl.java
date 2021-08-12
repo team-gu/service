@@ -5,9 +5,13 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.teamgu.api.dto.res.CodeResDto;
+import com.teamgu.api.dto.res.DashBoardDetailInfoResDto;
+import com.teamgu.api.dto.res.DashBoardDetailResDto;
+import com.teamgu.api.dto.res.DashBoardResDto;
 import com.teamgu.api.dto.res.ProjectInfoResDto;
 import com.teamgu.database.entity.Mapping;
 import com.teamgu.database.entity.ProjectDetail;
@@ -37,7 +41,7 @@ public class AdminServiceImpl implements AdminService {
 
 	@Override
 	public List<ProjectInfoResDto> getProjectInfo() {
-		List<ProjectDetail> projectDetailList = projectDetailRepository.findAll();
+		List<ProjectDetail> projectDetailList = projectDetailRepository.findAll(Sort.by(Sort.Direction.DESC, "activeDate"));
 		List<ProjectInfoResDto> list = new ArrayList<>();
 		for (int i = 0, size = projectDetailList.size(); i < size; i++) {
 
@@ -188,6 +192,110 @@ public class AdminServiceImpl implements AdminService {
 		
 		adminRepositorySupport.deleteProject(projectId);
 	}
+	
+
+	@Override
+	public DashBoardResDto getTeamBuildingStatus(Long projectId) {
+		
+		DashBoardResDto dashBoard = new DashBoardResDto();
+		
+		List<DashBoardDetailResDto> region = new ArrayList<>();
+		List<DashBoardDetailResDto> track = new ArrayList<>();
+		
+		List<CodeResDto> regionCode = adminRepositorySupport.getRegionList();
+		
+		int totalCount = 0;
+		int beforeTotalCount = 0;
+		int doingTotalCount = 0;
+		int afterTotalCount = 0;
+		short complete = 0;
+		
+		for(int i = 0, size = regionCode.size(); i<size;  i++) {
+			DashBoardDetailResDto dashBoardDetail = new DashBoardDetailResDto();
+			DashBoardDetailInfoResDto data = new DashBoardDetailInfoResDto();
+			
+			String code = Integer.toString( regionCode.get(i).getCode()-100);
+			
+			// 총 인원
+			int totalMember = adminRepositorySupport.getTotalMemberCountByRegion(projectId, code);
+			totalCount += totalMember;
+			data.setTotal(totalMember);
+			
+			// 팀 구성 중 인원
+			complete = 0;
+			int doingCount = adminRepositorySupport.getTeamBuildingMemberCountByRegion(projectId, code, complete);
+			doingTotalCount += doingCount;
+			data.setDoing(doingCount);
+			
+			// 팀 구성 후 인원
+			complete = 1;
+			int afterCount = adminRepositorySupport.getTeamBuildingMemberCountByRegion(projectId, code, complete);
+			afterTotalCount += afterCount;
+			data.setAfter(afterCount);
+
+			// 팀 구성 전 인원
+			
+			int beforeCount = totalMember - doingCount - afterCount;
+			beforeTotalCount += beforeCount;
+			data.setBefore(beforeCount);
+			
+			dashBoardDetail.setTitle(regionCode.get(i).getCodeName());
+			dashBoardDetail.setData(data);
+			
+			region.add(dashBoardDetail);
+		}
+
+		DashBoardDetailResDto totalDashBoardDetail  = new DashBoardDetailResDto();
+		DashBoardDetailInfoResDto totalData = new DashBoardDetailInfoResDto();
+		
+		totalData.setTotal(totalCount);
+		totalData.setAfter(afterTotalCount);
+		totalData.setBefore(beforeTotalCount);
+		totalData.setDoing(doingTotalCount);
+		totalDashBoardDetail.setData(totalData);
+		totalDashBoardDetail.setTitle("전국");
+		region.add(totalDashBoardDetail);
+		
+		List<CodeResDto> tracks = adminRepositorySupport.getTrackList(projectId);
+		
+		for(int i = 0, size = tracks.size(); i<size; i++) {
+
+			DashBoardDetailResDto dashBoardDetail = new DashBoardDetailResDto();
+			DashBoardDetailInfoResDto data = new DashBoardDetailInfoResDto();
+			int trackCode = tracks.get(i).getCode();
+			// 구성중인 팀의 갯수
+			complete = 0;
+			int doingTeam = adminRepositorySupport.getTeamCountByTrack(projectId, trackCode, complete);
+			data.setDoingTeam(doingTeam);
+
+			// 구성중인 교육생
+			int doingCount = adminRepositorySupport.getMemberCountByTrack(projectId, trackCode, complete);
+			data.setDoing(doingCount);
+			
+			// 구성된 팀의 갯수
+			complete = 1;
+			int afterTeam = adminRepositorySupport.getTeamCountByTrack(projectId, trackCode, complete);
+			data.setAfterTeam(afterTeam);
+			
+			
+			// 구성된 교육생
+			int afterCount = adminRepositorySupport.getMemberCountByTrack(projectId, trackCode, complete);
+			data.setAfter(afterCount);
+
+			dashBoardDetail.setTitle(tracks.get(i).getCodeName());
+			dashBoardDetail.setData(data);
+			
+			track.add(dashBoardDetail);
+			
+		}
+		
+		
+		dashBoard.setRegion(region);
+		dashBoard.setTrack(track);
+		
+		return dashBoard;
+	}
+
 	
 	/*
 	 * Select Code
