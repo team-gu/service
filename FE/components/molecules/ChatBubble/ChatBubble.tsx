@@ -123,7 +123,7 @@ export default function ChatBubble({
               ),
               TEAM_INVITE_WAITING: isMe ? (
                 <Text
-                  text={`${userName}님이 팀원 초대를 기다리고 있습니다.`}
+                  text={'상대방이 팀원 초대를 기다리고 있습니다.'}
                   fontSetting="n16m"
                   isLineBreak
                 />
@@ -155,7 +155,7 @@ export default function ChatBubble({
                 <Text
                   text={
                     isMe
-                      ? `${userName}님이 팀원 초대를 수락했습니다.`
+                      ? '상대방이 팀원 초대를 수락했습니다.'
                       : '팀 초대를 수락했습니다'
                   }
                   fontSetting="n16m"
@@ -166,7 +166,7 @@ export default function ChatBubble({
                 <Text
                   text={
                     isMe
-                      ? `${userName}님이 팀원 초대를 거절했습니다`
+                      ? '상대방이 팀원 초대를 거절했습니다'
                       : '팀 초대를 거절했습니다'
                   }
                   fontSetting="n16m"
