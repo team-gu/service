@@ -138,7 +138,7 @@ public class UserChatRoomRepositorySupport {
 		List<BigInteger> res = em.createNativeQuery(jpql)
 				.setParameter("user_id", user_id)
 				.getResultList();
-		log.info(user_id+" 조회된 unread total : "+res.get(0).longValue());
+		log.debug(user_id+" 조회된 unread total : "+res.get(0).longValue());
 		em.close();
 		return res.get(0).longValue();
 		
