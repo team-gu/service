@@ -13,13 +13,17 @@ import org.springframework.stereotype.Repository;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.teamgu.api.dto.res.CodeResDto;
 import com.teamgu.api.dto.res.ProjectInfoResDto;
 import com.teamgu.database.entity.QCodeDetail;
 import com.teamgu.database.entity.QMapping;
 import com.teamgu.database.entity.QProjectDetail;
+import com.teamgu.database.entity.QTeam;
+import com.teamgu.database.entity.QUser;
 import com.teamgu.database.entity.QUserProjectDetail;
+import com.teamgu.database.entity.QUserTeam;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,10 +37,14 @@ public class AdminRepositorySupport {
 	@PersistenceUnit
 	EntityManagerFactory emf;
 	
+	QUser qUser = QUser.user;
+	QTeam qTeam = QTeam.team;
 	QCodeDetail qCodeDetail = QCodeDetail.codeDetail1;
 	QProjectDetail qProjectDetail = QProjectDetail.projectDetail;
 	QUserProjectDetail qUserProjectDetail = QUserProjectDetail.userProjectDetail;
 	QMapping qMapping = QMapping.mapping;
+	QUserTeam qUserTeam = QUserTeam.userTeam;
+	
 	
 	// Select Code
 	public List<CodeResDto> selectCode(String codeId){
@@ -99,7 +107,7 @@ public class AdminRepositorySupport {
 
 		et.begin();
 
-		String jpql = "INSERT INTO project_detail(project_code, stage_code, active_date, end_date, start_date) values(?1, ?2, ?3, ?4, ?5)";
+		String jpql = "INSERT INTO project_detail(project_code, stage_code, active_date, start_date, end_date) values(?1, ?2, ?3, ?4, ?5)";
 
 		em.createNativeQuery(jpql)
 		.setParameter(1, projectInfoResDto.getProject().getCode())
@@ -153,6 +161,143 @@ public class AdminRepositorySupport {
 		
 		
 		return list;
+	}
+	
+	// Region Code 가져오기
+	public List<CodeResDto> getRegionList(){
+		
+		return 
+				jpaQueryFactory
+				.select(Projections.constructor(CodeResDto.class, qCodeDetail.codeDetail, qCodeDetail.Name))
+				.from(qCodeDetail)
+				.where(qCodeDetail.code.code.eq("RE"))
+				.fetch();
+
+	}
+	
+	// Track 가져오기
+	public List<CodeResDto> getTrackList(Long projectId){
+		return
+				jpaQueryFactory
+				.select(Projections.constructor(CodeResDto.class, qCodeDetail.codeDetail, qCodeDetail.Name))
+				.from(qCodeDetail)
+				.where(qCodeDetail.codeDetail.in(JPAExpressions
+						.select(qMapping.trackCode)
+						.from(qMapping)
+						.where(qMapping.projectCode.eq(JPAExpressions
+								.select(qProjectDetail.projectCode)
+								.from(qProjectDetail)
+								.where(qProjectDetail.id.eq(projectId)))
+								.and(qMapping.stageCode.eq(JPAExpressions
+										.select(qProjectDetail.stageCode)
+										.from(qProjectDetail)
+										.where(qProjectDetail.id.eq(projectId))))))
+						.and(qCodeDetail.code.code.eq("TR")))
+				.fetch();
+	}
+	
+	// 지역별 프로젝트 전체 인원 수
+	public Integer getTotalMemberCountByRegion(Long projectId, String code) {
+		Integer count =
+				(int) jpaQueryFactory
+					.select(qUser.id)
+					.from(qUser)
+					.where(qUser.id.in(JPAExpressions
+							.select(qUserProjectDetail.user.id)
+							.from(qUserProjectDetail)
+							.where(qUserProjectDetail.projectDetail.id.eq(projectId)))
+							.and(qUser.studentNumber.substring(2, 3).eq(code)))
+					.fetchCount()
+				;
+
+		return count;
+	}
+	
+	// 지역별 프로젝트 진행 구성 인원 현황
+	public Integer getTeamBuildingMemberCountByRegion(Long projectId, String code, short complete) {
+		Integer count =
+				(int) jpaQueryFactory
+					.select(qUser.id)
+					.from(qUser)
+					.leftJoin(qUserTeam)
+					.on(qUser.id.eq(qUserTeam.user.id))
+					.leftJoin(qTeam)
+					.on(qUserTeam.team.id.eq(qTeam.id))
+					.where(qUser.id.in(JPAExpressions
+							.select(qUserProjectDetail.user.id)
+							.from(qUserProjectDetail)
+							.where(qUserProjectDetail.projectDetail.id.eq(projectId)))
+
+						.and(qTeam.mapping.id.in(JPAExpressions
+								.select(qMapping.id)
+								.from(qMapping)
+								.where(qMapping.projectCode.eq(JPAExpressions
+										.select(qProjectDetail.projectCode)
+										.from(qProjectDetail)
+										.where(qProjectDetail.id.eq(projectId)))
+										.and(qMapping.stageCode.eq(JPAExpressions
+												.select(qProjectDetail.stageCode)
+												.from(qProjectDetail)
+												.where(qProjectDetail.id.eq(projectId)))))))
+						.and(qTeam.completeYn.eq(complete))
+						.and(qUser.studentNumber.substring(2, 3).eq(code)))
+					.fetchCount();
+				;
+
+		return count;
+	}
+	
+	// 트랙별 전체 팀 현황
+	public Integer getTeamCountByTrack(Long projectId, int trackCode, short complete) {
+		Integer count =
+				(int) jpaQueryFactory
+					.select(qTeam.id)
+					.from(qTeam)
+					.where(qTeam.mapping.id.in(JPAExpressions
+							.select(qMapping.id)
+							.from(qMapping)
+							.where(qMapping.projectCode.eq(JPAExpressions
+									.select(qProjectDetail.projectCode)
+									.from(qProjectDetail)
+									.where(qProjectDetail.id.eq(projectId)))
+									.and(qMapping.stageCode.eq(JPAExpressions
+											.select(qProjectDetail.stageCode)
+											.from(qProjectDetail)
+											.where(qProjectDetail.id.eq(projectId))))
+									.and(qMapping.trackCode.eq(trackCode))))
+							.and(qTeam.completeYn.eq(complete)))
+		.fetchCount();
+		
+		
+		return count;
+
+	}
+	
+	// 트랙별 교육생 현황
+	public Integer getMemberCountByTrack(Long projectId, int trackCode, short complete) {
+		Integer count =
+				(int) jpaQueryFactory
+					.select(qTeam.id)
+					.from(qTeam)
+					.leftJoin(qUserTeam)
+					.on(qUserTeam.team.id.eq(qTeam.id))
+					.where(qTeam.mapping.id.in(JPAExpressions
+							.select(qMapping.id)
+							.from(qMapping)
+							.where(qMapping.projectCode.eq(JPAExpressions
+									.select(qProjectDetail.projectCode)
+									.from(qProjectDetail)
+									.where(qProjectDetail.id.eq(projectId)))
+									.and(qMapping.stageCode.eq(JPAExpressions
+											.select(qProjectDetail.stageCode)
+											.from(qProjectDetail)
+											.where(qProjectDetail.id.eq(projectId))))
+									.and(qMapping.trackCode.eq(trackCode))))
+							.and(qTeam.completeYn.eq(complete)))
+		.fetchCount();
+		
+		return count;
+
 	}
 	
 	// Mapping Table Code 삭제
