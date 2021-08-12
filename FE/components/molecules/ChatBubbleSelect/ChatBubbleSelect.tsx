@@ -8,6 +8,7 @@ interface ChatBubbleSelectProps {
   text: string;
   funcAccept?: MouseEventHandler<HTMLSpanElement>;
   funcDecline?: MouseEventHandler<HTMLSpanElement>;
+  isTeamInvite?: boolean;
 }
 
 const Wrapper = styled.div`
@@ -31,12 +32,19 @@ export default function ChatBubbleSelect({
   text,
   funcAccept,
   funcDecline,
+  isTeamInvite,
 }: ChatBubbleSelectProps): ReactElement {
   return (
     <Wrapper>
       <Text text={text} fontSetting="n14b" />
       <div>
-        {funcAccept && <Button func={funcAccept} title="참여" width="45px" />}
+        {funcAccept && (
+          <Button
+            func={funcAccept}
+            title={isTeamInvite ? '수락' : '참여'}
+            width="45px"
+          />
+        )}
         {funcDecline && <Button func={funcDecline} title="거절" width="45px" />}
       </div>
     </Wrapper>
