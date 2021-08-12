@@ -148,10 +148,10 @@ public class ChatRoomRepositorySupport {
 				long user_id = users.get(i);
 				if(i==0) jpql+="\r\nVALUES";			
 				if(i>0) jpql+=",";
-				jpql+="\r\n("+room_id+","+user_id+",null,"+title+")";
+				jpql+="\r\n("+room_id+","+user_id+",null,:title)";
 			}			
 			log.debug(jpql);
-			em.createNativeQuery(jpql).executeUpdate();
+			em.createNativeQuery(jpql).setParameter("title", title).executeUpdate();
 			et.commit();
 		}catch(Exception e) {
 			log.error("N명 방 생성에 실패");
@@ -182,10 +182,10 @@ public class ChatRoomRepositorySupport {
 				long user_id = users.get(i);
 				if(i==0) jpql+="\r\nVALUES";			
 				if(i>0) jpql+=",";
-				jpql+="\r\n("+room_id+","+user_id+",null,"+title+")";
+				jpql+="\r\n("+room_id+","+user_id+",null,:title)";
 			}			
 			log.debug(jpql);
-			em.createNativeQuery(jpql).executeUpdate();
+			em.createNativeQuery(jpql).setParameter("title", title).executeUpdate();
 			et.commit();
 		}catch(Exception e) {
 			log.error("N명 대화방 초대에 실패했습니다");
