@@ -1,4 +1,10 @@
-import { ReactElement, useState, useRef } from 'react';
+import {
+  ReactElement,
+  useState,
+  useRef,
+  SyntheticEvent,
+  KeyboardEvent,
+} from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { OptionsType } from 'react-select';
@@ -13,7 +19,12 @@ import {
 import useSockStomp from '@hooks/useSockStomp';
 
 import { ChatList, ChatRoom, Modal } from '@organisms';
-import { UserSelectChatAutoComplete, Button } from '@molecules';
+import {
+  UserSelectChatAutoComplete,
+  Button,
+  DropdownMenu,
+  Tooltip,
+} from '@molecules';
 import { Text, Icon } from '@atoms';
 import { MODALS } from '@utils/constants';
 
@@ -21,6 +32,9 @@ import {
   getChatLists,
   postCreateRoom,
   postInviteRoom,
+  postModifyRoomName,
+  getRoomUserList,
+  postLeaveChatRoom,
 } from '@repository/chatRepository';
 import { MemberOption } from '@utils/type';
 
@@ -43,9 +57,10 @@ const Wrapper = styled(motion.div)`
   .header {
     ${({ theme: { flexRow } }) => flexRow('space-between')}
 
-    padding: 0 20px;
+    padding: 0 10px;
 
-    width: calc(100% - 40px);
+    width: calc(100% - 20px);
+
     height: 40px;
     background-color: ${({
       theme: {
@@ -55,24 +70,31 @@ const Wrapper = styled(motion.div)`
 
     border-radius: 10px 10px 0px 0px;
 
+    > a {
+      > div {
+        ${({ theme: { flexRow } }) => flexRow()}
+      }
+    }
+
     i {
       cursor: pointer;
     }
 
     .header-title {
-      cursor: default;
+      ${({ theme: { flexRow } }) => flexRow()}
+      cursor: pointer;
       user-select: none;
       width: 200px;
     }
 
     .fixed-one {
       position: absolute;
-      right: 50px;
+      right: 40px;
     }
 
     .fixed-two {
       position: absolute;
-      right: 80px;
+      right: 70px;
     }
   }
 
@@ -96,7 +118,6 @@ const Wrapper = styled(motion.div)`
 
 const CHAT_LIST = 0;
 const CHAT_ROOM = 1;
-const IS_EDIT = true;
 
 export default function ChatRoute(): ReactElement {
   const dispatch = useAppDispatch();
@@ -106,13 +127,13 @@ export default function ChatRoute(): ReactElement {
 
   const [room_id, setRoomId] = useState<number>(0);
   const [roomName, setRoomName] = useState<string>('');
-  const [selectedUser, setSelectedUser] =
-    useState<OptionsType<MemberOption> | null>();
+  const [selectedUser, setSelectedUser] = useState<OptionsType<MemberOption>>(
+    [],
+  );
   const [userList, setUserList] = useState([]);
+  const [roomUserList, setRoomUserList] = useState([]);
 
   const [route, setRoute] = useState(CHAT_LIST);
-
-  const [isEdit, setIsEdit] = useState(!IS_EDIT);
 
   const {
     handleSendMessage,
@@ -125,6 +146,7 @@ export default function ChatRoute(): ReactElement {
   });
 
   const wrapperRef: any = useRef<HTMLInputElement>(null);
+  const editRef: any = useRef<string>('');
 
   // function handleClickOutside({ target }: ChangeEvent<HTMLInputElement>) {
   //   if (!wrapperRef.current?.contains(target)) {
@@ -142,6 +164,10 @@ export default function ChatRoute(): ReactElement {
     await setRoomId(id);
     setRoomName(room_name);
     setRoute(CHAT_ROOM);
+    const {
+      data: { data },
+    } = await getRoomUserList(id);
+    setRoomUserList(data);
   };
 
   const handleClickSend = async (msg: string) => {
@@ -205,6 +231,20 @@ export default function ChatRoute(): ReactElement {
     }
   };
 
+  const handleChangeTitle = async () => {
+    if (editRef.current.value.length > 0) {
+      try {
+        await postModifyRoomName({
+          room_id,
+          title: editRef.current.value,
+        });
+        setRoomName(editRef.current.value);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
+
   return (
     <>
       <Modal modalName={MODALS.HOC_MODAL}>
@@ -248,35 +288,83 @@ export default function ChatRoute(): ReactElement {
                 color="white"
                 func={() => setRoute(CHAT_LIST)}
               />
-              {isEdit === IS_EDIT ? (
-                <Text
-                  className="header-title"
-                  text={roomName}
-                  fontSetting="n16b"
-                  color="white"
-                />
-              ) : (
-                <></>
-              )}
+              <>
+                <Tooltip>
+                  <>
+                    <div className="content">
+                      <input
+                        ref={editRef}
+                        type="text"
+                        placeholder="변경할 방 제목을 입력해주세요"
+                        onKeyPress={(e: KeyboardEvent<HTMLDivElement>) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            handleChangeTitle();
+                          }
+                        }}
+                      />
+                      <button type="button" onClick={handleChangeTitle}>
+                        EDIT
+                      </button>
+                    </div>
+                    <Text
+                      className="header-title"
+                      text={roomName}
+                      fontSetting="n16b"
+                      color="white"
+                    />
+                  </>
+                </Tooltip>
+              </>
+
               <div className="fixed-two">
-                <Icon
-                  iconName="support_agent"
-                  color="white"
-                  size="30"
-                  func={() => handleSendRtcLink(id, room_id, true)}
-                />
+                <DropdownMenu roomUserList={roomUserList}>
+                  <Icon iconName="supervisor_account" color="white" size="30" />
+                </DropdownMenu>
               </div>
             </>
           )}
           <div className="fixed-one">
-            <Icon
-              iconName="person_add"
-              color="white"
-              size="30"
-              func={() =>
-                dispatch(displayModal({ modalName: MODALS.HOC_MODAL }))
+            <DropdownMenu
+              items={
+                route === CHAT_LIST
+                  ? [
+                      {
+                        id: 1,
+                        title: '방 만들기',
+                        func: () =>
+                          dispatch(
+                            displayModal({ modalName: MODALS.HOC_MODAL }),
+                          ),
+                      },
+                    ]
+                  : [
+                      {
+                        id: 1,
+                        title: '팀원 초대',
+                        func: () =>
+                          dispatch(
+                            displayModal({ modalName: MODALS.HOC_MODAL }),
+                          ),
+                      },
+                      {
+                        id: 2,
+                        title: '전화 걸기',
+                        func: () => handleSendRtcLink(id, room_id, true),
+                      },
+                      {
+                        id: 3,
+                        title: '방 나가기',
+                        func: () => {
+                          postLeaveChatRoom({ room_id, user_id: id });
+                          setRoute(CHAT_LIST);
+                        },
+                      },
+                    ]
               }
-            />
+            >
+              <Icon iconName="menu" color="white" size="30" />
+            </DropdownMenu>
           </div>
 
           <Icon
@@ -299,6 +387,7 @@ export default function ChatRoute(): ReactElement {
                 isConnectStomp={isConnectStomp}
                 messageList={messageList}
                 setMessageList={setMessageList}
+                setRoomId={setRoomId}
                 handleClickSend={handleClickSend}
                 roomId={room_id}
               />

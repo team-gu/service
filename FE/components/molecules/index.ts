@@ -3,6 +3,7 @@ import ChatBubble from './ChatBubble';
 import ChatBubbleSelect from './ChatBubbleSelect';
 import ChatInput from './ChatInput';
 import Checkbox from './Checkbox';
+import DropdownMenu from './DropdownMenu';
 import Filter from './Filter';
 import FloatingButton from './FloatingButton';
 import Label from './Label';
@@ -13,6 +14,7 @@ import RadioButton from './RadioButton';
 import Spinner from './Spinner';
 import Tag from './Tag';
 import Title from './Title';
+import Tooltip from './Tooltip';
 import SimpleSelect from './SimpleSelect';
 import UserSelectAutoComplete from './UserSelectAutoComplete';
 import UserSelectTeamAutoComplete from './UserSelectTeamAutoComplete';
@@ -28,6 +30,7 @@ export {
   ChatBubbleSelect,
   ChatInput,
   Checkbox,
+  DropdownMenu,
   Filter,
   FloatingButton,
   Label,
@@ -38,6 +41,7 @@ export {
   Spinner,
   Tag,
   Title,
+  Tooltip,
   SimpleSelect,
   UserSelectAutoComplete,
   UserSelectChatAutoComplete,

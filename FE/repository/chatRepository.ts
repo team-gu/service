@@ -6,7 +6,7 @@ export const getChatLists = async (param: string | number) =>
     type: 'get',
   });
 
-export const getChatRoomMessages = async (param: string | number) =>
+export const getChatRoomMessages = async (param: number) =>
   await api({
     url: `/api/chat/room/${param}`,
     type: 'get',
@@ -57,4 +57,21 @@ export const getNotificationNumber = async (param: any) =>
   await api({
     url: `/api/chat/unread/${param}`,
     type: 'get',
+  });
+
+export const postModifyRoomName = async (param: any) =>
+  await api({
+    url: '/api/chat/room/modify',
+    type: 'post',
+    param,
+  });
+
+export const postLeaveChatRoom = async (param: {
+  room_id: number;
+  user_id: number;
+}) =>
+  await api({
+    url: '/api/chat/room/leave',
+    type: 'post',
+    param,
   });
