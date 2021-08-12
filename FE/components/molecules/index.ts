@@ -14,6 +14,7 @@ import RadioButton from './RadioButton';
 import Spinner from './Spinner';
 import Tag from './Tag';
 import Title from './Title';
+import Tooltip from './Tooltip';
 import SimpleSelect from './SimpleSelect';
 import UserSelectAutoComplete from './UserSelectAutoComplete';
 import UserSelectTeamAutoComplete from './UserSelectTeamAutoComplete';
@@ -40,6 +41,7 @@ export {
   Spinner,
   Tag,
   Title,
+  Tooltip,
   SimpleSelect,
   UserSelectAutoComplete,
   UserSelectChatAutoComplete,
