@@ -79,7 +79,7 @@ const Wrapper = styled.div<{ isMe: boolean }>`
 
 export default function ChatBubble({
   profileSrc,
-  userName,
+  userName = '',
   time,
   message,
   isMe = false,
@@ -106,7 +106,7 @@ export default function ChatBubble({
             {
               RTC_INVITE: (
                 <ChatBubbleSelect
-                  text={`화상전화 요청`}
+                  text="화상전화 요청"
                   funcAccept={() => router.push(`rtc/${roomId}`)}
                 />
               ),
@@ -118,7 +118,7 @@ export default function ChatBubble({
                 />
               ) : (
                 <ChatBubbleSelect
-                  text={`화상전화 요청`}
+                  text="팀원초대 요청"
                   funcAccept={() =>
                     postTeamInviteAccept({
                       invitee_id: id,
@@ -135,43 +135,38 @@ export default function ChatBubble({
                       team_id: teamId,
                     })
                   }
+                  isTeamInvite
                 />
               ),
-              TEAM_INVITE_ACCEPTED: isMe ? (
+              TEAM_INVITE_ACCEPTED: (
                 <Text
-                  text={`${userName}님이 팀원 초대를 수락했습니다.`}
-                  fontSetting="n16m"
-                  isLineBreak
-                />
-              ) : (
-                <Text
-                  text="팀 초대를 수락했습니다"
-                  fontSetting="n16m"
-                  isLineBreak
-                />
-              ),
-              TEAM_INVITE_REJECTED: isMe ? (
-                <Text
-                  text={`${userName}님이 팀원 초대를 거절했습니다`}
-                  fontSetting="n16m"
-                  isLineBreak
-                />
-              ) : (
-                <Text
-                  text="팀 초대를 거절했습니다"
+                  text={
+                    isMe
+                      ? `${userName}님이 팀원 초대를 수락했습니다.`
+                      : '팀 초대를 수락했습니다'
+                  }
                   fontSetting="n16m"
                   isLineBreak
                 />
               ),
-              TEAM_INVITE_EXPIRED: isMe ? (
+              TEAM_INVITE_REJECTED: (
                 <Text
-                  text="시간이 만료되었습니다. 다시 초대해주세요."
+                  text={
+                    isMe
+                      ? `${userName}님이 팀원 초대를 거절했습니다`
+                      : '팀 초대를 거절했습니다'
+                  }
                   fontSetting="n16m"
                   isLineBreak
                 />
-              ) : (
+              ),
+              TEAM_INVITE_EXPIRED: (
                 <Text
-                  text="시간이 만료되었습니다."
+                  text={
+                    isMe
+                      ? '시간이 만료되었습니다. 다시 초대해주세요.'
+                      : '시간이 만료되었습니다.'
+                  }
                   fontSetting="n16m"
                   isLineBreak
                 />
