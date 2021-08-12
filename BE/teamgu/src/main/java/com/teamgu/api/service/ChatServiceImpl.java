@@ -113,7 +113,7 @@ public class ChatServiceImpl implements ChatService{
 		List<ChatMessageResDto> chatMessageResDtoList = new ArrayList<ChatMessageResDto>();
 		for(Chat chat:chatRepositorySupport.findByReceiveRoomId(chatRoomId)) {
 			long team_id = 0;
-			if(!chat.getType().contains("TEAM_INVITE"))//팀초대 관련 메세지만 team_id를 가져온다
+			if(chat.getType().contains("TEAM_INVITE"))//팀초대 관련 메세지만 team_id를 가져온다
 				team_id = chat.getTeamId();
 			ChatMessageResDto chatMessageResDto = ChatMessageResDto.builder()
 													.chat_id(chat.getId())
