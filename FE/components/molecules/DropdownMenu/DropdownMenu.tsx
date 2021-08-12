@@ -2,6 +2,7 @@ import { ReactElement, useState } from 'react';
 import styled from 'styled-components';
 
 import { Title } from '@molecules';
+import { Text } from '@atoms';
 
 interface Items {
   id: number;
@@ -35,7 +36,7 @@ const Wrapper = styled.div<{ isOpen: boolean; isRoomUserHover: boolean }>`
 		`}
 
   .list {
-    width: ${({ isRoomUserHover }) => (isRoomUserHover ? '210px' : '143px')};
+    width: ${({ isRoomUserHover }) => (isRoomUserHover ? '210px' : '120px')};
     padding: 10px 0;
     position: absolute;
     top: 25px;
@@ -52,11 +53,12 @@ const Wrapper = styled.div<{ isOpen: boolean; isRoomUserHover: boolean }>`
 
     .item {
       ${({ theme: { flexRow } }) => flexRow()};
-      width: ${({ isRoomUserHover }) => (isRoomUserHover ? '180px' : '87px')};
+      width: ${({ isRoomUserHover }) => (isRoomUserHover ? '180px' : '90px')};
       padding: 0 5px;
 
       .each {
-        ${({ theme: { flexRow } }) => flexRow('flex-start')};
+        ${({ theme: { flexRow }, isRoomUserHover }) =>
+          flexRow(isRoomUserHover ? 'flex-start' : 'center')};
         width: 100%;
         height: 100%;
         padding: 5px 0;
@@ -64,6 +66,7 @@ const Wrapper = styled.div<{ isOpen: boolean; isRoomUserHover: boolean }>`
         text-align: left;
         font-size: 15px;
         color: #9e9e9e;
+        > div:hover,
         &:hover {
           color: #f2886b;
           text-decoration: none;
@@ -96,10 +99,16 @@ export default function DropdownMenu({
           </li>
         ))}
         {roomUserList?.length > 0 && (
-          <Title title="참가자">
+          <Title title="참가자" fontSetting="n14b">
             {roomUserList?.map(({ user_id, name, email }: RoomUserList) => (
               <li className="item" key={user_id}>
-                <div className="each">{`${name}(${email})`}</div>
+                <div className="each">
+                  <Text
+                    className="item"
+                    text={`${name}(${email})`}
+                    fontSetting="n12m"
+                  />
+                </div>
               </li>
             ))}
           </Title>
