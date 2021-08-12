@@ -22,7 +22,7 @@ const renderActiveShape = (props: any, title?: string) => {
         outerRadius={outerRadius + 10}
         startAngle={startAngle}
         endAngle={endAngle}
-        fill='#fff'
+        fill="#fff"
       />
       <text
         x={cx}
@@ -87,18 +87,9 @@ export default function BigDonutChart({
   title,
 }: BigDonutChartProps): ReactElement {
   const [activeIndex, setActiveIndex] = useState(0);
-  const onPieEnter = useCallback(
-    (_, index) => {
-      setActiveIndex(1);
-    },
-    [setActiveIndex],
-  );
-  const onPieLeave = useCallback(
-    (_, index) => {
-      setActiveIndex(0);
-    },
-    [setActiveIndex],
-  );
+  const onPieEnter = (_: any, index: number) => {
+    setActiveIndex(index);
+  };
 
   return (
     <PieChart width={300} height={320}>
@@ -113,7 +104,6 @@ export default function BigDonutChart({
         fill="#dcdcdc"
         dataKey="value"
         onMouseEnter={onPieEnter}
-        onMouseLeave={onPieLeave}
       />
     </PieChart>
   );
