@@ -143,12 +143,12 @@ public class ChatRoomRepositorySupport {
 			room_id = res.get(0).longValue();
 			
 			//3. 채팅방에 인원 초대
-			jpql = "INSERT INTO user_chat_room(chat_room_id,user_id,last_chat_id)";
+			jpql = "INSERT INTO user_chat_room(chat_room_id,user_id,last_chat_id,title)";
 			for(int i = 0; i<users.size();i++) {
 				long user_id = users.get(i);
 				if(i==0) jpql+="\r\nVALUES";			
 				if(i>0) jpql+=",";
-				jpql+="\r\n("+room_id+","+user_id+",null)";
+				jpql+="\r\n("+room_id+","+user_id+",null,"+title+")";
 			}			
 			log.debug(jpql);
 			em.createNativeQuery(jpql).executeUpdate();
@@ -170,19 +170,19 @@ public class ChatRoomRepositorySupport {
 	 * @param room_id
 	 * @return
 	 */
-	public boolean inviteNUsers(List<Long> users, long room_id) {
+	public boolean inviteNUsers(List<Long> users, long room_id, String title) {
 		EntityManager em = emf.createEntityManager();
 		EntityTransaction et = em.getTransaction();
 		log.debug("트랜잭션 시작 완료");
 		try {
 			et.begin();
 			//1. 채팅방에 인원 초대
-			String jpql = "INSERT INTO user_chat_room(chat_room_id,user_id,last_chat_id)";
+			String jpql = "INSERT INTO user_chat_room(chat_room_id,user_id,last_chat_id,title)";
 			for(int i = 0; i<users.size();i++) {
 				long user_id = users.get(i);
 				if(i==0) jpql+="\r\nVALUES";			
 				if(i>0) jpql+=",";
-				jpql+="\r\n("+room_id+","+user_id+",null)";
+				jpql+="\r\n("+room_id+","+user_id+",null,"+title+")";
 			}			
 			log.debug(jpql);
 			em.createNativeQuery(jpql).executeUpdate();
@@ -195,30 +195,7 @@ public class ChatRoomRepositorySupport {
 			em.close();
 		}
 		return true;		
-	}
-	
-	/**
-	 * 채팅방 내에서 방 이름을 변경하는 경우
-	 */
-	public boolean modifyRoomName(String title, long room_id) {
-		EntityManager em = emf.createEntityManager();
-		EntityTransaction et = em.getTransaction();
-		try {
-			et.begin();
-			String jpql = "UPDATE chat_room SET title = :title WHERE id=:room_id";
-			em.createNativeQuery(jpql).setParameter("title", title)
-										.setParameter("room_id", room_id)
-										.executeUpdate();
-			et.commit();
-		}catch(Exception e) {
-			log.error("채팅방 이름 변경에 실패했습니다");			
-			et.rollback();
-			return false;
-		}finally {
-			em.close();
-		}
-		return true;		
-	}
+	}	
 	
 	/**
 	 * 개인이 특정 채팅방을 나가는 경우
@@ -236,6 +213,30 @@ public class ChatRoomRepositorySupport {
 			et.commit();
 		}catch(Exception e) {
 			log.error("방 나가기에 실패했습니다");
+			et.rollback();
+			return false;
+		}finally {
+			em.close();
+		}
+		return true;		
+	}
+	
+	/**
+	 * 채팅방 내에서 (개인에게 보여지는) 방 이름을 변경하는 경우
+	 */
+	public boolean modifyPersonalRoomName(String title, long room_id, long user_id) {
+		EntityManager em = emf.createEntityManager();
+		EntityTransaction et = em.getTransaction();
+		try {
+			et.begin();
+			String jpql = "UPDATE user_chat_room SET title = :title WHERE chat_room_id=:room_id AND user_id=:user_id";
+			em.createNativeQuery(jpql).setParameter("title", title)
+										.setParameter("room_id", room_id)
+										.setParameter("user_id", user_id)
+										.executeUpdate();
+			et.commit();
+		}catch(Exception e) {
+			log.error("채팅방 이름 변경에 실패했습니다");			
 			et.rollback();
 			return false;
 		}finally {

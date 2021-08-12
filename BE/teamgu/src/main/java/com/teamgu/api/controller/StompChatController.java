@@ -89,7 +89,7 @@ public class StompChatController {
 	@MessageMapping(value="/chat/messageRTC")
 	public void messageRTC(@RequestBody UserRoomInviteReqDto userReqDto) {
 		log.info("in user-invite...");
-		log.info(userReqDto.getUser_id()+"가 "+userReqDto.getRoom_id()+" 방에 메세지를 보냅ㄴ디ㅏ");
+		log.info(userReqDto.getUser_id()+"가 "+userReqDto.getRoom_id()+" 방에 메세지를 보냅니다.");
 		long roomid = userReqDto.getRoom_id();
 		String name = userService.getUserById(userReqDto.getUser_id()).get().getName();
 		//1. 초대 메세지 보내기 전에 저장
@@ -130,11 +130,13 @@ public class StompChatController {
 		log.info(leader_id+"가 "+invitee_id+"를"+team_id+" 팀으로 초대합니다");
 		
 		//1. 해당 유저와 채팅방이 생성되어 있는지 체크하고 없다면 생성한다
-		long chat_room_id = chatService.roomCheck(leader_id, invitee_id);
+		long chat_room_id = chatService.roomCheckOneToOne(leader_id, invitee_id);
+		
 		if(chat_room_id==0) {//존재하지 않는 경우 방을 생성하고 방 번호를 반환한다.
 //			String name1 = userService.getUserById(leader_id).get().getName(); //name변수와 동일한 처리이므로 주석처리
 			String name2 = userService.getUserById(invitee_id).get().getName();			
-			ChatRoomResDto chatRoomResDto = chatService.createRoom(name+", "+name2+"의 방");
+			String init_title = name+", "+name2+"의 방";	//초기 채팅방 이름
+			ChatRoomResDto chatRoomResDto = chatService.createRoom(init_title);
 			chat_room_id = chatRoomResDto.getChat_room_id();
 			
 			log.info(chat_room_id+"방이 생성되었습니다");
