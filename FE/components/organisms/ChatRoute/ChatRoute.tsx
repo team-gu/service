@@ -1,4 +1,4 @@
-import { ReactElement, useState, useRef, KeyboardEvent } from 'react';
+import { ReactElement, useState, useRef, SyntheticEvent } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { OptionsType } from 'react-select';
@@ -110,17 +110,6 @@ const Wrapper = styled(motion.div)`
   }
 `;
 
-const Form = styled.div`
-  ${({ theme: { flexRow } }) => flexRow()}
-  input {
-    height: 100%;
-  }
-
-  button {
-    height: 100%;
-  }
-`;
-
 const CHAT_LIST = 0;
 const CHAT_ROOM = 1;
 
@@ -137,7 +126,6 @@ export default function ChatRoute(): ReactElement {
   );
   const [userList, setUserList] = useState([]);
   const [roomUserList, setRoomUserList] = useState([]);
-  const [showTooltip, setShowTooltip] = useState(false);
 
   const [route, setRoute] = useState(CHAT_LIST);
 
@@ -247,7 +235,6 @@ export default function ChatRoute(): ReactElement {
           title: editRef.current.value,
         });
         setRoomName(editRef.current.value);
-        setShowTooltip(false);
       } catch (error) {
         console.error(error);
       }
@@ -298,34 +285,24 @@ export default function ChatRoute(): ReactElement {
                 func={() => setRoute(CHAT_LIST)}
               />
               <>
-                {showTooltip && (
-                  <Tooltip>
-                    <Form>
+                <Tooltip>
+                  <>
+                    <form className="content" onSubmit={handleChangeTitle}>
                       <input
                         ref={editRef}
                         type="text"
                         placeholder="변경할 방 제목을 입력해주세요"
-                        onKeyPress={(e: KeyboardEvent<HTMLDivElement>) => {
-                          if (e.key === 'Enter') {
-                            e.preventDefault();
-                            handleChangeTitle();
-                          }
-                        }}
                       />
-                      <button type="button" onClick={handleChangeTitle}>
-                        EDIT
-                      </button>
-                    </Form>
-                  </Tooltip>
-                )}
-                <span onClick={() => setShowTooltip((prev) => !prev)}>
-                  <Text
-                    className="header-title"
-                    text={roomName}
-                    fontSetting="n16b"
-                    color="white"
-                  />
-                </span>
+                      <button type="submit">EDIT</button>
+                    </form>
+                    <Text
+                      className="header-title"
+                      text={roomName}
+                      fontSetting="n16b"
+                      color="white"
+                    />
+                  </>
+                </Tooltip>
               </>
 
               <div className="fixed-two">
