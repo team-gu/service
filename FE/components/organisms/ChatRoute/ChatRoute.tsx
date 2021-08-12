@@ -132,8 +132,9 @@ export default function ChatRoute(): ReactElement {
 
   const [room_id, setRoomId] = useState<number>(0);
   const [roomName, setRoomName] = useState<string>('');
-  const [selectedUser, setSelectedUser] =
-    useState<OptionsType<MemberOption> | null>();
+  const [selectedUser, setSelectedUser] = useState<OptionsType<MemberOption>>(
+    [],
+  );
   const [userList, setUserList] = useState([]);
   const [roomUserList, setRoomUserList] = useState([]);
   const [showTooltip, setShowTooltip] = useState(false);
