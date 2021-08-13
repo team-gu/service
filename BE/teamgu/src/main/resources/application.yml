@@ -1,6 +1,8 @@
 logging:
   level:
-    root: info
+    root: INFO
+    com.zaxxer.hikari.HikariConfig: DEBUG
+    com.zaxxer.hikari: TRACE
 server:
   ssl:
     key-alias: tomcat
@@ -26,11 +28,12 @@ spring:
     hikari:
       username: root
       password: teamgupassword
-      idle-timeout: 10000
-      max-lifetime: 420000
-      connection-timeout: 10000
-      validation-timeout: 10000
+#      idle-timeout: 10000
+#      max-lifetime: 420000
+#      connection-timeout: 10000
+#      validation-timeout: 10000
       maximum-pool-size: 30
+      leak-detection-threshold: 2000
   servlet:
     multipart:
       maxFileSize: 30MB

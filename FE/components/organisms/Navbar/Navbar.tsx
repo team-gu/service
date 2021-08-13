@@ -6,6 +6,8 @@ import styled from 'styled-components';
 import { Icon } from '@atoms';
 import { useAuthState, useAppDispatch, setLogout } from '@store';
 import { useScrollPosition } from '@hooks/useWindow';
+import { getImageURL } from '@utils/constants';
+
 const Wrapper = styled.nav<{ isShowByScroll: Boolean }>`
   font-family: 'Roboto', sans-serif;
   position: fixed;
@@ -18,7 +20,7 @@ const Wrapper = styled.nav<{ isShowByScroll: Boolean }>`
   ${({ theme: { flexRow } }) => flexRow('space-between')};
   transition: 0.5s;
   background-color: #fff;
-  z-index: 100;
+  z-index: 20;
 
   ul {
     display: flex;
@@ -79,7 +81,7 @@ const Menu = styled.div<{ show: Boolean }>`
   box-sizing: 0 5px 25px rgba(0, 0, 0, 0.1);
   border-radius: 15px;
   transition: 0.5s;
-  opacity: ${({ show }) => (show ? '1' : '0')};
+  display: ${({ show }) => (show ? '' : 'none')};
 
   ul {
     display: inline-block;
@@ -124,12 +126,12 @@ export default function Navbar(): ReactElement {
   const router = useRouter();
   const { user } = useAuthState();
 
-  const menuRef = useRef();
+  const menuRef = useRef<HTMLDivElement>(null);
   const [show, setShow] = useState(false);
   const [hideOnScroll, setHideOnScroll] = useState(true);
 
   useEffect(() => {
-    const handler = (e: MouseEvent) => {
+    const handler = (e: Event & { target: HTMLDivElement }) => {
       if (!menuRef.current.contains(e.target) && show) {
         setShow(false);
       }
@@ -204,7 +206,7 @@ export default function Navbar(): ReactElement {
         <Image
           className="profileImage"
           alt="프로필사진"
-          src="/profile.png"
+          src={getImageURL(user.img)}
           width={'40%'}
           height={'40%'}
           onClick={() => {

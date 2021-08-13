@@ -3,6 +3,7 @@ package com.teamgu.api.service;
 import java.util.List;
 
 import com.teamgu.api.dto.res.CodeResDto;
+import com.teamgu.api.dto.res.DashBoardResDto;
 import com.teamgu.api.dto.res.ProjectInfoResDto;
 
 public interface AdminService {
@@ -39,5 +40,8 @@ public interface AdminService {
 	
 	// Check Deleteable
 	public boolean checkProjectDeletion(Long projectId);
+	
+	// Select DashBoard Data
+	public DashBoardResDto getTeamBuildingStatus(Long projectId);
 	
 }

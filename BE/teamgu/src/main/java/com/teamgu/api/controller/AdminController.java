@@ -20,6 +20,7 @@ import com.teamgu.api.dto.req.ProjectReqDto;
 import com.teamgu.api.dto.res.BasicResponse;
 import com.teamgu.api.dto.res.CodeResDto;
 import com.teamgu.api.dto.res.CommonResponse;
+import com.teamgu.api.dto.res.DashBoardResDto;
 import com.teamgu.api.dto.res.ProjectInfoResDto;
 import com.teamgu.api.service.AdminServiceImpl;
 
@@ -86,7 +87,7 @@ public class AdminController {
 	
 	}
 	
-	@ApiOperation(value = "코드 조회")
+	@ApiOperation(value = "Select Box Code 조회")
 	@PostMapping("/project/code")
 	public ResponseEntity<? extends BasicResponse> getCodeList(@RequestBody ProjectCodeReqDto projectCodeReqDto) {
 
@@ -94,7 +95,7 @@ public class AdminController {
 		return ResponseEntity.ok(new CommonResponse<List<CodeResDto>>(list));
 	}
 
-	@ApiOperation(value = "코드 입력")
+	@ApiOperation(value = "Select Box Code 입력")
 	@PostMapping("/project/code/insert")
 	public ResponseEntity<? extends BasicResponse> insertCode(@RequestBody ProjectCodeReqDto projectCodeReqDto) {
 
@@ -117,7 +118,7 @@ public class AdminController {
 
 	}
 
-	@ApiOperation(value = "코드 삭제")
+	@ApiOperation(value = "Select Box Code 삭제")
 	@PostMapping("/project/code/delete")
 	public ResponseEntity<? extends BasicResponse> deleteCode(@RequestBody ProjectCodeReqDto projectCodeReqDto) {
 
@@ -134,5 +135,19 @@ public class AdminController {
 		}
 
 	}
+	
+	@ApiOperation(value = "DashBoard 조회")
+	@GetMapping("/dashboard/{projectId}")
+	public ResponseEntity<? extends BasicResponse> getTeamBuildingStatus(@PathVariable Long projectId) {
+
+		if(!adminService.checkProjectDeletion(projectId)) {
+
+			DashBoardResDto dashBoard = adminService.getTeamBuildingStatus(projectId);
+			
+			return ResponseEntity.ok(new CommonResponse<DashBoardResDto>(dashBoard));
+		}
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+	}
+	
 
 }

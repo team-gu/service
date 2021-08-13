@@ -70,18 +70,23 @@ public class TeamRepositorySupport {
 
 		EntityManager em = emf.createEntityManager();
 		EntityTransaction et = em.getTransaction();
-
-		et.begin();
-
-		String jpql = "INSERT INTO team_skill Values(?1, ?2)";
-
-		em.createNativeQuery(jpql)
-		.setParameter(1, skillCode)
-		.setParameter(2, teamId)
-		.executeUpdate();
-
-		et.commit();
-		em.close();
+		try {
+			et.begin();
+	
+			String jpql = "INSERT INTO team_skill Values(?1, ?2)";
+	
+			em.createNativeQuery(jpql)
+			.setParameter(1, skillCode)
+			.setParameter(2, teamId)
+			.executeUpdate();
+	
+			et.commit();
+		}catch(Exception e) {
+			et.rollback();
+			e.printStackTrace();
+		}finally {
+			em.close();
+		}
 
 	}
 
@@ -123,15 +128,20 @@ public class TeamRepositorySupport {
 
 		EntityManager em = emf.createEntityManager();
 		EntityTransaction et = em.getTransaction();
-
-		et.begin();
-
-		String jpql = "INSERT INTO user_team (team_id, user_id) Values(?1, ?2)";
-
-		em.createNativeQuery(jpql).setParameter(1, teamId).setParameter(2, userId).executeUpdate();
-
-		et.commit();
-		em.close();
+		try {
+			et.begin();
+	
+			String jpql = "INSERT INTO user_team (team_id, user_id) Values(?1, ?2)";
+	
+			em.createNativeQuery(jpql).setParameter(1, teamId).setParameter(2, userId).executeUpdate();
+	
+			et.commit();
+		}catch(Exception e) {
+			et.rollback();
+			e.printStackTrace();
+		}finally {
+			em.close();
+		}
 
 	}
 
@@ -140,15 +150,20 @@ public class TeamRepositorySupport {
 
 		EntityManager em = emf.createEntityManager();
 		EntityTransaction et = em.getTransaction();
-
-		et.begin();
-
-		String jpql = "DELETE FROM user_team where team_id = ?1 and user_id = ?2";
-
-		em.createNativeQuery(jpql).setParameter(1, teamId).setParameter(2, userId).executeUpdate();
-
-		et.commit();
-		em.close();
+		try {
+			et.begin();
+	
+			String jpql = "DELETE FROM user_team where team_id = ?1 and user_id = ?2";
+	
+			em.createNativeQuery(jpql).setParameter(1, teamId).setParameter(2, userId).executeUpdate();
+	
+			et.commit();
+		}catch(Exception e) {
+			et.rollback();
+			e.printStackTrace();
+		}finally {
+			em.close();
+		}
 	}
 
 	// Team의 teamId 조회
@@ -164,17 +179,22 @@ public class TeamRepositorySupport {
 	public void changeTeamLeader(Long teamId, Long userId) {
 		EntityManager em = emf.createEntityManager();
 		EntityTransaction et = em.getTransaction();
-
-		et.begin();
-
-		String jpql = "UPDATE team SET leader_id = ?1 WHERE id = ?2";
-
-		em.createNativeQuery(jpql)
-			.setParameter(1, userId)
-			.setParameter(2, teamId)
-			.executeUpdate();
-		et.commit();
-		em.close();
+		try {
+			et.begin();
+	
+			String jpql = "UPDATE team SET leader_id = ?1 WHERE id = ?2";
+	
+			em.createNativeQuery(jpql)
+				.setParameter(1, userId)
+				.setParameter(2, teamId)
+				.executeUpdate();
+			et.commit();
+		}catch(Exception e) {
+			et.rollback();
+			e.printStackTrace();
+		}finally {			
+			em.close();
+		}
 	}
 	
 	// Team 구성 완료 여부
@@ -215,14 +235,19 @@ public class TeamRepositorySupport {
 		
 		EntityManager em = emf.createEntityManager();
 		EntityTransaction et = em.getTransaction();
-
-		et.begin();
-
-		String jpql = "DELETE FROM user_team where team_id = ?1 ";
-
-		em.createNativeQuery(jpql).setParameter(1, teamId).executeUpdate();
-		et.commit();
-		em.close();
+		try {
+			et.begin();
+	
+			String jpql = "DELETE FROM user_team where team_id = ?1 ";
+	
+			em.createNativeQuery(jpql).setParameter(1, teamId).executeUpdate();
+			et.commit();
+		}catch(Exception e) {
+			et.rollback();
+			e.printStackTrace();
+		}finally {			
+			em.close();
+		}
 
 	}
 
@@ -265,21 +290,22 @@ public class TeamRepositorySupport {
 	}
 	
 	// Team 생성 가능 여부 체크
-	public List<BigInteger> checkTeamBuilding(Long userId, int projectCode) {
-		
+	public List<BigInteger> checkTeamBuilding(Long userId, int projectCode) {		
 		EntityManager em = emf.createEntityManager();
-		
-		String jpql = "select team_id from user_team where team_id in \r\n" + 
-				"(select id from team where team.mapping_id in \r\n" + 
-				"(select mapping.id from mapping where mapping.project_code = ?1))" +
-				" and user_id = ?2";
-		
-		Query query = em.createNativeQuery(jpql)
-		.setParameter(1, projectCode)
-		.setParameter(2, userId);
-		
-		List<BigInteger> result = query.getResultList();
-		
+		List<BigInteger> result = null;
+		try {
+			String jpql = "select team_id from user_team where team_id in \r\n" + 
+					"(select id from team where team.mapping_id in \r\n" + 
+					"(select mapping.id from mapping where mapping.project_code = ?1))" +
+					" and user_id = ?2";	
+			result = em.createNativeQuery(jpql)
+						.setParameter(1, projectCode)
+						.setParameter(2, userId).getResultList();		
+		}catch(Exception e) {
+			e.printStackTrace();		
+		}finally {
+			em.close();
+		}
 		return result;
 
 	}
@@ -382,11 +408,13 @@ public class TeamRepositorySupport {
 					"(select id from team where team.mapping_id in \r\n" +
 					"(select mapping.id from mapping where mapping.project_code = " + projectCode + " and stage_code = " + stageCode +")) and user_id = " + userId;
 		}
-		
-		list = em.createNativeQuery(jqpl).getResultList();
-		
-		em.close();
-
+		try {
+			list = em.createNativeQuery(jqpl).getResultList();
+		}catch(Exception e) {
+			e.printStackTrace();
+		}finally {
+			em.close();
+		}
 		return list;
 	}
 	

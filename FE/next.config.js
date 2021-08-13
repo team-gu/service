@@ -8,6 +8,9 @@ module.exports = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  images: {
+    domains: ['i5a202.p.ssafy.io'],
+  },
   webpack(config, options) {
     config.resolve = {
       alias: {
@@ -23,7 +26,7 @@ module.exports = {
         '@routes': path.resolve(__dirname, 'routes'),
         '@store': path.resolve(__dirname, 'store'),
         '@styles': path.resolve(__dirname, 'styles'),
-        "@types": path.resolve(__dirname, 'types'),
+        '@types': path.resolve(__dirname, 'types'),
         '@utils': path.resolve(__dirname, 'utils'),
         '@context': path.resolve(__dirname, 'context'),
         '@parse': path.resolve(__dirname, 'test'),

@@ -79,10 +79,11 @@ export default function AdminMenuSidebarLeft({
 
   useEffect(() => {
     if (projects && projects.length > 0) {
+      const projectIdx = projects.length - 1;
       setSelectedProject({
-        ...projects[0],
-        label: projects[0].name,
-        value: projects[0].id,
+        ...projects[projectIdx],
+        label: projects[projectIdx].name,
+        value: projects[projectIdx].id,
       });
     }
   }, [projects]);
@@ -97,8 +98,14 @@ export default function AdminMenuSidebarLeft({
   };
 
   const handleChangeProject = (project: Project) => {
-    setSelectedProject({ ...project, label: project.name, value: project.id });
-    onChangeProject(project.id);
+    if (project.id) {
+      setSelectedProject({
+        ...project,
+        label: project.name,
+        value: project.id,
+      });
+      onChangeProject(project.id);
+    }
   };
 
   const customStyles = {

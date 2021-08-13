@@ -73,3 +73,13 @@ export const deleteAdminProjectOption = async (param: any) => {
     param,
   });
 };
+
+export const getChartData = async (param: any) => {
+  console.log('getChartData');
+  console.log(param);
+
+  return await api({
+    url: `/api/admin/dashboard/${param.projectId}`,
+    type: 'get',
+  })
+}
