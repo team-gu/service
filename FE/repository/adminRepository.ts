@@ -6,8 +6,8 @@ export const getAdminProject = async () => {
   return await api({
     url: `/api/admin/project`,
     type: 'get',
-  })
-}
+  });
+};
 
 export const createAdminProject = async (param: any) => {
   console.log('createAdminProject');
@@ -81,5 +81,15 @@ export const getChartData = async (param: any) => {
   return await api({
     url: `/api/admin/dashboard/${param.projectId}`,
     type: 'get',
-  })
-}
+  });
+};
+
+export const getTableData = async (param: any) => {
+  console.log('getTableData');
+  console.log(param);
+
+  return await api({
+    url: `/api/admin/dashboardtable/${param.projectId}`,
+    type: 'get',
+  });
+};

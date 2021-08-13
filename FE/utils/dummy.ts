@@ -112,13 +112,12 @@ export const ADMIN_TRACK_DATA = [
   },
 ];
 
+
 export const DUMMY_TABLE_COLUMNS = [
   {
     Header: '학번',
     accessor: 'studentNumber',
     disableGroupBy: true,
-    // aggregate: 'count',
-    // Aggregated: ({ value }: any) => `${value} (count)`,
   },
   {
     Header: '이름',
@@ -136,11 +135,11 @@ export const DUMMY_TABLE_COLUMNS = [
   },
   {
     Header: '반',
-    accessor: 'classNum',
+    accessor: 'studentClass',
   },
   {
     Header: '팀 유무',
-    accessor: 'hasTeam',
+    accessor: 'teamYn',
   },
   {
     Header: '팀 식별자',
@@ -148,7 +147,7 @@ export const DUMMY_TABLE_COLUMNS = [
   },
   {
     Header: '리더 여부',
-    accessor: 'isLeader',
+    accessor: 'leaderYn',
   },
   {
     Header: '전공/비전공',
@@ -156,7 +155,7 @@ export const DUMMY_TABLE_COLUMNS = [
   },
   {
     Header: '희망 포지션',
-    accessor: 'wishPosition',
+    accessor: 'position',
   },
 ];
 
