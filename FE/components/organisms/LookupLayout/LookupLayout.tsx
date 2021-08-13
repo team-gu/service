@@ -48,6 +48,40 @@ const Wrapper = styled.div<{ showTeamCreateBtn: boolean }>`
     > div {
       margin-bottom: 20px;
     }
+
+    .react-paginate {
+      ${({ theme: { flexRow } }) => flexRow()}
+
+      width: 100%;
+      height: 50px;
+      ul {
+        display: inline-block;
+        padding-left: 15px;
+        padding-right: 15px;
+      }
+
+      li {
+        display: inline-block;
+        a {
+          color: black;
+          float: left;
+          padding: 8px 16px;
+          text-decoration: none;
+          cursor: pointer;
+        }
+      }
+
+      .selected {
+        background-color: #ddd;
+      }
+
+      .disabled {
+        > a {
+          cursor: normal;
+          color: lightgrey;
+        }
+      }
+    }
   }
 `;
 
