@@ -1,8 +1,9 @@
 package com.teamgu.api.service;
 
 import com.teamgu.api.dto.req.UserPoolNameReqDto;
-import com.teamgu.api.dto.req.UserPoolReqDto;
+import com.teamgu.api.dto.req.UserPoolPageReqDto;
 import com.teamgu.api.dto.res.UserPoolNameResDto;
+import com.teamgu.api.dto.res.UserPoolPageResDto;
 import com.teamgu.api.dto.res.UserPoolResDto;
 import com.teamgu.database.repository.UserPoolRepository;
 import lombok.extern.log4j.Log4j2;
@@ -11,9 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Service("userPoolService")
 @Log4j2
@@ -23,11 +22,18 @@ public class UserPoolServiceImpl implements UserPoolService {
     UserPoolRepository userPoolRepository;
 
     @Override
-    public List<UserPoolResDto> findUsersByFilter(UserPoolReqDto userPoolReqDto) {
-        List<Object[]> list = userPoolRepository.findUsersByFilter(userPoolReqDto);
+    public UserPoolPageResDto findUsersByFilter(UserPoolPageReqDto userPoolPageReqDto) {
+        List<Object[]> list = userPoolRepository.findUsersByFilter(userPoolPageReqDto);
         List<UserPoolResDto> retList = new ArrayList<>();
 
-        for (Object[] elem : list) {
+        int size = list.size();
+        int totPageCnt = size / userPoolPageReqDto.getPageSize();
+        int startIdx = userPoolPageReqDto.getPageNum() * userPoolPageReqDto.getPageSize();
+        int endIdx = startIdx + userPoolPageReqDto.getPageSize();
+
+        for (int i = startIdx; i < size && i < endIdx; i++) {
+            Object[] elem = list.get(i);
+
             UserPoolResDto userPoolResDto = UserPoolResDto.builder().build();
 
             userPoolResDto.setId(Long.parseLong(elem[0].toString()));
@@ -68,7 +74,9 @@ public class UserPoolServiceImpl implements UserPoolService {
             retList.add(userPoolResDto);
         }
 
-        return retList;
+        return UserPoolPageResDto.builder()
+                .dataList(retList)
+                .totPageCnt(totPageCnt).build();
     }
 
     @Override

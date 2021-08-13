@@ -1,7 +1,7 @@
 package com.teamgu.api.controller;
 
 import com.teamgu.api.dto.req.UserPoolNameReqDto;
-import com.teamgu.api.dto.req.UserPoolReqDto;
+import com.teamgu.api.dto.req.UserPoolPageReqDto;
 import com.teamgu.api.dto.res.*;
 import com.teamgu.api.service.UserPoolServiceImpl;
 import io.swagger.annotations.Api;
@@ -30,26 +30,26 @@ public class UserPoolController {
     /**
      * 인력 풀 검색 Api
      *
-     * @param userPoolReqDto
+     * @param userPoolPageReqDto
      */
     @PostMapping("/search")
     @ApiOperation(value = "필터를 기반으로 하여 원하는 유저 목록을 가져올 수 있는 Api")
     public ResponseEntity<? extends BasicResponse> searchUserPool(
-            @RequestBody @ApiParam(value = "검색 필터 데이터", required = true) UserPoolReqDto userPoolReqDto
+            @RequestBody @ApiParam(value = "검색 필터 데이터", required = true) UserPoolPageReqDto userPoolPageReqDto
     ) {
-        if (ObjectUtils.isEmpty(userPoolReqDto.getStudentNumber())) {
+        if (ObjectUtils.isEmpty(userPoolPageReqDto.getStudentNumber())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new ErrorResponse("입력값이 정확하지 않습니다"));
         }
 
-        List<UserPoolResDto> oFilteredList = userPoolService.findUsersByFilter(userPoolReqDto);
+        UserPoolPageResDto oFilteredPage = userPoolService.findUsersByFilter(userPoolPageReqDto);
 
-        if (CollectionUtils.isEmpty(oFilteredList)) {
+        if (CollectionUtils.isEmpty(oFilteredPage.getDataList())) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new ErrorResponse("일치하는 유저가 없습니다"));
         }
 
-        return ResponseEntity.ok(new CommonResponse<List<UserPoolResDto>>(oFilteredList));
+        return ResponseEntity.ok(new CommonResponse<UserPoolPageResDto>(oFilteredPage));
     }
 
     /**
@@ -59,7 +59,7 @@ public class UserPoolController {
      * @param studentNumber
      * @param projectCode
      */
-    @GetMapping("/search/{name}")
+    @GetMapping("/search")
     @ApiOperation(value = "사용자 검색시 이름 or 이메일 기반으로 자동완성 가능하게 하는 Api")
     public ResponseEntity<? extends BasicResponse> findUserBySimName(
             @RequestParam @ApiParam(value = "검색 대상 이름 or 이메일", required = true) String target,

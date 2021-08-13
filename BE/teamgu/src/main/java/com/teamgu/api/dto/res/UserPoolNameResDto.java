@@ -8,7 +8,6 @@ import lombok.Data;
 
 @Data
 @Builder
-@AllArgsConstructor
 @ApiModel(description = "인력풀 이름 자동완성 Response 모델")
 public class UserPoolNameResDto {
     @ApiModelProperty(name = "유저 id")
@@ -23,10 +22,10 @@ public class UserPoolNameResDto {
     @ApiModelProperty(name = "유저 email")
     private String email;
 
-//    public UserPoolNameResDto(Long id, String profileSrc, String name, String email) {
-//        this.id = id;
-//        this.profileSrc = "https://i5a202.p.ssafy.io:8080/api/file/display?url=profile/" + profileSrc;
-//        this.name = name;
-//        this.email = email;
-//    }
+    public UserPoolNameResDto(Long id, String profileSrc, String name, String email) {
+        this.id = id;
+        this.profileSrc = "https://i5a202.p.ssafy.io:8080/api/file/display?url=profile/" + profileSrc;
+        this.name = name;
+        this.email = email;
+    }
 }

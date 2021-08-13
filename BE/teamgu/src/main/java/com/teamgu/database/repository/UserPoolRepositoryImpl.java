@@ -3,7 +3,7 @@ package com.teamgu.database.repository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.teamgu.api.dto.req.UserPoolNameReqDto;
-import com.teamgu.api.dto.req.UserPoolReqDto;
+import com.teamgu.api.dto.req.UserPoolPageReqDto;
 import com.teamgu.api.dto.res.UserPoolNameResDto;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.log4j.Log4j2;
@@ -41,26 +41,26 @@ public class UserPoolRepositoryImpl implements UserPoolRepositoryCustom {
     EntityManagerFactory emf;
 
     @Override
-    public List<Object[]> findUsersByFilter(UserPoolReqDto userPoolReqDto) {
-        log.info(userPoolReqDto);
+    public List<Object[]> findUsersByFilter(UserPoolPageReqDto userPoolPageReqDto) {
+        log.info(userPoolPageReqDto);
 
         try {
-            studentNum = userPoolReqDto.getStudentNumber(); //무조건 들어와야하는 값
-            prjCode = userPoolReqDto.getProject(); //무조건 들어와야하는 값
-            stage = userPoolReqDto.getStudentNumber().substring(0, 2); //무조건 들어와야하는 값
+            studentNum = userPoolPageReqDto.getStudentNumber(); //무조건 들어와야하는 값
+            prjCode = userPoolPageReqDto.getProject(); //무조건 들어와야하는 값
+            stage = userPoolPageReqDto.getStudentNumber().substring(0, 2); //무조건 들어와야하는 값
         } catch (Exception e) {
-            log.info("substring 에러");
+            log.error("substring 에러");
         }
 
 
-        regList = userPoolReqDto.getRegion();
-        posList = userPoolReqDto.getPosition();
-        trkList = userPoolReqDto.getTrack(); //얘는 쿼리문 돌리고 나서 처리 조인해야되는 테이블떄문에
-        skList = userPoolReqDto.getSkills(); //얘도 쿼리문 돌리고 나서 처리
+        regList = userPoolPageReqDto.getRegion();
+        posList = userPoolPageReqDto.getPosition();
+        trkList = userPoolPageReqDto.getTrack(); //얘는 쿼리문 돌리고 나서 처리 조인해야되는 테이블떄문에
+        skList = userPoolPageReqDto.getSkills(); //얘도 쿼리문 돌리고 나서 처리
 
-        majorCode = userPoolReqDto.getIsMajor(); //얘네는 where에서 처리
-        name = userPoolReqDto.getName();
-        sort = userPoolReqDto.getSort();
+        majorCode = userPoolPageReqDto.getIsMajor(); //얘네는 where에서 처리
+        name = userPoolPageReqDto.getName();
+        sort = userPoolPageReqDto.getSort();
 
         String whereStmt = makeFilterWhere();
         String orderStmt = makeFilterOrder();
