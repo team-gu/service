@@ -1,12 +1,9 @@
 package com.teamgu.api.service;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -215,8 +212,6 @@ public class AdminServiceImpl implements AdminService {
 		short complete = 0;
 		
 		for(int i = 0, size = regionCode.size(); i<size;  i++) {
-			DashBoardDetailResDto dashBoardDetail = new DashBoardDetailResDto();
-			DashBoardDetailInfoResDto data = new DashBoardDetailInfoResDto();
 			
 			String code = Integer.toString( regionCode.get(i).getCode()-100);
 			String title =  regionCode.get(i).getCodeName();
@@ -224,86 +219,90 @@ public class AdminServiceImpl implements AdminService {
 			// 총 인원
 			int totalMember = adminRepositorySupport.getTotalMemberCountByRegion(projectId, code);
 			totalCount += totalMember;
-			data.setTotal(totalMember);
 			
 			// 팀 구성 중 인원
 			complete = 0;
 			int doingCount = adminRepositorySupport.getTeamBuildingMemberCountByRegion(projectId, code, complete);
 			doingTotalCount += doingCount;
-			data.setDoing(doingCount);
 			
 			// 팀 구성 후 인원
 			complete = 1;
 			int afterCount = adminRepositorySupport.getTeamBuildingMemberCountByRegion(projectId, code, complete);
 			afterTotalCount += afterCount;
-			data.setAfter(afterCount);
 
-			// 팀 구성 전 인원
-			
+			// 팀 구성 전 인원			
 			int beforeCount = totalMember - doingCount - afterCount;
 			beforeTotalCount += beforeCount;
-			data.setBefore(beforeCount);
 			
-			dashBoardDetail.setTitle(title);
-			dashBoardDetail.setData(data);
 			if(title.equals("서울")) {
-				region.add(0, dashBoardDetail);
+				region.add(0, DashBoardDetailResDto.builder()
+						.data(DashBoardDetailInfoResDto.builder()
+								.total(totalMember)
+								.doing(doingCount)
+								.after(afterCount)
+								.before(beforeCount)
+								.build())
+						.title(title)
+						.build());
 			}
 			else {
 
-				region.add(dashBoardDetail);
+				region.add(DashBoardDetailResDto.builder()
+						.data(DashBoardDetailInfoResDto.builder()
+								.total(totalMember)
+								.doing(doingCount)
+								.after(afterCount)
+								.before(beforeCount)
+								.build())
+						.title(title)
+						.build());
 			}
 		}
-		// 구미 광주 대전 서울 부울경 전국
-		// 전국 서울 구미 광주 대전 부울경
 
-		DashBoardDetailResDto totalDashBoardDetail  = new DashBoardDetailResDto();
-		DashBoardDetailInfoResDto totalData = new DashBoardDetailInfoResDto();
-		
-		totalData.setTotal(totalCount);
-		totalData.setAfter(afterTotalCount);
-		totalData.setBefore(beforeTotalCount);
-		totalData.setDoing(doingTotalCount);
-		totalDashBoardDetail.setData(totalData);
-		totalDashBoardDetail.setTitle("전국");
-		region.add(0, totalDashBoardDetail);
+		region.add(0, DashBoardDetailResDto.builder()
+				.data(DashBoardDetailInfoResDto.builder()
+						.after(afterTotalCount)
+						.total(totalCount)
+						.before(beforeTotalCount)
+						.doing(doingTotalCount)
+						.build())
+				.title("전국")
+				.build());
 		
 		List<CodeResDto> tracks = adminRepositorySupport.getTrackList(projectId);
 		
 		for(int i = 0, size = tracks.size(); i<size; i++) {
 
-			DashBoardDetailResDto dashBoardDetail = new DashBoardDetailResDto();
-			DashBoardDetailInfoResDto data = new DashBoardDetailInfoResDto();
 			int trackCode = tracks.get(i).getCode();
 			// 구성중인 팀의 갯수
 			complete = 0;
 			int doingTeam = adminRepositorySupport.getTeamCountByTrack(projectId, trackCode, complete);
-			data.setDoingTeam(doingTeam);
 
 			// 구성중인 교육생
 			int doingCount = adminRepositorySupport.getMemberCountByTrack(projectId, trackCode, complete);
-			data.setDoing(doingCount);
 			
 			// 구성된 팀의 갯수
 			complete = 1;
 			int afterTeam = adminRepositorySupport.getTeamCountByTrack(projectId, trackCode, complete);
-			data.setAfterTeam(afterTeam);
-			
 			
 			// 구성된 교육생
 			int afterCount = adminRepositorySupport.getMemberCountByTrack(projectId, trackCode, complete);
-			data.setAfter(afterCount);
-
-			dashBoardDetail.setTitle(tracks.get(i).getCodeName());
-			dashBoardDetail.setData(data);
 			
-			track.add(dashBoardDetail);
+			track.add(DashBoardDetailResDto.builder()
+					.data(DashBoardDetailInfoResDto.builder()
+							.doingTeam(doingTeam)
+							.doing(doingCount)
+							.afterTeam(afterTeam)
+							.after(afterCount)
+							.build())
+					.title(tracks.get(i).getCodeName())
+					.build());
 			
 		}
-		
-		
-		dashBoard.setRegion(region);
-		dashBoard.setTrack(track);
+		dashBoard = DashBoardResDto.builder()
+		.track(track)
+		.region(region)
+		.build();
 		
 		return dashBoard;
 	}

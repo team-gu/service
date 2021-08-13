@@ -361,20 +361,19 @@ public class AdminRepositorySupport {
 			
 			for(Object[] data : datas)
 			{
-				DashBoardTableResDto dashBoardTableResDto = DashBoardTableResDto.builder().build();
 
-				dashBoardTableResDto.setStudentNumber(data[0].toString());
-				dashBoardTableResDto.setName(data[1].toString());
-				dashBoardTableResDto.setEmail(data[2].toString());
-				dashBoardTableResDto.setRegion(data[3].toString());
-				dashBoardTableResDto.setStudentClass(data[4].toString());
-				dashBoardTableResDto.setTeamYn(data[5].toString());
-				dashBoardTableResDto.setTeamId(Long.parseLong(data[6].toString()));
-				dashBoardTableResDto.setLeaderYn(data[7].toString());
-				dashBoardTableResDto.setMajor(data[8].toString());
-				dashBoardTableResDto.setPosition(data[9].toString());
-				dashBoardTable.add(dashBoardTableResDto);
-				
+				dashBoardTable.add(DashBoardTableResDto.builder()
+						.studentNumber(data[0].toString())
+						.name(data[1].toString())
+						.email(data[2].toString())
+						.region(data[3].toString())
+						.studentClass(data[4].toString())
+						.teamYn(data[5].toString())
+						.teamId(Long.parseLong(data[6].toString()))
+						.leaderYn(data[7].toString())
+						.major(data[8].toString())
+						.position(data[9].toString())
+						.build());
 			}
 
 		} catch (Exception e) {

@@ -22,6 +22,7 @@ import com.teamgu.api.dto.res.CodeResDto;
 import com.teamgu.api.dto.res.CommonResponse;
 import com.teamgu.api.dto.res.DashBoardResDto;
 import com.teamgu.api.dto.res.DashBoardTableResDto;
+import com.teamgu.api.dto.res.ErrorResponse;
 import com.teamgu.api.dto.res.ProjectInfoResDto;
 import com.teamgu.api.service.AdminServiceImpl;
 
@@ -52,9 +53,11 @@ public class AdminController {
 		int projectCode = projectInfoResDto.getProject().getCode();
 		if(adminService.checkProjectDuplication(stageCode, projectCode)) {
 			adminService.createProject(projectInfoResDto);
-			return ResponseEntity.status(HttpStatus.OK).build();	
+			return ResponseEntity.status(HttpStatus.OK)
+					.body(new CommonResponse<String>("프로젝트 추가가 완료되었습니다."));	
 		}
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+				.body(new ErrorResponse("이미 존재하는 프로젝트입니다."));
 	}
 	
 	@ApiOperation(value = "프로젝트 수정")
@@ -68,11 +71,13 @@ public class AdminController {
 
 			adminService.updateProject(projectInfoResDto);
 
-			return ResponseEntity.status(HttpStatus.OK).build();	
+			return ResponseEntity.status(HttpStatus.OK)
+					.body(new CommonResponse<String>("수정이 완료되었습니다."));	
 
 		}
 
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+				.body(new ErrorResponse("존재하지 않는 프로젝트입니다."));
 	}
 
 	@ApiOperation(value = "프로젝트 삭제")
@@ -84,7 +89,8 @@ public class AdminController {
 			return ResponseEntity.status(HttpStatus.OK).build();
 		}
 
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+				.body(new ErrorResponse("삭제할 수 없는 프로젝트입니다. 참여하고 있는 교육생이 있는지 확인 바랍니다."));
 	
 	}
 	
@@ -113,7 +119,8 @@ public class AdminController {
 			List<CodeResDto> list = adminService.selectCode(codeId);
 			return ResponseEntity.ok(new CommonResponse<List<CodeResDto>>(list));
 		} else {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					.body(new ErrorResponse("이미 존재하는 코드입니다"));
 
 		}
 
@@ -132,7 +139,8 @@ public class AdminController {
 			return ResponseEntity.ok(new CommonResponse<List<CodeResDto>>(list));
 
 		} else {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					.body(new ErrorResponse("존재하지 않는 코드입니다"));
 		}
 
 	}
@@ -147,7 +155,8 @@ public class AdminController {
 			
 			return ResponseEntity.ok(new CommonResponse<DashBoardResDto>(dashBoard));
 		}
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+				.body(new ErrorResponse("존재하지 않는 프로젝트입니다"));
 	}
 	
 	@ApiOperation(value = "DashBoard Table 조회")
@@ -160,7 +169,8 @@ public class AdminController {
 			
 			return ResponseEntity.ok(new CommonResponse<List<DashBoardTableResDto>>(dashBoardTable));
 		}
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+				.body(new ErrorResponse("존재하지 않는 프로젝트입니다"));
 	}
 	
 
