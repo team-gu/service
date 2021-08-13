@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
 
-import { DropdownMenu } from 'components/molecules';
+import { DropdownMenu } from '@molecules';
 import { useAuthState, useAppDispatch, setLogout } from '@store';
 import { useScrollPosition } from '@hooks/useWindow';
 import { getImageURL } from '@utils/constants';
