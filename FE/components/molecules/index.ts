@@ -8,6 +8,7 @@ import Filter from './Filter';
 import FloatingButton from './FloatingButton';
 import Label from './Label';
 import Notification from './Notification';
+import Pagination from './Pagination';
 import ProfileContainer from './ProfileContainer';
 import ProfileImage from './ProfileImage';
 import RadioButton from './RadioButton';
@@ -37,6 +38,7 @@ export {
   FloatingButton,
   Label,
   Notification,
+  Pagination,
   ProfileContainer,
   ProfileImage,
   RadioButton,
