@@ -4,6 +4,7 @@ import {
   useRef,
   useEffect,
   KeyboardEvent,
+  ChangeEvent,
 } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
@@ -12,6 +13,7 @@ import { OptionsType } from 'react-select';
 import {
   useAuthState,
   useAppDispatch,
+  useModalState,
   setChatOpen,
   displayModal,
   removeModal,
@@ -122,6 +124,8 @@ const CHAT_ROOM = 1;
 
 export default function ChatRoute(): ReactElement {
   const dispatch = useAppDispatch();
+  const isShow = useModalState();
+
   const {
     user: { id, projectCode },
   } = useAuthState();
@@ -155,18 +159,23 @@ export default function ChatRoute(): ReactElement {
 
   const wrapperRef: any = useRef<HTMLInputElement>(null);
   const editRef: any = useRef<string>('');
+  const modalRef: any = useRef(null);
 
-  // function handleClickOutside({ target }: ChangeEvent<HTMLInputElement>) {
-  //   if (!wrapperRef.current?.contains(target)) {
-  //     dispatch(setChatOpen({ isChatOpen: false }));
-  //   }
-  // }
+  useEffect(() => {
+    modalRef.current = Object.keys(isShow).find((each) => isShow[each]);
+  });
 
-  // useEffect(() => {
-  //   document.addEventListener('click', handleClickOutside, true);
-  //   return () =>
-  //     document.removeEventListener('click', handleClickOutside, true);
-  // }, []);
+  function handleClickOutside({ target }: ChangeEvent<HTMLInputElement>) {
+    if (!wrapperRef.current?.contains(target) && !modalRef.current) {
+      dispatch(setChatOpen({ isChatOpen: false }));
+    }
+  }
+
+  useEffect(() => {
+    document.addEventListener('click', handleClickOutside, true);
+    return () =>
+      document.removeEventListener('click', handleClickOutside, true);
+  }, []);
 
   useEffect(() => {
     (async () => {
