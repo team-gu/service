@@ -120,20 +120,19 @@ export default function UserStatus(): ReactElement {
       setFilterContents(data);
     })();
 
+    const project = projectCodes[projectCodes.length - 1];
+
     setPayload({
-      project:
-        projectCodes?.length > 1 ? projectCodes[projectCodes.length - 1] : 101,
+      project,
       studentNumber,
       sort: 'asc',
       pageNum: 0,
       pageSize: 10,
     });
 
-    const project = projectCodes[projectCodes.length - 1];
-
     if (project) {
       setProjectCode(project);
-      return getUserHasTeam({
+      getUserHasTeam({
         userId: id,
         project: { code: project },
       }).then(({ data: { data } }) => {
@@ -144,14 +143,14 @@ export default function UserStatus(): ReactElement {
           }
         }
       });
+    } else {
+      dispatch(
+        displayModal({
+          modalName: MODALS.ALERT_MODAL,
+          content: '관리자에게 프로젝트 멤버 등록을 요청해주세요',
+        }),
+      );
     }
-
-    dispatch(
-      displayModal({
-        modalName: MODALS.ALERT_MODAL,
-        content: '관리자에게 프로젝트 멤버 등록을 요청해주세요',
-      }),
-    );
   }, []);
 
   useEffect(() => {
