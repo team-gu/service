@@ -53,6 +53,9 @@ public class JwtAuthController {
                 .password(password)
                 .name(name)
                 .role(role)
+                .profileExtension("png")
+                .profileServerName("c21f969b5f03d33d43e04f8f136e7682")
+                .profileOriginName("default")
                 .studentNumber(studentNumber)
                 .build();
         if (userService.save(user))
