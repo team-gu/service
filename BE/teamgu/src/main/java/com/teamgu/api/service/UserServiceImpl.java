@@ -100,6 +100,7 @@ public class UserServiceImpl implements UserService {
     @Autowired
     ProfileImageHandler profileImageHandler;
 
+    //프로필 이미지에 접근하기 위한 서버 baseUrl
     private static final String serverUrl = "https://i5a202.p.ssafy.io:8080/api/file/display?url=profile/";
 
     Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
@@ -308,7 +309,7 @@ public class UserServiceImpl implements UserService {
         userInfoResDto.setWishTrack(userInfoReqDto.getWishTracks());
         userInfoResDto.setIntroduce(userInfoReqDto.getIntroduce());
         userInfoResDto.setSkills(userInfoReqDto.getSkills());
-        userInfoResDto.setImg(userProfileImgDto.getServerName() + "." + userProfileImgDto.getExtension());
+        userInfoResDto.setImg(serverUrl + userProfileImgDto.getServerName() + "." + userProfileImgDto.getExtension());
 
         return userInfoResDto;
     }
