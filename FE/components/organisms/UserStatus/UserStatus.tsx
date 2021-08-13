@@ -89,7 +89,7 @@ const InviteConfirmModal = styled.div`
 
 export default function UserStatus(): ReactElement {
   const {
-    user: { id, name: userName, projectCode, studentNumber },
+    user: { id, projectCodes, studentNumber },
   } = useAuthState();
 
   const { handleSendInvitation, handleSendRtcLink } = useSockStomp({
@@ -122,7 +122,7 @@ export default function UserStatus(): ReactElement {
 
     setPayload({
       project:
-        projectCode?.length > 1 ? projectCode[projectCode.length - 1] : 101,
+        projectCodes?.length > 1 ? projectCodes[projectCodes.length - 1] : 101,
       studentNumber,
       sort: 'asc',
       pageNum: 0,
@@ -130,8 +130,8 @@ export default function UserStatus(): ReactElement {
     });
 
     const project =
-      projectCode && projectCode.length > 0
-        ? projectCode[projectCode.length - 1]
+      projectCodes && projectCodes.length > 0
+        ? projectCodes[projectCodes.length - 1]
         : 101;
     getUserHasTeam({
       userId: id,
@@ -178,7 +178,7 @@ export default function UserStatus(): ReactElement {
 
   const handleToggleFilter = (title: string, code: string) => {
     if (code === '전체') {
-      const payloadTemp: any = { ...payload };
+      const payloadTemp: any = { ...payload, pageNum: 0 };
       delete payloadTemp[FILTER_TITLE[title]];
       return setPayload(payloadTemp);
     }
@@ -187,7 +187,7 @@ export default function UserStatus(): ReactElement {
   };
 
   const handleFilter = (title: string, code: string) => {
-    const payloadTemp: any = { ...payload };
+    const payloadTemp: any = { ...payload, pageNum: 0 };
     const convertTitle: any = FILTER_TITLE[title];
 
     if (!payloadTemp.hasOwnProperty(convertTitle)) {
@@ -207,7 +207,7 @@ export default function UserStatus(): ReactElement {
   };
 
   const handleFilterArray = (title: string, arr: any) => {
-    const payloadTemp: any = { ...payload };
+    const payloadTemp: any = { ...payload, pageNum: 0 };
     const convertTitle: any = FILTER_TITLE[title];
 
     if (arr.length === 0) {
@@ -223,21 +223,28 @@ export default function UserStatus(): ReactElement {
   };
 
   const handleChangeUserSelect = (selectedUser: MemberOption | null) => {
-    if (selectedUser) {
-      setContainsUserId(selectedUser.id);
-    } else {
-      setContainsUserId(undefined);
+    if (selectedUser?.email) {
+      return setPayload((prev) => ({
+        ...prev,
+        email: selectedUser?.email,
+        pageNum: 0,
+      }));
     }
+
+    const payloadTemp: any = { ...payload, pageNum: 0 };
+
+    delete payloadTemp.email;
+    setPayload(payloadTemp);
   };
 
   const handleSortByChange = ({ value }: { value: number }) => {
-    if (projectCode?.includes(value)) {
-      setPayload({ ...payload, project: value });
+    if (projectCodes?.includes(value)) {
+      setPayload({ ...payload, project: value, pageNum: 0 });
     }
   };
 
   const handleClickSort = (sort: string) => {
-    setPayload({ ...payload, sort });
+    setPayload({ ...payload, sort, pageNum: 0 });
     setSortAsc(!sortAsc);
   };
 
@@ -316,6 +323,8 @@ export default function UserStatus(): ReactElement {
         <div className="team-status-header">
           <UserSelectAutoComplete
             handleChangeUserSelect={handleChangeUserSelect}
+            projectCodes={projectCodes}
+            studentNumber={studentNumber}
           />
           <div className="sort-container">
             <div className="sort-select">
