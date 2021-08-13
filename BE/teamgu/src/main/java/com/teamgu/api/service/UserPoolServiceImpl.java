@@ -21,6 +21,8 @@ public class UserPoolServiceImpl implements UserPoolService {
     @Autowired
     UserPoolRepository userPoolRepository;
 
+    private static final String serverUrl = "https://i5a202.p.ssafy.io:8080/api/file/display?url=profile/";
+
     @Override
     public UserPoolPageResDto findUsersByFilter(UserPoolPageReqDto userPoolPageReqDto) {
         List<Object[]> list = userPoolRepository.findUsersByFilter(userPoolPageReqDto);
@@ -48,14 +50,9 @@ public class UserPoolServiceImpl implements UserPoolService {
                 userPoolResDto.setIntroduce(elem[2].toString());
             }
 
-            if (ObjectUtils.isNotEmpty(elem[3])) { //프로필 파일 서버측 이름
-                userPoolResDto.setFileName(elem[3].toString());
+            if (ObjectUtils.isNotEmpty(elem[3]) && ObjectUtils.isNotEmpty(elem[4])) { //프로필 url 세팅
+                userPoolResDto.setProfileUIr(serverUrl + elem[3].toString() + "." + elem[4].toString());
             }
-
-            if (ObjectUtils.isNotEmpty(elem[4])) { //프로필 확장자
-                userPoolResDto.setExtension(elem[4].toString());
-            }
-
 
             if (elem[5] != null) { //wish Track
                 String[] tracks = elem[5].toString().split(",");
