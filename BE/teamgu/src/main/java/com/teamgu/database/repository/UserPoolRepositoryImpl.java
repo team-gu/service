@@ -28,7 +28,7 @@ public class UserPoolRepositoryImpl implements UserPoolRepositoryCustom {
 
     private static short majorCode;
     private static int prjCode;
-    private static String name, sort, stage, studentNum;
+    private static String email, sort, stage, studentNum;
     private static List<Integer> regList, posList, trkList, skList;
 
     @Autowired
@@ -59,7 +59,7 @@ public class UserPoolRepositoryImpl implements UserPoolRepositoryCustom {
         skList = userPoolPageReqDto.getSkills(); //얘도 쿼리문 돌리고 나서 처리
 
         majorCode = userPoolPageReqDto.getIsMajor(); //얘네는 where에서 처리
-        name = userPoolPageReqDto.getName();
+        email = userPoolPageReqDto.getEmail();
         sort = userPoolPageReqDto.getSort();
 
         String whereStmt = makeFilterWhere();
@@ -151,8 +151,8 @@ public class UserPoolRepositoryImpl implements UserPoolRepositoryCustom {
             sb.append(" ").append("and u.major = " + majorCode);
         else
             sb.append(" ").append("and u.major != " + majorCode);
-        if (!StringUtils.isEmpty(name))
-            sb.append(" ").append("and u.name = '" + name + "'");
+        if (!StringUtils.isEmpty(email))
+            sb.append(" ").append("and u.email = '" + email + "'");
 
         return sb.toString();
     }
