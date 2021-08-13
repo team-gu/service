@@ -8,7 +8,7 @@ import java.util.List;
 
 @Data
 @ApiModel(description = "인력풀 검색 Request 모델")
-public class UserPoolReqDto {
+public class UserPoolPageReqDto {
     @ApiModelProperty(name = "검색 하는 사람의 프로젝트 코드(동일한 프로젝트 내에서만 검색되게 함)", example = "")
     private int project;
 
@@ -35,4 +35,10 @@ public class UserPoolReqDto {
 
     @ApiModelProperty(name = "검색하는 사람의 학번", example = "0503050")
     private String studentNumber;
+
+    @ApiModelProperty(name = "원하는 페이지 번호", example = "1")
+    private int pageNum;
+
+    @ApiModelProperty(name = "페이지네이션할 사이즈", example = "10")
+    private int pageSize;
 }
