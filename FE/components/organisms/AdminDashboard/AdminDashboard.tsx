@@ -210,11 +210,12 @@ export default function AdminDashboard({
           ],
         }));
 
+        console.log(regionData);
         setRegionTeamData(regionData);
         setTrackTeamData(trackData);
       });
     }
-  }, []);
+  }, [projectId]);
 
   const tableData = useMemo(() => {
     // TODO: 팀 테이블 정보 서버에서 받기
