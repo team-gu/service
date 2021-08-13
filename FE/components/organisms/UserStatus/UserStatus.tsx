@@ -298,14 +298,14 @@ export default function UserStatus(): ReactElement {
                     title={each}
                     contents={filterContents[each]}
                     func={handleFilter}
-                    key={index}
+                    key={`filter-checkbox-${each}`}
                   />
                 ) : (
                   <Filter
                     title={each}
                     contents={filterContents[each]}
                     func={handleFilterArray}
-                    key={index}
+                    key={`filter-selectbox-${each}`}
                   />
                 )
               ) : (
@@ -313,7 +313,7 @@ export default function UserStatus(): ReactElement {
                   title={each}
                   contents={filterContents[each]}
                   func={handleToggleFilter}
-                  key={index}
+                  key={`filter-radiobutton-${each}`}
                   isRadioButton
                 />
               )),
@@ -349,7 +349,7 @@ export default function UserStatus(): ReactElement {
           <>
             {users?.map((each: Users) => (
               <UserStatusCard
-                key={each?.id}
+                key={`status-card-${each?.id}`}
                 user={each}
                 filterContents={filterContents}
                 id={id}
