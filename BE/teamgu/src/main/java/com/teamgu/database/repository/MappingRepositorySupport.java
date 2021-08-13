@@ -15,12 +15,13 @@ public class MappingRepositorySupport {
 	QMapping qMapping = QMapping.mapping;
 	
 	//
-	public Mapping selectMapping(int trackCode) {
+	public Mapping selectMapping(int trackCode, int stageCode) {
 		
 		
 		return (Mapping) jpaQueryFactory
 				.from(qMapping)
-				.where(qMapping.trackCode.eq(trackCode))
+				.where(qMapping.trackCode.eq(trackCode)
+						.and(qMapping.stageCode.eq(stageCode)))
 				.fetchOne();
 		
 	}
