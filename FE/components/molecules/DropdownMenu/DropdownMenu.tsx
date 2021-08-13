@@ -19,7 +19,7 @@ interface RoomUserList {
 
 interface DropdownMenuProps {
   children: ReactElement;
-  items: Items[];
+  items?: Items[];
   roomUserList?: RoomUserList[];
 }
 

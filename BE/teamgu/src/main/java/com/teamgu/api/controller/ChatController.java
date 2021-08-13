@@ -224,7 +224,7 @@ public class ChatController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR) 
 					.body(new ErrorResponse("방 이름 수정에 실패했습니다"));
 		}
-		return ResponseEntity.ok(new CommonResponse<Boolean>(true));
+		return ResponseEntity.ok(new CommonResponse<String>(chatRoomModifyReqDto.getTitle()));
 	}
 	
 	@GetMapping("/room/show/{room_id}")

@@ -106,11 +106,20 @@ const Bold = styled.span`
 
 const HelpContainer = styled.div<{ isOpen: boolean }>`
   position: relative;
+  display: block;
 
   .help-content {
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.5s;
+
     ${({ isOpen }) =>
-      isOpen ? 'display: block; !important' : 'display: none; !important'}
-    ${({ theme: { flexRow } }) => flexRow()};
+      isOpen
+        ? `visibility: visible;
+            opacity: 1;`
+        : `visibility: hidden;
+            opacity: 0;`}
+
     position: absolute;
     z-index: 5;
     background-color: Ivory;
@@ -121,7 +130,7 @@ const HelpContainer = styled.div<{ isOpen: boolean }>`
     bottom: 10px;
     right: 30px;
 
-    > p {
+    > div {
       text-align: left;
       margin-bottom: 10px;
       line-height: 20px;
@@ -260,21 +269,6 @@ export default function Table({ columns, data }: TableProps): ReactElement {
 
   return (
     <>
-      {/* Legend */}
-      {/* <pre>
-        <code>
-          {JSON.stringify(
-            {
-              sortBy: state.sortBy,
-              groupBy: state.groupBy,
-              expanded: state.expanded,
-            },
-            null,
-            2,
-          )}
-        </code>
-      </pre> */}
-
       <table {...getTableProps()}>
         <thead>
           <tr>
@@ -296,25 +290,25 @@ export default function Table({ columns, data }: TableProps): ReactElement {
                 >
                   <Icon iconName="help" />
                   <div className="help-content">
-                    <p>
+                    <div>
                       칼럼 이름을 클릭하면, 해당 칼럼을 기준으로{' '}
                       <Bold>정렬</Bold>됩니다.
-                    </p>
-                    <p>
+                    </div>
+                    <div>
                       여러번 클릭하여 오름차순, 내림차순을 변경할 수 있습니다.
                       또한 여러 칼럼을 선택하여 <Bold>다중 중렬</Bold>을 할 수
                       있습니다.
-                    </p>
-                    <p>
+                    </div>
+                    <div>
                       <Icon iconName="toggle_on" />를 클릭하면,{' '}
                       <Bold>그룹화</Bold>
                       (grouping)됩니다. 같은 칼럼을 가지는 데이터들을 묶어서 볼
                       수 있습니다.
-                    </p>
-                    <p>
+                    </div>
+                    <div>
                       <Icon iconName="search" />는 모든 데이터에 대해서 검색어를
                       포함하는 데이터를 <Bold>검색</Bold>할 수 있습니다.
-                    </p>
+                    </div>
                   </div>
                 </HelpContainer>
               </div>

@@ -3,8 +3,8 @@ import { ThemeProvider } from 'styled-components';
 import type { AppProps } from 'next/app';
 import { useRouter } from 'next/router';
 
-import { Modal, Layout } from '@organisms';
 import { Spinner } from '@molecules';
+import { Modal, Layout, ProtectedRoute } from '@organisms';
 import { MODALS } from '@utils/constants';
 import GlobalStyle from '@styles/globalStyles';
 import store from '@store';
@@ -17,13 +17,15 @@ export default function MyApp({ Component, pageProps }: AppProps) {
     <Provider store={store}>
       <ThemeProvider theme={theme}>
         <GlobalStyle />
-        {router.pathname === '/' ? (
-          <Component {...pageProps} />
-        ) : (
-          <Layout>
+        <ProtectedRoute>
+          {router.pathname === '/' ? (
             <Component {...pageProps} />
-          </Layout>
-        )}
+          ) : (
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          )}
+        </ProtectedRoute>
         {Object.keys(MODALS).map(
           (each, idx) =>
             each !== 'HOC_MODAL' && (

@@ -73,6 +73,36 @@ export default function useSockStomp({ room_id = 0 }: useSockStompProps) {
     });
   };
 
+  const handleSendInvitation = async (
+    teamId: number,
+    leaderId: number,
+    inviteeId: number,
+  ) => {
+    clientRef.current = await Stomp.over(new SockJS(URL));
+
+    clientRef.current?.connect({}, async () => {
+      await clientRef.current?.send(
+        '/send/chat/inviteTeam',
+        {},
+        JSON.stringify({
+          team_id: teamId,
+          leader_id: leaderId,
+          invitee_id: inviteeId,
+        }),
+      );
+
+      clientRef.current?.disconnect();
+    });
+  };
+
+  const handleGetChatRoomMessages = async () => {
+    const {
+      data: { data },
+    } = await getChatRoomMessages(room_id);
+
+    await setMessageList(data);
+  };
+
   useEffect(() => {
     if (room_id !== 0) {
       (async () => {
@@ -81,11 +111,7 @@ export default function useSockStomp({ room_id = 0 }: useSockStompProps) {
         clientRef.current?.connect(
           {},
           async () => {
-            const {
-              data: { data },
-            } = await getChatRoomMessages(room_id);
-
-            await setMessageList(data);
+            await handleGetChatRoomMessages();
             await setIsConnectStomp(true);
 
             clientRef.current?.subscribe(
@@ -129,6 +155,8 @@ export default function useSockStomp({ room_id = 0 }: useSockStompProps) {
     clientRef: clientRef.current,
     handleSendMessage,
     handleSendRtcLink,
+    handleSendInvitation,
+    handleGetChatRoomMessages,
     messageList,
     setMessageList,
     isConnectStomp,

@@ -8,6 +8,7 @@ import Layout from './Layout';
 import LookupLayout from './LookupLayout';
 import UserDetail from './UserDetail';
 import OtherUserDetail from './OtherUserDetail';
+import ProtectedRoute from './ProtectedRoute';
 import LineBackground from './LineBackground';
 import Main from './Main';
 import ModalWrapper from './Modal/ModalWrapper';
@@ -35,6 +36,7 @@ export {
   LookupLayout,
   UserDetail,
   OtherUserDetail,
+  ProtectedRoute,
   LineBackground,
   Main,
   ModalWrapper,
