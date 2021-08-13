@@ -100,6 +100,8 @@ public class UserServiceImpl implements UserService {
     @Autowired
     ProfileImageHandler profileImageHandler;
 
+    private static final String serverUrl = "https://i5a202.p.ssafy.io:8080/api/file/display?url=profile/";
+
     Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
     // email을 통한 User Entity 조회
@@ -340,7 +342,7 @@ public class UserServiceImpl implements UserService {
 
         String profileServerName = user.getProfileServerName();
         String profileExtension = user.getProfileExtension();
-        String profilePath = profileServerName + "." + profileExtension;
+        String profilePath = serverUrl + profileServerName + "." + profileExtension;
         short userRole = user.getRole();
         userInfoRes.setImg(profilePath);
 
