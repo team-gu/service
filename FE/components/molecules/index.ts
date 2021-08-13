@@ -24,7 +24,7 @@ import ProjectCard from './ProjectCard';
 import DonutChart from './DonutChart';
 import BigDonutChart from './BigDonutChart';
 import DashboardTable from './DashboardTable';
-import TeamStatusBarChart from './TeamStatusBarChart';
+import DashBoardBarChart from './DashboardBarChart';
 
 export {
   Button,
@@ -53,5 +53,5 @@ export {
   DonutChart,
   BigDonutChart,
   DashboardTable,
-  TeamStatusBarChart,
+  DashBoardBarChart,
 };

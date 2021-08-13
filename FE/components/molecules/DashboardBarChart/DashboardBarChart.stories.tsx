@@ -1,14 +1,14 @@
 import React from 'react';
 import { Story } from '@storybook/react';
-import TeamStatusBarChart from './TeamStatusBarChart';
+import DashBoardBarChart from './DashboardBarChart';
 
 export default {
-  title: 'Molecules/Team Status Bar Chart',
-  component: TeamStatusBarChart,
+  title: 'Molecules/Dashboard Bar Chart',
+  component: DashBoardBarChart,
 };
 
 const Template: Story = () => (
-  <TeamStatusBarChart
+  <DashBoardBarChart
     data={data}
     width={700}
     height={300}

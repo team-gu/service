@@ -9,7 +9,7 @@ import {
   Legend,
 } from 'recharts';
 
-interface TeamStatusBarChartProps {
+interface DashBoardBarChartProps {
   width: number;
   height: number;
   data: { name: string; 미소속: number; 진행중: number; 완료: number }[];
@@ -17,13 +17,13 @@ interface TeamStatusBarChartProps {
   legend?: boolean;
 }
 
-export default function TeamStatusBarChart({
+export default function DashBoardBarChart({
   data,
   width,
   height,
   color,
   legend = true,
-}: TeamStatusBarChartProps) {
+}: DashBoardBarChartProps) {
   const chartData = useMemo(() => data.slice(), []);
 
   return (
