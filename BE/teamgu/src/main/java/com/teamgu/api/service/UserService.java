@@ -29,7 +29,7 @@ public interface UserService {
 
     TokenResDto reissue(TokenReqDto tokenReq);
 
-    void setPassward(PasswordReqDto passwordReq);
+    boolean setPassward(PasswordReqDto passwordReq);
 
     // Email을 이용한 User Entity 조회
     Optional<User> getUserByEmail(String email);
