@@ -145,6 +145,8 @@ export default function ChatRoute(): ReactElement {
 
   const [opponentId, setOpponentId] = useState(0);
 
+  const [isEdit, setIsEdit] = useState(false);
+
   const {
     handleSendMessage,
     handleSendRtcLink,
@@ -168,6 +170,10 @@ export default function ChatRoute(): ReactElement {
   function handleClickOutside({ target }: ChangeEvent<HTMLInputElement>) {
     if (!wrapperRef.current?.contains(target) && !modalRef.current) {
       dispatch(setChatOpen({ isChatOpen: false }));
+    }
+
+    if (!editRef.current?.contains(target)) {
+      setIsEdit(false);
     }
   }
 
@@ -285,11 +291,14 @@ export default function ChatRoute(): ReactElement {
   const handleChangeTitle = async () => {
     if (editRef.current.value.length > 0) {
       try {
+        // TODO: 서버에 response 로직 추가되면 리팩토링
+        const roomNameDummy = editRef.current.value;
         await postModifyRoomName({
           room_id,
+          user_id: id,
           title: editRef.current.value,
         });
-        setRoomName(editRef.current.value);
+        setRoomName(roomNameDummy);
       } catch (error) {
         console.error(error);
       }
@@ -340,32 +349,34 @@ export default function ChatRoute(): ReactElement {
                 func={() => setRoute(CHAT_LIST)}
               />
               <>
-                <Tooltip>
-                  <>
-                    <div className="content">
-                      <input
-                        ref={editRef}
-                        type="text"
-                        placeholder="변경할 방 제목을 입력해주세요"
-                        onKeyPress={(e: KeyboardEvent<HTMLDivElement>) => {
-                          if (e.key === 'Enter') {
-                            e.preventDefault();
-                            handleChangeTitle();
-                          }
-                        }}
-                      />
-                      <button type="button" onClick={handleChangeTitle}>
-                        EDIT
-                      </button>
-                    </div>
+                {isEdit ? (
+                  <input
+                    ref={editRef}
+                    type="text"
+                    placeholder="변경할 방 제목 입력"
+                    onKeyPress={(e: KeyboardEvent<HTMLDivElement>) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleChangeTitle();
+                        setIsEdit(false);
+                      }
+                    }}
+                  />
+                ) : (
+                  <div
+                    onClick={async () => {
+                      await setIsEdit(true);
+                      editRef.current.focus();
+                    }}
+                  >
                     <Text
                       className="header-title"
                       text={roomName}
                       fontSetting="n16b"
                       color="white"
                     />
-                  </>
-                </Tooltip>
+                  </div>
+                )}
               </>
 
               <div className="fixed-two">
