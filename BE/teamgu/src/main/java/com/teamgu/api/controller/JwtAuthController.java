@@ -100,8 +100,6 @@ public class JwtAuthController {
 
         LoginResDto oUserInfo = userService.reqInfo(auth);
 
-        logger.info(String.valueOf(oUserInfo));
-
         if (ObjectUtils.isEmpty(oUserInfo)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new ErrorResponse("토큰이 만료되었거나 일치하는 유저정보가 없습니다"));
