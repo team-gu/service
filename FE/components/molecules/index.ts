@@ -23,6 +23,7 @@ import SkillSelectAutoComplete from './SkillSelectAutoComplete';
 import ProjectCard from './ProjectCard';
 import DonutChart from './DonutChart';
 import BigDonutChart from './BigDonutChart';
+import DashboardTable from './DashboardTable';
 
 export {
   Button,
@@ -50,4 +51,5 @@ export {
   ProjectCard,
   DonutChart,
   BigDonutChart,
+  DashboardTable,
 };

@@ -74,18 +74,9 @@ interface DonutChart {
 
 export default function DonutChart({ data, title }: DonutChart): ReactElement {
   const [activeIndex, setActiveIndex] = useState(0);
-  const onPieEnter = useCallback(
-    (_, index) => {
-      setActiveIndex(1);
-    },
-    [setActiveIndex],
-  );
-  const onPieLeave = useCallback(
-    (_, index) => {
-      setActiveIndex(0);
-    },
-    [setActiveIndex],
-  );
+  const onPieEnter = (_: any, index: number) => {
+    setActiveIndex(index);
+  };
 
   return (
     <PieChart width={200} height={200}>
@@ -100,7 +91,6 @@ export default function DonutChart({ data, title }: DonutChart): ReactElement {
         fill="#dcdcdc"
         dataKey="value"
         onMouseEnter={onPieEnter}
-        onMouseLeave={onPieLeave}
       />
     </PieChart>
   );

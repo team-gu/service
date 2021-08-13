@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 import { useUiState, useAppDispatch, setChatOpen, useAuthState } from '@store';
 import { ChatRoute } from '@organisms';
 import { FloatingButton } from '@molecules';
-import { VIDEO_CHAT_PATH_PREFIX } from '@utils/constants';
+import { VIDEO_CHAT_PATH_PREFIX, ADMIN_PATH_PREFIX } from '@utils/constants';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -30,8 +30,9 @@ export default function Layout({ children }: LayoutProps) {
 
   return (
     <>
-      {router.pathname.startsWith(VIDEO_CHAT_PATH_PREFIX) ? (
-        <Narrow>{children}</Narrow>
+      {router.pathname.startsWith(VIDEO_CHAT_PATH_PREFIX) ||
+      router.pathname.startsWith(ADMIN_PATH_PREFIX) ? (
+        <>{children}</>
       ) : (
         <>
           <Navbar />

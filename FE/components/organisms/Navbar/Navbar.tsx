@@ -20,7 +20,7 @@ const Wrapper = styled.nav<{ isShowByScroll: Boolean }>`
   ${({ theme: { flexRow } }) => flexRow('space-between')};
   transition: 0.5s;
   background-color: #fff;
-  z-index: 100;
+  z-index: 20;
 
   ul {
     display: flex;
@@ -81,7 +81,7 @@ const Menu = styled.div<{ show: Boolean }>`
   box-sizing: 0 5px 25px rgba(0, 0, 0, 0.1);
   border-radius: 15px;
   transition: 0.5s;
-  opacity: ${({ show }) => (show ? '1' : '0')};
+  display: ${({ show }) => (show ? '' : 'none')};
 
   ul {
     display: inline-block;
