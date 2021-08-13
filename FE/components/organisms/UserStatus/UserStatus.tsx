@@ -9,6 +9,7 @@ import {
   SimpleSelect,
   Title,
   Button,
+  Pagination,
 } from '@molecules';
 import { Icon, Text } from '@atoms';
 
@@ -107,6 +108,7 @@ export default function UserStatus(): ReactElement {
   const [invitedUser, setInvitedUser] = useState<Users>();
   const [isLeader, setIsLeader] = useState(false);
   const [teamId, setTeamId] = useState(0);
+  const [pageCount, setPageCount] = useState(0);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -123,6 +125,8 @@ export default function UserStatus(): ReactElement {
         projectCode?.length > 1 ? projectCode[projectCode.length - 1] : 101,
       studentNumber,
       sort: 'asc',
+      pageNum: 0,
+      pageSize: 10,
     });
 
     const project =
@@ -150,10 +154,13 @@ export default function UserStatus(): ReactElement {
       (async () => {
         try {
           const {
-            data: { data },
+            data: {
+              data: { dataList, totPageCnt },
+            },
           } = await postByFilteredUsers(payload);
 
-          setUsers(data);
+          setUsers(dataList);
+          setPageCount(totPageCnt);
         } catch ({
           response: {
             data: { errorMessage },
@@ -330,17 +337,32 @@ export default function UserStatus(): ReactElement {
         {users && users.length === 0 ? (
           <div>일치하는 유저가 없습니다.</div>
         ) : (
-          users.map((each: Users) => (
-            <UserStatusCard
-              key={each?.id}
-              user={each}
-              filterContents={filterContents}
-              id={id}
-              onClickInviteIcon={() => handleClickInviteIcon(each)}
-              currentUserIsLeader={isLeader}
-              handleSendRtcLink={handleSendRtcLink}
-            />
-          ))
+          <>
+            {users?.map((each: Users) => (
+              <UserStatusCard
+                key={each?.id}
+                user={each}
+                filterContents={filterContents}
+                id={id}
+                onClickInviteIcon={() => handleClickInviteIcon(each)}
+                currentUserIsLeader={isLeader}
+                handleSendRtcLink={handleSendRtcLink}
+              />
+            ))}
+            {pageCount > 0 && (
+              <Pagination
+                pageCount={pageCount}
+                previousLabel={'<'}
+                nextLabel={'>'}
+                marginPagesDisplayed={2}
+                pageRangeDisplayed={5}
+                breakLabel={'...'}
+                onPageChange={({ selected }: { selected: number }) =>
+                  setPayload((prev) => ({ ...prev, pageNum: selected }))
+                }
+              />
+            )}
+          </>
         )}
       </div>
       {showInviteModal && invitedUser && (
