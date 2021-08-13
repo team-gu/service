@@ -75,3 +75,27 @@ export const postLeaveChatRoom = async (param: {
     type: 'post',
     param,
   });
+
+export const postTeamInviteAccept = async (param: {
+  invitee_id: number;
+  leader_id: number;
+  message_id: number;
+  team_id: number;
+}) =>
+  await api({
+    url: '/api/chat/message/team/invite/accept',
+    type: 'post',
+    param,
+  });
+
+export const postTeamInviteReject = async (param: {
+  invitee_id: number;
+  leader_id: number;
+  message_id: number;
+  team_id: number;
+}) =>
+  await api({
+    url: '/api/chat/message/team/invite/reject',
+    type: 'post',
+    param,
+  });

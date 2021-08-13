@@ -2,8 +2,9 @@ import {
   ReactElement,
   useState,
   useRef,
-  SyntheticEvent,
+  useEffect,
   KeyboardEvent,
+  ChangeEvent,
 } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
@@ -12,6 +13,7 @@ import { OptionsType } from 'react-select';
 import {
   useAuthState,
   useAppDispatch,
+  useModalState,
   setChatOpen,
   displayModal,
   removeModal,
@@ -28,6 +30,7 @@ import {
 import { Text, Icon } from '@atoms';
 import { MODALS } from '@utils/constants';
 
+import { getUserHasTeam } from '@repository/teamRepository';
 import {
   getChatLists,
   postCreateRoom,
@@ -121,8 +124,10 @@ const CHAT_ROOM = 1;
 
 export default function ChatRoute(): ReactElement {
   const dispatch = useAppDispatch();
+  const isShow = useModalState();
+
   const {
-    user: { id },
+    user: { id, projectCode },
   } = useAuthState();
 
   const [room_id, setRoomId] = useState<number>(0);
@@ -135,9 +140,18 @@ export default function ChatRoute(): ReactElement {
 
   const [route, setRoute] = useState(CHAT_LIST);
 
+  const [isLeader, setIsLeader] = useState(false);
+  const [teamId, setTeamId] = useState(0);
+
+  const [opponentId, setOpponentId] = useState(0);
+
+  const [isEdit, setIsEdit] = useState(false);
+
   const {
     handleSendMessage,
     handleSendRtcLink,
+    handleSendInvitation,
+    handleGetChatRoomMessages,
     messageList,
     setMessageList,
     isConnectStomp,
@@ -147,18 +161,61 @@ export default function ChatRoute(): ReactElement {
 
   const wrapperRef: any = useRef<HTMLInputElement>(null);
   const editRef: any = useRef<string>('');
+  const modalRef: any = useRef(null);
 
-  // function handleClickOutside({ target }: ChangeEvent<HTMLInputElement>) {
-  //   if (!wrapperRef.current?.contains(target)) {
-  //     dispatch(setChatOpen({ isChatOpen: false }));
-  //   }
-  // }
+  useEffect(() => {
+    modalRef.current = Object.keys(isShow).find((each) => isShow[each]);
+  });
 
-  // useEffect(() => {
-  //   document.addEventListener('click', handleClickOutside, true);
-  //   return () =>
-  //     document.removeEventListener('click', handleClickOutside, true);
-  // }, []);
+  function handleClickOutside({ target }: ChangeEvent<HTMLInputElement>) {
+    if (!wrapperRef.current?.contains(target) && !modalRef.current) {
+      dispatch(setChatOpen({ isChatOpen: false }));
+    }
+
+    if (!editRef.current?.contains(target)) {
+      setIsEdit(false);
+    }
+  }
+
+  useEffect(() => {
+    document.addEventListener('click', handleClickOutside, true);
+    return () =>
+      document.removeEventListener('click', handleClickOutside, true);
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      const project =
+        projectCode && projectCode.length > 0
+          ? projectCode[projectCode.length - 1]
+          : 101;
+
+      const {
+        data: { data },
+      } = await getUserHasTeam({
+        userId: id,
+        project: { code: project },
+      });
+
+      if (data.hasTeam) {
+        if (data.team.leaderId === id) {
+          setTeamId(data.team.id);
+          setIsLeader(true);
+        }
+      }
+    })();
+  }, [roomUserList]);
+
+  useEffect(() => {
+    if (room_id !== 0) {
+      (async () => {
+        const {
+          data: { data },
+        } = await getRoomUserList(room_id);
+        setOpponentId(data.filter(({ user_id }) => id !== user_id)[0].user_id);
+      })();
+    }
+  }, [room_id]);
 
   const handleToChatRoom = async (id: number, room_name: string) => {
     await setRoomId(id);
@@ -234,11 +291,14 @@ export default function ChatRoute(): ReactElement {
   const handleChangeTitle = async () => {
     if (editRef.current.value.length > 0) {
       try {
+        // TODO: 서버에 response 로직 추가되면 리팩토링
+        const roomNameDummy = editRef.current.value;
         await postModifyRoomName({
           room_id,
+          user_id: id,
           title: editRef.current.value,
         });
-        setRoomName(editRef.current.value);
+        setRoomName(roomNameDummy);
       } catch (error) {
         console.error(error);
       }
@@ -289,32 +349,34 @@ export default function ChatRoute(): ReactElement {
                 func={() => setRoute(CHAT_LIST)}
               />
               <>
-                <Tooltip>
-                  <>
-                    <div className="content">
-                      <input
-                        ref={editRef}
-                        type="text"
-                        placeholder="변경할 방 제목을 입력해주세요"
-                        onKeyPress={(e: KeyboardEvent<HTMLDivElement>) => {
-                          if (e.key === 'Enter') {
-                            e.preventDefault();
-                            handleChangeTitle();
-                          }
-                        }}
-                      />
-                      <button type="button" onClick={handleChangeTitle}>
-                        EDIT
-                      </button>
-                    </div>
+                {isEdit ? (
+                  <input
+                    ref={editRef}
+                    type="text"
+                    placeholder="변경할 방 제목 입력"
+                    onKeyPress={(e: KeyboardEvent<HTMLDivElement>) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleChangeTitle();
+                        setIsEdit(false);
+                      }
+                    }}
+                  />
+                ) : (
+                  <div
+                    onClick={async () => {
+                      await setIsEdit(true);
+                      editRef.current.focus();
+                    }}
+                  >
                     <Text
                       className="header-title"
                       text={roomName}
                       fontSetting="n16b"
                       color="white"
                     />
-                  </>
-                </Tooltip>
+                  </div>
+                )}
               </>
 
               <div className="fixed-two">
@@ -341,11 +403,21 @@ export default function ChatRoute(): ReactElement {
                   : [
                       {
                         id: 1,
-                        title: '팀원 초대',
+                        title:
+                          roomUserList.length === 2 ? '팀 초대' : '단톡 초대',
                         func: () =>
-                          dispatch(
-                            displayModal({ modalName: MODALS.HOC_MODAL }),
-                          ),
+                          roomUserList.length === 2
+                            ? isLeader
+                              ? handleSendInvitation(teamId, id, opponentId)
+                              : dispatch(
+                                  displayModal({
+                                    modalName: MODALS.ALERT_MODAL,
+                                    content: '팀장만 초대 가능합니다.',
+                                  }),
+                                )
+                            : dispatch(
+                                displayModal({ modalName: MODALS.HOC_MODAL }),
+                              ),
                       },
                       {
                         id: 2,
@@ -387,6 +459,7 @@ export default function ChatRoute(): ReactElement {
                 isConnectStomp={isConnectStomp}
                 messageList={messageList}
                 setMessageList={setMessageList}
+                handleGetChatRoomMessages={handleGetChatRoomMessages}
                 setRoomId={setRoomId}
                 handleClickSend={handleClickSend}
                 roomId={room_id}

@@ -1,11 +1,11 @@
-import { ReactElement, useRef, useEffect, MouseEventHandler } from 'react';
+import { ReactElement, useRef, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { DateTime } from 'luxon';
 import { Session } from 'openvidu-browser';
 
 import { ChatInput, ChatBubble } from '@molecules';
 
-import { postExitRoom } from '@repository/chatRepository';
+import { postExitRoom, getRoomUserList } from '@repository/chatRepository';
 import { Chat, ChatNormal } from '@types/chat-type';
 import { useAuthState } from '@store';
 
@@ -15,9 +15,11 @@ interface ChatRoomProps {
   session?: Session | undefined;
   messageList: Chat[] & ChatNormal[] & any;
   setMessageList: any; // TODO: 추후 타입 정의
+  handleGetChatRoomMessages: any;
   setRoomId: any;
   handleClickSend: (msg: string) => Promise<void>;
   roomId?: number;
+  opponentId?: number;
 }
 
 const Wrapper = styled.div<{ disabled: boolean }>`
@@ -48,8 +50,10 @@ export default function ChatRoom({
   messageList,
   setRoomId,
   setMessageList,
+  handleGetChatRoomMessages,
   handleClickSend,
   roomId,
+  opponentId,
 }: ChatRoomProps): ReactElement {
   const {
     user: { id },
@@ -76,7 +80,7 @@ export default function ChatRoom({
 
   useEffect(() => {
     return () => handleUnmount();
-  }, []);
+  }, [roomId]);
 
   useEffect(() => {
     handleScrollToEnd();
@@ -95,7 +99,6 @@ export default function ChatRoom({
     }
   }, [session]);
 
-  // type 때문에 억지로 Promise 반환
   const sendMessage = async (msg: string) => {
     await handleClickSend(msg);
     handleScrollToEnd();
@@ -134,6 +137,8 @@ export default function ChatRoom({
                     sender_id,
                     sender_name,
                     type,
+                    chat_id,
+                    team_id,
                   }: ChatNormal,
                   index: number,
                 ) => (
@@ -151,10 +156,15 @@ export default function ChatRoom({
                             .toRelative()
                     }
                     message={message}
+                    handleGetChatRoomMessages={handleGetChatRoomMessages}
                     isMe={sender_id === id}
                     func={sendMessage}
                     type={type}
                     roomId={roomId}
+                    opponentId={opponentId}
+                    chatId={chat_id}
+                    teamId={team_id}
+                    id={id}
                   />
                 ),
               )}
