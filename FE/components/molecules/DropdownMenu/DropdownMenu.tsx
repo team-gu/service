@@ -2,12 +2,13 @@ import { ReactElement, useState } from 'react';
 import styled from 'styled-components';
 
 import { Title } from '@molecules';
-import { Text } from '@atoms';
+import { Icon, Text } from '@atoms';
 
 interface Items {
   id: number;
   title: string;
   func: any;
+  iconName?: string;
 }
 
 interface RoomUserList {
@@ -73,6 +74,10 @@ const Wrapper = styled.div<{ isOpen: boolean; isRoomUserHover: boolean }>`
         }
         cursor: pointer;
       }
+
+      i {
+        cursor: pointer;
+      }
     }
   }
 `;
@@ -93,9 +98,16 @@ export default function DropdownMenu({
     >
       {children}
       <ul className="list">
-        {items?.map(({ id, title, func }: Items) => (
+        {items?.map(({ id, title, func, iconName }: Items) => (
           <li className="item" key={id} onClick={func}>
-            <div className="each">{title}</div>
+            {iconName ? (
+              <div>
+                <Icon iconName={iconName} />
+                <div className="each">{title}</div>
+              </div>
+            ) : (
+              <div className="each">{title}</div>
+            )}
           </li>
         ))}
         {roomUserList?.length > 0 && (

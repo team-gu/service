@@ -1,9 +1,10 @@
-import { useState, useEffect, useRef, ReactElement, MouseEvent } from 'react';
+import { useState, ReactElement } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
-import { Icon } from '@atoms';
+
+import { DropdownMenu } from '@molecules';
 import { useAuthState, useAppDispatch, setLogout } from '@store';
 import { useScrollPosition } from '@hooks/useWindow';
 import { getImageURL } from '@utils/constants';
@@ -70,54 +71,15 @@ const Wrapper = styled.nav<{ isShowByScroll: Boolean }>`
       object-fit: cover;
     }
   }
-`;
 
-const Menu = styled.div<{ show: Boolean }>`
-  position: absolute;
-  top: 100px;
-  right: -53px;
-  width: 145px;
-  background: #cecece;
-  box-sizing: 0 5px 25px rgba(0, 0, 0, 0.1);
-  border-radius: 15px;
-  transition: 0.5s;
-  display: ${({ show }) => (show ? '' : 'none')};
+  .userName {
+    font-size: 12px;
+    margin-left: 4px;
 
-  ul {
-    display: inline-block;
-  }
-
-  li {
-    list-style: none;
-    padding: 10px 0;
-    border-top: 1px solid rgba(0, 0, 0, 0.5);
-    ${({ theme: { flexRow } }) => flexRow()};
-
-    a {
-      display: inline-block;
-      text-decoration: none;
-      color: #000;
-      font-weight: 500;
-      transition: 0.5s;
+    span {
+      color: #3797f4;
+      font-weight: 900;
     }
-
-    a:hover {
-      color: red;
-    }
-  }
-
-  h3 {
-    width: 100%;
-    text-align: center;
-    font-size: 18px;
-    padding: 20px 0;
-    font-weight: 500;
-    line-height: 1.2em;
-  }
-  span {
-    font-size: 14px;
-    font-weight: 400;
-    color: #fff;
   }
 `;
 
@@ -126,23 +88,7 @@ export default function Navbar(): ReactElement {
   const router = useRouter();
   const { user } = useAuthState();
 
-  const menuRef = useRef<HTMLDivElement>(null);
-  const [show, setShow] = useState(false);
   const [hideOnScroll, setHideOnScroll] = useState(true);
-
-  useEffect(() => {
-    const handler = (e: Event & { target: HTMLDivElement }) => {
-      if (!menuRef.current.contains(e.target) && show) {
-        setShow(false);
-      }
-    };
-
-    document.addEventListener('click', handler);
-
-    return () => {
-      document.removeEventListener('click', handler);
-    };
-  });
 
   useScrollPosition(
     ({ prevPos, currPos }) => {
@@ -203,42 +149,40 @@ export default function Navbar(): ReactElement {
         </ul>
       </div>
       <div>
-        <Image
-          className="profileImage"
-          alt="프로필사진"
-          src={getImageURL(user.img)}
-          width={'40%'}
-          height={'40%'}
-          onClick={() => {
-            setShow(!show);
-          }}
-        />
+        <DropdownMenu
+          items={[
+            {
+              id: 1,
+              title: '마이페이지',
+              func: () => router.push('/userdetail'),
+              iconName: 'account_circle',
+            },
+            {
+              id: 2,
+              title: '로그아웃',
+              func: () => {
+                dispatch(setLogout());
+              },
+              iconName: 'logout',
+            },
+          ]}
+        >
+          <>
+            <Image
+              className="profileImage"
+              alt="프로필사진"
+              src={getImageURL(user.img)}
+              width={'40%'}
+              height={'40%'}
+            />
+            <p className="userName">
+              {user.studentNumber}
+              <br />
+              <span>{user.name}</span>님
+            </p>
+          </>
+        </DropdownMenu>
       </div>
-      <Menu show={show} ref={menuRef}>
-        <h3>
-          {user.name}
-          <br />
-          <span>{user.studentNumber}</span>
-        </h3>
-        <ul>
-          <li>
-            <Icon iconName="account_circle" />
-            <Link href="/userdetail">
-              <a className="hoverable">마이페이지</a>
-            </Link>
-          </li>
-          <li
-            onClick={() => {
-              dispatch(setLogout());
-            }}
-          >
-            <>
-              <Icon iconName="logout" />
-              <a>로그아웃</a>
-            </>
-          </li>
-        </ul>
-      </Menu>
     </Wrapper>
   );
 }
