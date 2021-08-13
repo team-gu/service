@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Data
 @Getter
 @Setter
 @NoArgsConstructor
@@ -25,6 +24,4 @@ public class LoginResDto extends BaseResDto {
         this.accessToken = accessToken;
         this.userInfo = userInfo;
     }
-
-
 }
