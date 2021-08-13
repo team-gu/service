@@ -18,8 +18,8 @@ interface RoomUserList {
 
 interface DropdownMenuProps {
   children: ReactElement;
-  items: Items[];
-  roomUserList: RoomUserList[];
+  items?: Items[];
+  roomUserList?: RoomUserList[];
 }
 
 const Wrapper = styled.div<{ isOpen: boolean; isRoomUserHover: boolean }>`
