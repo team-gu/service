@@ -61,6 +61,8 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
       '/humanpool',
       '/userdetail',
       `/userdetail/${/\d+/}`,
+      `/rtc/${/\d+/}`,
+      '/admin',
     ];
     const isNotLogIn = !user.id || user.id === 0;
     const isRequireAuthPath = requireAuthPath.some((p) => path.startsWith(p));
