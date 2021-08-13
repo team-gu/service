@@ -7,6 +7,7 @@ import {
   DashboardTable,
   TeamStatusBarChart,
 } from '@molecules';
+
 import { getChartData } from '@repository/adminRepository';
 
 import {
@@ -29,7 +30,7 @@ const Wrapper = styled.div`
     .chart-header {
       display: flex;
       align-items: center;
-      margin-bottom: 20px;
+      margin: 20px 0;
       > div {
         margin-right: 10px;
       }
@@ -67,6 +68,7 @@ const Wrapper = styled.div`
         gap: 100px;
         align-items: center;
         justify-content: center;
+        position: relative;
 
         .count-up {
           > div {
@@ -82,22 +84,50 @@ const Wrapper = styled.div`
           .countup-complete {
             font-size: 82px;
           }
+
+          .tooltiptext {
+            visibility: hidden;
+            width: 60px;
+            background-color: #3848a0;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+
+            font-size: 12px;
+
+            position: absolute;
+            z-index: 1;
+            bottom: 70%;
+            margin-left: 75px;
+
+            opacity: 0;
+            transition: opacity 1s;
+
+            ::after {
+              content: '';
+              position: absolute;
+              top: 100%;
+              left: 50%;
+              margin-left: -5px;
+              border-width: 5px;
+              border-style: solid;
+              border-color: black transparent transparent transparent;
+            }
+          }
+
+          :hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+          }
         }
       }
-    }
-  }
-
-  .team-status-table {
-    margin-top: 30px;
-
-    .table-header {
-      margin-bottom: 20px;
     }
   }
 `;
 
 const TableWrapper = styled.div`
-  margin-top: 50px;
+  margin-top: 30px;
 
   .tableWrap {
     display: block;
@@ -209,7 +239,7 @@ export default function AdminDashboard({
     <Wrapper>
       <div className="team-status-chart">
         <div className="chart-header">
-          <Text text="팀 구성 현황" fontSetting="n22m" />
+          <Text text="팀 구성 현황" fontSetting="n26b" />
         </div>
         <div className="chart-container">
           {regionTeamData && regionTeamData.length > 0 && (
@@ -271,17 +301,18 @@ export default function AdminDashboard({
                     </span>
 
                     <Text text={each.title} fontSetting="n16m" />
+                    <span className="tooltiptext">
+                      진행중
+                    </span>
                   </div>
                 ))}
               </>
             )}
           </div>
         </div>
-        <div className="team-status-table">
-          <TableWrapper>
-            <DashboardTable data={tableData} columns={tableColumns} />
-          </TableWrapper>
-        </div>
+        <TableWrapper>
+          <DashboardTable data={tableData} columns={tableColumns} />
+        </TableWrapper>
       </div>
     </Wrapper>
   );

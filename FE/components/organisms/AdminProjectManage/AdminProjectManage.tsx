@@ -15,7 +15,7 @@ const Wrapper = styled.div`
   .manage-header {
     display: flex;
     align-items: center;
-    margin-bottom: 20px;
+    margin: 20px 0;
     > div {
       margin-right: 10px;
     }
@@ -110,7 +110,7 @@ export default function AdminProjectManage({
   return (
     <Wrapper>
       <div className="manage-header">
-        <Text text="프로젝트 목록" fontSetting="n22m" />
+        <Text text="프로젝트 목록" fontSetting="n26b" />
         <Icon iconName="add_box" func={handleShowCreateModal} />
       </div>
       <div className="manage-content">
