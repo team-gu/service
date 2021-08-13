@@ -1,14 +1,7 @@
 import { ReactElement } from 'react';
 import AsyncSelect from 'react-select/async';
-import { getUserListByNameContains } from '@repository/teamRepository';
+import { getSearchUserListByNameAndEmail } from '@repository/filterRepository';
 import { MemberOption } from '@utils/type';
-
-const promiseOptions = (inputValue: string) =>
-  new Promise<MemberOption[]>((resolve) => {
-    getUserListByNameContains(inputValue).then(({data : {data}}) => {
-      resolve(data);
-    });
-  });
 
 const customStyles = {
   control: (base: any) => ({
@@ -34,14 +27,37 @@ const customStyles = {
 
 interface UserSelectAutoCompleteProps {
   handleChangeUserSelect: (newValue: MemberOption | null) => void;
+  projectCodes: number[];
+  studentNumber: string;
 }
 
 export default function UserSelectAutoComplete({
   handleChangeUserSelect,
+  projectCodes,
+  studentNumber,
 }: UserSelectAutoCompleteProps): ReactElement {
   const handleSelectChange = (newValue: MemberOption | null) => {
     handleChangeUserSelect(newValue);
   };
+
+  const promiseOptions = (inputValue: string) =>
+    new Promise<MemberOption[]>((resolve) => {
+      getSearchUserListByNameAndEmail(
+        projectCodes.length > 0 ? projectCodes[projectCodes.length - 1] : 101,
+        studentNumber,
+        inputValue,
+      ).then(({ data: { data } }) => {
+        resolve(
+          data.reduce(
+            (acc, cur) => [
+              ...acc,
+              { ...cur, label: `${cur?.name}(${cur?.email})` },
+            ],
+            [],
+          ),
+        );
+      });
+    });
 
   return (
     <>
