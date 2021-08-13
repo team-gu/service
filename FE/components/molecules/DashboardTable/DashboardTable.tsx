@@ -13,6 +13,38 @@ import styled from 'styled-components';
 
 import { Icon, Text } from '@atoms';
 
+const Wrapper = styled.div`
+  table {
+    border-spacing: 0;
+    border: 1px solid gainsboro;
+
+    th {
+      border-bottom: 1px solid black;
+    }
+
+    tr:hover {
+      td {
+        background-color: #fafafa !important;
+      }
+    }
+
+    th,
+    td {
+      margin: 0;
+      padding: 10px;
+      border-bottom: 1px solid gainsboro;
+      border-right: 1px solid gainsboro;
+      vertical-align: middle;
+
+      // Each cell should grow equally
+      width: 1%;
+      &.collapse {
+        width: 0.0000000001%;
+      }
+    }
+  }
+`;
+
 const CellWrapper = styled.td`
   .grouped-cell {
     display: flex;
@@ -200,7 +232,7 @@ interface TableProps {
   data: any[];
 }
 
-export default function Table({ columns, data }: TableProps): ReactElement {
+export default function DashboardTable({ columns, data }: TableProps): ReactElement {
   const filterTypes = useMemo(
     () => ({
       // Add a new fuzzyTextFilterFn filter type.
@@ -268,7 +300,7 @@ export default function Table({ columns, data }: TableProps): ReactElement {
   const [showTooltip, setShowTooltip] = useState(false);
 
   return (
-    <>
+    <Wrapper>
       <table {...getTableProps()}>
         <thead>
           <tr>
@@ -458,6 +490,6 @@ export default function Table({ columns, data }: TableProps): ReactElement {
           ))}
         </select>
       </PaginationContainer>
-    </>
+    </Wrapper>
   );
 }
