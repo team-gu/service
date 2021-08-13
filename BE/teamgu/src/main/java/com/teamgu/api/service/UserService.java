@@ -67,4 +67,12 @@ public interface UserService {
 
     //토큰 기반으로 spa에서 초기화된 상태정보 재요청
     LoginResDto reqInfo(String token);
+
+    /**
+     * N명의 유저를 한 번에 가입 시킨다
+     * 이 기능은 관리자만 수행 가능하다
+     * @param users
+     * @return
+     */
+    boolean saveAll(List<User> users);
 }
