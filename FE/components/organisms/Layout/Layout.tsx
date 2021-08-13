@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { Navbar, Footer } from '@organisms';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
@@ -28,25 +27,6 @@ export default function Layout({ children }: LayoutProps) {
   const {
     user: { id },
   } = useAuthState();
-
-  useEffect(() => {
-    const path = router.route;
-    const requireAuthPath = [
-      '/team',
-      '/humanpool',
-      '/userdetail',
-      `/userdetail/${/\d+/}`,
-    ];
-    const isNotLogIn = !id || id === 0;
-    const isRequireAuthPath = requireAuthPath.some((p) => path.startsWith(p));
-
-    if (isNotLogIn) {
-      if (isRequireAuthPath) {
-        // alert('잘못된 접근입니다. 홈으로 이동합니다.');
-        router.push('/');
-      }
-    }
-  });
 
   return (
     <>

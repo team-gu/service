@@ -230,7 +230,6 @@ export default function Navbar(): ReactElement {
           <li
             onClick={() => {
               dispatch(setLogout());
-              router.push('/');
             }}
           >
             <>
