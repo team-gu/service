@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.teamgu.api.dto.res.AdminTeamManagementResDto;
 import com.teamgu.api.dto.res.CodeResDto;
 import com.teamgu.api.dto.res.DashBoardDetailInfoResDto;
 import com.teamgu.api.dto.res.DashBoardDetailResDto;
@@ -306,6 +307,14 @@ public class AdminServiceImpl implements AdminService {
 		
 		return dashBoard;
 	}
+	
+
+	// Select Team Building Status to manage and to export
+	@Override
+	public List<AdminTeamManagementResDto> getTeamManagementData(Long projectId, int regionCode) {
+		// TODO Auto-generated method stub
+		return adminRepositorySupport.getTeamManagementData(projectId, regionCode);
+	}
 	/*
 	 * Select Code
 	 */
@@ -365,6 +374,5 @@ public class AdminServiceImpl implements AdminService {
 	public List<DashBoardTableResDto> getDashBoardTableInfo(Long projectId) {
 		return adminRepositorySupport.getDashBoardTableInfo(projectId);
 	}
-
 
 }
