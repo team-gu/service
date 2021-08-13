@@ -24,6 +24,7 @@ import AdminMenuSidebarLeft from './AdminMenuSidebarLeft';
 import AdminProjectManage from './AdminProjectManage';
 import AdminProjectManageModal from './AdminProjectManageModal';
 import AdminDashboard from './AdminDashboard';
+import AdminTeamManage from './AdminTeamManage';
 
 export {
   ChatList,
@@ -51,4 +52,5 @@ export {
   AdminProjectManage,
   AdminProjectManageModal,
   AdminDashboard,
+  AdminTeamManage,
 };
