@@ -129,22 +129,29 @@ export default function UserStatus(): ReactElement {
       pageSize: 10,
     });
 
-    const project =
-      projectCodes && projectCodes.length > 0
-        ? projectCodes[projectCodes.length - 1]
-        : 101;
-    setProjectCode(project);
-    getUserHasTeam({
-      userId: id,
-      project: { code: project },
-    }).then(({ data: { data } }) => {
-      if (data.hasTeam) {
-        if (data.team.leaderId === id) {
-          setTeamId(data.team.id);
-          setIsLeader(true);
+    const project = projectCodes[projectCodes.length - 1];
+
+    if (project) {
+      setProjectCode(project);
+      return getUserHasTeam({
+        userId: id,
+        project: { code: project },
+      }).then(({ data: { data } }) => {
+        if (data.hasTeam) {
+          if (data.team.leaderId === id) {
+            setTeamId(data.team.id);
+            setIsLeader(true);
+          }
         }
-      }
-    });
+      });
+    }
+
+    dispatch(
+      displayModal({
+        modalName: MODALS.ALERT_MODAL,
+        content: '관리자에게 프로젝트 멤버 등록을 요청해주세요',
+      }),
+    );
   }, []);
 
   useEffect(() => {
