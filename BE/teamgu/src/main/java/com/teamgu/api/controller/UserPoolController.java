@@ -73,7 +73,7 @@ public class UserPoolController {
                 .build());
 
         if (CollectionUtils.isEmpty(oSimNameSet)) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            return ResponseEntity.status(HttpStatus.NO_CONTENT)
                     .body(new ErrorResponse("일치하는 유저가 없습니다"));
         }
 
