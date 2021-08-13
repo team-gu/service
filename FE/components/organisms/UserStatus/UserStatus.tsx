@@ -320,6 +320,7 @@ export default function UserStatus(): ReactElement {
           )}
       </div>
       <div className="team-status-list-container">
+        <WrapFilter>
         <div className="team-status-header">
           <UserSelectAutoComplete
             handleChangeUserSelect={handleChangeUserSelect}
@@ -343,8 +344,10 @@ export default function UserStatus(): ReactElement {
             </span>
           </div>
         </div>
+        </WrapFilter>
+
         {users && users.length === 0 ? (
-          <div>일치하는 유저가 없습니다.</div>
+          <WrapFilter>일치하는 유저가 없습니다.</WrapFilter>
         ) : (
           <>
             {users?.map((each: Users) => (

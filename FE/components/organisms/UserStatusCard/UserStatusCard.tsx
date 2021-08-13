@@ -10,8 +10,9 @@ import useSockStomp from '@hooks/useSockStomp';
 
 const Wrapper = styled.div`
   position: relative;
-  box-shadow: 0 12px 20px 0 rgba(0, 0, 0, 0.15);
-  padding: 20px;
+  box-shadow: 0 6px 12px 0 rgba(4, 4, 161, 0.1);
+  padding: 10px;
+  margin: 10px;
 
   min-height: 200px;
 
