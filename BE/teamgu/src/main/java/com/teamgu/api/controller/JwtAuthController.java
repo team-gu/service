@@ -122,14 +122,14 @@ public class JwtAuthController {
     	List<User> users = new ArrayList<User>();
     	
     	for(UserRegistDto userRegist:usersRegist) {
+    		String studentNumber = userRegist.getStudentNumber();    		
     		String email = userRegist.getEmail();
-    		String password = email;//초기 패스워드는 email과 동일하게 설정
+    		String password = studentNumber;//초기 패스워드는 email과 동일하게 설정
     		String name = userRegist.getName();
     		short role = 1;
-    		String studentNumber = userRegist.getStudentNumber();    		
     		User user = User.builder()
     				.email(email)
-    				.password(studentNumber)//초기패스워드는 본인의 학번
+    				.password(password)//초기패스워드는 본인의 학번
     				.name(name)
     				.role(role)
     				.profileExtension("png")
