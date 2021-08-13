@@ -20,11 +20,8 @@ public class UserPoolResDto {
     @ApiModelProperty(name = "자기소개")
     private String introduce;
 
-    @ApiModelProperty(name = "프로필 이미지 파일명")
-    private String fileName;
-
-    @ApiModelProperty(name = "프로필 이미지 확장자")
-    private String extension;
+    @ApiModelProperty(name = "프로필 url")
+    private String profileUIr;
 
     @ApiModelProperty(name = "원하는 트랙 리스트")
     private List<String> trackList;
