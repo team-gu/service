@@ -3,19 +3,20 @@ import styled from 'styled-components';
 import CountUp from 'react-countup';
 
 import { Text } from '@atoms';
-import { BigDonutChart, DonutChart, DashboardTable } from '@molecules';
+import {
+  DashboardTable,
+  DashboardBarChart,
+} from '@molecules';
+
 import { getChartData } from '@repository/adminRepository';
 
 import {
-  ADMIN_TEAM_DATA,
-  ADMIN_TRACK_DATA,
   DUMMY_TABLE_COLUMNS,
   DUMMY_TABLE_DATA,
 } from '@utils/dummy';
-import { Project } from '@utils/type';
 
 const COLOR_MAP = {
-  COMPLETE: '#0088FE',
+  COMPLETE: '#32CD32',
   NONE: '#FF8042',
   ONGOING: '#1E90FF',
 };
@@ -29,7 +30,7 @@ const Wrapper = styled.div`
     .chart-header {
       display: flex;
       align-items: center;
-      margin-bottom: 20px;
+      margin: 20px 0;
       > div {
         margin-right: 10px;
       }
@@ -67,6 +68,7 @@ const Wrapper = styled.div`
         gap: 100px;
         align-items: center;
         justify-content: center;
+        position: relative;
 
         .count-up {
           > div {
@@ -82,22 +84,50 @@ const Wrapper = styled.div`
           .countup-complete {
             font-size: 82px;
           }
+
+          .tooltiptext {
+            visibility: hidden;
+            width: 60px;
+            background-color: #3848a0;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+
+            font-size: 12px;
+
+            position: absolute;
+            z-index: 1;
+            bottom: 70%;
+            margin-left: 75px;
+
+            opacity: 0;
+            transition: opacity 1s;
+
+            ::after {
+              content: '';
+              position: absolute;
+              top: 100%;
+              left: 50%;
+              margin-left: -5px;
+              border-width: 5px;
+              border-style: solid;
+              border-color: black transparent transparent transparent;
+            }
+          }
+
+          :hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+          }
         }
       }
-    }
-  }
-
-  .team-status-table {
-    margin-top: 30px;
-
-    .table-header {
-      margin-bottom: 20px;
     }
   }
 `;
 
 const TableWrapper = styled.div`
-  margin-top: 50px;
+  margin-top: 30px;
 
   .tableWrap {
     display: block;
@@ -130,10 +160,10 @@ const TableWrapper = styled.div`
       vertical-align: middle;
 
       // Each cell should grow equally
-      // width: 1%;
-      // &.collapse {
-      //   width: 0.0000000001%;
-      // }
+      width: 1%;
+      &.collapse {
+        width: 0.0000000001%;
+      }
     }
   }
 `;
@@ -159,20 +189,6 @@ export default function AdminDashboard({
   const [trackTeamData, setTrackTeamData] = useState<any[]>([]);
 
   // init data
-  // useEffect(() => {
-
-  //   const tmp = ADMIN_TEAM_DATA.map((d) => ({
-  //     title: d.title,
-  //     data: d.data.map((item) => ({
-  //       ...item,
-  //       color: item.name === '완성' ? COLOR_MAP.COMPLETE : COLOR_MAP.NONE,
-  //     })),
-  //   }));
-  //   console.log(tmp);
-  //   setRegionTeamData(tmp);
-  //   setTrackTeamData(ADMIN_TRACK_DATA);
-  // }, []);
-
   useEffect(() => {
     if (projectId) {
       getChartData({ projectId }).then(({ data: { data } }: any) => {
@@ -181,35 +197,20 @@ export default function AdminDashboard({
             a.title === '전국' ? -1 : 1,
           )
           .map(({ title, data }: DashboardData) => ({
-            title,
-            data: [
-              {
-                name: '완성',
-                value: data.after,
-                color: COLOR_MAP.COMPLETE,
-              },
-              {
-                name: '진행중',
-                value: data.doing,
-                color: COLOR_MAP.ONGOING,
-              },
-              {
-                name: '미완성',
-                value: data.before,
-                color: COLOR_MAP.NONE,
-              },
-            ],
+            name: title,
+            미소속: data.before,
+            진행중: data.doing,
+            완료: data.after,
           }));
         const trackData = data.track.map(({ title, data }: DashboardData) => ({
           title,
           data: [
-            { name: '완성', value: data.afterTeam },
+            { name: '완료', value: data.afterTeam },
             { name: '진행중', value: data.doingTeam },
           ],
         }));
 
         console.log(regionData);
-        console.log(trackData);
         setRegionTeamData(regionData);
         setTrackTeamData(trackData);
       });
@@ -239,22 +240,36 @@ export default function AdminDashboard({
     <Wrapper>
       <div className="team-status-chart">
         <div className="chart-header">
-          <Text text="팀 구성 현황" fontSetting="n22m" />
+          <Text text="팀 구성 현황" fontSetting="n26b" />
         </div>
         <div className="chart-container">
           {regionTeamData && regionTeamData.length > 0 && (
             <>
               <div className="entire-chart">
-                <BigDonutChart
-                  data={regionTeamData[0].data}
-                  title={regionTeamData[0].title}
+                <DashboardBarChart
+                  data={regionTeamData.slice(0, 1)}
+                  width={300}
+                  height={500}
+                  color={{
+                    미소속: COLOR_MAP.NONE,
+                    진행중: COLOR_MAP.ONGOING,
+                    완료: COLOR_MAP.COMPLETE,
+                  }}
+                  legend={false}
                 />
               </div>
 
               <div className="region-chart">
-                {regionTeamData.slice(1).map((each: any, idx: number) => (
-                  <DonutChart key={idx} data={each.data} title={each.title} />
-                ))}
+                <DashboardBarChart
+                  data={regionTeamData.slice(1)}
+                  width={800}
+                  height={300}
+                  color={{
+                    미소속: COLOR_MAP.NONE,
+                    진행중: COLOR_MAP.ONGOING,
+                    완료: COLOR_MAP.COMPLETE,
+                  }}
+                />
               </div>
             </>
           )}
@@ -266,7 +281,7 @@ export default function AdminDashboard({
                   <div key={idx} className="count-up">
                     <CountUp
                       end={
-                        each.data.find(({ name }: DataItem) => name === '완성')
+                        each.data.find(({ name }: DataItem) => name === '완료')
                           .value
                       }
                       duration={4}
@@ -287,17 +302,16 @@ export default function AdminDashboard({
                     </span>
 
                     <Text text={each.title} fontSetting="n16m" />
+                    <span className="tooltiptext">진행중</span>
                   </div>
                 ))}
               </>
             )}
           </div>
         </div>
-        <div className="team-status-table">
-          <TableWrapper>
-            <DashboardTable data={tableData} columns={tableColumns} />
-          </TableWrapper>
-        </div>
+        <TableWrapper>
+          <DashboardTable data={tableData} columns={tableColumns} />
+        </TableWrapper>
       </div>
     </Wrapper>
   );
