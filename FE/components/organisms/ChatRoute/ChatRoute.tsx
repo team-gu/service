@@ -2,7 +2,7 @@ import {
   ReactElement,
   useState,
   useRef,
-  SyntheticEvent,
+  useEffect,
   KeyboardEvent,
 } from 'react';
 import styled from 'styled-components';
@@ -28,6 +28,7 @@ import {
 import { Text, Icon } from '@atoms';
 import { MODALS } from '@utils/constants';
 
+import { getUserHasTeam } from '@repository/teamRepository';
 import {
   getChatLists,
   postCreateRoom,
@@ -122,7 +123,7 @@ const CHAT_ROOM = 1;
 export default function ChatRoute(): ReactElement {
   const dispatch = useAppDispatch();
   const {
-    user: { id },
+    user: { id, projectCode },
   } = useAuthState();
 
   const [room_id, setRoomId] = useState<number>(0);
@@ -135,10 +136,15 @@ export default function ChatRoute(): ReactElement {
 
   const [route, setRoute] = useState(CHAT_LIST);
 
+  const [isLeader, setIsLeader] = useState(false);
+  const [teamId, setTeamId] = useState(0);
+
   const [opponentId, setOpponentId] = useState(0);
+
   const {
     handleSendMessage,
     handleSendRtcLink,
+    handleSendInvitation,
     handleGetChatRoomMessages,
     messageList,
     setMessageList,
@@ -161,6 +167,29 @@ export default function ChatRoute(): ReactElement {
   //   return () =>
   //     document.removeEventListener('click', handleClickOutside, true);
   // }, []);
+
+  useEffect(() => {
+    (async () => {
+      const project =
+        projectCode && projectCode.length > 0
+          ? projectCode[projectCode.length - 1]
+          : 101;
+
+      const {
+        data: { data },
+      } = await getUserHasTeam({
+        userId: id,
+        project: { code: project },
+      });
+
+      if (data.hasTeam) {
+        if (data.team.leaderId === id) {
+          setTeamId(data.team.id);
+          setIsLeader(true);
+        }
+      }
+    })();
+  }, [roomUserList]);
 
   useEffect(() => {
     if (room_id !== 0) {
@@ -354,11 +383,21 @@ export default function ChatRoute(): ReactElement {
                   : [
                       {
                         id: 1,
-                        title: '팀원 초대',
+                        title:
+                          roomUserList.length === 2 ? '팀 초대' : '단톡 초대',
                         func: () =>
-                          dispatch(
-                            displayModal({ modalName: MODALS.HOC_MODAL }),
-                          ),
+                          roomUserList.length === 2
+                            ? isLeader
+                              ? handleSendInvitation(teamId, id, opponentId)
+                              : dispatch(
+                                  displayModal({
+                                    modalName: MODALS.ALERT_MODAL,
+                                    content: '팀장만 초대 가능합니다.',
+                                  }),
+                                )
+                            : dispatch(
+                                displayModal({ modalName: MODALS.HOC_MODAL }),
+                              ),
                       },
                       {
                         id: 2,
