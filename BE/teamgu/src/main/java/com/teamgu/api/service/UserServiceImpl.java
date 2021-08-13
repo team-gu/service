@@ -29,11 +29,9 @@ import com.teamgu.api.dto.res.UserInfoProjectResDto;
 import com.teamgu.common.auth.JwtUserDetailsService;
 import com.teamgu.common.util.JwtTokenUtil;
 import com.teamgu.database.entity.Mapping;
-import com.teamgu.database.entity.Skill;
 import com.teamgu.database.entity.User;
 import com.teamgu.database.entity.UserInfoAward;
 import com.teamgu.database.entity.UserInfoProject;
-import com.teamgu.database.entity.WishTrack;
 import com.teamgu.database.repository.UserInfoAwardRepository;
 import com.teamgu.database.repository.CodeDetailRepositorySupport;
 import com.teamgu.database.repository.MappingRepository;
@@ -113,7 +111,7 @@ public class UserServiceImpl implements UserService {
         if (user.isPresent()) {// Optional의 null 체크(값ㅇ ㅣ있는 경우)
             logger.info(user.get().getEmail());
         } else {// 없는 경우
-            logger.info("user가 비었습니다.");
+            throw new RuntimeException("일치하는 유저가 없습니다.");
         }
         return user;
     }
@@ -318,10 +316,26 @@ public class UserServiceImpl implements UserService {
      * 비밀번호 변경함수
      */
     @Override
-    public void setPassward(PasswordReqDto passwordReq) {
-        User user = getUserByEmail(passwordReq.getEmail()).get();
-        user.setPassword(passwordEncoder.encode(passwordReq.getPassword()));
-        userRepository.save(user);
+    public boolean setPassward(PasswordReqDto passwordReq) {
+
+        User user = null;
+
+        try {
+            user = getUserByEmail(passwordReq.getEmail()).get();
+        } catch (Exception e) {
+            log.error("일치하는 유저가 존재하지 않습니다.");
+
+            return false;
+        }
+
+        if(passwordEncoder.matches(passwordReq.getOriPassword(), user.getPassword())) {
+            user.setPassword(passwordEncoder.encode(passwordReq.getModPassword()));
+            userRepository.save(user);
+
+            return true;
+        }
+
+        return false;
     }
 
     /**

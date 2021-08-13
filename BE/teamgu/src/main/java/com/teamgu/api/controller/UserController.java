@@ -2,6 +2,7 @@ package com.teamgu.api.controller;
 
 import java.util.List;
 
+import com.teamgu.api.dto.res.*;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,11 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 import com.teamgu.api.dto.req.PasswordReqDto;
 import com.teamgu.api.dto.req.UserInfoReqDto;
-import com.teamgu.api.dto.res.BasicResponse;
-import com.teamgu.api.dto.res.CommonResponse;
-import com.teamgu.api.dto.res.UserInfoAwardResDto;
-import com.teamgu.api.dto.res.UserInfoProjectResDto;
-import com.teamgu.api.dto.res.UserInfoResDto;
 import com.teamgu.api.service.UserServiceImpl;
 
 import io.swagger.annotations.Api;
@@ -35,7 +31,12 @@ public class UserController {
     @ApiOperation(value = "비밀번호 변경", notes = "비밀번호를 변경한다.")
     public ResponseEntity<? extends BasicResponse> setPassword(
             @RequestBody @ApiParam(value = "비밀번호", required = true) PasswordReqDto password) {
-        userService.setPassward(password);
+
+        if(!userService.setPassward(password)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorResponse("현재 비밀번호가 일치하지 않거나 이메일이 일치하는 유저가 없습니다."));
+        }
+
         return ResponseEntity.ok(new CommonResponse<String>("비밀번호 변경 완료"));
     }
 
