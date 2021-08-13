@@ -21,6 +21,7 @@ import com.teamgu.api.dto.res.BasicResponse;
 import com.teamgu.api.dto.res.CodeResDto;
 import com.teamgu.api.dto.res.CommonResponse;
 import com.teamgu.api.dto.res.DashBoardResDto;
+import com.teamgu.api.dto.res.DashBoardTableResDto;
 import com.teamgu.api.dto.res.ProjectInfoResDto;
 import com.teamgu.api.service.AdminServiceImpl;
 
@@ -145,6 +146,19 @@ public class AdminController {
 			DashBoardResDto dashBoard = adminService.getTeamBuildingStatus(projectId);
 			
 			return ResponseEntity.ok(new CommonResponse<DashBoardResDto>(dashBoard));
+		}
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+	}
+	
+	@ApiOperation(value = "DashBoard Table 조회")
+	@GetMapping("/dashboardtable/{projectId}")
+	public ResponseEntity<? extends BasicResponse> getTeamBuildingTable(@PathVariable Long projectId) {
+
+		if(!adminService.checkProjectDeletion(projectId)) {
+
+			List<DashBoardTableResDto> dashBoardTable = adminService.getDashBoardTableInfo(projectId);
+			
+			return ResponseEntity.ok(new CommonResponse<List<DashBoardTableResDto>>(dashBoardTable));
 		}
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 	}

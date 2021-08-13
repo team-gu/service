@@ -1,5 +1,6 @@
 package com.teamgu.database.repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -16,6 +17,7 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.teamgu.api.dto.res.CodeResDto;
+import com.teamgu.api.dto.res.DashBoardTableResDto;
 import com.teamgu.api.dto.res.ProjectInfoResDto;
 import com.teamgu.database.entity.QCodeDetail;
 import com.teamgu.database.entity.QMapping;
@@ -298,6 +300,94 @@ public class AdminRepositorySupport {
 		
 		return count;
 
+	}
+	
+	// Dash Board Table Infomation
+	
+	public List<DashBoardTableResDto> getDashBoardTableInfo(Long projectId){
+		List<DashBoardTableResDto> dashBoardTable = new ArrayList<>();
+		EntityManager em = emf.createEntityManager();
+		
+		try {
+			String jpql = "select u.student_number, u.name, u.email, (select code_detail.name\r\n" + 
+					"		from code_detail \r\n" + 
+					"        where code_detail.code_detail = (substr(u.student_number, 3, 1) + 100)\r\n" + 
+					"        and code_detail.code_id = \"RE\") as region,\r\n" + 
+					"	ifnull(concat((select code_detail.name\r\n" + 
+					"		from code_detail \r\n" + 
+					"        where code_detail.code_detail = s.region_code\r\n" + 
+					"        and code_detail.code_id = \"RE\"), \" \" ,s.name ,\"반\"), concat((select code_detail.name\r\n" + 
+					"		from code_detail \r\n" + 
+					"        where code_detail.code_detail = (substr(u.student_number, 3, 1) + 100)\r\n" + 
+					"        and code_detail.code_id = \"RE\"), \" 0반\")) as studentClass,\r\n" + 
+					"    if(isnull(t.team_id),\"X\",\"O\") as team,\r\n" + 
+					"    ifnull(t.team_id, 0) as teamId,\r\n" + 
+					"    if(t.leader_id = u.id, \"O\", \"X\") as leader,\r\n" + 
+					"    if(u.major = 1, \"전공\", if(u.major = 2, \"비전공\", \"전공 선택 안됨\")) as major,\r\n" + 
+					"    ifnull((select code_detail.name\r\n" + 
+					"		from code_detail \r\n" + 
+					"        where code_detail.code_detail = u.wish_position_code\r\n" + 
+					"        and code_detail.code_id = \"PO\"), \"포지션 선택 안함\") as wish_position\r\n" + 
+					"from (select *\r\n" + 
+					"from user\r\n" + 
+					"where user.id in (select user_project_detail.user_id\r\n" + 
+					"	from user_project_detail\r\n" + 
+					"    where user_project_detail.project_detail_id in (?1))) u\r\n" + 
+					"left outer join (select user_team.team_id, user_team.user_id, team.complete_yn, team.leader_id\r\n" + 
+					"from user_team\r\n" + 
+					"left outer join team\r\n" + 
+					"on user_team.team_id = team.id\r\n" + 
+					"where mapping_id in \r\n" + 
+					"	(select id\r\n" + 
+					"	from mapping\r\n" + 
+					"	where project_code = \r\n" + 
+					"		(select project_code from project_detail where id = ?1)\r\n" + 
+					"		and stage_code =\r\n" + 
+					"			(select stage_code from project_detail where id = ?1))) t\r\n" + 
+					"on u.id = t.user_id\r\n" + 
+					"left Outer Join (select user_class.user_id , std.name, std.region_code\r\n" + 
+					"	from user_class\r\n" + 
+					"	left outer join (select * \r\n" + 
+					"		from std_class\r\n" + 
+					"		where project_code = \r\n" + 
+					"			(select project_code from project_detail where id = ?1)\r\n" + 
+					"		and stage_code =\r\n" + 
+					"			(select stage_code from project_detail where id = ?1)) std\r\n" + 
+					"on user_class.class_id = std.id) s\r\n" + 
+					"on u.id = s.user_id";
+			List<Object[]> datas = em.createNativeQuery(jpql)
+					.setParameter(1, projectId)
+					.getResultList();
+			
+			for(Object[] data : datas)
+			{
+				DashBoardTableResDto dashBoardTableResDto = DashBoardTableResDto.builder().build();
+
+				dashBoardTableResDto.setStudentNumber(data[0].toString());
+				dashBoardTableResDto.setName(data[1].toString());
+				dashBoardTableResDto.setEmail(data[2].toString());
+				dashBoardTableResDto.setRegion(data[3].toString());
+				dashBoardTableResDto.setStudentClass(data[4].toString());
+				dashBoardTableResDto.setTeamYn(data[5].toString());
+				dashBoardTableResDto.setTeamId(Long.parseLong(data[6].toString()));
+				dashBoardTableResDto.setLeaderYn(data[7].toString());
+				dashBoardTableResDto.setMajor(data[8].toString());
+				dashBoardTableResDto.setPosition(data[9].toString());
+				dashBoardTable.add(dashBoardTableResDto);
+				
+			}
+
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+	
+		} finally {
+		
+			em.close();
+		
+		}
+		
+		return dashBoardTable;
 	}
 	
 	// Mapping Table Code 삭제

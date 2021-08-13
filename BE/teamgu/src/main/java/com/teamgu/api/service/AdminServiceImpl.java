@@ -1,8 +1,12 @@
 package com.teamgu.api.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -12,6 +16,7 @@ import com.teamgu.api.dto.res.CodeResDto;
 import com.teamgu.api.dto.res.DashBoardDetailInfoResDto;
 import com.teamgu.api.dto.res.DashBoardDetailResDto;
 import com.teamgu.api.dto.res.DashBoardResDto;
+import com.teamgu.api.dto.res.DashBoardTableResDto;
 import com.teamgu.api.dto.res.ProjectInfoResDto;
 import com.teamgu.database.entity.Mapping;
 import com.teamgu.database.entity.ProjectDetail;
@@ -34,7 +39,6 @@ public class AdminServiceImpl implements AdminService {
 
 	@Autowired
 	MappingRepository mappingRepository;
-
 	/*
 	 * Select Project Infomation (프로젝트 정보 조회)
 	 */
@@ -215,6 +219,7 @@ public class AdminServiceImpl implements AdminService {
 			DashBoardDetailInfoResDto data = new DashBoardDetailInfoResDto();
 			
 			String code = Integer.toString( regionCode.get(i).getCode()-100);
+			String title =  regionCode.get(i).getCodeName();
 			
 			// 총 인원
 			int totalMember = adminRepositorySupport.getTotalMemberCountByRegion(projectId, code);
@@ -239,11 +244,18 @@ public class AdminServiceImpl implements AdminService {
 			beforeTotalCount += beforeCount;
 			data.setBefore(beforeCount);
 			
-			dashBoardDetail.setTitle(regionCode.get(i).getCodeName());
+			dashBoardDetail.setTitle(title);
 			dashBoardDetail.setData(data);
-			
-			region.add(dashBoardDetail);
+			if(title.equals("서울")) {
+				region.add(0, dashBoardDetail);
+			}
+			else {
+
+				region.add(dashBoardDetail);
+			}
 		}
+		// 구미 광주 대전 서울 부울경 전국
+		// 전국 서울 구미 광주 대전 부울경
 
 		DashBoardDetailResDto totalDashBoardDetail  = new DashBoardDetailResDto();
 		DashBoardDetailInfoResDto totalData = new DashBoardDetailInfoResDto();
@@ -254,7 +266,7 @@ public class AdminServiceImpl implements AdminService {
 		totalData.setDoing(doingTotalCount);
 		totalDashBoardDetail.setData(totalData);
 		totalDashBoardDetail.setTitle("전국");
-		region.add(totalDashBoardDetail);
+		region.add(0, totalDashBoardDetail);
 		
 		List<CodeResDto> tracks = adminRepositorySupport.getTrackList(projectId);
 		
@@ -295,8 +307,6 @@ public class AdminServiceImpl implements AdminService {
 		
 		return dashBoard;
 	}
-
-	
 	/*
 	 * Select Code
 	 */
@@ -350,6 +360,11 @@ public class AdminServiceImpl implements AdminService {
 	@Override
 	public boolean checkProjectDeletion(Long projectCode) {
 		return adminRepositorySupport.checkProjectDeletion(projectCode);
+	}
+
+	@Override
+	public List<DashBoardTableResDto> getDashBoardTableInfo(Long projectId) {
+		return adminRepositorySupport.getDashBoardTableInfo(projectId);
 	}
 
 
