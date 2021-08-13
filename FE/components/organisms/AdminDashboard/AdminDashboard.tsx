@@ -5,7 +5,7 @@ import CountUp from 'react-countup';
 import { Text } from '@atoms';
 import {
   DashboardTable,
-  TeamStatusBarChart,
+  DashboardBarChart,
 } from '@molecules';
 
 import { getChartData } from '@repository/adminRepository';
@@ -245,7 +245,7 @@ export default function AdminDashboard({
           {regionTeamData && regionTeamData.length > 0 && (
             <>
               <div className="entire-chart">
-                <TeamStatusBarChart
+                <DashboardBarChart
                   data={regionTeamData.slice(0, 1)}
                   width={300}
                   height={500}
@@ -259,7 +259,7 @@ export default function AdminDashboard({
               </div>
 
               <div className="region-chart">
-                <TeamStatusBarChart
+                <DashboardBarChart
                   data={regionTeamData.slice(1)}
                   width={800}
                   height={300}
@@ -301,9 +301,7 @@ export default function AdminDashboard({
                     </span>
 
                     <Text text={each.title} fontSetting="n16m" />
-                    <span className="tooltiptext">
-                      진행중
-                    </span>
+                    <span className="tooltiptext">진행중</span>
                   </div>
                 ))}
               </>
