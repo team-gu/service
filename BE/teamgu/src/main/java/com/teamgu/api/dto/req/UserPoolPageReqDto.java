@@ -39,6 +39,6 @@ public class UserPoolPageReqDto {
     @ApiModelProperty(name = "원하는 페이지 번호", example = "1")
     private int pageNum;
 
-    @ApiModelProperty(name = "페이지네이션할 사이즈", example = "10")
+    @ApiModelProperty(name = "한 페이지에 들어갈 데이터 개수", example = "10")
     private int pageSize;
 }
