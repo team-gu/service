@@ -281,9 +281,9 @@ export default function UserStatus(): ReactElement {
         <WrapFilter>
           <Title title="프로젝트">
             <SimpleSelect
-              options={OPTIONS.slice(0, 1)} // projectCode?.length)}
+              options={OPTIONS.slice(0, projectCodes?.length)}
               onChange={handleSortByChange}
-              value={{ label: '공통', value: 101 }}
+              value={OPTIONS[projectCodes?.length]}
             />
           </Title>
         </WrapFilter>
