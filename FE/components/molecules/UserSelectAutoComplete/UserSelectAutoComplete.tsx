@@ -27,14 +27,14 @@ const customStyles = {
 
 interface UserSelectAutoCompleteProps {
   handleChangeUserSelect: (newValue: MemberOption | null) => void;
-  projectCodes: number[];
   studentNumber: string;
+  projectCode?: number;
 }
 
 export default function UserSelectAutoComplete({
   handleChangeUserSelect,
-  projectCodes,
   studentNumber,
+  projectCode = 101,
 }: UserSelectAutoCompleteProps): ReactElement {
   const handleSelectChange = (newValue: MemberOption | null) => {
     handleChangeUserSelect(newValue);
@@ -43,12 +43,12 @@ export default function UserSelectAutoComplete({
   const promiseOptions = (inputValue: string) =>
     new Promise<MemberOption[]>((resolve) => {
       getSearchUserListByNameAndEmail(
-        projectCodes.length > 0 ? projectCodes[projectCodes.length - 1] : 101,
+        projectCode,
         studentNumber,
         inputValue,
       ).then(({ data: { data } }) => {
         resolve(
-          data.reduce(
+          data?.reduce(
             (acc, cur) => [
               ...acc,
               { ...cur, label: `${cur?.name}(${cur?.email})` },

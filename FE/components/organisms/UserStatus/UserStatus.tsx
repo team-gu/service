@@ -102,7 +102,7 @@ export default function UserStatus(): ReactElement {
 
   const [users, setUsers] = useState([]);
   // TODO: Search contain
-  const [containsUserId, setContainsUserId] = useState<number>();
+  const [projectCode, setProjectCode] = useState<number>();
 
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [invitedUser, setInvitedUser] = useState<Users>();
@@ -133,6 +133,7 @@ export default function UserStatus(): ReactElement {
       projectCodes && projectCodes.length > 0
         ? projectCodes[projectCodes.length - 1]
         : 101;
+    setProjectCode(project);
     getUserHasTeam({
       userId: id,
       project: { code: project },
@@ -237,9 +238,10 @@ export default function UserStatus(): ReactElement {
     setPayload(payloadTemp);
   };
 
-  const handleSortByChange = ({ value }: { value: number }) => {
+  const handleProjectChange = ({ value }: { value: number }) => {
     if (projectCodes?.includes(value)) {
       setPayload({ ...payload, project: value, pageNum: 0 });
+      setProjectCode(value);
     }
   };
 
@@ -282,8 +284,8 @@ export default function UserStatus(): ReactElement {
           <Title title="프로젝트">
             <SimpleSelect
               options={OPTIONS.slice(0, projectCodes?.length)}
-              onChange={handleSortByChange}
-              value={OPTIONS[projectCodes?.length]}
+              onChange={handleProjectChange}
+              value={OPTIONS[projectCodes?.length - 1]}
             />
           </Title>
         </WrapFilter>
@@ -321,29 +323,28 @@ export default function UserStatus(): ReactElement {
       </div>
       <div className="team-status-list-container">
         <WrapFilter>
-        <div className="team-status-header">
-          <UserSelectAutoComplete
-            handleChangeUserSelect={handleChangeUserSelect}
-            projectCodes={projectCodes}
-            studentNumber={studentNumber}
-          />
-          <div className="sort-container">
-            <div className="sort-select">
-              <SimpleSelect
-                options={sortByOptions}
-                onChange={handleSortByChange}
-                placeholder={'Sort by...'}
-                value={sortByOptions[0]}
-              />
+          <div className="team-status-header">
+            <UserSelectAutoComplete
+              handleChangeUserSelect={handleChangeUserSelect}
+              studentNumber={studentNumber}
+              projectCode={projectCode}
+            />
+            <div className="sort-container">
+              <div className="sort-select">
+                <SimpleSelect
+                  options={sortByOptions}
+                  placeholder={'Sort by...'}
+                  value={sortByOptions[0]}
+                />
+              </div>
+              <span className={'sort-icon' + (sortAsc ? '' : ' rotated')}>
+                <Icon
+                  iconName="sort"
+                  func={() => handleClickSort(sortAsc ? 'asc' : 'desc')}
+                />
+              </span>
             </div>
-            <span className={'sort-icon' + (sortAsc ? '' : ' rotated')}>
-              <Icon
-                iconName="sort"
-                func={() => handleClickSort(sortAsc ? 'asc' : 'desc')}
-              />
-            </span>
           </div>
-        </div>
         </WrapFilter>
 
         {users && users.length === 0 ? (

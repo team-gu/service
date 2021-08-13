@@ -6,8 +6,6 @@ import { useRouter } from 'next/router';
 import { Text, Icon } from '@atoms';
 import { Tag, ProfileImage } from '@molecules';
 
-import useSockStomp from '@hooks/useSockStomp';
-
 const Wrapper = styled.div`
   position: relative;
   box-shadow: 0 6px 12px 0 rgba(4, 4, 161, 0.1);
@@ -82,7 +80,7 @@ interface UserStatusCardProps {
   handleSendRtcLink: (
     teamId: number,
     leaderId: number,
-    inviteeId: number,
+    inviteeId?: number,
   ) => Promise<void> | any;
 }
 
@@ -122,7 +120,7 @@ export default function UserStatusCard({
             <div className="items">
               <Text text="트랙" color="gray" />
               <div className="items-tags">
-                {trackList.map((each) => (
+                {trackList?.map((each, index) => (
                   <>
                     <Tag
                       text={
@@ -130,7 +128,7 @@ export default function UserStatusCard({
                         filterContents['트랙'].find(({ code }) => code == each)
                           ?.codeName
                       }
-                      key={`track-${each}`}
+                      key={`track-${filterContents['트랙'][index].codeName}`}
                     />
                   </>
                 ))}
@@ -139,14 +137,14 @@ export default function UserStatusCard({
             <div className="items">
               <Text text="기술" color="gray" />
               <div className="items-tags">
-                {skillList.map((each) => (
+                {skillList?.map((each, index) => (
                   <Tag
                     text={
                       filterContents &&
                       filterContents['스킬'].find(({ code }) => code == each)
                         ?.codeName
                     }
-                    key={`skill-${each}`}
+                    key={`skill-${filterContents['스킬'][index].codeName}`}
                   />
                 ))}
               </div>
