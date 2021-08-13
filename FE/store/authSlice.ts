@@ -28,7 +28,8 @@ const initialState: AuthState = {
   email: '',
   id: 0,
   img: '',
-  introduce: '',
+  introduce:
+    'https://i5a202.p.ssafy.io:8080/api/file/display?url=profile/c21f969b5f03d33d43e04f8f136e7682.png',
   major: 0,
   name: '',
   projects: [],
