@@ -24,14 +24,19 @@ const defaultValue = {
 };
 
 const Template: Story = () => {
-  const [show, setShow] = useState(true);
+  const [show, setShow] = useState('');
   return (
     <>
-      <button onClick={() => setShow(true)}>모달</button>
-      {show && (
+      <button onClick={() => setShow('추가')}>추가</button>
+      <button onClick={() => setShow('수정')}>수정</button>
+      {show === '추가' && (
         <AdminUserManageModal
-          handleClickClose={() => setShow(false)}
-          // closeModalAndRerender={() => {}}
+          handleClickClose={() => setShow('')}
+        />
+      )}
+      {show === '수정' && (
+        <AdminUserManageModal
+          handleClickClose={() => setShow('')}
           defaultValue={defaultValue}
         />
       )}
