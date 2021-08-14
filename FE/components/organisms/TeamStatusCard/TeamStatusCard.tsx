@@ -121,7 +121,7 @@ export default function TeamStatusCard({
                 <div className="profile" key={item.id}>
                   <ProfileImage
                     size={80}
-                    // src={item.img ? getImageURL(item.img) : undefined}
+                    src={item.img ? getImageURL(item.img) : undefined}
                   />
                   {item.id === team.leaderId ? (
                     <Text text={item.name + '(팀장)'} />
