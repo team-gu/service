@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import CountUp from 'react-countup';
 
 import { Text } from '@atoms';
-import { DashboardTable, DashboardBarChart } from '@molecules';
+import { ReactTable, DashboardBarChart } from '@molecules';
 import { getChartData, getTableData } from '@repository/adminRepository';
 import { ADMIN_DASHBOARD_TABLE_COLUMNS } from '@utils/constants';
 
@@ -252,7 +252,7 @@ export default function AdminDashboard({
           </div>
         </div>
         <TableWrapper>
-          <DashboardTable data={teamStatusTableData} columns={tableColumns} />
+          <ReactTable data={teamStatusTableData} columns={tableColumns} />
         </TableWrapper>
       </div>
     </Wrapper>

@@ -24,7 +24,7 @@ import SkillSelectAutoComplete from './SkillSelectAutoComplete';
 import ProjectCard from './ProjectCard';
 import DonutChart from './DonutChart';
 import BigDonutChart from './BigDonutChart';
-import DashboardTable from './DashboardTable';
+import ReactTable from './ReactTable';
 import DashboardBarChart from './DashboardBarChart';
 
 export {
@@ -54,6 +54,6 @@ export {
   ProjectCard,
   DonutChart,
   BigDonutChart,
-  DashboardTable,
+  ReactTable,
   DashboardBarChart,
 };

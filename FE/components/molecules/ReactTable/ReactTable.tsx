@@ -247,7 +247,7 @@ interface TableProps {
   fullWidth?: boolean;
 }
 
-export default function DashboardTable({
+export default function ReactTable({
   columns,
   data,
   grouping = true,

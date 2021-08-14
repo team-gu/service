@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 import { Text } from '@atoms';
-import { Button, DashboardTable } from '@molecules';
+import { Button, ReactTable } from '@molecules';
 import { getTeamTableData } from '@repository/adminRepository';
 import { REGIONS, TEAM_TABLE_COLUMNS } from '@utils/constants';
 
@@ -119,7 +119,7 @@ export default function AdminTeamManage({ projectId }: AdminTeamManageProps) {
           </RegionButtonWrapper>
         ))}
       </div>
-      <DashboardTable
+      <ReactTable
         data={teamData}
         columns={TEAM_TABLE_COLUMNS}
         grouping
