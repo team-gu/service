@@ -16,16 +16,16 @@ import { DateTime } from 'luxon';
 
 const Wrapper = styled.div`
   display: flex;
-  gap: 30px;
   min-height: 100vh;
-  margin-right: 30px;
 
   .sidebar {
+    
     flex: 0 0 200px;
   }
 
   .content {
     flex: auto;
+    margin: 30px;
   }
 `;
 

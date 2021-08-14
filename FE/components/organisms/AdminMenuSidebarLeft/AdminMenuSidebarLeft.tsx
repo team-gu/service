@@ -8,12 +8,13 @@ import { ADMIN_MENU_CONTENT } from '@utils/constants';
 import { OptionTypeBase } from 'react-select';
 
 const Wrapper = styled.div`
-  position: relative;
+  position: fixed;
+  width: 200px;
+  height: 100vh;
 
   display: flex;
   flex-direction: column;
   box-shadow: 3px 0px 5px rgba(55, 53, 47, 0.4);
-  height: 100%;
 
   .sidebar-header {
     flex: 0 0 100px;

@@ -28,7 +28,7 @@ export default function AdminUserManage({ projectId }: AdminUserManageProps) {
   return (
     <Wrapper>
       <div className="manage-header">
-        <Text text="회원 목록 (임시)" fontSetting="n26b" />
+        <Text text="교육생 목록" fontSetting="n26b" />
       </div>
       <DashboardTable
         data={teamStatusTableData}

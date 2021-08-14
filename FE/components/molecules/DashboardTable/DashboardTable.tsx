@@ -14,6 +14,10 @@ import styled from 'styled-components';
 import { Icon, Text } from '@atoms';
 
 const Wrapper = styled.div<{ fullWidth: boolean }>`
+  i {
+    cursor: pointer;
+  }
+  
   table {
     border-spacing: 0;
     border: 1px solid gainsboro;

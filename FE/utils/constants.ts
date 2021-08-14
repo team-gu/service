@@ -36,7 +36,7 @@ export const FILTER_TITLE: any = {
 export const ADMIN_MENU_CONTENT = [
   '프로젝트 관리',
   '대시보드',
-  '회원 관리',
+  '교육생 관리',
   '팀 관리',
   '공지사항 관리',
 ];
