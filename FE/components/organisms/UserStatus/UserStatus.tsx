@@ -350,6 +350,7 @@ export default function UserStatus(): ReactElement {
               handleChangeUserSelect={handleChangeUserSelect}
               studentNumber={studentNumber}
               projectCode={projectCode}
+              payload={payload}
             />
             <div className="sort-container">
               <div className="sort-select">

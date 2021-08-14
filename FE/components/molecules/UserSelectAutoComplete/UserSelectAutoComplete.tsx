@@ -1,6 +1,6 @@
 import { ReactElement } from 'react';
 import AsyncSelect from 'react-select/async';
-import { getSearchUserListByNameAndEmail } from '@repository/filterRepository';
+import { getSearchUserListByName } from '@repository/filterRepository';
 import { MemberOption } from '@utils/type';
 
 const customStyles = {
@@ -29,12 +29,23 @@ interface UserSelectAutoCompleteProps {
   handleChangeUserSelect: (newValue: MemberOption | null) => void;
   studentNumber: string;
   projectCode?: number;
+  payload: {
+    target: string;
+    studentNumber: string;
+    project: number;
+    region: number[];
+    position: number[];
+    track: number[];
+    skills: number[];
+    isMajor: number;
+  };
 }
 
 export default function UserSelectAutoComplete({
   handleChangeUserSelect,
   studentNumber,
   projectCode = 101,
+  payload,
 }: UserSelectAutoCompleteProps): ReactElement {
   const handleSelectChange = (newValue: MemberOption | null) => {
     handleChangeUserSelect(newValue);
@@ -42,11 +53,17 @@ export default function UserSelectAutoComplete({
 
   const promiseOptions = (inputValue: string) =>
     new Promise<MemberOption[]>((resolve) => {
-      getSearchUserListByNameAndEmail(
-        projectCode,
+      const { region, position, track, skills, isMajor } = payload;
+      getSearchUserListByName({
+        target: inputValue,
         studentNumber,
-        inputValue,
-      ).then(({ data: { data } }) => {
+        project: projectCode,
+        region,
+        position,
+        track,
+        skills,
+        isMajor,
+      }).then(({ data: { data } }) => {
         resolve(
           data?.reduce(
             (acc, cur) => [

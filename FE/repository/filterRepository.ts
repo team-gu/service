@@ -13,12 +13,18 @@ export const postByFilteredUsers = async (param: any) =>
     param,
   });
 
-export const getSearchUserListByNameAndEmail = async (
-  projectCode: number,
-  studentNumber: string,
-  target: string,
-) =>
+export const getSearchUserListByName = async (param: {
+  target: string;
+  studentNumber: string;
+  project: number;
+  region: number[];
+  position: number[];
+  track: number[];
+  skills: number[];
+  isMajor: number;
+}) =>
   await api({
-    url: `/api/userPool/search?projectCode=${projectCode}&studentNumber=${studentNumber}&target=${target}`,
-    type: 'get',
+    url: `/api/userPool/search/name`,
+    type: 'post',
+    param,
   });
