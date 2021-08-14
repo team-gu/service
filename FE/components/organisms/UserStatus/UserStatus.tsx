@@ -101,8 +101,6 @@ export default function UserStatus(): ReactElement {
   const [sortAsc, setSortAsc] = useState(true);
 
   const [users, setUsers] = useState([]);
-  // TODO: Search contain
-  const [projectCode, setProjectCode] = useState<number>();
 
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [invitedUser, setInvitedUser] = useState<Users>();
@@ -131,7 +129,6 @@ export default function UserStatus(): ReactElement {
     });
 
     if (project) {
-      setProjectCode(project);
       getUserHasTeam({
         userId: id,
         project: { code: project },
@@ -185,16 +182,21 @@ export default function UserStatus(): ReactElement {
 
   const handleToggleFilter = (title: string, code: string) => {
     if (code === '전체') {
-      const payloadTemp: any = { ...payload, pageNum: 0 };
+      const payloadTemp: any = { ...payload, pageNum: 0, sort: 'asc' };
       delete payloadTemp[FILTER_TITLE[title]];
       return setPayload(payloadTemp);
     }
 
-    setPayload((prev) => ({ ...prev, [FILTER_TITLE[title]]: code }));
+    setPayload((prev) => ({
+      ...prev,
+      [FILTER_TITLE[title]]: code,
+      pageNum: 0,
+      sort: 'asc',
+    }));
   };
 
   const handleFilter = (title: string, code: string) => {
-    const payloadTemp: any = { ...payload, pageNum: 0 };
+    const payloadTemp: any = { ...payload, pageNum: 0, sort: 'asc' };
     const convertTitle: any = FILTER_TITLE[title];
 
     if (!payloadTemp.hasOwnProperty(convertTitle)) {
@@ -214,7 +216,7 @@ export default function UserStatus(): ReactElement {
   };
 
   const handleFilterArray = (title: string, arr: any) => {
-    const payloadTemp: any = { ...payload, pageNum: 0 };
+    const payloadTemp: any = { ...payload, pageNum: 0, sort: 'asc' };
     const convertTitle: any = FILTER_TITLE[title];
 
     if (arr.length === 0) {
@@ -235,10 +237,11 @@ export default function UserStatus(): ReactElement {
         ...prev,
         email: selectedUser?.email,
         pageNum: 0,
+        sort: 'asc',
       }));
     }
 
-    const payloadTemp: any = { ...payload, pageNum: 0 };
+    const payloadTemp: any = { ...payload, pageNum: 0, sort: 'asc' };
 
     delete payloadTemp.email;
     setPayload(payloadTemp);
@@ -246,8 +249,7 @@ export default function UserStatus(): ReactElement {
 
   const handleProjectChange = ({ value }: { value: number }) => {
     if (projectCodes?.includes(value)) {
-      setPayload({ ...payload, project: value, pageNum: 0 });
-      setProjectCode(value);
+      setPayload({ ...payload, project: value, pageNum: 0, sort: 'asc' });
     }
   };
 
@@ -349,7 +351,6 @@ export default function UserStatus(): ReactElement {
             <UserSelectAutoComplete
               handleChangeUserSelect={handleChangeUserSelect}
               studentNumber={studentNumber}
-              projectCode={projectCode}
               payload={payload}
             />
             <div className="sort-container">

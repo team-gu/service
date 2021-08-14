@@ -28,23 +28,26 @@ const customStyles = {
 interface UserSelectAutoCompleteProps {
   handleChangeUserSelect: (newValue: MemberOption | null) => void;
   studentNumber: string;
-  projectCode?: number;
   payload: {
-    target: string;
-    studentNumber: string;
+    email: string;
+    isMajor: number;
+    pageNum: number;
+    pageSize: number;
+    position: number[];
     project: number;
     region: number[];
-    position: number[];
-    track: number[];
     skills: number[];
-    isMajor: number;
+    sort: string;
+    studentNumber: string;
+    target: string;
+    projectCode: number;
+    track: number[];
   };
 }
 
 export default function UserSelectAutoComplete({
   handleChangeUserSelect,
   studentNumber,
-  projectCode = 101,
   payload,
 }: UserSelectAutoCompleteProps): ReactElement {
   const handleSelectChange = (newValue: MemberOption | null) => {
@@ -53,11 +56,11 @@ export default function UserSelectAutoComplete({
 
   const promiseOptions = (inputValue: string) =>
     new Promise<MemberOption[]>((resolve) => {
-      const { region, position, track, skills, isMajor } = payload;
+      const { region, position, project, track, skills, isMajor } = payload;
       getSearchUserListByName({
         target: inputValue,
         studentNumber,
-        project: projectCode,
+        project,
         region,
         position,
         track,
