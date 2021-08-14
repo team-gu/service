@@ -13,7 +13,7 @@ import styled from 'styled-components';
 
 import { Icon, Text } from '@atoms';
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<{ fullWidth: boolean }>`
   table {
     border-spacing: 0;
     border: 1px solid gainsboro;
@@ -36,11 +36,15 @@ const Wrapper = styled.div`
       border-right: 1px solid gainsboro;
       vertical-align: middle;
 
-      // Each cell should grow equally
-      width: 1%;
-      &.collapse {
-        width: 0.0000000001%;
-      }
+      ${({ fullWidth }) =>
+        fullWidth &&
+        `
+        // Each cell should grow equally
+        width: 1%;
+        &.collapse {
+          width: 0.0000000001%;
+        }
+      `}
     }
   }
 `;
@@ -140,6 +144,10 @@ const HelpContainer = styled.div<{ isOpen: boolean }>`
   position: relative;
   display: block;
 
+  i {
+    cursor: pointer;
+  }
+
   .help-content {
     visibility: hidden;
     opacity: 0;
@@ -159,7 +167,7 @@ const HelpContainer = styled.div<{ isOpen: boolean }>`
     border-radius: 5px;
     padding: 20px;
     width: 400px;
-    bottom: 10px;
+    top: 10px;
     right: 30px;
 
     > div {
@@ -232,6 +240,7 @@ interface TableProps {
   data: any[];
   grouping?: boolean;
   pagination?: boolean;
+  fullWidth?: boolean;
 }
 
 export default function DashboardTable({
@@ -239,6 +248,7 @@ export default function DashboardTable({
   data,
   grouping = true,
   pagination = true,
+  fullWidth = true,
 }: TableProps): ReactElement {
   const filterTypes = useMemo(
     () => ({
@@ -307,7 +317,7 @@ export default function DashboardTable({
   const [showTooltip, setShowTooltip] = useState(false);
 
   return (
-    <Wrapper>
+    <Wrapper fullWidth={fullWidth}>
       <table {...getTableProps()}>
         <thead>
           <tr>
