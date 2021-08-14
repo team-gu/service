@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 import { Text, Icon } from '@atoms';
 import { ReactTable } from '@molecules';
-import { AdminUserManageModal } from '@organisms';
+import { AdminUserManageModal, AdminUserImport } from '@organisms';
 import { getTableData } from '@repository/adminRepository';
 import { ADMIN_DASHBOARD_TABLE_COLUMNS } from '@utils/constants';
 
@@ -49,8 +49,14 @@ export default function AdminUserManage({ projectId }: AdminUserManageProps) {
         columns={ADMIN_DASHBOARD_TABLE_COLUMNS}
         fullWidth={false}
       />
+      <div className="manage-header">
+        <Text text="교육생 Import" fontSetting="n26b" />
+      </div>
+      <AdminUserImport />
       {showCreateModal && (
-        <AdminUserManageModal handleClickClose={() => setCreateShowModal(false)} />
+        <AdminUserManageModal
+          handleClickClose={() => setCreateShowModal(false)}
+        />
       )}
     </Wrapper>
   );

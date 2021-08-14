@@ -104,3 +104,26 @@ export const getTeamTableData = async (param: any) => {
     param,
   })
 }
+
+export const uploadExcelFile = async (param: any) => {
+  console.log('uploadExcelFile');
+  console.log(param);
+
+  return await api({
+    url: `/api/excel/read`,
+    type: 'post',
+    param,
+  });
+};
+
+export const registUsers = async (param: any) => {
+  console.log('registUsers');
+  console.log(param);
+
+  return await api({
+    url: `/api/auth/regist/users`,
+    type: 'post',
+    param,
+  });
+};
+
