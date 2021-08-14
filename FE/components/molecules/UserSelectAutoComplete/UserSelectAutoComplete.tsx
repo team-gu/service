@@ -1,7 +1,8 @@
-import { ReactElement } from 'react';
+import { ReactElement, useState } from 'react';
 import AsyncSelect from 'react-select/async';
-import { getSearchUserListByName } from '@repository/filterRepository';
+import { postSearchUserListByName } from '@repository/filterRepository';
 import { MemberOption } from '@utils/type';
+import { useEffect } from 'react';
 
 const customStyles = {
   control: (base: any) => ({
@@ -27,7 +28,6 @@ const customStyles = {
 
 interface UserSelectAutoCompleteProps {
   handleChangeUserSelect: (newValue: MemberOption | null) => void;
-  studentNumber: string;
   payload: {
     email?: string;
     isMajor?: number;
@@ -47,17 +47,50 @@ interface UserSelectAutoCompleteProps {
 
 export default function UserSelectAutoComplete({
   handleChangeUserSelect,
-  studentNumber,
   payload,
 }: UserSelectAutoCompleteProps): ReactElement {
+  const [initValue, setInitValue] = useState([]);
   const handleSelectChange = (newValue: MemberOption | null) => {
     handleChangeUserSelect(newValue);
   };
 
+  useEffect(() => {
+    (async () => {
+      const { project, studentNumber } = payload;
+
+      const {
+        data: { data },
+      } = await postSearchUserListByName({
+        studentNumber,
+        project,
+      });
+
+      console.log(project, studentNumber, data);
+      setInitValue(
+        data?.reduce(
+          (acc, cur) => [
+            ...acc,
+            { ...cur, label: `${cur?.name}(${cur?.email})` },
+          ],
+          [],
+        ),
+      );
+    })();
+  }, []);
+
   const promiseOptions = (inputValue: string) =>
     new Promise<MemberOption[]>((resolve) => {
-      const { region, position, project, track, skills, isMajor } = payload;
-      getSearchUserListByName({
+      const {
+        region,
+        position,
+        project,
+        track,
+        studentNumber,
+        skills,
+        isMajor,
+      } = payload;
+
+      postSearchUserListByName({
         target: inputValue || '',
         studentNumber,
         project,
@@ -67,6 +100,7 @@ export default function UserSelectAutoComplete({
         skills,
         isMajor,
       }).then(({ data: { data } }) => {
+        console.log(data, '???');
         resolve(
           data?.reduce(
             (acc, cur) => [
@@ -82,9 +116,8 @@ export default function UserSelectAutoComplete({
   return (
     <>
       <AsyncSelect
-        cacheOptions
         loadOptions={promiseOptions}
-        defaultOptions
+        defaultOptions={initValue}
         onChange={handleSelectChange}
         isClearable
         styles={customStyles}

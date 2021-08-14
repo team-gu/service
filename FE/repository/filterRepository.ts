@@ -13,7 +13,7 @@ export const postByFilteredUsers = async (param: any) =>
     param,
   });
 
-export const getSearchUserListByName = async (param: {
+export const postSearchUserListByName = async (param: {
   target: string;
   studentNumber: string;
   project: number;
