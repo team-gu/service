@@ -25,6 +25,7 @@ interface InputProps {
   value?: string;
   refValue?: string;
   accept?: string;
+  autoComplete?: string;
 }
 
 const Wrapper = styled.div<{
@@ -76,6 +77,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       value,
       refValue = '',
       accept = '',
+      autoComplete = 'on',
     }: InputProps,
     ref,
   ): ReactElement => {
@@ -111,6 +113,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           value={value}
           onKeyDown={onKeyDown}
           accept={accept}
+          autoComplete={autoComplete}
         />
         {error?.split('/')[0] !== '' && <div>{error?.split('/')[0]}</div>}
       </Wrapper>

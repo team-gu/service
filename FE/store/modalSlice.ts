@@ -7,6 +7,7 @@ interface ModalState {
   [MODALS.PROJECT_MODAL]: boolean;
   [MODALS.AWARD_MODAL]: boolean;
   [MODALS.HOC_MODAL]: boolean;
+  [MODALS.CHANGEPASSWORD_MODAL]: boolean;
   content?: any;
 }
 
@@ -15,6 +16,7 @@ const initialState: ModalState = {
   [MODALS.PROJECT_MODAL]: false,
   [MODALS.AWARD_MODAL]: false,
   [MODALS.HOC_MODAL]: false,
+  [MODALS.CHANGEPASSWORD_MODAL]: false,
   content: '',
 };
 

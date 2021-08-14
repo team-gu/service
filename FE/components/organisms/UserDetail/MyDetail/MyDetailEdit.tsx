@@ -439,7 +439,19 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
           />
         </ModalWrapper>
       )}
+
       <Icons>
+        <Icon
+          iconName="password"
+          color="black"
+          func={() =>
+            dispatch(
+              displayModal({
+                modalName: MODALS.CHANGEPASSWORD_MODAL,
+              }),
+            )
+          }
+        />
         <Icon iconName="clear" color="black" func={changeEditMode} />
       </Icons>
       <form onSubmit={onSubmit} encType="multipart/form-data">
