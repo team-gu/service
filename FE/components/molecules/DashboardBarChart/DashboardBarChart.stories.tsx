@@ -16,7 +16,7 @@ const Template: Story = () => (
   />
 );
 
-export const teamStatusBarChart = Template.bind({});
+export const dashboardBarChart = Template.bind({});
 
 const data = [
   {
