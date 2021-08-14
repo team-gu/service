@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 @ApiModel(description = "Admin Team Building Status Management Reqeust Model ")
-public class AdminTeamManagementReqDto {
+public class AdminManagementReqDto {
 	
 	@ApiModelProperty(name = "project_detail Id", example = "1")
 	Long projectId;

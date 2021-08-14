@@ -3,11 +3,16 @@ package com.teamgu.api.service;
 import java.util.List;
 
 import com.teamgu.api.dto.res.AdminTeamManagementResDto;
+import com.teamgu.api.dto.res.AdminUserManagementResDto;
 import com.teamgu.api.dto.res.CodeResDto;
 import com.teamgu.api.dto.res.DashBoardResDto;
 import com.teamgu.api.dto.res.DashBoardTableResDto;
 import com.teamgu.api.dto.res.ProjectInfoResDto;
 
+/**
+ * @author naann
+ *
+ */
 public interface AdminService {
 	
 	/**
@@ -101,6 +106,16 @@ public interface AdminService {
 	 * @return
 	 */
 	public boolean checkProjectDeletion(Long projectId);
+
+	
+	/**
+	 * Check Project Validation
+	 * 프로젝트의 유효성을 체크한다. 존재하는 프로젝트이면 true를 없으면 false를 반환한다.
+	 * project Id기반 관리자의 데이터 조회시 유효한 프로젝트임을 검증할 때 쓰인다.
+	 * @param projectId
+	 * @return
+	 */
+	public boolean checkProjectValidation(Long projectId);
 	
 	/**
 	 * Select DashBoard Data
@@ -129,4 +144,22 @@ public interface AdminService {
 	 */
 	public List<AdminTeamManagementResDto> getTeamManagementData(Long projectId, int regionCode);
 	
+	/**
+	 * Select User Status to manage , import, regist
+	 * Project Id와 region code를 통해 회원 현황을 조회하여 관리한다
+	 * @param projectId
+	 * @param regionCode
+	 * @return
+	 */
+	public List<AdminUserManagementResDto> getUserManagamentData(Long projectId, int regionCode);
+
+	/**
+	 * Get Class Select Box
+	 * 프로젝트별 회원 정보 관리 탭의 반 메뉴를 구성한다. 
+	 * region code가 0이 아니라면 지역별로도 필터 할수 있도록 한다.
+	 * @param projectId
+	 * @param regionCode
+	 * @return
+	 */
+	public List<CodeResDto> getClassCode(Long projectId, int regionCode);
 }
