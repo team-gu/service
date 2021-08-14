@@ -16,6 +16,8 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.teamgu.api.dto.res.AdminTeamManagementHumanResDto;
+import com.teamgu.api.dto.res.AdminTeamManagementResDto;
 import com.teamgu.api.dto.res.CodeResDto;
 import com.teamgu.api.dto.res.DashBoardTableResDto;
 import com.teamgu.api.dto.res.ProjectInfoResDto;
@@ -389,6 +391,93 @@ public class AdminRepositorySupport {
 		return dashBoardTable;
 	}
 	
+	// getProjectInfo
+	public List<AdminTeamManagementResDto> getTeamManagementData(Long projectId, int regionCode)
+	{
+		List<AdminTeamManagementResDto> list = new ArrayList<>();
+		EntityManager em = emf.createEntityManager();
+		StringBuilder sb = new StringBuilder();
+		
+		// 지역 필터 (0이면 전국, 그 외엔 지역 필터)
+		if(regionCode != 0) {
+			sb.append("and (select code_detail.code_detail from code_detail where code_detail = "
+				+ "(substr(user.student_number, 3, 1) + 100) and code_id = \"RE\") = ").append(regionCode);
+			}
+		try {
+			String jpql = "select team.id, (select code_detail.name from code_detail where code_detail = (substr(user.student_number, 3, 1) + 100) and code_id = \"RE\") as region\r\n" + 
+					", team.name\r\n" + 
+					", (select code_detail.name from code_detail where code_detail.code_detail = (select mapping.track_code from mapping where mapping.id = team.mapping_id) and code_id=\"TR\") as track\r\n" + 
+					", ut.number\r\n" + 
+					", if(team.complete_yn = 1, \"O\", \"X\") as complete\r\n" + 
+					", team.leader_id\r\n" + 
+					"from team\r\n" + 
+					"left outer join user\r\n" + 
+					"on team.leader_id = user.id\r\n" + 
+					"left outer join (select team_id, count(team_id) as number from user_team group by team_id) ut\r\n" + 
+					"on team.id = ut.team_id\r\n" + 
+					"where mapping_id in (select id \r\n" + 
+					"from mapping\r\n" + 
+					"where project_code = (\r\n" + 
+					"select project_code from project_detail where id = 2)\r\n" + 
+					"and stage_code = (\r\n" + 
+					"select stage_code from project_detail where id = 2))\r\n" + sb.toString();
+			
+			
+			List<Object[]> datas = em.createNativeQuery(jpql)
+					.getResultList();
+			
+			String jpql2 = "select user_team.user_id, user.name, if(user.id = (select leader_id from team where team.id = 58), \"팀장\", \"팀원\") as role\r\n" + 
+					"from user_team \r\n" + 
+					"left outer join user\r\n" + 
+					"on user_team.user_id = user.id\r\n" + 
+					"where team_id = ?1";
+			
+			for(Object[] data : datas)
+			{
+				Long index = Long.parseLong(data[0].toString());
+				
+				List<AdminTeamManagementHumanResDto> members = new ArrayList<>();
+				
+				List<Object[]> people = em.createNativeQuery(jpql2)
+						.setParameter(1, index)
+						.getResultList();
+				
+				for(Object[] person : people) {
+					
+					members.add(AdminTeamManagementHumanResDto.builder()
+							.userId(Long.parseLong(person[0].toString()))
+							.name(person[1].toString())
+							.role(person[2].toString())
+							.build());
+			
+				}
+
+				list.add(AdminTeamManagementResDto.builder()
+						.teamId(index)
+						.region(data[1].toString())
+						.teamName(data[2].toString())
+						.track(data[3].toString())
+						.memberCnt(Integer.parseInt(data[4].toString()))
+						.completeYn(data[5].toString())
+						.leaderId(Long.parseLong(data[6].toString()))
+						.members(members)
+						.build()
+						)
+						;
+			}
+			
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+		
+		} finally {
+			
+			em.close();
+		
+		}
+		
+		return list;
+	}
 	// Mapping Table Code 삭제
 	@Transactional
 	public void deleteMappingCode(int stageCode, int projectCode, int trackCode) {

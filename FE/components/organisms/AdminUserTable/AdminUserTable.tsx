@@ -7,7 +7,6 @@ import {
   useSortBy,
   useExpanded,
   useAsyncDebounce,
-  usePagination,
 } from 'react-table';
 import styled from 'styled-components';
 
@@ -120,18 +119,6 @@ const GlobalFilterWrapper = styled.span`
   }
 `;
 
-const PaginationContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 10px;
-
-  .pagination-text {
-    display: inline-block;
-    margin: 0 10px;
-  }
-`;
-
 const Bold = styled.span`
   font-weight: 700;
 `;
@@ -159,7 +146,7 @@ const HelpContainer = styled.div<{ isOpen: boolean }>`
     border-radius: 5px;
     padding: 20px;
     width: 400px;
-    bottom: 10px;
+    top: 10px;
     right: 30px;
 
     > div {
@@ -232,7 +219,10 @@ interface TableProps {
   data: any[];
 }
 
-export default function DashboardTable({ columns, data }: TableProps): ReactElement {
+export default function AdminUserTable({
+  columns,
+  data,
+}: TableProps): ReactElement {
   const filterTypes = useMemo(
     () => ({
       // Add a new fuzzyTextFilterFn filter type.
@@ -272,16 +262,6 @@ export default function DashboardTable({ columns, data }: TableProps): ReactElem
     visibleColumns,
     preGlobalFilteredRows,
     setGlobalFilter,
-
-    page,
-    canPreviousPage,
-    canNextPage,
-    pageOptions,
-    pageCount,
-    gotoPage,
-    nextPage,
-    previousPage,
-    setPageSize,
   } = useTable(
     {
       columns,
@@ -294,7 +274,6 @@ export default function DashboardTable({ columns, data }: TableProps): ReactElem
     useGroupBy,
     useSortBy,
     useExpanded,
-    usePagination,
   );
 
   const [showTooltip, setShowTooltip] = useState(false);
@@ -401,7 +380,7 @@ export default function DashboardTable({ columns, data }: TableProps): ReactElem
           ))}
         </thead>
         <tbody {...getTableBodyProps()}>
-          {page.map((row, i) => {
+          {rows.map((row, i) => {
             prepareRow(row);
             return (
               <tr {...row.getRowProps()}>
@@ -458,38 +437,6 @@ export default function DashboardTable({ columns, data }: TableProps): ReactElem
         </tbody>
       </table>
 
-      <PaginationContainer>
-        <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
-          {'<<'}
-        </button>{' '}
-        <button onClick={() => previousPage()} disabled={!canPreviousPage}>
-          {'<'}
-        </button>{' '}
-        <div className="pagination-text">
-          <Text
-            text={`${state.pageIndex + 1} / ${pageOptions.length}`}
-            fontSetting="n16m"
-          />
-        </div>
-        <button onClick={() => nextPage()} disabled={!canNextPage}>
-          {'>'}
-        </button>{' '}
-        <button onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
-          {'>>'}
-        </button>{' '}
-        <select
-          value={state.pageSize}
-          onChange={(e) => {
-            setPageSize(Number(e.target.value));
-          }}
-        >
-          {[10, 20, 30, 40, 50].map((pageSize) => (
-            <option key={pageSize} value={pageSize}>
-              {pageSize}개씩
-            </option>
-          ))}
-        </select>
-      </PaginationContainer>
     </Wrapper>
   );
 }

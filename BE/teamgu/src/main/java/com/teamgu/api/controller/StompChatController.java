@@ -149,7 +149,7 @@ public class StompChatController {
 		ChatReqDto chatReqDto = ChatReqDto.builder()
 				.room_id(chat_room_id)
 				.sender_id(leader_id)
-				.message("팀에 초대되었습니다")
+				.message("(팀 초대 메세지)")
 				.type("TEAM_INVITE_WAITING")//팀 초대후 기다리는 상태
 				.team_id(team_id)
 				.build();

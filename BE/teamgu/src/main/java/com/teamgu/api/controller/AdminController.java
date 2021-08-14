@@ -15,8 +15,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.teamgu.api.dto.req.AdminTeamManagementReqDto;
 import com.teamgu.api.dto.req.ProjectCodeReqDto;
-import com.teamgu.api.dto.req.ProjectReqDto;
+import com.teamgu.api.dto.res.AdminTeamManagementResDto;
 import com.teamgu.api.dto.res.BasicResponse;
 import com.teamgu.api.dto.res.CodeResDto;
 import com.teamgu.api.dto.res.CommonResponse;
@@ -173,5 +174,23 @@ public class AdminController {
 				.body(new ErrorResponse("존재하지 않는 프로젝트입니다"));
 	}
 	
+	@ApiOperation(value = "팀 구성 현황 조회")
+	@PostMapping("/team")
+	public ResponseEntity<? extends BasicResponse> getTeamManagementData(@RequestBody AdminTeamManagementReqDto adminTeamManagementReqDto){
+		
+		Long projectId = adminTeamManagementReqDto.getProjectId();
+		int regionCode = adminTeamManagementReqDto.getRegionCode();
+		
+		if(!adminService.checkProjectDeletion(projectId)) {
+			List<AdminTeamManagementResDto> list = adminService.getTeamManagementData(projectId, regionCode);
+			
+			return ResponseEntity.ok(new CommonResponse<List<AdminTeamManagementResDto>>(list));
+
+		}
+		
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+				.body(new ErrorResponse("존재하지 않는 프로젝트입니다"));
+		
+	}
 
 }

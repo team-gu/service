@@ -1,7 +1,11 @@
 import { ReactElement, useState, useEffect } from 'react';
 import styled from 'styled-components';
 
-import { AdminMenuSidebarLeft, AdminTeamManage } from '@organisms';
+import {
+  AdminMenuSidebarLeft,
+  AdminTeamManage,
+  AdminUserManage,
+} from '@organisms';
 import { Text } from '@atoms';
 import { Project } from '@utils/type';
 import { ADMIN_MENU_CONTENT } from '@utils/constants';
@@ -86,7 +90,9 @@ export default function AdminLayout(): ReactElement {
                 [ADMIN_MENU_CONTENT[1]]: selectedProject && (
                   <AdminDashboard projectId={selectedProject} />
                 ),
-                [ADMIN_MENU_CONTENT[2]]: <div>회원 관리</div>,
+                [ADMIN_MENU_CONTENT[2]]: selectedProject && (
+                  <AdminUserManage projectId={selectedProject} />
+                ),
                 [ADMIN_MENU_CONTENT[3]]: selectedProject && (
                   <AdminTeamManage projectId={selectedProject} />
                 ),

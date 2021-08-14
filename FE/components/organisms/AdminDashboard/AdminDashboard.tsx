@@ -119,45 +119,7 @@ const Wrapper = styled.div`
 `;
 
 const TableWrapper = styled.div`
-  margin-top: 30px;
-
-  .tableWrap {
-    display: block;
-    max-width: 100%;
-    overflow-x: scroll;
-    overflow-y: hidden;
-    border-bottom: 1px solid black;
-  }
-
-  table {
-    border-spacing: 0;
-    border: 1px solid gainsboro;
-
-    th {
-      border-bottom: 1px solid black;
-    }
-
-    tr:hover {
-      td {
-        background-color: #fafafa !important;
-      }
-    }
-
-    th,
-    td {
-      margin: 0;
-      padding: 10px;
-      border-bottom: 1px solid gainsboro;
-      border-right: 1px solid gainsboro;
-      vertical-align: middle;
-
-      // Each cell should grow equally
-      width: 1%;
-      &.collapse {
-        width: 0.0000000001%;
-      }
-    }
-  }
+  margin-top: 30px;  
 `;
 
 interface AdminDashboardProps {
