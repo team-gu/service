@@ -14,7 +14,7 @@ interface AuthState {
   major: number;
   name: string;
   projects: object[];
-  projectCode: number[];
+  projectCodes: number[];
   role: number;
   skills: string[];
   studentNumber: string;
@@ -33,7 +33,7 @@ const initialState: AuthState = {
   major: 0,
   name: '',
   projects: [],
-  projectCode: [101],
+  projectCodes: [101],
   role: 0,
   skills: [],
   studentNumber: '',

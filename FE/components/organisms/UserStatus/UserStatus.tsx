@@ -19,8 +19,8 @@ import {
   getEachFiltersCodeList,
   postByFilteredUsers,
 } from '@repository/filterRepository';
-import { setLoading, useAppDispatch, useAuthState, displayModal } from '@store';
-import { FILTER_TITLE, OPTIONS } from '@utils/constants';
+import { useAppDispatch, useAuthState, displayModal } from '@store';
+import { FILTER_TITLE } from '@utils/constants';
 import { MemberOption } from '@utils/type';
 import { ModalWrapper } from '@organisms';
 import { getUserHasTeam } from '@repository/teamRepository';
@@ -89,7 +89,7 @@ const InviteConfirmModal = styled.div`
 
 export default function UserStatus(): ReactElement {
   const {
-    user: { id, name: userName, projectCode, studentNumber },
+    user: { id, projectCodes, studentNumber },
   } = useAuthState();
 
   const { handleSendInvitation, handleSendRtcLink } = useSockStomp({
@@ -98,11 +98,7 @@ export default function UserStatus(): ReactElement {
   const [filterContents, setFilterContents] = useState<any>();
   const [payload, setPayload] = useState({});
 
-  const [sortAsc, setSortAsc] = useState(true);
-
   const [users, setUsers] = useState([]);
-  // TODO: Search contain
-  const [containsUserId, setContainsUserId] = useState<number>();
 
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [invitedUser, setInvitedUser] = useState<Users>();
@@ -120,30 +116,36 @@ export default function UserStatus(): ReactElement {
       setFilterContents(data);
     })();
 
+    const project = projectCodes[projectCodes.length - 1];
+
     setPayload({
-      project:
-        projectCode?.length > 1 ? projectCode[projectCode.length - 1] : 101,
+      project,
       studentNumber,
       sort: 'asc',
       pageNum: 0,
       pageSize: 10,
     });
 
-    const project =
-      projectCode && projectCode.length > 0
-        ? projectCode[projectCode.length - 1]
-        : 101;
-    getUserHasTeam({
-      userId: id,
-      project: { code: project },
-    }).then(({ data: { data } }) => {
-      if (data.hasTeam) {
-        if (data.team.leaderId === id) {
-          setTeamId(data.team.id);
-          setIsLeader(true);
+    if (project) {
+      getUserHasTeam({
+        userId: id,
+        project: { code: project },
+      }).then(({ data: { data } }) => {
+        if (data.hasTeam) {
+          if (data.team.leaderId === id) {
+            setTeamId(data.team.id);
+            setIsLeader(true);
+          }
         }
-      }
-    });
+      });
+    } else {
+      dispatch(
+        displayModal({
+          modalName: MODALS.ALERT_MODAL,
+          content: '관리자에게 프로젝트 멤버 등록을 요청해주세요',
+        }),
+      );
+    }
   }, []);
 
   useEffect(() => {
@@ -178,16 +180,21 @@ export default function UserStatus(): ReactElement {
 
   const handleToggleFilter = (title: string, code: string) => {
     if (code === '전체') {
-      const payloadTemp: any = { ...payload };
+      const payloadTemp: any = { ...payload, pageNum: 0, sort: 'asc' };
       delete payloadTemp[FILTER_TITLE[title]];
       return setPayload(payloadTemp);
     }
 
-    setPayload((prev) => ({ ...prev, [FILTER_TITLE[title]]: code }));
+    setPayload((prev) => ({
+      ...prev,
+      [FILTER_TITLE[title]]: code,
+      pageNum: 0,
+      sort: 'asc',
+    }));
   };
 
   const handleFilter = (title: string, code: string) => {
-    const payloadTemp: any = { ...payload };
+    const payloadTemp: any = { ...payload, pageNum: 0, sort: 'asc' };
     const convertTitle: any = FILTER_TITLE[title];
 
     if (!payloadTemp.hasOwnProperty(convertTitle)) {
@@ -207,7 +214,7 @@ export default function UserStatus(): ReactElement {
   };
 
   const handleFilterArray = (title: string, arr: any) => {
-    const payloadTemp: any = { ...payload };
+    const payloadTemp: any = { ...payload, pageNum: 0, sort: 'asc' };
     const convertTitle: any = FILTER_TITLE[title];
 
     if (arr.length === 0) {
@@ -223,22 +230,29 @@ export default function UserStatus(): ReactElement {
   };
 
   const handleChangeUserSelect = (selectedUser: MemberOption | null) => {
-    if (selectedUser) {
-      setContainsUserId(selectedUser.id);
-    } else {
-      setContainsUserId(undefined);
+    if (selectedUser?.email) {
+      return setPayload((prev) => ({
+        ...prev,
+        email: selectedUser?.email,
+        pageNum: 0,
+        sort: 'asc',
+      }));
     }
+
+    const payloadTemp: any = { ...payload, pageNum: 0, sort: 'asc' };
+
+    delete payloadTemp.email;
+    setPayload(payloadTemp);
   };
 
-  const handleSortByChange = ({ value }: { value: number }) => {
-    if (projectCode?.includes(value)) {
-      setPayload({ ...payload, project: value });
+  const handleProjectChange = ({ value }: { value: number }) => {
+    if (projectCodes?.includes(value)) {
+      setPayload({ ...payload, project: value, pageNum: 0, sort: 'asc' });
     }
   };
 
   const handleClickSort = (sort: string) => {
-    setPayload({ ...payload, sort });
-    setSortAsc(!sortAsc);
+    setPayload({ ...payload, sort, pageNum: 0 });
   };
 
   const handleCloseInviteModal = () => {
@@ -271,18 +285,34 @@ export default function UserStatus(): ReactElement {
   return (
     <LookupLayout showTeamCreateBtn={false}>
       <div className="filter-container">
-        <WrapFilter>
-          <Title title="프로젝트">
-            <SimpleSelect
-              options={OPTIONS.slice(0, 1)} // projectCode?.length)}
-              onChange={handleSortByChange}
-              value={{ label: '공통', value: 101 }}
-            />
-          </Title>
-        </WrapFilter>
+        {filterContents && (
+          <WrapFilter>
+            <Title title="프로젝트">
+              <SimpleSelect
+                options={filterContents['프로젝트']
+                  .slice(0, projectCodes?.length)
+                  .reduce(
+                    (acc, { codeName, code }) => [
+                      ...acc,
+                      { label: codeName, value: code },
+                    ],
+                    [],
+                  )}
+                onChange={handleProjectChange}
+                value={{
+                  label:
+                    filterContents['프로젝트'][projectCodes?.length - 1]
+                      ?.codeName,
+                  value:
+                    filterContents['프로젝트'][projectCodes?.length - 1]?.code,
+                }}
+              />
+            </Title>
+          </WrapFilter>
+        )}
         {filterContents &&
           Object.keys(filterContents).map(
-            (each, index) =>
+            (each) =>
               each !== '기수' &&
               each !== '프로젝트' &&
               (each !== '전공/비전공' ? (
@@ -291,14 +321,14 @@ export default function UserStatus(): ReactElement {
                     title={each}
                     contents={filterContents[each]}
                     func={handleFilter}
-                    key={index}
+                    key={`filter-checkbox-${each}`}
                   />
                 ) : (
                   <Filter
                     title={each}
                     contents={filterContents[each]}
                     func={handleFilterArray}
-                    key={index}
+                    key={`filter-selectbox-${each}`}
                   />
                 )
               ) : (
@@ -306,41 +336,50 @@ export default function UserStatus(): ReactElement {
                   title={each}
                   contents={filterContents[each]}
                   func={handleToggleFilter}
-                  key={index}
+                  key={`filter-radiobutton-${each}`}
                   isRadioButton
                 />
               )),
           )}
       </div>
       <div className="team-status-list-container">
-        <div className="team-status-header">
-          <UserSelectAutoComplete
-            handleChangeUserSelect={handleChangeUserSelect}
-          />
-          <div className="sort-container">
-            <div className="sort-select">
-              <SimpleSelect
-                options={sortByOptions}
-                onChange={handleSortByChange}
-                placeholder={'Sort by...'}
-                value={sortByOptions[0]}
-              />
+        <WrapFilter>
+          <div className="team-status-header">
+            <UserSelectAutoComplete
+              handleChangeUserSelect={handleChangeUserSelect}
+              payload={payload}
+            />
+            <div className="sort-container">
+              <div className="sort-select">
+                <SimpleSelect
+                  options={sortByOptions}
+                  placeholder={'Sort by...'}
+                  value={sortByOptions[0]}
+                />
+              </div>
+              <span
+                className={
+                  'sort-icon' + (payload?.sort === 'asc' ? ' rotated' : '')
+                }
+              >
+                <Icon
+                  iconName="sort"
+                  func={() =>
+                    handleClickSort(payload?.sort === 'asc' ? 'desc' : 'asc')
+                  }
+                />
+              </span>
             </div>
-            <span className={'sort-icon' + (sortAsc ? '' : ' rotated')}>
-              <Icon
-                iconName="sort"
-                func={() => handleClickSort(sortAsc ? 'asc' : 'desc')}
-              />
-            </span>
           </div>
-        </div>
+        </WrapFilter>
+
         {users && users.length === 0 ? (
-          <div>일치하는 유저가 없습니다.</div>
+          <WrapFilter>일치하는 유저가 없습니다.</WrapFilter>
         ) : (
           <>
             {users?.map((each: Users) => (
               <UserStatusCard
-                key={each?.id}
+                key={`status-card-${each?.id}`}
                 user={each}
                 filterContents={filterContents}
                 id={id}
