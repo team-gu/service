@@ -17,13 +17,6 @@ export const PROJECT_CODE: any = {
   자율: 104,
 };
 
-export const OPTIONS: any = [
-  { label: '공통', value: 101 },
-  { label: '특화', value: 102 },
-  { label: '필드', value: 103 },
-  { label: '자율', value: 104 },
-];
-
 export const FILTER_TITLE: any = {
   스킬: 'skills',
   프로젝트: 'project',

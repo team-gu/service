@@ -20,7 +20,7 @@ import {
   postByFilteredUsers,
 } from '@repository/filterRepository';
 import { setLoading, useAppDispatch, useAuthState, displayModal } from '@store';
-import { FILTER_TITLE, OPTIONS } from '@utils/constants';
+import { FILTER_TITLE } from '@utils/constants';
 import { MemberOption } from '@utils/type';
 import { ModalWrapper } from '@organisms';
 import { getUserHasTeam } from '@repository/teamRepository';
