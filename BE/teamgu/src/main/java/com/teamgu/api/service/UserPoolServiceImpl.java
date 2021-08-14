@@ -56,14 +56,14 @@ public class UserPoolServiceImpl implements UserPoolService {
 
             if (elem[5] != null) { //wish Track
                 String[] tracks = elem[5].toString().split(",");
-                for(String track : tracks) {
+                for (String track : tracks) {
                     userPoolResDto.getTrackList().add(track);
                 }
             }
 
             if (elem[6] != null) { //스킬 코드
                 String[] skills = elem[6].toString().split(",");
-                for(String skill : skills) {
+                for (String skill : skills) {
                     userPoolResDto.getSkillList().add(skill);
                 }
             }
@@ -78,6 +78,18 @@ public class UserPoolServiceImpl implements UserPoolService {
 
     @Override
     public List<UserPoolNameResDto> findUsersBySimName(UserPoolNameReqDto userPoolNameReqDto) {
-        return userPoolRepository.findUsersBySimName(userPoolNameReqDto);
+        List<Object[]> list = userPoolRepository.findUsersBySimName(userPoolNameReqDto);
+        List<UserPoolNameResDto> retList = new ArrayList<>();
+
+        for (Object[] elem : list) {
+            retList.add(UserPoolNameResDto.builder()
+                    .id(Long.parseLong(elem[0].toString()))
+                    .name(elem[1].toString())
+                    .email(elem[2].toString())
+                    .profileSrc(serverUrl + elem[3].toString() + '.' + elem[4].toString())
+                    .build());
+        }
+
+        return retList;
     }
 }
