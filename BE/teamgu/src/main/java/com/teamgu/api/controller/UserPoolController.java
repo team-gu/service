@@ -55,22 +55,14 @@ public class UserPoolController {
     /**
      * 인력풀 유저명 자동완성 Api
      *
-     * @param target
-     * @param studentNumber
-     * @param projectCode
+     * @param userPoolNameReqDto
      */
-    @GetMapping("/search")
+    @PostMapping("/search/name")
     @ApiOperation(value = "사용자 검색시 이름 or 이메일 기반으로 자동완성 가능하게 하는 Api")
     public ResponseEntity<? extends BasicResponse> findUserBySimName(
-            @RequestParam @ApiParam(value = "검색 대상 이름 or 이메일", required = true) String target,
-            @RequestParam @ApiParam(value = "검색하는 사람의 학번", required = true) String studentNumber,
-            @RequestParam @ApiParam(value = "검색하는 사람의 프로젝트 코드", required = true) int projectCode
+            @RequestBody @ApiParam(value = "유저 목록 자동완성시 필요한 데이터", required = true) UserPoolNameReqDto userPoolNameReqDto
     ) {
-        List<UserPoolNameResDto> oSimNameSet = userPoolService.findUsersBySimName(UserPoolNameReqDto.builder()
-                .target(target)
-                .studentNumber(studentNumber)
-                .projectCode(projectCode)
-                .build());
+        List<UserPoolNameResDto> oSimNameSet = userPoolService.findUsersBySimName(userPoolNameReqDto);
 
         if (CollectionUtils.isEmpty(oSimNameSet)) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT)

@@ -11,5 +11,5 @@ import java.util.List;
  */
 public interface UserPoolRepositoryCustom {
     List<Object[]> findUsersByFilter(UserPoolPageReqDto userPoolPageReqDto);
-    List<UserPoolNameResDto> findUsersBySimName(UserPoolNameReqDto userPoolNameReqDto);
+    List<Object[]> findUsersBySimName(UserPoolNameReqDto userPoolNameReqDto);
 }
