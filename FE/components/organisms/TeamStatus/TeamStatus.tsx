@@ -14,10 +14,7 @@ import { FILTER_TITLE } from '@utils/constants';
 import { MemberOption, Team } from '@utils/type';
 import { useAuthState, useAppDispatch, setLoading } from '@store';
 import { getEachFiltersCodeList } from '@repository/filterRepository';
-import {
-  getTeamsFiltered,
-  getUserHasTeam,
-} from '@repository/teamRepository';
+import { getTeamsFiltered, getUserHasTeam } from '@repository/teamRepository';
 
 const sortByOptions: OptionsType<OptionTypeBase> = [
   {
@@ -43,7 +40,7 @@ interface Payload {
 
 export default function TeamStatus(): ReactElement {
   const {
-    user: { id: userId, projectCode, studentNumber },
+    user: { id: userId, projectCodes, studentNumber },
   } = useAuthState();
   const [filterContents, setFilterContents] = useState<any>({});
   const [payload, setPayload] = useState<Payload>({});
@@ -75,13 +72,13 @@ export default function TeamStatus(): ReactElement {
     // Set Filter criteria
     setPayload({
       project:
-        projectCode?.length > 1 ? projectCode[projectCode.length - 1] : 101,
+        projectCodes?.length > 0 ? projectCodes[projectCodes.length - 1] : 101,
       studentNumber,
     });
 
     const project =
-      projectCode && projectCode.length > 0
-        ? projectCode[projectCode.length - 1]
+      projectCodes && projectCodes.length > 0
+        ? projectCodes[projectCodes.length - 1]
         : 101;
     getUserHasTeam({
       userId,
