@@ -347,7 +347,6 @@ export default function UserStatus(): ReactElement {
           <div className="team-status-header">
             <UserSelectAutoComplete
               handleChangeUserSelect={handleChangeUserSelect}
-              studentNumber={studentNumber}
               payload={payload}
             />
             <div className="sort-container">

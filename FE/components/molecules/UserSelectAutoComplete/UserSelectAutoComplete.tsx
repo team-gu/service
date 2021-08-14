@@ -56,27 +56,29 @@ export default function UserSelectAutoComplete({
 
   useEffect(() => {
     (async () => {
-      const { project, studentNumber } = payload;
+      const { project, studentNumber = 101 } = payload;
 
-      const {
-        data: { data },
-      } = await postSearchUserListByName({
-        studentNumber,
-        project,
-      });
+      if (project && studentNumber) {
+        const {
+          data: { data },
+        } = await postSearchUserListByName({
+          studentNumber,
+          project,
+        });
 
-      console.log(project, studentNumber, data);
-      setInitValue(
-        data?.reduce(
-          (acc, cur) => [
-            ...acc,
-            { ...cur, label: `${cur?.name}(${cur?.email})` },
-          ],
-          [],
-        ),
-      );
+        console.log(project, studentNumber, data);
+        setInitValue(
+          data?.reduce(
+            (acc, cur) => [
+              ...acc,
+              { ...cur, label: `${cur?.name}(${cur?.email})` },
+            ],
+            [],
+          ),
+        );
+      }
     })();
-  }, []);
+  }, [payload]);
 
   const promiseOptions = (inputValue: string) =>
     new Promise<MemberOption[]>((resolve) => {
