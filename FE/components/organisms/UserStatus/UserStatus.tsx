@@ -98,8 +98,6 @@ export default function UserStatus(): ReactElement {
   const [filterContents, setFilterContents] = useState<any>();
   const [payload, setPayload] = useState({});
 
-  const [sortAsc, setSortAsc] = useState(true);
-
   const [users, setUsers] = useState([]);
 
   const [showInviteModal, setShowInviteModal] = useState(false);
@@ -255,7 +253,6 @@ export default function UserStatus(): ReactElement {
 
   const handleClickSort = (sort: string) => {
     setPayload({ ...payload, sort, pageNum: 0 });
-    setSortAsc(!sortAsc);
   };
 
   const handleCloseInviteModal = () => {
@@ -361,10 +358,16 @@ export default function UserStatus(): ReactElement {
                   value={sortByOptions[0]}
                 />
               </div>
-              <span className={'sort-icon' + (sortAsc ? '' : ' rotated')}>
+              <span
+                className={
+                  'sort-icon' + (payload?.sort === 'asc' ? ' rotated' : '')
+                }
+              >
                 <Icon
                   iconName="sort"
-                  func={() => handleClickSort(sortAsc ? 'asc' : 'desc')}
+                  func={() =>
+                    handleClickSort(payload?.sort === 'asc' ? 'desc' : 'asc')
+                  }
                 />
               </span>
             </div>

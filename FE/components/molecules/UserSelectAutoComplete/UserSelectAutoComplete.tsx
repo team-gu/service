@@ -58,7 +58,7 @@ export default function UserSelectAutoComplete({
     new Promise<MemberOption[]>((resolve) => {
       const { region, position, project, track, skills, isMajor } = payload;
       getSearchUserListByName({
-        target: inputValue,
+        target: inputValue || '',
         studentNumber,
         project,
         region,
