@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 import { Text } from '@atoms';
-import { AdminUserTable } from '@organisms';
+import { DashboardTable } from '@molecules';
 import { getTableData } from '@repository/adminRepository';
 import { ADMIN_DASHBOARD_TABLE_COLUMNS } from '@utils/constants';
 
@@ -30,9 +30,10 @@ export default function AdminUserManage({ projectId }: AdminUserManageProps) {
       <div className="manage-header">
         <Text text="회원 목록 (임시)" fontSetting="n26b" />
       </div>
-      <AdminUserTable
+      <DashboardTable
         data={teamStatusTableData}
         columns={ADMIN_DASHBOARD_TABLE_COLUMNS}
+        pagination={false}
       />
     </Wrapper>
   );

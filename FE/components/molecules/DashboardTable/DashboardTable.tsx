@@ -230,9 +230,16 @@ function DefaultColumnFilter({
 interface TableProps {
   columns: any[];
   data: any[];
+  grouping?: boolean;
+  pagination?: boolean;
 }
 
-export default function DashboardTable({ columns, data }: TableProps): ReactElement {
+export default function DashboardTable({
+  columns,
+  data,
+  grouping = true,
+  pagination = true,
+}: TableProps): ReactElement {
   const filterTypes = useMemo(
     () => ({
       // Add a new fuzzyTextFilterFn filter type.
@@ -331,12 +338,15 @@ export default function DashboardTable({ columns, data }: TableProps): ReactElem
                       또한 여러 칼럼을 선택하여 <Bold>다중 중렬</Bold>을 할 수
                       있습니다.
                     </div>
-                    <div>
-                      <Icon iconName="toggle_on" />를 클릭하면,{' '}
-                      <Bold>그룹화</Bold>
-                      (grouping)됩니다. 같은 칼럼을 가지는 데이터들을 묶어서 볼
-                      수 있습니다.
-                    </div>
+                    {grouping && (
+                      <div>
+                        <Icon iconName="toggle_on" />를 클릭하면,{' '}
+                        <Bold>그룹화</Bold>
+                        (grouping)됩니다. 같은 칼럼을 가지는 데이터들을 묶어서
+                        볼 수 있습니다.
+                      </div>
+                    )}
+
                     <div>
                       <Icon iconName="search" />는 모든 데이터에 대해서 검색어를
                       포함하는 데이터를 <Bold>검색</Bold>할 수 있습니다.
@@ -352,7 +362,7 @@ export default function DashboardTable({ columns, data }: TableProps): ReactElem
                 <th {...column.getHeaderProps()}>
                   <TableHeaderItem>
                     <div>
-                      {column.canGroupBy ? (
+                      {grouping && column.canGroupBy ? (
                         // If the column can be grouped, let's add a toggle
                         <span className="group-icon">
                           <Icon
@@ -401,7 +411,7 @@ export default function DashboardTable({ columns, data }: TableProps): ReactElem
           ))}
         </thead>
         <tbody {...getTableBodyProps()}>
-          {page.map((row, i) => {
+          {(pagination ? page : rows).map((row, i) => {
             prepareRow(row);
             return (
               <tr {...row.getRowProps()}>
@@ -458,38 +468,43 @@ export default function DashboardTable({ columns, data }: TableProps): ReactElem
         </tbody>
       </table>
 
-      <PaginationContainer>
-        <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
-          {'<<'}
-        </button>{' '}
-        <button onClick={() => previousPage()} disabled={!canPreviousPage}>
-          {'<'}
-        </button>{' '}
-        <div className="pagination-text">
-          <Text
-            text={`${state.pageIndex + 1} / ${pageOptions.length}`}
-            fontSetting="n16m"
-          />
-        </div>
-        <button onClick={() => nextPage()} disabled={!canNextPage}>
-          {'>'}
-        </button>{' '}
-        <button onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
-          {'>>'}
-        </button>{' '}
-        <select
-          value={state.pageSize}
-          onChange={(e) => {
-            setPageSize(Number(e.target.value));
-          }}
-        >
-          {[10, 20, 30, 40, 50].map((pageSize) => (
-            <option key={pageSize} value={pageSize}>
-              {pageSize}개씩
-            </option>
-          ))}
-        </select>
-      </PaginationContainer>
+      {pagination && (
+        <PaginationContainer>
+          <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
+            {'<<'}
+          </button>{' '}
+          <button onClick={() => previousPage()} disabled={!canPreviousPage}>
+            {'<'}
+          </button>{' '}
+          <div className="pagination-text">
+            <Text
+              text={`${state.pageIndex + 1} / ${pageOptions.length}`}
+              fontSetting="n16m"
+            />
+          </div>
+          <button onClick={() => nextPage()} disabled={!canNextPage}>
+            {'>'}
+          </button>{' '}
+          <button
+            onClick={() => gotoPage(pageCount - 1)}
+            disabled={!canNextPage}
+          >
+            {'>>'}
+          </button>{' '}
+          <select
+            value={state.pageSize}
+            onChange={(e) => {
+              setPageSize(Number(e.target.value));
+            }}
+          >
+            {[10, 20, 30, 40, 50].map((pageSize) => (
+              <option key={pageSize} value={pageSize}>
+                {pageSize}개씩
+              </option>
+            ))}
+          </select>
+        </PaginationContainer>
+      )}
     </Wrapper>
   );
 }
