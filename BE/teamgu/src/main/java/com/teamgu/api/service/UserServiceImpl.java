@@ -557,5 +557,17 @@ public class UserServiceImpl implements UserService {
 
         return login(null, user);
     }
-
+    
+    @Override
+    public boolean saveAll(List<User> users) {
+    	for(int i =0;i<users.size();i++) {
+    		String passwd = users.get(i).getPassword();
+    		users.get(i).setPassword(passwordEncoder.encode(passwd));
+    	}
+        if (userRepository.saveAll(users) == null) {
+        	log.error(users.size()+"명의 가입을 실패했습니다.");
+            return false;
+        }
+        return true;
+    }
 }

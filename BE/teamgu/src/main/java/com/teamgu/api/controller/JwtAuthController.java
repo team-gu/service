@@ -1,5 +1,7 @@
 package com.teamgu.api.controller;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import com.teamgu.api.dto.res.*;
@@ -12,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
+import com.teamgu.api.dto.UserRegistDto;
 import com.teamgu.api.dto.req.DummyReqDto;
 import com.teamgu.api.dto.req.LoginReqDto;
 import com.teamgu.api.dto.req.TokenReqDto;
@@ -109,6 +112,41 @@ public class JwtAuthController {
         }
 
         return ResponseEntity.ok(new CommonResponse<LoginResDto>(oUserInfo));
+
+    }
+    
+    @PostMapping("/regist/users")
+    @ApiOperation(value = "N명의 유저를 회원가입 시킨다")
+    public ResponseEntity<? extends BasicResponse> signInUsers(
+            @RequestBody @ApiParam(value = "", required = true) List<UserRegistDto> usersRegist) {
+    	List<User> users = new ArrayList<User>();
+    	
+    	for(UserRegistDto userRegist:usersRegist) {
+    		String studentNumber = userRegist.getStudentNumber();    		
+    		String email = userRegist.getEmail();
+    		String password = studentNumber;//초기 패스워드는 email과 동일하게 설정
+    		String name = userRegist.getName();
+    		short role = 1;
+    		User user = User.builder()
+    				.email(email)
+    				.password(password)//초기패스워드는 본인의 학번
+    				.name(name)
+    				.role(role)
+    				.profileExtension("png")
+    				.profileServerName("c21f969b5f03d33d43e04f8f136e7682")
+    				.profileOriginName("default")
+    				.studentNumber(studentNumber)
+    				.build();
+    		users.add(user);
+    	}
+    	if(users.size()==0)//user가 없는 경우
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					.body(new ErrorResponse("가입을 요청한 유저 데이터가 없습니다"));
+    	
+        if (userService.saveAll(users))
+            return ResponseEntity.ok(new CommonResponse<String>("회원 등록 성공"));
+        else
+            return ResponseEntity.status(500).body(new CommonResponse<String>("회원 등록 실패"));
 
     }
 }

@@ -6,12 +6,11 @@ import { useRouter } from 'next/router';
 import { Text, Icon } from '@atoms';
 import { Tag, ProfileImage } from '@molecules';
 
-import useSockStomp from '@hooks/useSockStomp';
-
 const Wrapper = styled.div`
   position: relative;
-  box-shadow: 0 12px 20px 0 rgba(0, 0, 0, 0.15);
-  padding: 20px;
+  box-shadow: 0 6px 12px 0 rgba(4, 4, 161, 0.1);
+  padding: 10px;
+  margin: 10px;
 
   min-height: 200px;
 
@@ -81,7 +80,7 @@ interface UserStatusCardProps {
   handleSendRtcLink: (
     teamId: number,
     leaderId: number,
-    inviteeId: number,
+    inviteeId?: number,
   ) => Promise<void> | any;
 }
 
@@ -121,33 +120,34 @@ export default function UserStatusCard({
             <div className="items">
               <Text text="트랙" color="gray" />
               <div className="items-tags">
-                {trackList.map((each) => (
-                  <>
-                    <Tag
-                      text={
-                        filterContents &&
-                        filterContents['트랙'].find(({ code }) => code == each)
-                          ?.codeName
-                      }
-                      key={`track-${each}`}
-                    />
-                  </>
-                ))}
+                {filterContents &&
+                  trackList?.map((each, index) => (
+                    <>
+                      <Tag
+                        text={
+                          filterContents['트랙'].find(
+                            ({ code }) => code == each,
+                          )?.codeName
+                        }
+                        key={`track-${filterContents['트랙'][index].codeName}`}
+                      />
+                    </>
+                  ))}
               </div>
             </div>
             <div className="items">
               <Text text="기술" color="gray" />
               <div className="items-tags">
-                {skillList.map((each) => (
-                  <Tag
-                    text={
-                      filterContents &&
-                      filterContents['스킬'].find(({ code }) => code == each)
-                        ?.codeName
-                    }
-                    key={`skill-${each}`}
-                  />
-                ))}
+                {filterContents &&
+                  skillList?.map((each, index) => (
+                    <Tag
+                      text={
+                        filterContents['스킬'].find(({ code }) => code == each)
+                          .codeName
+                      }
+                      key={`skill-${filterContents['스킬'][index].codeName}`}
+                    />
+                  ))}
               </div>
             </div>
           </div>

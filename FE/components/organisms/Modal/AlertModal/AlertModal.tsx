@@ -17,7 +17,8 @@ const Wrapper = styled.div`
   width: 300px;
   height: 200px;
 
-  > div {
+  .alert-content {
+    text-align: center;
     padding: 0 20px;
 
     ${({

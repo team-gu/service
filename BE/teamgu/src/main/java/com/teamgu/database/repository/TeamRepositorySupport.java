@@ -1,6 +1,7 @@
 package com.teamgu.database.repository;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,10 +22,12 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.teamgu.api.dto.req.TeamAutoCorrectReqDto;
 import com.teamgu.api.dto.req.TeamFilterReqDto;
 import com.teamgu.api.dto.req.TrackReqDto;
+import com.teamgu.api.dto.res.HorizontalByTeamResDto;
 import com.teamgu.api.dto.res.SkillResDto;
 import com.teamgu.api.dto.res.TeamAutoCorrectResDto;
 import com.teamgu.api.dto.res.TeamListResDto;
 import com.teamgu.api.dto.res.TeamMemberInfoResDto;
+import com.teamgu.api.dto.res.UserInfoByTeam;
 import com.teamgu.database.entity.QCodeDetail;
 import com.teamgu.database.entity.QMapping;
 import com.teamgu.database.entity.QTeam;
@@ -107,7 +110,7 @@ public class TeamRepositorySupport {
 		return jpaQueryFactory
 				.select(Projections.constructor
 						(TeamMemberInfoResDto.class, qUser.id, qUser.name,
-						qUser.profileServerName, qUser.email))
+						qUser.profileServerName, qUser.profileExtension, qUser.email))
 				.from(qUser)
 				.join(qUserTeam)
 				.on(qUser.id.eq(qUserTeam.user.id))
@@ -487,5 +490,115 @@ public class TeamRepositorySupport {
 			em.close();
 		}
 		return false;
+	}
+	
+	/**
+	 * 특정 기수, 프로젝트 도메인에 존재하는 팀 목록 반환
+	 * 단, 코드 반환이 아닌 엑셀에 출력 될 이름으로 반환한다
+	 * @param project_code
+	 * @param stage_code
+	 * @return
+	 */
+	public List<HorizontalByTeamResDto> getTeamList(int project_code, int stage_code){
+		List<HorizontalByTeamResDto> horizontalByTeamResDto = new ArrayList<HorizontalByTeamResDto>();
+		EntityManager em = emf.createEntityManager();
+		try {
+			String jpql = "select t.id, t.name, cd.name stage, cd2.name track, cd3.name project\r\n" + 
+							"from mapping m\r\n" + 
+							"right join team t\r\n" + 
+							"on m.id = t.mapping_id\r\n" + 
+							"left join code_detail cd\r\n" + 
+							"on cd.code_id='ST' and cd.code_detail=m.stage_code\r\n" + 
+							"left join code_detail cd2\r\n" + 
+							"on cd2.code_id='TR' and cd2.code_detail=m.track_code\r\n" + 
+							"left join code_detail cd3\r\n" + 
+							"on cd3.code_id='PR' and cd3.code_detail=m.project_code\r\n" + 
+							"where m.project_code=:project_code and m.stage_code= :stage_code";
+			List<Object[]> results = em.createNativeQuery(jpql)
+									.setParameter("project_code", project_code)
+									.setParameter("stage_code", stage_code)
+									.getResultList();
+			/**
+			 * 0: team_id
+			 * 1: team_name
+			 * 2: stage_name
+			 * 3: track_name
+			 * 4: proejct_name
+			 */
+			for(int i =0;i<results.size();i++) {
+				Object[] o = results.get(i);
+				long team_id = Long.parseLong(o[0].toString());
+				String team_name = o[1].toString();
+				String stage_name = o[2].toString();
+				String track_name = o[3].toString();
+				String project_name = o[4].toString();
+				
+				//변환 즉시 반환 객체에 추가
+				horizontalByTeamResDto.add(HorizontalByTeamResDto.builder()
+												.team_id(team_id)
+												.name(team_name)
+												.stage_name(stage_name)
+												.track_name(track_name)
+												//다음 단계에서 추가될 예정이므로 미리 설정해준다
+												.members(new ArrayList<UserInfoByTeam>())
+												.project_name(project_name)
+												.build());
+			}
+		}catch(Exception e) {
+			log.error("Excel) 팀 가져오기 실패");
+			e.printStackTrace();
+		}finally {
+			em.close();
+		}
+		return horizontalByTeamResDto;
+	}
+	
+	/**
+	 * 멤버를 제외한 리스트형 팀 DTO를 받고
+	 * 해당 객체에 있는 team_id에 속한 유저들의 값을 채워
+	 * 완성된 DTO를 반환한다
+	 * @param teamsInfo
+	 * @return
+	 */
+	public List<HorizontalByTeamResDto> getUserListByTeam(List<HorizontalByTeamResDto> teamsInfo){
+		EntityManager em = emf.createEntityManager();
+		try {
+			for(int i =0;i<teamsInfo.size();i++) {
+				long team_id = teamsInfo.get(i).getTeam_id();
+				String jpql = "select ut.team_id, u.id ,u.name, u.email, u.student_number, if(t.leader_id=u.id,'팀장','팀원') role\r\n" + 
+								"from user_team ut\r\n" + 
+								"left join user u\r\n" + 
+								"on ut.user_id = u.id\r\n" + 
+								"left join team t\r\n" + 
+								"on t.id = ut.team_id\r\n" + 
+								"where ut.team_id=:team_id";
+				List<Object[]> o = em.createNativeQuery(jpql).setParameter("team_id", team_id).getResultList();
+				for(int j = 0;j<o.size();j++) {
+					Object[] el = o.get(j);
+					/**
+					 * 0:team_id
+					 * 1:user_id
+					 * 2:user_name
+					 * 3:email
+					 * 4:student_number
+					 * 5:role (팀장, 팀원)
+					 */
+					UserInfoByTeam userInfoByTeam = UserInfoByTeam.builder()															
+															.name(el[2].toString())
+															.email(el[3].toString())
+															.studentNumber(el[4].toString())
+															.role(el[5].toString())
+															.build();
+					teamsInfo.get(i).getMembers().add(userInfoByTeam);		
+				}
+				
+			}
+		}catch(Exception e) {
+			log.error("팀 객체에 유저 정보를 채우는 것에 실패했습니다");
+			e.printStackTrace();
+		}finally {
+			em.close();
+		}
+		return teamsInfo;
 	}
 }
