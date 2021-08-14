@@ -38,7 +38,7 @@ export const FILTER_TITLE: any = {
 export const ADMIN_MENU_CONTENT = [
   '프로젝트 관리',
   '대시보드',
-  '회원 관리',
+  '교육생 관리',
   '팀 관리',
   '공지사항 관리',
 ];
@@ -104,5 +104,94 @@ export const ADMIN_DASHBOARD_TABLE_COLUMNS = [
   {
     Header: '희망 포지션',
     accessor: 'position',
+  },
+];
+
+
+export const REGIONS = [
+  {
+    name: '전국',
+    code: 0,
+  },
+  {
+    name: '서울',
+    code: 104,
+  },
+  {
+    name: '광주',
+    code: 101,
+  },
+  {
+    name: '구미',
+    code: 102,
+  },
+  {
+    name: '대전',
+    code: 103,
+  },
+  {
+    name: '부울경',
+    code: 105,
+  },
+];
+
+export const TEAM_TABLE_COLUMNS = [
+  {
+    Header: '팀 식별자',
+    accessor: 'teamId',
+    disableGroupBy: true,
+  },
+  {
+    Header: '지역',
+    accessor: 'region',
+    disableGroupBy: true,
+  },
+  {
+    Header: '팀 이름',
+    accessor: 'teamName',
+    disableGroupBy: true,
+  },
+  {
+    Header: '트랙',
+    accessor: 'track',
+  },
+  {
+    Header: '현재 인원',
+    accessor: 'memberCnt',
+    disableGroupBy: true,
+  },
+  {
+    Header: '완료 여부',
+    accessor: 'completeYn',
+  },
+  {
+    Header: '팀장',
+    accessor: 'member1',
+    disableGroupBy: true,
+  },
+  {
+    Header: '팀원1',
+    accessor: 'member2',
+    disableGroupBy: true,
+  },
+  {
+    Header: '팀원2',
+    accessor: 'member3',
+    disableGroupBy: true,
+  },
+  {
+    Header: '팀원3',
+    accessor: 'member4',
+    disableGroupBy: true,
+  },
+  {
+    Header: '팀원4',
+    accessor: 'member5',
+    disableGroupBy: true,
+  },
+  {
+    Header: '팀원5',
+    accessor: 'member6',
+    disableGroupBy: true,
   },
 ];

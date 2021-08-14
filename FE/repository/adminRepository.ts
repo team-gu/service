@@ -93,3 +93,14 @@ export const getTableData = async (param: any) => {
     type: 'get',
   });
 };
+
+export const getTeamTableData = async (param: any) => {
+  console.log('getTeamTableData');
+  console.log(param);
+
+  return await api({
+    url: `/api/admin/team`,
+    type: 'post',
+    param,
+  })
+}
