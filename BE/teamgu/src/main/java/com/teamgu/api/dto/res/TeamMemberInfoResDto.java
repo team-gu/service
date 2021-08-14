@@ -25,10 +25,10 @@ public class TeamMemberInfoResDto {
 	@ApiModelProperty(name = "교육생 email", example = "ssafy@ssafy.com")
 	String email;
 
-	public TeamMemberInfoResDto(Long id, String name, String img, String email) {
+	public TeamMemberInfoResDto(Long id, String name, String serverName, String extension, String email) {
 		this.id = id;
 		this.name = name;
-		this.img = img;
+		this.img = "https://i5a202.p.ssafy.io:8080/api/file/display?url=profile/" + serverName + "." + extension;
 		this.email = email;
 	}
 

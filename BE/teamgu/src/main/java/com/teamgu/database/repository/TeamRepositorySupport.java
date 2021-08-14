@@ -110,7 +110,7 @@ public class TeamRepositorySupport {
 		return jpaQueryFactory
 				.select(Projections.constructor
 						(TeamMemberInfoResDto.class, qUser.id, qUser.name,
-						qUser.profileServerName, qUser.email))
+						qUser.profileServerName, qUser.profileExtension, qUser.email))
 				.from(qUser)
 				.join(qUserTeam)
 				.on(qUser.id.eq(qUserTeam.user.id))
