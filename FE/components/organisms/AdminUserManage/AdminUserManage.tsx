@@ -33,7 +33,7 @@ export default function AdminUserManage({ projectId }: AdminUserManageProps) {
       <ReactTable
         data={teamStatusTableData}
         columns={ADMIN_DASHBOARD_TABLE_COLUMNS}
-        pagination={false}
+        fullWidth={false}
       />
     </Wrapper>
   );
