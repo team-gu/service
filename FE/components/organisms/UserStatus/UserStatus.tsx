@@ -286,15 +286,31 @@ export default function UserStatus(): ReactElement {
   return (
     <LookupLayout showTeamCreateBtn={false}>
       <div className="filter-container">
-        <WrapFilter>
-          <Title title="프로젝트">
-            <SimpleSelect
-              options={OPTIONS.slice(0, projectCodes?.length)}
-              onChange={handleProjectChange}
-              value={OPTIONS[projectCodes?.length - 1]}
-            />
-          </Title>
-        </WrapFilter>
+        {filterContents && (
+          <WrapFilter>
+            <Title title="프로젝트">
+              <SimpleSelect
+                options={filterContents['프로젝트']
+                  .slice(0, projectCodes?.length)
+                  .reduce(
+                    (acc, { codeName, code }) => [
+                      ...acc,
+                      { label: codeName, value: code },
+                    ],
+                    [],
+                  )}
+                onChange={handleProjectChange}
+                value={{
+                  label:
+                    filterContents['프로젝트'][projectCodes?.length - 1]
+                      ?.codeName,
+                  value:
+                    filterContents['프로젝트'][projectCodes?.length - 1]?.code,
+                }}
+              />
+            </Title>
+          </WrapFilter>
+        )}
         {filterContents &&
           Object.keys(filterContents).map(
             (each, index) =>
