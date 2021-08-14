@@ -4,6 +4,7 @@ import { Text, Icon } from '@atoms';
 import { Tag, ProfileImage } from '@molecules';
 import { useAuthState } from '@store';
 import { Team } from '@utils/type';
+import { getImageURL } from '@utils/constants';
 
 const Wrapper = styled.div<{ isComplete: boolean }>`
   position: relative;
@@ -120,7 +121,7 @@ export default function TeamStatusCard({
                 <div className="profile" key={item.id}>
                   <ProfileImage
                     size={80}
-                    src={item.img ? item.img : undefined}
+                    // src={item.img ? getImageURL(item.img) : undefined}
                   />
                   {item.id === team.leaderId ? (
                     <Text text={item.name + '(팀장)'} />
