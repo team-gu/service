@@ -3,17 +3,9 @@ import styled from 'styled-components';
 import CountUp from 'react-countup';
 
 import { Text } from '@atoms';
-import {
-  DashboardTable,
-  DashboardBarChart,
-} from '@molecules';
-
-import { getChartData } from '@repository/adminRepository';
-
-import {
-  DUMMY_TABLE_COLUMNS,
-  DUMMY_TABLE_DATA,
-} from '@utils/dummy';
+import { ReactTable, DashboardBarChart } from '@molecules';
+import { getChartData, getTableData } from '@repository/adminRepository';
+import { ADMIN_DASHBOARD_TABLE_COLUMNS } from '@utils/constants';
 
 const COLOR_MAP = {
   COMPLETE: '#32CD32',
@@ -127,45 +119,7 @@ const Wrapper = styled.div`
 `;
 
 const TableWrapper = styled.div`
-  margin-top: 30px;
-
-  .tableWrap {
-    display: block;
-    max-width: 100%;
-    overflow-x: scroll;
-    overflow-y: hidden;
-    border-bottom: 1px solid black;
-  }
-
-  table {
-    border-spacing: 0;
-    border: 1px solid gainsboro;
-
-    th {
-      border-bottom: 1px solid black;
-    }
-
-    tr:hover {
-      td {
-        background-color: #fafafa !important;
-      }
-    }
-
-    th,
-    td {
-      margin: 0;
-      padding: 10px;
-      border-bottom: 1px solid gainsboro;
-      border-right: 1px solid gainsboro;
-      vertical-align: middle;
-
-      // Each cell should grow equally
-      width: 1%;
-      &.collapse {
-        width: 0.0000000001%;
-      }
-    }
-  }
+  margin-top: 30px;  
 `;
 
 interface AdminDashboardProps {
@@ -187,11 +141,11 @@ export default function AdminDashboard({
 }: AdminDashboardProps): ReactElement {
   const [regionTeamData, setRegionTeamData] = useState<any[]>();
   const [trackTeamData, setTrackTeamData] = useState<any[]>([]);
+  const [teamStatusTableData, setTeamStatusTableData] = useState<any[]>([]);
 
-  // init data
   useEffect(() => {
     if (projectId) {
-      getChartData({ projectId }).then(({ data: { data } }: any) => {
+      getChartData({ projectId }).then(({ data: { data } }) => {
         const regionData = data.region
           .sort((a: DashboardData, b: DashboardData) =>
             a.title === '전국' ? -1 : 1,
@@ -210,30 +164,18 @@ export default function AdminDashboard({
           ],
         }));
 
-        console.log(regionData);
         setRegionTeamData(regionData);
         setTrackTeamData(trackData);
+      });
+
+      getTableData({ projectId }).then(({ data: { data } }) => {
+        setTeamStatusTableData(data);
       });
     }
   }, [projectId]);
 
-  const tableData = useMemo(() => {
-    // TODO: 팀 테이블 정보 서버에서 받기
-    return DUMMY_TABLE_DATA;
-  }, []);
-
   const tableColumns = useMemo(() => {
-    // TODO: 팀 테이블 칼럼 정보 서버에서 받기?
-    const data = DUMMY_TABLE_COLUMNS.map((col) => {
-      if (col.accessor === 'region') {
-        return {
-          ...col,
-        };
-      } else {
-        return col;
-      }
-    });
-    return data;
+    return ADMIN_DASHBOARD_TABLE_COLUMNS;
   }, []);
 
   return (
@@ -310,7 +252,7 @@ export default function AdminDashboard({
           </div>
         </div>
         <TableWrapper>
-          <DashboardTable data={tableData} columns={tableColumns} />
+          <ReactTable data={teamStatusTableData} columns={tableColumns} />
         </TableWrapper>
       </div>
     </Wrapper>

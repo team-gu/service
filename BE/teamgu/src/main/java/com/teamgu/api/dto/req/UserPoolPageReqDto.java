@@ -27,8 +27,8 @@ public class UserPoolPageReqDto {
     @ApiModelProperty(name = "검색 대상의 전공 여부")
     private short isMajor;
 
-    @ApiModelProperty(name = "검색 대상의 이름")
-    private String name;
+    @ApiModelProperty(name = "검색 대상의 이메일") //프론트 측에서는 이름처럼 보이게 하고 실제 들어오는 데이터는 이메일
+    private String email;
 
     @ApiModelProperty(name = "정렬 방식", example = "asc")
     private String sort;

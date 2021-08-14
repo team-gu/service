@@ -13,6 +13,46 @@ import styled from 'styled-components';
 
 import { Icon, Text } from '@atoms';
 
+const Wrapper = styled.div<{ fullWidth: boolean }>`
+  i {
+    cursor: pointer;
+  }
+  
+  table {
+    border-spacing: 0;
+    border: 1px solid gainsboro;
+
+    th {
+      border-bottom: 1px solid black;
+    }
+
+    tr:hover {
+      td {
+        background-color: #fafafa !important;
+      }
+    }
+
+    th,
+    td {
+      margin: 0;
+      padding: 10px;
+      border-bottom: 1px solid gainsboro;
+      border-right: 1px solid gainsboro;
+      vertical-align: middle;
+
+      ${({ fullWidth }) =>
+        fullWidth &&
+        `
+        // Each cell should grow equally
+        width: 1%;
+        &.collapse {
+          width: 0.0000000001%;
+        }
+      `}
+    }
+  }
+`;
+
 const CellWrapper = styled.td`
   .grouped-cell {
     display: flex;
@@ -108,6 +148,10 @@ const HelpContainer = styled.div<{ isOpen: boolean }>`
   position: relative;
   display: block;
 
+  i {
+    cursor: pointer;
+  }
+
   .help-content {
     visibility: hidden;
     opacity: 0;
@@ -127,7 +171,7 @@ const HelpContainer = styled.div<{ isOpen: boolean }>`
     border-radius: 5px;
     padding: 20px;
     width: 400px;
-    bottom: 10px;
+    top: 10px;
     right: 30px;
 
     > div {
@@ -198,9 +242,18 @@ function DefaultColumnFilter({
 interface TableProps {
   columns: any[];
   data: any[];
+  grouping?: boolean;
+  pagination?: boolean;
+  fullWidth?: boolean;
 }
 
-export default function Table({ columns, data }: TableProps): ReactElement {
+export default function ReactTable({
+  columns,
+  data,
+  grouping = true,
+  pagination = true,
+  fullWidth = true,
+}: TableProps): ReactElement {
   const filterTypes = useMemo(
     () => ({
       // Add a new fuzzyTextFilterFn filter type.
@@ -268,7 +321,7 @@ export default function Table({ columns, data }: TableProps): ReactElement {
   const [showTooltip, setShowTooltip] = useState(false);
 
   return (
-    <>
+    <Wrapper fullWidth={fullWidth}>
       <table {...getTableProps()}>
         <thead>
           <tr>
@@ -299,12 +352,15 @@ export default function Table({ columns, data }: TableProps): ReactElement {
                       또한 여러 칼럼을 선택하여 <Bold>다중 중렬</Bold>을 할 수
                       있습니다.
                     </div>
-                    <div>
-                      <Icon iconName="toggle_on" />를 클릭하면,{' '}
-                      <Bold>그룹화</Bold>
-                      (grouping)됩니다. 같은 칼럼을 가지는 데이터들을 묶어서 볼
-                      수 있습니다.
-                    </div>
+                    {grouping && (
+                      <div>
+                        <Icon iconName="toggle_on" />를 클릭하면,{' '}
+                        <Bold>그룹화</Bold>
+                        (grouping)됩니다. 같은 칼럼을 가지는 데이터들을 묶어서
+                        볼 수 있습니다.
+                      </div>
+                    )}
+
                     <div>
                       <Icon iconName="search" />는 모든 데이터에 대해서 검색어를
                       포함하는 데이터를 <Bold>검색</Bold>할 수 있습니다.
@@ -320,7 +376,7 @@ export default function Table({ columns, data }: TableProps): ReactElement {
                 <th {...column.getHeaderProps()}>
                   <TableHeaderItem>
                     <div>
-                      {column.canGroupBy ? (
+                      {grouping && column.canGroupBy ? (
                         // If the column can be grouped, let's add a toggle
                         <span className="group-icon">
                           <Icon
@@ -369,7 +425,7 @@ export default function Table({ columns, data }: TableProps): ReactElement {
           ))}
         </thead>
         <tbody {...getTableBodyProps()}>
-          {page.map((row, i) => {
+          {(pagination ? page : rows).map((row, i) => {
             prepareRow(row);
             return (
               <tr {...row.getRowProps()}>
@@ -426,38 +482,43 @@ export default function Table({ columns, data }: TableProps): ReactElement {
         </tbody>
       </table>
 
-      <PaginationContainer>
-        <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
-          {'<<'}
-        </button>{' '}
-        <button onClick={() => previousPage()} disabled={!canPreviousPage}>
-          {'<'}
-        </button>{' '}
-        <div className="pagination-text">
-          <Text
-            text={`${state.pageIndex + 1} / ${pageOptions.length}`}
-            fontSetting="n16m"
-          />
-        </div>
-        <button onClick={() => nextPage()} disabled={!canNextPage}>
-          {'>'}
-        </button>{' '}
-        <button onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
-          {'>>'}
-        </button>{' '}
-        <select
-          value={state.pageSize}
-          onChange={(e) => {
-            setPageSize(Number(e.target.value));
-          }}
-        >
-          {[10, 20, 30, 40, 50].map((pageSize) => (
-            <option key={pageSize} value={pageSize}>
-              {pageSize}개씩
-            </option>
-          ))}
-        </select>
-      </PaginationContainer>
-    </>
+      {pagination && (
+        <PaginationContainer>
+          <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
+            {'<<'}
+          </button>{' '}
+          <button onClick={() => previousPage()} disabled={!canPreviousPage}>
+            {'<'}
+          </button>{' '}
+          <div className="pagination-text">
+            <Text
+              text={`${state.pageIndex + 1} / ${pageOptions.length}`}
+              fontSetting="n16m"
+            />
+          </div>
+          <button onClick={() => nextPage()} disabled={!canNextPage}>
+            {'>'}
+          </button>{' '}
+          <button
+            onClick={() => gotoPage(pageCount - 1)}
+            disabled={!canNextPage}
+          >
+            {'>>'}
+          </button>{' '}
+          <select
+            value={state.pageSize}
+            onChange={(e) => {
+              setPageSize(Number(e.target.value));
+            }}
+          >
+            {[10, 20, 30, 40, 50].map((pageSize) => (
+              <option key={pageSize} value={pageSize}>
+                {pageSize}개씩
+              </option>
+            ))}
+          </select>
+        </PaginationContainer>
+      )}
+    </Wrapper>
   );
 }

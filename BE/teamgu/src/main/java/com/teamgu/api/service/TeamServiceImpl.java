@@ -11,6 +11,7 @@ import com.teamgu.api.dto.req.TeamAutoCorrectReqDto;
 import com.teamgu.api.dto.req.TeamFilterReqDto;
 import com.teamgu.api.dto.req.TeamMemberReqDto;
 import com.teamgu.api.dto.req.TrackReqDto;
+import com.teamgu.api.dto.res.HorizontalByTeamResDto;
 import com.teamgu.api.dto.res.SkillResDto;
 import com.teamgu.api.dto.res.TeamAutoCorrectResDto;
 import com.teamgu.api.dto.res.TeamIsCreateResDto;
@@ -392,5 +393,10 @@ public class TeamServiceImpl implements TeamService {
 	@Override
 	public boolean checkTeamBetweenLeader(long leader_id, long team_id) {	
 		return teamRepositorySupport.checkTeamBetweenLeader(leader_id, team_id);
+	}
+	
+	@Override
+	public List<HorizontalByTeamResDto> getHorizontalByTeamInfo(int project_code, int stage_code) {
+		return teamRepositorySupport.getUserListByTeam(teamRepositorySupport.getTeamList(project_code, stage_code));
 	}
 }

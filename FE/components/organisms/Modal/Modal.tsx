@@ -4,7 +4,11 @@ import { MODALS } from '@utils/constants';
 import ModalWrapper from './ModalWrapper';
 import AlertModal from './AlertModal';
 import HocModal from './HocModal';
-import { ProjectModal, AwardModal } from '../UserDetail/MyDetail/Modal';
+import {
+  ProjectModal,
+  AwardModal,
+  ChangePasswordModal,
+} from '../UserDetail/MyDetail/Modal';
 
 interface ModalProps {
   modalName: string;
@@ -27,6 +31,7 @@ export default function Modal({
               [MODALS.PROJECT_MODAL]: <ProjectModal />,
               [MODALS.AWARD_MODAL]: <AwardModal />,
               [MODALS.HOC_MODAL]: <HocModal>{children}</HocModal>,
+              [MODALS.CHANGEPASSWORD_MODAL]: <ChangePasswordModal />,
             }[modalName]
           }
         </ModalWrapper>

@@ -62,3 +62,11 @@ export const getUserDetailbyRefresh = async () => {
     type: 'get',
   });
 };
+
+export const changePassword = async (param: object) => {
+  await api({
+    url: '/api/auth/password',
+    type: 'put',
+    param,
+  });
+};

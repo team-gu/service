@@ -2,6 +2,7 @@ package com.teamgu.api.service;
 
 import java.util.List;
 
+import com.teamgu.api.dto.res.AdminTeamManagementResDto;
 import com.teamgu.api.dto.res.CodeResDto;
 import com.teamgu.api.dto.res.DashBoardResDto;
 import com.teamgu.api.dto.res.DashBoardTableResDto;
@@ -116,5 +117,16 @@ public interface AdminService {
 	 * @return
 	 */
 	public List<DashBoardTableResDto> getDashBoardTableInfo(Long projectId);
+	
+	
+	/**
+	 * Select Team Building Status to manage and to export
+	 * project Id와 regionCode를 통해 팀 구성 현황을 조회하게 한다
+	 * region code가 0일 경우 전국을 의미하며 나머지 숫자들은 각각 공통 테이블에 정의된 지역으로 필터링 된다.
+	 * @param projectId
+	 * @param regionCode
+	 * @return
+	 */
+	public List<AdminTeamManagementResDto> getTeamManagementData(Long projectId, int regionCode);
 	
 }

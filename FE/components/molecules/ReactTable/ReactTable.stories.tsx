@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Story, Meta } from '@storybook/react';
 import styled from 'styled-components';
-import DashboardTable from './DashboardTable';
+import ReactTable from './ReactTable';
 import { DUMMY_TABLE_COLUMNS, DUMMY_TABLE_DATA } from '@utils/dummy';
 
 const Wrapper = styled.div`
@@ -34,8 +34,8 @@ const Wrapper = styled.div`
 `;
 
 export default {
-  title: 'Molecules/Dashboard Table',
-  component: DashboardTable,
+  title: 'Molecules/React Table',
+  component: ReactTable,
 } as Meta;
 
 const Template: Story = () => {
@@ -43,9 +43,9 @@ const Template: Story = () => {
 
   return (
     <Wrapper>
-      <DashboardTable data={DUMMY_TABLE_DATA} columns={columns} />
+      <ReactTable data={DUMMY_TABLE_DATA} columns={columns} />
     </Wrapper>
   );
 };
 
-export const dashboardTable = Template.bind({});
+export const reactTable = Template.bind({});

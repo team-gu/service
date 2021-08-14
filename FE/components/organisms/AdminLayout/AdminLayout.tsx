@@ -1,7 +1,11 @@
 import { ReactElement, useState, useEffect } from 'react';
 import styled from 'styled-components';
 
-import { AdminMenuSidebarLeft } from '@organisms';
+import {
+  AdminMenuSidebarLeft,
+  AdminTeamManage,
+  AdminUserManage,
+} from '@organisms';
 import { Text } from '@atoms';
 import { Project } from '@utils/type';
 import { ADMIN_MENU_CONTENT } from '@utils/constants';
@@ -12,16 +16,16 @@ import { DateTime } from 'luxon';
 
 const Wrapper = styled.div`
   display: flex;
-  gap: 30px;
   min-height: 100vh;
-  margin-right: 30px;
 
   .sidebar {
+    
     flex: 0 0 200px;
   }
 
   .content {
     flex: auto;
+    margin: 30px;
   }
 `;
 
@@ -86,8 +90,12 @@ export default function AdminLayout(): ReactElement {
                 [ADMIN_MENU_CONTENT[1]]: selectedProject && (
                   <AdminDashboard projectId={selectedProject} />
                 ),
-                [ADMIN_MENU_CONTENT[2]]: <div>회원 관리</div>,
-                [ADMIN_MENU_CONTENT[3]]: <div>팀 관리</div>,
+                [ADMIN_MENU_CONTENT[2]]: selectedProject && (
+                  <AdminUserManage projectId={selectedProject} />
+                ),
+                [ADMIN_MENU_CONTENT[3]]: selectedProject && (
+                  <AdminTeamManage projectId={selectedProject} />
+                ),
                 [ADMIN_MENU_CONTENT[4]]: <div>공지사항 관리</div>,
               }[ADMIN_MENU_CONTENT[selectedMenu]]
             }
