@@ -19,7 +19,7 @@ import {
   getEachFiltersCodeList,
   postByFilteredUsers,
 } from '@repository/filterRepository';
-import { setLoading, useAppDispatch, useAuthState, displayModal } from '@store';
+import { useAppDispatch, useAuthState, displayModal } from '@store';
 import { FILTER_TITLE } from '@utils/constants';
 import { MemberOption } from '@utils/type';
 import { ModalWrapper } from '@organisms';
@@ -315,7 +315,7 @@ export default function UserStatus(): ReactElement {
         )}
         {filterContents &&
           Object.keys(filterContents).map(
-            (each, index) =>
+            (each) =>
               each !== '기수' &&
               each !== '프로젝트' &&
               (each !== '전공/비전공' ? (

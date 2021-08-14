@@ -29,19 +29,19 @@ interface UserSelectAutoCompleteProps {
   handleChangeUserSelect: (newValue: MemberOption | null) => void;
   studentNumber: string;
   payload: {
-    email: string;
-    isMajor: number;
-    pageNum: number;
-    pageSize: number;
-    position: number[];
-    project: number;
-    region: number[];
-    skills: number[];
-    sort: string;
-    studentNumber: string;
-    target: string;
-    projectCode: number;
-    track: number[];
+    email?: string;
+    isMajor?: number;
+    pageNum?: number;
+    pageSize?: number;
+    position?: number[];
+    project?: number;
+    region?: number[];
+    skills?: number[];
+    sort?: string;
+    studentNumber?: string;
+    target?: string;
+    projectCode?: number;
+    track?: number[];
   };
 }
 
