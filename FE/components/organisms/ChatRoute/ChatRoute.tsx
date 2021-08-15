@@ -463,6 +463,7 @@ export default function ChatRoute(): ReactElement {
                 setRoomId={setRoomId}
                 handleClickSend={handleClickSend}
                 roomId={room_id}
+                opponentId={opponentId}
               />
             ),
           }[route]
