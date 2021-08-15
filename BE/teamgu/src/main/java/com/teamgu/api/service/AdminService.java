@@ -161,5 +161,50 @@ public interface AdminService {
 	 * @param regionCode
 	 * @return
 	 */
-	public List<CodeResDto> getClassCode(Long projectId, int regionCode);
+	public List<CodeResDto> selectStudentClass(Long projectId, int regionCode);
+	
+	/**
+	 * Check Student Class Deletion
+	 * 추가한 교육생 반을 삭제할 수 있는지 체크한다.
+	 * user_class에 해당하는 반의 데이터가 존재하면 삭제하지 못하도록 처리한다.
+	 * @param classId
+	 * @return
+	 */
+	public boolean checkStudentClassDeletion(Long classId) ;
+	
+	/**
+	 * Delete Student Class
+	 * 교육생 반을 삭제한다.
+	 * @param classId
+	 */
+	public void deleteStudentClass(Long classId);
+
+	/**
+	 * Check Region Code
+	 * 반을 추가할 때 등록되어 있는 지역인지 먼저 체크한다.
+	 * 등록되어 있는 지역이면 지역 코드를 반환한다.
+	 * @param region
+	 * @return
+	 */
+	public int checkRegionCode(String region);
+	
+	/**
+	 * Check Student Class Duplication
+	 * 반을 추가할 때 이미 존재하는 반인지 체크한다
+	 * 존재하지 않으면 true, 존재하면 false를 반환한다
+	 * @param projectId
+	 * @param regionCode
+	 * @param name
+	 * @return
+	 */
+	public boolean checkStudentClassDuplication(Long projectId, int regionCode, int name);
+
+	/**
+	 * Insert Student Class
+	 * 반을 추가한다.
+	 * @param projectId
+	 * @param regionCode
+	 * @param name
+	 */
+	public void insertStudentClass(Long projectId, int regionCode, int name);
 }

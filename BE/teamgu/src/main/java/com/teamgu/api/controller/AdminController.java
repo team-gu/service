@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.teamgu.api.dto.req.AdminManagementReqDto;
 import com.teamgu.api.dto.req.ProjectCodeReqDto;
+import com.teamgu.api.dto.req.StdClassReqDto;
 import com.teamgu.api.dto.res.AdminTeamManagementResDto;
 import com.teamgu.api.dto.res.AdminUserManagementResDto;
 import com.teamgu.api.dto.res.BasicResponse;
@@ -213,22 +214,93 @@ public class AdminController {
 		
 	}
 	
-	@ApiOperation(value = "Class Select Box 조회")
-	@PostMapping("/user/class")
-	public ResponseEntity<? extends BasicResponse> getClassCode(@RequestBody AdminManagementReqDto adminUserManagementReqDto){
+	@ApiOperation(value = "Stdent Class 추가")
+	@PostMapping("/user/class/add")
+	public ResponseEntity<? extends BasicResponse> insertStud(@RequestBody StdClassReqDto studentClass){
 
-		Long projectId = adminUserManagementReqDto.getProjectId();
-		int regionCode = adminUserManagementReqDto.getRegionCode();
+		Long projectId = studentClass.getProjectId();
+		String className = studentClass.getClassName();
+
+		// 1. [지역] [반] 형식은 맞는지 체크
 		
-		if(adminService.checkProjectValidation(projectId)) { // 존재하는 프로젝트일 경우
+		String[] split = className.replace("반", " ").trim().split(" ");
+		
+		if(split.length != 2) {
+
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					.body(new ErrorResponse("형식에 맞지 않습니다")); 
+		}
+		
+		String region = split[0];
+		String classNumber = split[1];
+		int name = 0;
+		
+		try {
 			
-			List<CodeResDto> list = adminService.getClassCode(projectId, regionCode);
-			return ResponseEntity.ok(new CommonResponse<List<CodeResDto>>(list));
+			name = Integer.parseInt(classNumber);
+
+		} catch (NumberFormatException e) {
+
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					.body(new ErrorResponse("형식에 맞지 않습니다")); 
+		}
+		
+		// 2. 이름이 공통테이블에 존재하는 지역인지 체크
+		
+		int regionCode = adminService.checkRegionCode(region);
+		if(regionCode == 0) {
+
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					.body(new ErrorResponse("옳지 않은 지역입니다")); 
+		}
+		
+		// 3. 해당 프로젝트의 [지역] [반]이 중복이지 않은지 체크 후 추가
+		
+		if(adminService.checkStudentClassDuplication(projectId, regionCode, name)) {
+			
+			adminService.insertStudentClass(projectId, regionCode, name);
+			return ResponseEntity.status(HttpStatus.OK)
+					.body(new CommonResponse<String>("반 등록이 완료 되었습니다"));	
 
 		}
 		
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+				.body(new ErrorResponse("입력된 데이터가 중복입니다"));
+
+	}
+		
+	@ApiOperation(value = "Stdent Class 조회")
+	@PostMapping("/user/class")
+	public ResponseEntity<? extends BasicResponse> selectStudentClass(@RequestBody AdminManagementReqDto adminUserManagementReqDto){
+
+		Long projectId = adminUserManagementReqDto.getProjectId();
+		int regionCode = adminUserManagementReqDto.getRegionCode();
+
+		if(adminService.checkProjectValidation(projectId)) { // 존재하는 프로젝트일 경우
+
+			List<CodeResDto> list = adminService.selectStudentClass(projectId, regionCode);
+			return ResponseEntity.ok(new CommonResponse<List<CodeResDto>>(list));
+
+		}
+
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 				.body(new ErrorResponse("존재하지 않는 프로젝트입니다"));
+
+	}
+	
+	@ApiOperation(value = "Stdent Class 삭제")
+	@DeleteMapping("/user/class/{classId}")
+	public ResponseEntity<? extends BasicResponse> deleteStudentClass(@PathVariable Long classId){
+		
+		if(adminService.checkStudentClassDeletion(classId)) { // 해당 클래스 검사
+			adminService.deleteStudentClass(classId);
+			return ResponseEntity.status(HttpStatus.OK)
+					.body(new CommonResponse<String>("삭제가 완료 되었습니다."));
+			
+		}
+
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+				.body(new ErrorResponse("삭제할 수 없는 항목입니다. 데이터를 확인하기 바랍니다.")); 
 		
 	}
 }
