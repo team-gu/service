@@ -2,7 +2,7 @@ import { useState, ChangeEventHandler } from 'react';
 import styled from 'styled-components';
 
 import { uploadExcelFile, registUsers } from '@repository/adminRepository';
-import { ReactTable } from 'components/molecules';
+import { ReactTable } from '@molecules';
 
 const Wrapper = styled.div`
   margin-top: 30px;
