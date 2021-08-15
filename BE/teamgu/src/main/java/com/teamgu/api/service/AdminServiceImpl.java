@@ -392,9 +392,37 @@ public class AdminServiceImpl implements AdminService {
 
 	// Class Select Box
 	@Override
-	public List<CodeResDto> getClassCode(Long projectId, int regionCode) {
+	public List<CodeResDto> selectStudentClass(Long projectId, int regionCode) {
 		
-		return adminRepositorySupport.getClassCode(projectId, regionCode);
+		return adminRepositorySupport.selectStudentClass(projectId, regionCode);
+	}
+	// Check Student Class Deletion
+	@Override
+	public boolean checkStudentClassDeletion(Long classId) {
+		return adminRepositorySupport.checkStudentClassDeletion(classId);
+	}
+
+	//Delete Student Class
+	@Override
+	public void deleteStudentClass(Long classId) {
+		adminRepositorySupport.deleteStudentClass(classId);
+	}
+	
+	// Check Region Code
+	@Override
+	public int checkRegionCode(String region) {
+		return adminRepositorySupport.checkRegionCode(region);
+	}
+
+	// Project별 Student Class Duplication Check
+	@Override
+	public boolean checkStudentClassDuplication(Long projectId, int regionCode, int name) {
+		return adminRepositorySupport.checkStudentClassDuplication(projectId, regionCode, name);
+	}
+
+	@Override
+	public void insertStudentClass(Long projectId, int regionCode, int name) {
+		adminRepositorySupport.insertStudentClass(projectId, regionCode, name);
 	}
 
 }
