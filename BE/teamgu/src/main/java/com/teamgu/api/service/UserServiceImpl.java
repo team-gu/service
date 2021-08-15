@@ -3,7 +3,9 @@ package com.teamgu.api.service;
 import java.util.List;
 import java.util.Optional;
 
+import com.teamgu.api.dto.MailDto;
 import com.teamgu.api.dto.UserProfileImgDto;
+import com.teamgu.common.util.RandomPwdUtil;
 import com.teamgu.handler.ProfileImageHandler;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.log4j.Log4j2;
@@ -54,17 +56,26 @@ public class UserServiceImpl implements UserService {
     private JwtTokenUtil jwtTokenUtil;
 
     @Autowired
+    private RandomPwdUtil randomPwdUtil;
+
+    @Autowired
     PasswordEncoder passwordEncoder;
+
+    @Autowired
+    MailServiceImpl mailService;
 
     @Autowired
     UserRepository userRepository;
 
     @Autowired
     WishTrackRepository wishTrackRepository;
+
     @Autowired
     UserSkillRepository skillRepository;
+
     @Autowired
     UserInfoProjectRepository projectRepository;
+
     @Autowired
     UserInfoAwardRepository awardRepository;
 
@@ -107,7 +118,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<User> getUserByEmail(String email) {
         logger.info(email);
-        Optional<User> user = userRepository.findByEmail(email);
+        Optional<User> user = null;
+        try {
+            user = userRepository.findByEmail(email);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         if (user.isPresent()) {// Optional의 null 체크(값ㅇ ㅣ있는 경우)
             logger.info(user.get().getEmail());
         } else {// 없는 경우
@@ -316,7 +333,7 @@ public class UserServiceImpl implements UserService {
      * 비밀번호 변경함수
      */
     @Override
-    public boolean setPassward(PasswordReqDto passwordReq) {
+    public boolean changePassword(PasswordReqDto passwordReq) {
 
         User user = null;
 
@@ -336,6 +353,57 @@ public class UserServiceImpl implements UserService {
         }
 
         return false;
+    }
+
+    /**
+     * 비밀번호 초기화 함수
+     */
+    @Override
+    public short initPassword(String email) {
+        User user = null;
+        String tmpPwd = "";
+
+        try {
+            user = getUserByEmail(email).get();
+        } catch (Exception e) {
+            log.info("일치하는 유저가 존재하지 않습니다.");
+
+            return 0;
+        }
+
+        //10자리 임시 비밀번호 생성
+        tmpPwd = randomPwdUtil.getRandomPwd();
+
+        //임시 비밀번호 세팅
+        user.setTempPassword(passwordEncoder.encode(tmpPwd));
+        userRepository.save(user);
+
+        try {
+            //메일 발송 로직
+            MailDto mailDto = MailDto.builder()
+                    .address(email)
+                    .title("TeamGu 서비스 임시비밀번호")
+                    .message("임시 비밀번호 : " + tmpPwd)
+                    .build();
+
+            mailService.sendMail(mailDto);
+        } catch (Exception e) {
+            log.error("메일 전송에 실패하였습니다.");
+
+            return -1;
+        }
+
+        return 1;
+    }
+
+    /**
+     * 임시 비밀번호로 로그인 시 원본 비밀번호는 폐기, 임시 비밀번호를 원본으로 대체
+     */
+
+    public void modifyOriginPwd(User user, String tempPwd) {
+        user.setPassword(tempPwd);
+        user.setTempPassword("");
+        userRepository.save(user);
     }
 
     /**

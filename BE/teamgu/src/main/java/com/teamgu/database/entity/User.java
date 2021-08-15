@@ -32,6 +32,10 @@ public class User extends BaseEntity{
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	String password;
 
+	@JsonIgnore
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	String tempPassword;
+
 	String refreshToken;
 	@Column(length = 7)
 	String studentNumber;
