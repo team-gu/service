@@ -47,11 +47,14 @@ export default function AdminUserManage({ projectId }: AdminUserManageProps) {
       <ReactTable
         data={teamStatusTableData}
         columns={ADMIN_DASHBOARD_TABLE_COLUMNS}
-        fullWidth={false}
       />
       <div className="manage-header">
         <Text text="교육생 Import" fontSetting="n26b" />
       </div>
+      <Text
+        text="엑셀 파일(.xlsx, .xls)을 업로드하여 한 번에 교육생 정보를 입력할 수 있습니다. 해당 엑셀 파일은 [이메일, 이름, 학번, 전공여부]에 대한 데이터를 담고 있어야합니다. "
+        isLineBreak
+      />
       <AdminUserImport />
       {showCreateModal && (
         <AdminUserManageModal
