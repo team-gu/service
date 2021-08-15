@@ -165,12 +165,8 @@ const USER_TABLE_COLUMNS = [
     disableGroupBy: true,
   },
   {
-    Header: '지역',
-    accessor: 'region',
-  },
-  {
     Header: '반',
-    accessor: 'studnetClass',
+    accessor: 'studentClass',
   },
   {
     Header: '전공/비전공',
@@ -184,10 +180,6 @@ const USER_TABLE_COLUMNS = [
   {
     Header: '팀 완료 여부',
     accessor: 'completeYn',
-  },
-  {
-    Header: '팀 식별자',
-    accessor: 'teamId',
   },
   {
     Header: '팀 이름',
