@@ -15,7 +15,7 @@ interface ChatBubbleProps {
   // TODO: 추후 타입 정의
   time: string | any;
   message: string;
-  handleGetChatRoomMessages: any;
+  handleGetChatRoomMessages?: any;
   isMe?: boolean;
   // TODO: 추후 타입 정의
   func?: any;

@@ -5,7 +5,7 @@ import { Session } from 'openvidu-browser';
 
 import { ChatInput, ChatBubble } from '@molecules';
 
-import { postExitRoom, getRoomUserList } from '@repository/chatRepository';
+import { postExitRoom } from '@repository/chatRepository';
 import { Chat, ChatNormal } from '@types/chat-type';
 import { useAuthState } from '@store';
 
@@ -20,6 +20,7 @@ interface ChatRoomProps {
   handleClickSend: (msg: string) => Promise<void>;
   roomId?: number;
   opponentId?: number;
+  unreadMessageCount?: number;
 }
 
 const Wrapper = styled.div<{ disabled: boolean }>`
@@ -54,6 +55,7 @@ export default function ChatRoom({
   handleClickSend,
   roomId,
   opponentId,
+  unreadMessageCount,
 }: ChatRoomProps): ReactElement {
   const {
     user: { id },
@@ -64,7 +66,6 @@ export default function ChatRoom({
   const handleScrollToEnd = () => {
     chatBoxRef.current.scrollTo({
       top: chatBoxRef.current.scrollHeight - chatBoxRef.current.clientHeight,
-      left: 0,
     });
   };
 
