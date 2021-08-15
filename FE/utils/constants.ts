@@ -137,7 +137,6 @@ export const TEAM_TABLE_COLUMNS = [
   {
     Header: '지역',
     accessor: 'region',
-    disableGroupBy: true,
   },
   {
     Header: '팀 이름',
@@ -151,7 +150,6 @@ export const TEAM_TABLE_COLUMNS = [
   {
     Header: '현재 인원',
     accessor: 'memberCnt',
-    disableGroupBy: true,
   },
   {
     Header: '완료 여부',

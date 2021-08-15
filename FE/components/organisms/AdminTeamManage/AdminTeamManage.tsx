@@ -76,7 +76,6 @@ export default function AdminTeamManage({ projectId }: AdminTeamManageProps) {
       projectId,
       regionCode: selectedRegion,
     }).then(({ data: { data } }: { data: { data: TeamData[] } }) => {
-      console.log(data);
 
       setTeamData(
         data.map((row) => {
@@ -110,22 +109,15 @@ export default function AdminTeamManage({ projectId }: AdminTeamManageProps) {
       </div>
       <div className="region-btns">
         {REGIONS.map((r) => (
-          <RegionButtonWrapper selected={selectedRegion === r.code}>
-            <Button
-              title={r.name}
-              key={r.code}
-              func={() => setSelectedRegion(r.code)}
-            />
+          <RegionButtonWrapper
+            key={r.code}
+            selected={selectedRegion === r.code}
+          >
+            <Button title={r.name} func={() => setSelectedRegion(r.code)} />
           </RegionButtonWrapper>
         ))}
       </div>
-      <ReactTable
-        data={teamData}
-        columns={TEAM_TABLE_COLUMNS}
-        grouping
-        pagination={false}
-        fullWidth={false}
-      />
+      <ReactTable data={teamData} columns={TEAM_TABLE_COLUMNS} />
     </Wrapper>
   );
 }
