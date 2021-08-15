@@ -2,6 +2,10 @@ import { ReactElement } from 'react';
 import styled from 'styled-components';
 
 const Wrapper = styled.div`
+  ${({ theme: { flexRow } }) => flexRow()}
+  width: 100%;
+  height: 20px;
+
   .typing__dot {
     float: left;
     width: 8px;
