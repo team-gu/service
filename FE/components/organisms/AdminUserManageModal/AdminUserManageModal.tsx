@@ -7,6 +7,11 @@ import { Text, Icon, Input } from '@atoms';
 import { Button, Label } from '@molecules';
 import { ModalWrapper } from '@organisms';
 import { Code } from '@utils/type';
+import {
+  createAdminClassOption,
+  getAdminClassOption,
+  deleteAdminClassOption,
+} from '@repository/adminRepository';
 
 const Wrapper = styled.div`
   input {
@@ -147,6 +152,14 @@ const Underline = styled.span`
   border-bottom: solid 1px black;
 `;
 
+const codesToOption = (data: any[]) => {
+  return data.map((i) => ({
+    ...i,
+    label: i.codeName,
+    value: i.code,
+  }));
+};
+
 const codeToOption = (data: any) => {
   if (data) {
     return {
@@ -157,14 +170,14 @@ const codeToOption = (data: any) => {
   }
 };
 
-const stringToOption = (data: string | undefined) => {
+const stringToOption = (data: string | undefined | null) => {
   if (data) {
     return {
       label: data,
       value: data,
-    }
+    };
   }
-}
+};
 
 const customStyles = {
   menuList: (base: any) => ({
@@ -187,14 +200,14 @@ const ACTIVATE_OPTIONS = [
   { value: '비활성', label: '비활성' },
 ];
 
-const EXIT_OPTIONS = [
-  { value: 1, label: '교육생' },
-  { value: 2, label: '퇴소생' },
+const ROLE_OPTIONS = [
+  { value: '교육생', label: '교육생' },
+  { value: '퇴소생', label: '퇴소생' },
 ];
 
 const MAJOR_OPTIONS = [
-  { value: 1, label: '전공' },
-  { value: 2, label: '비전공' },
+  { value: '전공', label: '전공' },
+  { value: '비전공', label: '비전공' },
 ];
 
 const CLASS_OPTIONS = [
@@ -205,24 +218,29 @@ const CLASS_OPTIONS = [
   { value: 5, label: '서울 5반' },
 ];
 
-interface DefaultUserInfo {
-  email: string;
+interface UserDataRow {
+  completeYn: string | null;
+  major: string;
   name: string;
+  region: string;
+  regist: string;
+  role: string;
+  studentClass: string;
   studentNumber: string;
-  major: Code;
-  studentClass: OptionTypeBase;
-  exitYn: Code;
-  projectActivate: string;
+  teamId: number | null;
+  teamName: string | null;
 }
 
 interface AdminUserCreateModalProps {
   handleClickClose: () => void;
-  defaultValue?: DefaultUserInfo;
+  defaultValue?: UserDataRow;
+  projectId: number;
 }
 
 export default function AdminUserManageModal({
   handleClickClose,
   defaultValue,
+  projectId,
 }: AdminUserCreateModalProps) {
   const [studentClassOptions, setStudentClassOptions] = useState<
     OptionTypeBase[]
@@ -230,20 +248,21 @@ export default function AdminUserManageModal({
 
   useEffect(() => {
     // TODO: 서버에서 반 목록 가져오기
+    fetchStudentClass();
     setStudentClassOptions(CLASS_OPTIONS);
   }, []);
 
-  const [userMajor, setUserMajor] = useState<Code | undefined>(
+  const [userMajor, setUserMajor] = useState<string | undefined>(
     defaultValue ? defaultValue.major : undefined,
   );
   const [studentClass, setStudentClass] = useState(
     defaultValue ? defaultValue.studentClass : null,
   );
-  const [userExitYn, setUserExitYn] = useState<Code | undefined>(
-    defaultValue ? defaultValue.exitYn : undefined,
+  const [userRole, setUserRole] = useState<string | undefined>(
+    defaultValue ? defaultValue.role : undefined,
   );
-  const [projectActivate, setProjectActivate] = useState<string | undefined>(
-    defaultValue ? defaultValue.projectActivate : undefined,
+  const [userRegist, setUserRegist] = useState<string | undefined>(
+    defaultValue ? defaultValue.regist : undefined,
   );
 
   const [isLoadingStudentClass, setIsLoadingStudentClass] = useState(false);
@@ -310,11 +329,11 @@ export default function AdminUserManageModal({
       console.log('반 없음');
       return;
     }
-    if (!userExitYn) {
+    if (!userRole) {
       console.log('교육생/퇴소생 없음');
       return;
     }
-    if (!projectActivate) {
+    if (!userRegist) {
       console.log('활성/비활성 없음');
       return;
     }
@@ -325,8 +344,8 @@ export default function AdminUserManageModal({
       studnetNumber: userStudentNumberInputRef.current.value,
       major: userMajor,
       studentClass,
-      userExitYn,
-      projectActivate,
+      role: userRole,
+      regist: userRegist,
     };
 
     console.log('UPDATE USER');
@@ -336,17 +355,32 @@ export default function AdminUserManageModal({
 
   const findDefaultStudentClass = () => {
     if (studentClass) {
-      return studentClassOptions.find((i) => studentClass.value === i.value);
+      return studentClassOptions.find((i) => studentClass === i.label);
     }
   };
+
+  const fetchStudentClass = () => {
+    getAdminClassOption({
+      projectId,
+      regionCode: 0,
+    }).then(({ data : { data }}) => {
+      setStudentClassOptions(codesToOption(data));
+    });
+  }
 
   const handleCreateStudentClassOption = (inputValue: string) => {
     setIsLoadingStudentClass(true);
 
-    // TODO: 반 생성 API 호출. 생성 결과 필요
-    // setStudentClassOptions(리턴 결과)
-    // setStudentClass(리턴결과 중 내가 추가했던거)
-    setIsLoadingStudentClass(false);
+    createAdminClassOption({
+      className: inputValue,
+      projectId,
+    }).then(({ data : { data }}) => {
+      console.log(data);
+      // TODO: 생성 결과 필요
+      // setStudentClassOptions(리턴 결과)
+      // setStudentClass(리턴결과 중 내가 추가했던거)
+      setIsLoadingStudentClass(false);
+    });
   };
 
   const onChangeStudentClassOption = (
@@ -354,20 +388,24 @@ export default function AdminUserManageModal({
     action: ActionMeta<OptionTypeBase>,
   ) => {
     if (action.action === 'select-option' && selectedValue) {
-      setStudentClass({
-        value: selectedValue.value,
-        label: selectedValue.label,
-      });
+      setStudentClass(selectedValue.label);
     } else if (action.action === 'clear') {
       setStudentClass(null);
     }
   };
 
   const handleOptionDelete = (deletedValue: OptionTypeBase) => {
-    // TODO: 반 삭제 API 호출. 삭제 결과 필요
-    // setCategoryOptions(codesToOption(리턴 결과));
-    // TODO: 반 삭제 시 선택했던거 초기화
-    // setCategory(null);
+    
+    deleteAdminClassOption({
+      classId: deletedValue.code
+    }).then(({ data : { data }}) => {
+      console.log(data);
+      // TODO: 삭제 결과 필요
+      // setCategoryOptions(codesToOption(리턴 결과));
+      // TODO: 반 삭제 시 선택했던거 초기화
+      // setCategory(null);
+    })
+    
   };
 
   const onChangeMajor = (
@@ -375,10 +413,7 @@ export default function AdminUserManageModal({
     action: ActionMeta<OptionTypeBase>,
   ) => {
     if (selectedValue) {
-      setUserMajor({
-        code: selectedValue.value,
-        codeName: selectedValue.label,
-      });
+      setUserMajor(selectedValue.value);
     } else {
       setUserMajor(undefined);
     }
@@ -389,12 +424,9 @@ export default function AdminUserManageModal({
     action: ActionMeta<OptionTypeBase>,
   ) => {
     if (selectedValue) {
-      setUserExitYn({
-        code: selectedValue.value,
-        codeName: selectedValue.label,
-      });
+      setUserRole(selectedValue.value);
     } else {
-      setUserExitYn(undefined);
+      setUserRole(undefined);
     }
   };
 
@@ -403,9 +435,9 @@ export default function AdminUserManageModal({
     action: ActionMeta<OptionTypeBase>,
   ) => {
     if (selectedValue) {
-      setProjectActivate(selectedValue.value);
+      setUserRegist(selectedValue.value);
     } else {
-      setUserExitYn(undefined);
+      setUserRegist(undefined);
     }
   };
 
@@ -455,7 +487,7 @@ export default function AdminUserManageModal({
             </Label>
           </div>
 
-          <div className="input-container">
+          {/* <div className="input-container">
             <Label text="이메일">
               <Input
                 type="email"
@@ -468,18 +500,18 @@ export default function AdminUserManageModal({
                 placeHolder="예) example@ssafy.com"
               />
             </Label>
-          </div>
+          </div> */}
           <div className="select-container">
             <Label text="전공/비전공">
               <Select
                 cacheOptions
                 defaultOptions
-                value={codeToOption(userMajor) || ''}
+                value={stringToOption(userMajor) || null}
                 options={MAJOR_OPTIONS}
                 onChange={onChangeMajor}
                 styles={customStyles}
                 defaultValue={
-                  defaultValue ? codeToOption(defaultValue.major) || '' : ''
+                  defaultValue ? stringToOption(defaultValue.major) : null
                 }
               />
             </Label>
@@ -493,7 +525,7 @@ export default function AdminUserManageModal({
                     <Label text="반">
                       <CreatableSelect
                         isClearable
-                        value={studentClass || null}
+                        value={stringToOption(studentClass) || null}
                         isDisabled={isLoadingStudentClass}
                         isLoading={isLoadingStudentClass}
                         cacheOptions
@@ -527,14 +559,12 @@ export default function AdminUserManageModal({
                   <Select
                     cacheOptions
                     defaultOptions
-                    value={codeToOption(userExitYn) || ''}
-                    options={EXIT_OPTIONS}
+                    value={stringToOption(userRole) || null}
+                    options={ROLE_OPTIONS}
                     onChange={onChangeProjectActivate}
                     styles={customStyles}
                     defaultValue={
-                      defaultValue
-                        ? codeToOption(defaultValue.exitYn) || ''
-                        : ''
+                      defaultValue ? stringToOption(defaultValue.role) : null
                     }
                   />
                 </Label>
@@ -545,14 +575,12 @@ export default function AdminUserManageModal({
                   <Select
                     cacheOptions
                     defaultOptions
-                    value={stringToOption(projectActivate) || null}
+                    value={stringToOption(userRegist) || null}
                     options={ACTIVATE_OPTIONS}
                     onChange={onChangeExitYn}
                     styles={customStyles}
                     defaultValue={
-                      defaultValue
-                        ? stringToOption(projectActivate) || null
-                        : null
+                      defaultValue ? stringToOption(userRegist) || null : null
                     }
                   />
                 </Label>
@@ -563,7 +591,7 @@ export default function AdminUserManageModal({
         <div className="modal-footer">
           <Button
             title={defaultValue ? '저장' : '추가'}
-            func={handleCreateUser}
+            func={defaultValue ? handleUpdateUser : handleCreateUser}
           />
         </div>
 
