@@ -73,26 +73,33 @@ public class AdminRepositorySupport {
 				.where(qCodeDetail.code.code.eq(codeId))
 				.fetchOne().intValue();
 		
-
-		log.info("insertStageCode codeId : " + codeId);
-		log.info("insertStageCode lastCode : " + lastCode);
-		log.info("insertStageCode codeName : " + codeName);
-		
 		EntityManager em = emf.createEntityManager();
 		EntityTransaction et = em.getTransaction();
+		
+		try {
 
-		et.begin();
+			et.begin();
 
-		String jpql = "INSERT INTO code_detail values(?1, ?2, ?3)";
+			String jpql = "INSERT INTO code_detail values(?1, ?2, ?3)";
 
-		em.createNativeQuery(jpql)
-		.setParameter(1, codeId)
-		.setParameter(2, lastCode +1)
-		.setParameter(3, codeName)
-		.executeUpdate();
+			em.createNativeQuery(jpql)
+			.setParameter(1, codeId)
+			.setParameter(2, lastCode +1)
+			.setParameter(3, codeName)
+			.executeUpdate();
 
-		et.commit();
-		em.close();
+			et.commit();
+			
+		} catch (Exception e) {
+			
+			et.rollback();
+			e.printStackTrace();
+			
+		} finally {
+
+			em.close();
+			
+		}
 		
 	}
 	
@@ -113,21 +120,34 @@ public class AdminRepositorySupport {
 
 		EntityManager em = emf.createEntityManager();
 		EntityTransaction et = em.getTransaction();
+		
+		try {
+			
+			et.begin();
 
-		et.begin();
+			String jpql = "INSERT INTO project_detail(project_code, stage_code, active_date, start_date, end_date) "
+					+ "values(:projectCode, :stageCode, :activeDate, :startDate, :endDate)";
 
-		String jpql = "INSERT INTO project_detail(project_code, stage_code, active_date, start_date, end_date) values(?1, ?2, ?3, ?4, ?5)";
+			em.createNativeQuery(jpql)
+			.setParameter("projectCode", projectInfoResDto.getProject().getCode())
+			.setParameter("stageCode", projectInfoResDto.getStage().getCode())
+			.setParameter("activeDate", projectInfoResDto.getActiveDate())
+			.setParameter("startDate", projectInfoResDto.getStartDate())
+			.setParameter("endDate", projectInfoResDto.getEndDate())
+			.executeUpdate();
 
-		em.createNativeQuery(jpql)
-		.setParameter(1, projectInfoResDto.getProject().getCode())
-		.setParameter(2, projectInfoResDto.getStage().getCode())
-		.setParameter(3, projectInfoResDto.getActiveDate())
-		.setParameter(4, projectInfoResDto.getStartDate())
-		.setParameter(5, projectInfoResDto.getEndDate())
-		.executeUpdate();
+			et.commit();
+			
+		} catch (Exception e) {
+			
+			et.rollback();
+			e.printStackTrace();
 
-		et.commit();
-		em.close();
+		} finally {
+			
+			em.close();
+			
+		}
 		
 	}
 	
@@ -669,13 +689,15 @@ public class AdminRepositorySupport {
 			.setParameter("regionCode", regionCode)
 			.executeUpdate();
 
+			et.commit();
+			
 		} catch (Exception e) {
 			
+			et.rollback();
 			e.printStackTrace();
 		
 		} finally {
 
-			et.commit();
 			em.close();
 			
 		}
