@@ -127,7 +127,7 @@ export default function ChatRoute(): ReactElement {
   const isShow = useModalState();
 
   const {
-    user: { id, projectCode },
+    user: { id, projectCodes },
   } = useAuthState();
 
   const [room_id, setRoomId] = useState<number>(0);
@@ -186,8 +186,8 @@ export default function ChatRoute(): ReactElement {
   useEffect(() => {
     (async () => {
       const project =
-        projectCode && projectCode.length > 0
-          ? projectCode[projectCode.length - 1]
+        projectCodes && projectCodes.length > 0
+          ? projectCodes[projectCodes.length - 1]
           : 101;
 
       const {

@@ -1,5 +1,6 @@
 import { ReactElement, useState, useEffect } from 'react';
 import { OptionsType, OptionTypeBase } from 'react-select';
+import styled from 'styled-components';
 
 import { Icon } from '@atoms';
 import {
@@ -9,15 +10,22 @@ import {
   SimpleSelect,
 } from '@molecules';
 
+import { Title } from '@molecules';
 import { TeamStatusCard, TeamManageModal, LookupLayout } from '@organisms';
 import { FILTER_TITLE } from '@utils/constants';
 import { MemberOption, Team } from '@utils/type';
-import { useAuthState, useAppDispatch, setLoading } from '@store';
+import { useAuthState } from '@store';
 import { getEachFiltersCodeList } from '@repository/filterRepository';
-import {
-  getTeamsFiltered,
-  getUserHasTeam,
-} from '@repository/teamRepository';
+import { getTeamsFiltered, getUserHasTeam } from '@repository/teamRepository';
+
+const WrapFilter = styled.div`
+  padding: 10px;
+  margin: 10px;
+  box-shadow: 0 6px 12px 0 rgba(4, 4, 161, 0.1);
+  > div > div {
+    width: 100%;
+  }
+`;
 
 const sortByOptions: OptionsType<OptionTypeBase> = [
   {
@@ -43,7 +51,7 @@ interface Payload {
 
 export default function TeamStatus(): ReactElement {
   const {
-    user: { id: userId, projectCode, studentNumber },
+    user: { id: userId, projectCodes, studentNumber },
   } = useAuthState();
   const [filterContents, setFilterContents] = useState<any>({});
   const [payload, setPayload] = useState<Payload>({});
@@ -55,41 +63,52 @@ export default function TeamStatus(): ReactElement {
   const [sortAsc, setSortAsc] = useState(true);
   const [containsUserId, setContainsUserId] = useState<number>();
   const [userHasTeam, setUserHasTeam] = useState<boolean>();
+  const [userTeam, setUserTeam] = useState<Team>();
   const [searchWhat, setSearchWhat] = useState(false);
 
   const SERACH_BY_FILTER = true;
   const SEARCH_BY_USERID = false;
-
-  const dispatch = useAppDispatch();
+  const [projectCode, setProjectCode] = useState(
+    projectCodes && projectCodes.length > 0
+      ? projectCodes[projectCodes.length - 1]
+      : 101,
+  );
 
   useEffect(() => {
     // Fetch Filter content
-    (async () => {
-      const {
-        data: { data },
-      } = await getEachFiltersCodeList(studentNumber);
-
+    getEachFiltersCodeList(studentNumber).then(({ data: { data } }) => {
       setFilterContents(data);
-    })();
+    });
 
     // Set Filter criteria
     setPayload({
       project:
-        projectCode?.length > 1 ? projectCode[projectCode.length - 1] : 101,
+        projectCodes?.length > 0 ? projectCodes[projectCodes.length - 1] : 101,
       studentNumber,
     });
 
     const project =
-      projectCode && projectCode.length > 0
-        ? projectCode[projectCode.length - 1]
+      projectCodes && projectCodes.length > 0
+        ? projectCodes[projectCodes.length - 1]
         : 101;
     getUserHasTeam({
       userId,
-      project: { code: project },
-    }).then(({ data }) => {
-      setUserHasTeam(data.data.hasTeam);
+      project: { code: projectCode },
+    }).then(({ data: { data } }) => {
+      setUserHasTeam(data.hasTeam);
+      setUserTeam(data.team);
     });
   }, []);
+
+  useEffect(() => {
+    getUserHasTeam({
+      userId,
+      project: { code: projectCode },
+    }).then(({ data: { data } }) => {
+      setUserHasTeam(data.hasTeam);
+      setUserTeam(data.team);
+    });
+  }, [projectCode]);
 
   useEffect(() => {
     renderTeams(SERACH_BY_FILTER);
@@ -123,6 +142,13 @@ export default function TeamStatus(): ReactElement {
     });
   };
 
+  const handleProjectChange = ({ value }: { value: number }) => {
+    if (projectCodes?.includes(value)) {
+      setProjectCode(value);
+      setPayload({ ...payload, project: value });
+    }
+  };
+
   const handleFilter = (title: string, code: string) => {
     const payloadTemp: any = { ...payload };
     const convertTitle: any = FILTER_TITLE[title];
@@ -151,7 +177,7 @@ export default function TeamStatus(): ReactElement {
       delete payloadTemp[FILTER_TITLE[title]];
     } else {
       payloadTemp[convertTitle] = arr.reduce(
-        (acc, cur) => [...acc, cur.value],
+        (acc: any, cur: any) => [...acc, cur.value],
         [],
       );
     }
@@ -192,6 +218,31 @@ export default function TeamStatus(): ReactElement {
   return (
     <LookupLayout showTeamCreateBtn={!userHasTeam}>
       <div className="filter-container">
+        {filterContents && filterContents['프로젝트'] && (
+          <WrapFilter>
+            <Title title="프로젝트">
+              <SimpleSelect
+                options={filterContents['프로젝트']
+                  .slice(0, projectCodes?.length)
+                  .reduce(
+                    (
+                      acc: number[],
+                      { codeName, code }: { codeName: string; code: number },
+                    ) => [...acc, { label: codeName, value: code }],
+                    [],
+                  )}
+                onChange={handleProjectChange}
+                value={{
+                  label:
+                    filterContents['프로젝트'][projectCodes?.length - 1]
+                      ?.codeName,
+                  value:
+                    filterContents['프로젝트'][projectCodes?.length - 1]?.code,
+                }}
+              />
+            </Title>
+          </WrapFilter>
+        )}
         {filterContents &&
           Object.keys(filterContents).map(
             (each, index) =>
@@ -244,6 +295,19 @@ export default function TeamStatus(): ReactElement {
             </div>
           )}
         </div>
+
+        {userTeam && (
+          <>
+            <Title title="나의 팀">
+              <TeamStatusCard
+                team={userTeam}
+                onClickTeamManage={handleTeamManageModal}
+              />
+            </Title>
+
+            <hr />
+          </>
+        )}
         {(!teams || teams.length === 0) && (
           <div>
             현재 등록된 팀이 없거나, 필터링 조건에 일치하는 팀이 없습니다.

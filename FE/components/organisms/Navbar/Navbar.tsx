@@ -80,6 +80,12 @@ const Wrapper = styled.nav<{ isShowByScroll: Boolean }>`
       color: #3797f4;
       font-weight: 900;
     }
+
+    user-select: none;
+  }
+
+  .list {
+    top: 40px;
   }
 `;
 
@@ -161,7 +167,7 @@ export default function Navbar(): ReactElement {
               id: 2,
               title: '로그아웃',
               func: () => {
-                dispatch(setLogout());
+                dispatch(setLogout(router));
               },
               iconName: 'logout',
             },

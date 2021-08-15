@@ -74,7 +74,7 @@ export default function AdminTeamManage({ projectId }: AdminTeamManageProps) {
   useEffect(() => {
     getTeamTableData({
       projectId,
-      regoinCode: selectedRegion,
+      regionCode: selectedRegion,
     }).then(({ data: { data } }: { data: { data: TeamData[] } }) => {
       console.log(data);
 
