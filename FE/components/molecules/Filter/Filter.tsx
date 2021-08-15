@@ -82,7 +82,7 @@ export default function Filter({
                 <RadioButton
                   func={() => func(title, code)}
                   name={title}
-                  key={code}
+                  key={`radio-${code}`}
                 >
                   <Text text={codeName} fontSetting={'n14m'} />
                 </RadioButton>
@@ -90,6 +90,7 @@ export default function Filter({
                 <Checkbox
                   func={() => onChangeCheckBox(code)}
                   checked={clear ? false : checkedBox.indexOf(code) > -1}
+                  key={`checbkox-${code}`}
                 >
                   <Text text={codeName} fontSetting={'n14m'} />
                 </Checkbox>

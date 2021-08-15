@@ -172,7 +172,7 @@ export default function ChatRoute(): ReactElement {
       dispatch(setChatOpen({ isChatOpen: false }));
     }
 
-    if (!editRef.current?.contains(target)) {
+    if (!editRef?.current?.contains(target)) {
       setIsEdit(false);
     }
   }
