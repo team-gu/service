@@ -107,7 +107,7 @@ export default function ChangePasswordModal(): ReactElement {
               width="30vw"
               height="50px"
               ref={emailRef}
-              maxLength={20}
+              maxLength={30}
               autoComplete="off"
             />
           </div>
