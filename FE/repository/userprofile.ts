@@ -65,8 +65,16 @@ export const getUserDetailbyRefresh = async () => {
 
 export const changePassword = async (param: object) => {
   await api({
-    url: '/api/user/password',
+    url: '/api/user/password/change',
     type: 'put',
+    param,
+  });
+};
+
+export const findPassword = async (param: object) => {
+  await api({
+    url: '/api/user/password/init',
+    type: 'patch',
     param,
   });
 };

@@ -9,6 +9,7 @@ import {
   AwardModal,
   ChangePasswordModal,
 } from '../UserDetail/MyDetail/Modal';
+import FindPasswordModal from '../Main/Modal';
 
 interface ModalProps {
   modalName: string;
@@ -32,6 +33,7 @@ export default function Modal({
               [MODALS.AWARD_MODAL]: <AwardModal />,
               [MODALS.HOC_MODAL]: <HocModal>{children}</HocModal>,
               [MODALS.CHANGEPASSWORD_MODAL]: <ChangePasswordModal />,
+              [MODALS.FINDPASSWORD_MODAL]: <FindPasswordModal />,
             }[modalName]
           }
         </ModalWrapper>

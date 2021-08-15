@@ -4,12 +4,14 @@ export const MODALS: {
   AWARD_MODAL: string;
   HOC_MODAL: string;
   CHANGEPASSWORD_MODAL: string;
+  FINDPASSWORD_MODAL: string;
 } = {
   ALERT_MODAL: 'alertModal',
   PROJECT_MODAL: 'projectModal',
   AWARD_MODAL: 'awardModal',
   HOC_MODAL: 'hocModal',
   CHANGEPASSWORD_MODAL: 'changePasswordModal',
+  FINDPASSWORD_MODAL: 'findPasswordModal',
 };
 
 export const PROJECT_CODE: any = {
@@ -99,7 +101,6 @@ export const ADMIN_DASHBOARD_TABLE_COLUMNS = [
     accessor: 'position',
   },
 ];
-
 
 export const REGIONS = [
   {
