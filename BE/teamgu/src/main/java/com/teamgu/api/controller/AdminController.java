@@ -15,9 +15,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.teamgu.api.dto.req.AdminTeamManagementReqDto;
+import com.teamgu.api.dto.req.AdminManagementReqDto;
 import com.teamgu.api.dto.req.ProjectCodeReqDto;
 import com.teamgu.api.dto.res.AdminTeamManagementResDto;
+import com.teamgu.api.dto.res.AdminUserManagementResDto;
 import com.teamgu.api.dto.res.BasicResponse;
 import com.teamgu.api.dto.res.CodeResDto;
 import com.teamgu.api.dto.res.CommonResponse;
@@ -150,7 +151,7 @@ public class AdminController {
 	@GetMapping("/dashboard/{projectId}")
 	public ResponseEntity<? extends BasicResponse> getTeamBuildingStatus(@PathVariable Long projectId) {
 
-		if(!adminService.checkProjectDeletion(projectId)) {
+		if(adminService.checkProjectValidation(projectId)) { // 존재하는 프로젝트일 경우
 
 			DashBoardResDto dashBoard = adminService.getTeamBuildingStatus(projectId);
 			
@@ -164,7 +165,7 @@ public class AdminController {
 	@GetMapping("/dashboardtable/{projectId}")
 	public ResponseEntity<? extends BasicResponse> getTeamBuildingTable(@PathVariable Long projectId) {
 
-		if(!adminService.checkProjectDeletion(projectId)) {
+		if(adminService.checkProjectValidation(projectId)) { // 존재하는 프로젝트일 경우
 
 			List<DashBoardTableResDto> dashBoardTable = adminService.getDashBoardTableInfo(projectId);
 			
@@ -176,12 +177,12 @@ public class AdminController {
 	
 	@ApiOperation(value = "팀 구성 현황 조회")
 	@PostMapping("/team")
-	public ResponseEntity<? extends BasicResponse> getTeamManagementData(@RequestBody AdminTeamManagementReqDto adminTeamManagementReqDto){
+	public ResponseEntity<? extends BasicResponse> getTeamManagementData(@RequestBody AdminManagementReqDto adminTeamManagementReqDto){
 		
 		Long projectId = adminTeamManagementReqDto.getProjectId();
 		int regionCode = adminTeamManagementReqDto.getRegionCode();
 		
-		if(!adminService.checkProjectDeletion(projectId)) {
+		if(adminService.checkProjectValidation(projectId)) { // 존재하는 프로젝트일 경우
 			List<AdminTeamManagementResDto> list = adminService.getTeamManagementData(projectId, regionCode);
 			
 			return ResponseEntity.ok(new CommonResponse<List<AdminTeamManagementResDto>>(list));
@@ -192,5 +193,42 @@ public class AdminController {
 				.body(new ErrorResponse("존재하지 않는 프로젝트입니다"));
 		
 	}
+	
+	@ApiOperation(value = "회원 관리 조회")
+	@PostMapping("/user")
+	public ResponseEntity<? extends BasicResponse> getUserManagamentData(@RequestBody AdminManagementReqDto adminUserManagementReqDto){
 
+		Long projectId = adminUserManagementReqDto.getProjectId();
+		int regionCode = adminUserManagementReqDto.getRegionCode();
+		
+		if(adminService.checkProjectValidation(projectId)) { // 존재하는 프로젝트일 경우
+			
+			List<AdminUserManagementResDto> list = adminService.getUserManagamentData(projectId, regionCode);
+			return ResponseEntity.ok(new CommonResponse<List<AdminUserManagementResDto>>(list));
+
+		}
+		
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+				.body(new ErrorResponse("존재하지 않는 프로젝트입니다"));
+		
+	}
+	
+	@ApiOperation(value = "Class Select Box 조회")
+	@PostMapping("/user/class")
+	public ResponseEntity<? extends BasicResponse> getClassCode(@RequestBody AdminManagementReqDto adminUserManagementReqDto){
+
+		Long projectId = adminUserManagementReqDto.getProjectId();
+		int regionCode = adminUserManagementReqDto.getRegionCode();
+		
+		if(adminService.checkProjectValidation(projectId)) { // 존재하는 프로젝트일 경우
+			
+			List<CodeResDto> list = adminService.getClassCode(projectId, regionCode);
+			return ResponseEntity.ok(new CommonResponse<List<CodeResDto>>(list));
+
+		}
+		
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+				.body(new ErrorResponse("존재하지 않는 프로젝트입니다"));
+		
+	}
 }
