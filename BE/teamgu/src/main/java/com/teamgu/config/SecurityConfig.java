@@ -85,7 +85,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/receive/chat/**",
                         "/stomp/**",
                         "/api/file/**",
-                        "/api/excel/**"
+                        "/api/excel/**",
+                        "/api/user/password/init"
                        )
                 .permitAll()
                 // 다른 모든 요청은 인증을 한다.

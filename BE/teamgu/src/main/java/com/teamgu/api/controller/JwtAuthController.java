@@ -84,8 +84,13 @@ public class JwtAuthController {
 
         Optional<User> opuser = userService.getUserByEmail(email);
         if (opuser.isPresent()) {
+
             User user = opuser.get();
-            if (passwordEncoder.matches(password, user.getPassword())) {
+
+            if (passwordEncoder.matches(password, user.getPassword())) { //기존 비밀번호로 로그인한 경우
+                return ResponseEntity.ok(userService.login(loginReq, user));
+            } else if(passwordEncoder.matches(password, user.getTempPassword())) { //발급받은 임시 비밀번호로 로그인한 경우
+                userService.modifyOriginPwd(user, user.getTempPassword());
                 return ResponseEntity.ok(userService.login(loginReq, user));
             }
         }

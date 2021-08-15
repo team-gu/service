@@ -29,7 +29,14 @@ public interface UserService {
 
     TokenResDto reissue(TokenReqDto tokenReq);
 
-    boolean setPassward(PasswordReqDto passwordReq);
+    //비밀번호 변경
+    boolean changePassword(PasswordReqDto passwordReq);
+
+    //임시 비밀번호 발급
+    short initPassword(String email);
+
+    //임시 비밀번호로 로그인시 원본 비번은 폐기, 임시 -> 원본 비밀번호로 변경
+    void modifyOriginPwd(User user, String tempPwd);
 
     // Email을 이용한 User Entity 조회
     Optional<User> getUserByEmail(String email);
