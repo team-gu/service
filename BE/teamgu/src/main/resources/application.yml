@@ -38,6 +38,18 @@ spring:
     multipart:
       maxFileSize: 30MB
       maxRequestSize: 30MB
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ssafy.teamgu@gmail.com
+    password: dyrxEw-sysqys-8cotfy
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
 jwt:
   issuer: teamgu
   secret: h2lsdmVybmluZS10ZWNoLXNwlmauZy1ib290LWp3dC10dXRvcmlhbC1zZWNyZXQtc2lsdmVybmluZS10ZWNoLXNwcmluZy1ib290LWp3dC10dXRvcmlhbC1zZWNyZXQK
