@@ -76,16 +76,21 @@ export default function TeamStatus(): ReactElement {
 
   useEffect(() => {
     // Fetch Filter content
-    getEachFiltersCodeList(studentNumber).then(({ data : { data }}) => {
+    getEachFiltersCodeList(studentNumber).then(({ data: { data } }) => {
       setFilterContents(data);
     });
 
     // Set Filter criteria
     setPayload({
-      project: projectCode,
+      project:
+        projectCodes?.length > 0 ? projectCodes[projectCodes.length - 1] : 101,
       studentNumber,
     });
 
+    const project =
+      projectCodes && projectCodes.length > 0
+        ? projectCodes[projectCodes.length - 1]
+        : 101;
     getUserHasTeam({
       userId,
       project: { code: projectCode },
