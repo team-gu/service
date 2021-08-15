@@ -28,9 +28,12 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
           router.push(path);
         } catch (e) {
           console.error(e);
+          setFlag(true);
+          router.push('/');
         }
       })();
-    } else {
+    }
+    if (!accessToken) {
       setFlag(true);
       router.push('/');
     }
