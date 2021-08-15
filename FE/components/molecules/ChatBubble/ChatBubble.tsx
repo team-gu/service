@@ -6,7 +6,7 @@ import {
   postTeamInviteAccept,
   postTeamInviteReject,
 } from '@repository/chatRepository';
-import { ProfileImage, ChatBubbleSelect } from '@molecules';
+import { ProfileImage, ChatBubbleSelect, ChatLoading } from '@molecules';
 import { Text } from '@atoms';
 
 interface ChatBubbleProps {
@@ -118,7 +118,7 @@ export default function ChatBubble({
                   fontSetting="n16m"
                   isLineBreak
                 />
-              ) : (
+              ) : opponentId !== 0 && id !== 0 && chatId !== 0 ? (
                 <ChatBubbleSelect
                   text="팀원초대 요청"
                   funcAccept={async () => {
@@ -141,6 +141,8 @@ export default function ChatBubble({
                   }}
                   isTeamInvite
                 />
+              ) : (
+                <ChatLoading />
               ),
               TEAM_INVITE_ACCEPTED: (
                 <Text
