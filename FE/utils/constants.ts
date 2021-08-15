@@ -100,7 +100,6 @@ export const ADMIN_DASHBOARD_TABLE_COLUMNS = [
   },
 ];
 
-
 export const REGIONS = [
   {
     name: '전국',
@@ -125,64 +124,5 @@ export const REGIONS = [
   {
     name: '부울경',
     code: 105,
-  },
-];
-
-export const TEAM_TABLE_COLUMNS = [
-  {
-    Header: '팀 식별자',
-    accessor: 'teamId',
-    disableGroupBy: true,
-  },
-  {
-    Header: '지역',
-    accessor: 'region',
-  },
-  {
-    Header: '팀 이름',
-    accessor: 'teamName',
-    disableGroupBy: true,
-  },
-  {
-    Header: '트랙',
-    accessor: 'track',
-  },
-  {
-    Header: '현재 인원',
-    accessor: 'memberCnt',
-  },
-  {
-    Header: '완료 여부',
-    accessor: 'completeYn',
-  },
-  {
-    Header: '팀장',
-    accessor: 'member1',
-    disableGroupBy: true,
-  },
-  {
-    Header: '팀원1',
-    accessor: 'member2',
-    disableGroupBy: true,
-  },
-  {
-    Header: '팀원2',
-    accessor: 'member3',
-    disableGroupBy: true,
-  },
-  {
-    Header: '팀원3',
-    accessor: 'member4',
-    disableGroupBy: true,
-  },
-  {
-    Header: '팀원4',
-    accessor: 'member5',
-    disableGroupBy: true,
-  },
-  {
-    Header: '팀원5',
-    accessor: 'member6',
-    disableGroupBy: true,
   },
 ];
