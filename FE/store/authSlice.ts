@@ -108,8 +108,10 @@ export const setUserInfo = () => async (dispatch: AppDispatch) => {
   }
 };
 
-export const setLogout = () => (dispatch: AppDispatch) => {
+export const setLogout = (router: NextRouter) => (dispatch: AppDispatch) => {
   dispatch(setUser(initialState));
   removeItem('accessToken');
   removeItem('refreshToken');
+
+  router.push('/');
 };

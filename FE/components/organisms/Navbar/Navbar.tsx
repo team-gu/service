@@ -167,7 +167,7 @@ export default function Navbar(): ReactElement {
               id: 2,
               title: '로그아웃',
               func: () => {
-                dispatch(setLogout());
+                dispatch(setLogout(router));
               },
               iconName: 'logout',
             },

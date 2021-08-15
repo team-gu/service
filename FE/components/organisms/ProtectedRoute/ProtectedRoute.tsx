@@ -16,6 +16,7 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
 
   useEffect(() => {
     const accessToken = loadItem('accessToken');
+
     if (accessToken && !user.name) {
       (async () => {
         try {
@@ -56,26 +57,6 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
       Router.events.off('routeChangeError', end);
     };
   }, []);
-
-  useEffect(() => {
-    const path = router.route;
-    const requireAuthPath = [
-      '/team',
-      '/humanpool',
-      '/userdetail',
-      `/userdetail/${/\d+/}`,
-      `/rtc/${/\d+/}`,
-      '/admin',
-    ];
-    const isNotLogIn = !user.id || user.id === 0;
-    const isRequireAuthPath = requireAuthPath.some((p) => path.startsWith(p));
-
-    if (isNotLogIn) {
-      if (isRequireAuthPath) {
-        router.push('/');
-      }
-    }
-  });
 
   if (user.name || flag) {
     return children;
