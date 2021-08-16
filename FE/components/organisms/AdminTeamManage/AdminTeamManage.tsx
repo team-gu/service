@@ -195,7 +195,11 @@ export default function AdminTeamManage({ project }: AdminTeamManageProps) {
           </RegionButtonWrapper>
         ))}
       </div>
-      <ReactTable data={teamData} columns={TEAM_TABLE_COLUMNS} />
+      <ReactTable
+        data={teamData}
+        columns={TEAM_TABLE_COLUMNS}
+        pagination={false}
+      />
       {showExportModal && (
         <AdminTeamExportModal
           handleClickClose={() => setShowExportModal(false)}
