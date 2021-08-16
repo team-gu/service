@@ -84,12 +84,12 @@ export const getChartData = async (param: any) => {
   });
 };
 
-export const getTableData = async (param: any) => {
-  console.log('getTableData');
+export const getProjectUserTableData = async (param: any) => {
+  console.log('getProjectUserTableData');
   console.log(param);
 
   return await api({
-    url: `/api/admin/dashboardtable/${param.projectId}`,
+    url: `/api/admin/project/${param.projectId}`,
     type: 'get',
   });
 };
