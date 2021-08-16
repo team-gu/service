@@ -18,27 +18,36 @@ const Wrapper = styled.div`
   width: calc(100% - 40px);
   padding: 20px;
 
-  min-height: 200px;
-
   .grid-container {
     display: grid;
-    grid-template-columns: 0.5fr 1.5fr;
+    grid-template-columns: 0.4fr 1.6fr;
     grid-template-rows: auto auto;
 
     .profiles-container {
       grid-column: 1 / 2;
       grid-row: 1 / 2;
-      margin-bottom: 20px;
 
       .profiles {
         padding: 0 15px 0 5px;
         .profile {
-          display: inline-block;
+          ${({ theme: { flexCol } }) => flexCol()}
           margin: 10px;
           text-align: center;
-          i {
+          .icon-container {
+            ${({ theme: { flexRow } }) => flexRow()}
             margin-top: 20px;
-            cursor: pointer;
+            padding: 5px;
+
+            i {
+              cursor: pointer;
+            }
+
+            i:not(:last-child) {
+              padding-right: 5px;
+            }
+
+            border: 3px solid lightgray;
+            border-radius: 20px;
           }
         }
       }
@@ -60,15 +69,13 @@ const Wrapper = styled.div`
           margin-bottom: 20px;
 
           .items-tags {
-            margin-top: 10px;
             > div {
               display: inline-block;
-              margin: 2px 5px;
+              margin: 2px 5px 2px 0px;
             }
           }
         }
       }
-      cursor: pointer;
     }
   }
 `;
@@ -109,21 +116,27 @@ export default function UserStatusCard({
             <div className="profile">
               <ProfileImage size={80} />
               <Text text={name} />
-              <Icon
-                iconName="call"
-                color="green"
-                func={() => handleSendRtcLink(id, opponentId)}
-              />
-              {currentUserIsLeader && (
-                <Icon iconName="person_add_alt" func={onClickInviteIcon} />
-              )}
+              <div className="icon-container">
+                <Icon
+                  iconName="call"
+                  color="green"
+                  func={() => handleSendRtcLink(id, opponentId)}
+                />
+
+                {currentUserIsLeader && (
+                  <Icon iconName="person_add_alt" func={onClickInviteIcon} />
+                )}
+                <Icon
+                  iconName="info_outline"
+                  func={() =>
+                    router.push({ pathname: `/userdetail/${opponentId}` })
+                  }
+                />
+              </div>
             </div>
           </div>
         </div>
-        <div
-          className="description-container"
-          onClick={() => router.push({ pathname: `/userdetail/${opponentId}` })}
-        >
+        <div className="description-container">
           <div className="item-container">
             <div className="items">
               <Text text="트랙" color="gray" />
