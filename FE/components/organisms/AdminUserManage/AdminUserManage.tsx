@@ -3,11 +3,13 @@ import styled from 'styled-components';
 
 import { Text, Icon } from '@atoms';
 import { ReactTable, Button } from '@molecules';
-import { AdminUserManageModal, AdminUserImportModal } from '@organisms';
 import { getUserTableData } from '@repository/adminRepository';
 import { REGIONS } from '@utils/constants';
 import { ModalWrapper } from '@organisms';
 import { Project } from '@utils/type';
+
+import AdminUserManageModal from './AdminUserManageModal';
+import AdminUserImportModal from './AdminUserImportModal';
 
 const Wrapper = styled.div`
   i {
@@ -106,6 +108,7 @@ const UserDeleteConfirmModal = styled.div`
 `;
 
 interface UserDataRow {
+  userId: number;
   completeYn: string | null;
   major: string;
   name: string;
@@ -116,6 +119,7 @@ interface UserDataRow {
   studentNumber: string;
   teamId: number | null;
   teamName: string | null;
+  email: string;
 }
 
 interface AdminUserManageProps {
@@ -261,6 +265,11 @@ const USER_TABLE_COLUMNS = [
   {
     Header: '이름',
     accessor: 'name',
+    disableGroupBy: true,
+  },
+  {
+    Header: '이메일',
+    accessor: 'email',
     disableGroupBy: true,
   },
   {

@@ -52,6 +52,7 @@ const Wrapper = styled.div`
 `;
 
 interface UserDataRow {
+  userid: number;
   completeYn: string | null;
   major: string;
   name: string;
@@ -62,6 +63,7 @@ interface UserDataRow {
   studentNumber: string;
   teamId: number | null;
   teamName: string | null;
+  email: string;
 }
 
 interface AdminUserManageProps {
