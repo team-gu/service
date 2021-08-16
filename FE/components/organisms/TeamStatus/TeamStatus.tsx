@@ -21,7 +21,7 @@ import { getTeamsFiltered, getUserHasTeam } from '@repository/teamRepository';
 const WrapFilter = styled.div`
   padding: 10px;
   margin: 10px;
-  box-shadow: 2px 4px 12px rgb(0 0 0 / 8%);
+  background-color: white;
   > div > div {
     width: 100%;
   }
@@ -267,7 +267,7 @@ export default function TeamStatus(): ReactElement {
           )}
       </div>
       <div className="team-status-list-container">
-        <div className="team-status-header">
+        <WrapFilter className="team-status-header">
           <UserSelectTeamAutoComplete
             handleChangeUserSelect={handleChangeUserSelect}
             clear={searchWhat === SERACH_BY_FILTER}
@@ -294,7 +294,7 @@ export default function TeamStatus(): ReactElement {
               />
             </div>
           )}
-        </div>
+        </WrapFilter>
 
         {userTeam && (
           <>

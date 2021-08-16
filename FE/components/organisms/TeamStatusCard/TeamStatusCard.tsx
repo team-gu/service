@@ -9,6 +9,7 @@ import { getImageURL } from '@utils/constants';
 const Wrapper = styled.div<{ isComplete: boolean }>`
   position: relative;
   border-radius: 18px;
+  background-color: white;
   box-shadow: 2px 4px 12px rgb(0 0 0 / 8%);
   transition: all 0.3s cubic-bezier(0, 0, 0.5, 1);
   :hover {

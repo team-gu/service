@@ -11,6 +11,9 @@ interface TitleProps {
 
 const Wrapper = styled.div`
   ${({ theme: { flexCol } }) => flexCol('flex-start', 'flex-start')}
+  div:first-child {
+    margin-bottom: 10px;
+  }
 `;
 
 export default function Title({

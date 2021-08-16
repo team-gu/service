@@ -9,13 +9,13 @@ import { Tag, ProfileImage } from '@molecules';
 const Wrapper = styled.div`
   position: relative;
   border-radius: 18px;
+  background-color: white;
   box-shadow: 2px 4px 12px rgb(0 0 0 / 8%);
   transition: all 0.3s cubic-bezier(0, 0, 0.5, 1);
   :hover {
     transform: scale(1.02);
   }
-  padding: 10px;
-  margin: 10px;
+  padding: 20px;
 
   min-height: 200px;
 
