@@ -157,7 +157,7 @@ export default function AdminUserManage({ project }: AdminUserManageProps) {
   };
 
   const handleDeleteConfirmCancel = () => {
-    setShowManageModal(false);
+    setShowDeleteModal(false);
     setEditTarget(undefined);
   };
 
@@ -165,7 +165,7 @@ export default function AdminUserManage({ project }: AdminUserManageProps) {
     // TODO: 사용자 삭제 API 호출 후 사용자 목록 리렌더링
     console.log(editTarget);
 
-    setShowManageModal(false);
+    setShowDeleteModal(false);
     setEditTarget(undefined);
   };
 
@@ -265,20 +265,12 @@ const USER_TABLE_COLUMNS = [
     accessor: 'major',
   },
   {
+    Header: '교육생/퇴소생',
+    accessor: 'role',
+  },
+  {
     Header: '프로젝트 활성/비활성',
     accessor: 'regist',
     disableGroupBy: true,
-  },
-  {
-    Header: '팀 완료 여부',
-    accessor: 'completeYn',
-  },
-  {
-    Header: '팀 이름',
-    accessor: 'teamName',
-  },
-  {
-    Header: '교육생/퇴소생',
-    accessor: 'role',
   },
 ];
