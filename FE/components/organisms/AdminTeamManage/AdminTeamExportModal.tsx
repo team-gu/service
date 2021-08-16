@@ -47,11 +47,13 @@ const Wrapper = styled.div`
 `;
 
 interface AdminTeamExportModalProps {
+  projectName: string;
   handleClickClose: () => void;
   handleClickDownload: () => void;
 }
 
 export default function AdminTeamExportModal({
+  projectName,
   handleClickClose,
   handleClickDownload,
 }: AdminTeamExportModalProps) {
@@ -66,7 +68,7 @@ export default function AdminTeamExportModal({
         </div>
         <div className="modal-description">
           <Text
-            text={`현재 프로젝트의 전체적인 팀 구성 정보를 엑셀로 다운로드받을 수 있습니다.`}
+            text={`[${projectName}]의 전체적인 팀 구성 정보를 엑셀로 다운로드받을 수 있습니다.`}
             isLineBreak
           />
         </div>

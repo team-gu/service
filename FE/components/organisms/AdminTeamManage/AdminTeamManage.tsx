@@ -202,6 +202,7 @@ export default function AdminTeamManage({ project }: AdminTeamManageProps) {
       />
       {showExportModal && (
         <AdminTeamExportModal
+          projectName={project.name ? project.name : '현재 프로젝트'}
           handleClickClose={() => setShowExportModal(false)}
           handleClickDownload={() => donwloadTeamExport()}
         />
