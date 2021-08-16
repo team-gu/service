@@ -134,11 +134,12 @@ export default function AdminUserManage({ project }: AdminUserManageProps) {
   const [editTarget, setEditTarget] = useState<UserDataRow>();
 
   useEffect(() => {
-    getUserTableData({ projectId: project.id, regionCode: selectedRegion }).then(
-      ({ data: { data } }) => {
-        setTeamStatusTableData(data);
-      },
-    );
+    getUserTableData({
+      projectId: project.id,
+      regionCode: selectedRegion,
+    }).then(({ data: { data } }) => {
+      setTeamStatusTableData(data);
+    });
   }, [project, selectedRegion]);
 
   const handleSelectedRow = (row: { type: string; data: UserDataRow }) => {
@@ -202,7 +203,13 @@ export default function AdminUserManage({ project }: AdminUserManageProps) {
       <ReactTable
         data={teamStatusTableData}
         columns={USER_TABLE_COLUMNS}
-        selectable={editable}
+        selectable={{
+          selectable: editable,
+          type: {
+            edit: true,
+            delete: true,
+          },
+        }}
         onSelectRow={handleSelectedRow}
       />
       {showManageModal &&
