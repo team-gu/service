@@ -240,13 +240,20 @@ function DefaultColumnFilter({
   );
 }
 
-const IndeterminateCheckbox = forwardRef(({ indeterminate, ...rest }, ref) => {
+const IndeterminateCheckbox = ({
+  onClickEdit,
+  onClickDelete,
+}: {
+  onClickEdit: () => void;
+  onClickDelete: () => void;
+}) => {
   return (
     <>
-      <Icon iconName="edit" {...rest} />
+      <Icon iconName="edit" color="green" func={onClickEdit} />
+      <Icon iconName="delete" color="crimson" func={onClickDelete} />
     </>
   );
-});
+};
 
 interface TableProps {
   columns: any[];
@@ -333,8 +340,15 @@ export default function ReactTable({
           {
             id: 'selection',
             Cell: ({ row }) => (
-              <div onClick={() => onSelectRow(row.original)}>
-                <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
+              <div>
+                <IndeterminateCheckbox
+                  onClickDelete={() =>
+                    onSelectRow({ type: 'delete', data: { ...row.original } })
+                  }
+                  onClickEdit={() =>
+                    onSelectRow({ type: 'edit', data: { ...row.original } })
+                  }
+                />
               </div>
             ),
           },
