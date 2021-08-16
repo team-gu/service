@@ -42,11 +42,11 @@ const Wrapper = styled.div`
 
     .sidebar-header-menu {
       flex: 1 0 auto;
-      padding: 40px 0;
+      padding: 30px 0;
 
       display: flex;
       flex-direction: column;
-      gap: 40px;
+      gap: 20px;
 
       background-color: white;
       border-bottom: solid 2px #3848a0;
