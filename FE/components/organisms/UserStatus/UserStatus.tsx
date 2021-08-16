@@ -382,9 +382,9 @@ export default function UserStatus(): ReactElement {
           <WrapFilter>일치하는 유저가 없습니다.</WrapFilter>
         ) : (
           <>
-            {users?.map((each: Users, index) => (
+            {users?.map((each: Users) => (
               <UserStatusCard
-                key={`status-card-${index}`}
+                key={`status-card-${each?.id}`}
                 user={each}
                 filterContents={filterContents}
                 id={id}
