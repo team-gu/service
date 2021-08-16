@@ -161,7 +161,7 @@ export default function UserStatus(): ReactElement {
             },
           } = await postByFilteredUsers(payload);
 
-          setUsers([...dataList]);
+          setUsers(dataList);
           setPageCount(totPageCnt);
         } catch ({
           response: {
@@ -247,12 +247,17 @@ export default function UserStatus(): ReactElement {
 
   const handleProjectChange = ({ value }: { value: number }) => {
     if (projectCodes?.includes(value)) {
-      setPayload({ ...payload, project: value, pageNum: 0, sort: 'asc' });
+      setPayload((prev) => ({
+        ...prev,
+        project: value,
+        pageNum: 0,
+        sort: 'asc',
+      }));
     }
   };
 
   const handleClickSort = (sort: string) => {
-    setPayload({ ...payload, sort, pageNum: 0 });
+    setPayload((prev) => ({ ...prev, sort, pageNum: 0 }));
   };
 
   const handleCloseInviteModal = () => {
@@ -279,7 +284,7 @@ export default function UserStatus(): ReactElement {
     handleSendInvitation(teamId, id, invitedUser.id);
 
     setShowInviteModal(false);
-    setPayload({ ...payload });
+    setPayload((prev) => ({ ...prev }));
   };
 
   return (
@@ -377,9 +382,9 @@ export default function UserStatus(): ReactElement {
           <WrapFilter>일치하는 유저가 없습니다.</WrapFilter>
         ) : (
           <>
-            {users?.map((each: Users) => (
+            {users?.map((each: Users, index) => (
               <UserStatusCard
-                key={`status-card-${each?.id}`}
+                key={`status-card-${index}`}
                 user={each}
                 filterContents={filterContents}
                 id={id}

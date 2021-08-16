@@ -66,7 +66,6 @@ export default function UserSelectAutoComplete({
           project,
         });
 
-        console.log(project, studentNumber, data);
         setInitValue(
           data?.reduce(
             (acc, cur) => [
