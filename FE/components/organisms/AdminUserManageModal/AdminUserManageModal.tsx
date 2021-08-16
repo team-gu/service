@@ -363,10 +363,10 @@ export default function AdminUserManageModal({
     getAdminClassOption({
       projectId,
       regionCode: 0,
-    }).then(({ data : { data }}) => {
+    }).then(({ data: { data } }) => {
       setStudentClassOptions(codesToOption(data));
     });
-  }
+  };
 
   const handleCreateStudentClassOption = (inputValue: string) => {
     setIsLoadingStudentClass(true);
@@ -374,7 +374,7 @@ export default function AdminUserManageModal({
     createAdminClassOption({
       className: inputValue,
       projectId,
-    }).then(({ data : { data }}) => {
+    }).then(({ data: { data } }) => {
       console.log(data);
       // TODO: 생성 결과 필요
       // setStudentClassOptions(리턴 결과)
@@ -395,17 +395,15 @@ export default function AdminUserManageModal({
   };
 
   const handleOptionDelete = (deletedValue: OptionTypeBase) => {
-    
     deleteAdminClassOption({
-      classId: deletedValue.code
-    }).then(({ data : { data }}) => {
+      classId: deletedValue.code,
+    }).then(({ data: { data } }) => {
       console.log(data);
       // TODO: 삭제 결과 필요
       // setCategoryOptions(codesToOption(리턴 결과));
       // TODO: 반 삭제 시 선택했던거 초기화
       // setCategory(null);
-    })
-    
+    });
   };
 
   const onChangeMajor = (
@@ -454,6 +452,11 @@ export default function AdminUserManageModal({
           </div>
         </div>
         <div className="modal-content">
+          {!defaultValue && (
+            <div style={{ margin: '20px 0'}}>
+              <Text text="프로젝트에 추가할 교육생의 학번을 입력해주세요." />
+            </div>
+          )}
           <div className="input-container">
             <Label text="학번">
               <Input
@@ -471,54 +474,56 @@ export default function AdminUserManageModal({
               />
             </Label>
           </div>
-          <div className="input-container">
-            <Label text="이름">
-              <Input
-                type="text"
-                width="100%"
-                height="40px"
-                ref={userNameInputRef}
-                refValue={
-                  defaultValue && defaultValue.name ? defaultValue.name : ''
-                }
-                placeHolder="예) 김싸피"
-                readOnly={!!defaultValue}
-              />
-            </Label>
-          </div>
-
-          {/* <div className="input-container">
-            <Label text="이메일">
-              <Input
-                type="email"
-                width="100%"
-                height="40px"
-                ref={userEmailInputRef}
-                refValue={
-                  defaultValue && defaultValue.email ? defaultValue.email : ''
-                }
-                placeHolder="예) example@ssafy.com"
-              />
-            </Label>
-          </div> */}
-          <div className="select-container">
-            <Label text="전공/비전공">
-              <Select
-                cacheOptions
-                defaultOptions
-                value={stringToOption(userMajor) || null}
-                options={MAJOR_OPTIONS}
-                onChange={onChangeMajor}
-                styles={customStyles}
-                defaultValue={
-                  defaultValue ? stringToOption(defaultValue.major) : null
-                }
-              />
-            </Label>
-          </div>
 
           {defaultValue && (
             <>
+              <div className="input-container">
+                <Label text="이름">
+                  <Input
+                    type="text"
+                    width="100%"
+                    height="40px"
+                    ref={userNameInputRef}
+                    refValue={
+                      defaultValue && defaultValue.name ? defaultValue.name : ''
+                    }
+                    placeHolder="예) 김싸피"
+                    readOnly={!!defaultValue}
+                  />
+                </Label>
+              </div>
+
+              <div className="input-container">
+                <Label text="이메일">
+                  <Input
+                    type="email"
+                    width="100%"
+                    height="40px"
+                    ref={userEmailInputRef}
+                    refValue={
+                      defaultValue && defaultValue.email
+                        ? defaultValue.email
+                        : ''
+                    }
+                    placeHolder="예) example@ssafy.com"
+                  />
+                </Label>
+              </div>
+              <div className="select-container">
+                <Label text="전공/비전공">
+                  <Select
+                    cacheOptions
+                    defaultOptions
+                    value={stringToOption(userMajor) || null}
+                    options={MAJOR_OPTIONS}
+                    onChange={onChangeMajor}
+                    styles={customStyles}
+                    defaultValue={
+                      defaultValue ? stringToOption(defaultValue.major) : null
+                    }
+                  />
+                </Label>
+              </div>
               <div className="select-container">
                 {studentClassOptions.length > 0 && (
                   <>
