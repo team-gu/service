@@ -493,7 +493,7 @@ export default function AdminUserManageModal({
                 </Label>
               </div>
 
-              <div className="input-container">
+              {/* <div className="input-container">
                 <Label text="이메일">
                   <Input
                     type="email"
@@ -508,7 +508,7 @@ export default function AdminUserManageModal({
                     placeHolder="예) example@ssafy.com"
                   />
                 </Label>
-              </div>
+              </div> */}
               <div className="select-container">
                 <Label text="전공/비전공">
                   <Select
