@@ -1,4 +1,4 @@
-import { ReactElement } from 'react';
+import { ReactElement, forwardRef } from 'react';
 import styled from 'styled-components';
 import { useRouter } from 'next/router';
 
@@ -6,7 +6,7 @@ import {
   postTeamInviteAccept,
   postTeamInviteReject,
 } from '@repository/chatRepository';
-import { ProfileImage, ChatBubbleSelect } from '@molecules';
+import { ProfileImage, ChatBubbleSelect, ChatLoading } from '@molecules';
 import { Text } from '@atoms';
 
 interface ChatBubbleProps {
@@ -15,7 +15,7 @@ interface ChatBubbleProps {
   // TODO: 추후 타입 정의
   time: string | any;
   message: string;
-  handleGetChatRoomMessages: any;
+  handleGetChatRoomMessages?: any;
   isMe?: boolean;
   // TODO: 추후 타입 정의
   func?: any;
@@ -78,109 +78,118 @@ const Wrapper = styled.div<{ isMe: boolean }>`
   }
 `;
 
-export default function ChatBubble({
-  profileSrc,
-  userName = '',
-  time,
-  message,
-  handleGetChatRoomMessages,
-  isMe = false,
-  // func,
-  type = 'NORMAL',
-  roomId = 0,
-  opponentId = 0,
-  chatId = 0,
-  teamId = 0,
-  id = 0,
-}: ChatBubbleProps): ReactElement {
-  const router = useRouter();
+const ChatBubble = forwardRef<HTMLInputElement, ChatBubbleProps>(
+  (
+    {
+      profileSrc,
+      userName = '',
+      time,
+      message = '',
+      handleGetChatRoomMessages,
+      isMe = false,
+      // func,
+      type = 'NORMAL',
+      roomId = 0,
+      opponentId = 0,
+      chatId = 0,
+      teamId = 0,
+      id = 0,
+    }: ChatBubbleProps,
+    ref,
+  ): ReactElement => {
+    const router = useRouter();
 
-  return (
-    <Wrapper isMe={isMe}>
-      {!isMe && <ProfileImage src={profileSrc} />}
-      <div className="chat">
-        <div className="chat-info">
-          {!isMe && <Text text={userName} fontSetting="n14b" />}
-          <Text text={time} fontSetting="n10m" />
+    return (
+      <Wrapper isMe={isMe} ref={ref}>
+        {!isMe && <ProfileImage src={profileSrc} />}
+        <div className="chat">
+          <div className="chat-info">
+            {!isMe && <Text text={userName} fontSetting="n14b" />}
+            <Text text={time} fontSetting="n10m" />
+          </div>
+          <div className="chat-message">
+            {type !== null && type !== 'NORMAL' ? (
+              {
+                RTC_INVITE: (
+                  <ChatBubbleSelect
+                    text="화상전화 요청"
+                    funcAccept={() => router.push(`rtc/${roomId}`)}
+                  />
+                ),
+                TEAM_INVITE_WAITING: isMe ? (
+                  <Text
+                    text={'상대방이 팀원 초대를 기다리고 있습니다.'}
+                    fontSetting="n16m"
+                    isLineBreak
+                  />
+                ) : opponentId !== 0 && id !== 0 && chatId !== 0 ? (
+                  <ChatBubbleSelect
+                    text="팀원초대 요청"
+                    funcAccept={async () => {
+                      await postTeamInviteAccept({
+                        invitee_id: id,
+                        leader_id: opponentId,
+                        message_id: chatId,
+                        team_id: teamId,
+                      });
+                      handleGetChatRoomMessages();
+                    }}
+                    funcDecline={async () => {
+                      await postTeamInviteReject({
+                        invitee_id: id,
+                        leader_id: opponentId,
+                        message_id: chatId,
+                        team_id: teamId,
+                      });
+                      handleGetChatRoomMessages();
+                    }}
+                    isTeamInvite
+                  />
+                ) : (
+                  <ChatLoading />
+                ),
+                TEAM_INVITE_ACCEPTED: (
+                  <Text
+                    text={
+                      isMe
+                        ? '상대방이 팀원 초대를 수락했습니다.'
+                        : '팀 초대를 수락했습니다'
+                    }
+                    fontSetting="n16m"
+                    isLineBreak
+                  />
+                ),
+                TEAM_INVITE_REJECTED: (
+                  <Text
+                    text={
+                      isMe
+                        ? '상대방이 팀원 초대를 거절했습니다'
+                        : '팀 초대를 거절했습니다'
+                    }
+                    fontSetting="n16m"
+                    isLineBreak
+                  />
+                ),
+                TEAM_INVITE_EXPIRED: (
+                  <Text
+                    text={
+                      isMe
+                        ? '시간이 만료되었습니다. 다시 초대해주세요.'
+                        : '시간이 만료되었습니다.'
+                    }
+                    fontSetting="n16m"
+                    isLineBreak
+                  />
+                ),
+              }[type]
+            ) : (
+              <Text text={message} fontSetting="n12m" isLineBreak />
+            )}
+          </div>
         </div>
-        <div className="chat-message">
-          {type !== null && type !== 'NORMAL' ? (
-            {
-              RTC_INVITE: (
-                <ChatBubbleSelect
-                  text="화상전화 요청"
-                  funcAccept={() => router.push(`rtc/${roomId}`)}
-                />
-              ),
-              TEAM_INVITE_WAITING: isMe ? (
-                <Text
-                  text={'상대방이 팀원 초대를 기다리고 있습니다.'}
-                  fontSetting="n16m"
-                  isLineBreak
-                />
-              ) : (
-                <ChatBubbleSelect
-                  text="팀원초대 요청"
-                  funcAccept={async () => {
-                    await postTeamInviteAccept({
-                      invitee_id: id,
-                      leader_id: opponentId,
-                      message_id: chatId,
-                      team_id: teamId,
-                    });
-                    handleGetChatRoomMessages();
-                  }}
-                  funcDecline={async () => {
-                    await postTeamInviteReject({
-                      invitee_id: id,
-                      leader_id: opponentId,
-                      message_id: chatId,
-                      team_id: teamId,
-                    });
-                    handleGetChatRoomMessages();
-                  }}
-                  isTeamInvite
-                />
-              ),
-              TEAM_INVITE_ACCEPTED: (
-                <Text
-                  text={
-                    isMe
-                      ? '상대방이 팀원 초대를 수락했습니다.'
-                      : '팀 초대를 수락했습니다'
-                  }
-                  fontSetting="n16m"
-                  isLineBreak
-                />
-              ),
-              TEAM_INVITE_REJECTED: (
-                <Text
-                  text={
-                    isMe
-                      ? '상대방이 팀원 초대를 거절했습니다'
-                      : '팀 초대를 거절했습니다'
-                  }
-                  fontSetting="n16m"
-                  isLineBreak
-                />
-              ),
-              TEAM_INVITE_EXPIRED: (
-                <Text
-                  text={
-                    isMe
-                      ? '시간이 만료되었습니다. 다시 초대해주세요.'
-                      : '시간이 만료되었습니다.'
-                  }
-                  fontSetting="n16m"
-                  isLineBreak
-                />
-              ),
-            }[type]
-          ) : (
-            <Text text={message} fontSetting="n12m" isLineBreak />
-          )}
-        </div>
-      </div>
-    </Wrapper>
-  );
-}
+      </Wrapper>
+    );
+  },
+);
+
+export default ChatBubble;

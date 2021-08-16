@@ -5,7 +5,7 @@ import { Session } from 'openvidu-browser';
 
 import { ChatInput, ChatBubble } from '@molecules';
 
-import { postExitRoom, getRoomUserList } from '@repository/chatRepository';
+import { postExitRoom } from '@repository/chatRepository';
 import { Chat, ChatNormal } from '@types/chat-type';
 import { useAuthState } from '@store';
 
@@ -20,6 +20,7 @@ interface ChatRoomProps {
   handleClickSend: (msg: string) => Promise<void>;
   roomId?: number;
   opponentId?: number;
+  unreadMessageCount?: number;
 }
 
 const Wrapper = styled.div<{ disabled: boolean }>`
@@ -54,17 +55,24 @@ export default function ChatRoom({
   handleClickSend,
   roomId,
   opponentId,
+  unreadMessageCount = 0,
 }: ChatRoomProps): ReactElement {
   const {
     user: { id },
   } = useAuthState();
 
   const chatBoxRef: any = useRef<HTMLInputElement>(null);
+  const [unreadPosition, setUnreadPosition]: any = useState<HTMLInputElement>();
 
   const handleScrollToEnd = () => {
     chatBoxRef.current.scrollTo({
       top: chatBoxRef.current.scrollHeight - chatBoxRef.current.clientHeight,
-      left: 0,
+    });
+  };
+
+  const handleScrollToUnread = () => {
+    chatBoxRef.current.scrollTo({
+      top: unreadPosition.offsetTop,
     });
   };
 
@@ -79,12 +87,16 @@ export default function ChatRoom({
   };
 
   useEffect(() => {
+    if (unreadPosition) {
+      handleScrollToUnread();
+    }
+  }, [unreadPosition]);
+
+  useEffect(() => {
     return () => handleUnmount();
   }, [roomId]);
 
   useEffect(() => {
-    handleScrollToEnd();
-
     const interval = setInterval(() => {
       setMessageList([...messageList]);
     }, 60000);
@@ -127,47 +139,51 @@ export default function ChatRoom({
                 />
               ),
             )
-          : messageList
-              .slice(-30)
-              ?.map(
-                (
-                  {
-                    create_date_time,
-                    message,
-                    sender_id,
-                    sender_name,
-                    type,
-                    chat_id,
-                    team_id,
-                  }: ChatNormal,
-                  index: number,
-                ) => (
-                  <ChatBubble
-                    key={index}
-                    userName={sender_name}
-                    profileSrc="/profile.png"
-                    time={
-                      DateTime.now()
-                        .diff(DateTime.fromISO(create_date_time))
-                        .toMillis() < 60000
-                        ? '지금 막'
-                        : DateTime.fromISO(create_date_time)
-                            .setLocale('ko')
-                            .toRelative()
-                    }
-                    message={message}
-                    handleGetChatRoomMessages={handleGetChatRoomMessages}
-                    isMe={sender_id === id}
-                    func={sendMessage}
-                    type={type}
-                    roomId={roomId}
-                    opponentId={opponentId}
-                    chatId={chat_id}
-                    teamId={team_id}
-                    id={id}
-                  />
-                ),
-              )}
+          : messageList?.map(
+              (
+                {
+                  create_date_time,
+                  message,
+                  sender_id,
+                  sender_name,
+                  type,
+                  chat_id,
+                  team_id,
+                }: ChatNormal,
+                index: number,
+              ) => (
+                <ChatBubble
+                  key={index}
+                  userName={sender_name}
+                  profileSrc="/profile.png"
+                  time={
+                    DateTime.now()
+                      .diff(DateTime.fromISO(create_date_time))
+                      .toMillis() < 60000
+                      ? '지금 막'
+                      : DateTime.fromISO(create_date_time)
+                          .setLocale('ko')
+                          .toRelative()
+                  }
+                  message={message}
+                  handleGetChatRoomMessages={handleGetChatRoomMessages}
+                  isMe={sender_id === id}
+                  func={sendMessage}
+                  type={type}
+                  roomId={roomId}
+                  opponentId={opponentId}
+                  chatId={chat_id}
+                  teamId={team_id}
+                  id={id}
+                  ref={
+                    index === messageList.length - unreadMessageCount - 1
+                      ? setUnreadPosition
+                      : null
+                  }
+                  handleScrollToUnread={handleScrollToUnread}
+                />
+              ),
+            )}
       </div>
       <div className="chat-input">
         <ChatInput func={sendMessage} />
