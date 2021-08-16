@@ -6,7 +6,7 @@ import { ModalWrapper } from '@organisms';
 
 const Wrapper = styled.div`
   position: relative;
-  width: 500px;
+  width: 300px;
   padding: 30px;
 
   .modal-header {
@@ -84,7 +84,7 @@ export default function AdminUserImportModal({
     <ModalWrapper modalName="adminUserImportModal">
       <Wrapper>
         <div className="modal-header">
-          <Text text="교육생 정보 가져오기 (import)" fontSetting="n26b" />
+          <Text text="교육생 정보 가져오기 (import)" fontSetting="n26b" isLineBreak />
           <div className="close-btn">
             <Icon iconName="close" func={handleClickClose} />
           </div>

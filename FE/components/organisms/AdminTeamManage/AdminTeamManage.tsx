@@ -5,9 +5,10 @@ import { Text } from '@atoms';
 import { Button, ReactTable } from '@molecules';
 import { getTeamTableData, exportTeamData } from '@repository/adminRepository';
 import { REGIONS } from '@utils/constants';
-import { AdminTeamExportModal } from '@organisms';
 import { Project } from '@utils/type';
 import { setLoading, useAppDispatch } from '@store';
+
+import AdminTeamExportModal from './AdminTeamExportModal';
 
 const Wrapper = styled.div`
   .manage-header {

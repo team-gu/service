@@ -3,13 +3,13 @@ import styled from 'styled-components';
 
 import { Text, Icon } from '@atoms';
 import { ReactTable, Button } from '@molecules';
-import { AdminUserManageModal, AdminUserImportModal } from '@organisms';
 import { getProjectUserTableData } from '@repository/adminRepository';
-import { ModalWrapper } from '@organisms';
 import { Project } from '@utils/type';
 
 import AdminProjectUserDeleteModal from './AdminProjectUserDeleteModal';
 import AdminProjectUserAddModal from './AdminProjectUserAddModal';
+import AdminUserImportModal from './AdminUserImportModal';
+import AdminUserExportModal from './AdminUserExportModal';
 
 const Wrapper = styled.div`
   i {
@@ -35,8 +35,9 @@ const Wrapper = styled.div`
 
     .manage-header-import {
       > button {
-        padding: 0 10px;
+        padding: 0 15px;
         box-shadow: none;
+        margin-left: 10px;
       }
     }
   }
@@ -71,6 +72,7 @@ export default function AdminProjectUserManage({
   );
   const [showAddModal, setShowAddModal] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
+  const [showExportModal, setShowExportModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [editable, setEditable] = useState(false);
   const [editTarget, setEditTarget] = useState<UserDataRow>();
@@ -116,6 +118,11 @@ export default function AdminProjectUserManage({
     closeAddModal();
   };
 
+  const downloadUserExport = () => {
+    // TODO: 사용자 export 결과 다운로드 API 호출
+    console.log("DOWNLOAD USER EXPORT");
+  }
+
   return (
     <Wrapper>
       <div className="manage-header">
@@ -134,6 +141,11 @@ export default function AdminProjectUserManage({
             func={() => setShowImportModal(true)}
             width="auto"
           />
+          <Button
+            title="export"
+            func={() => setShowExportModal(true)}
+            width="auto"
+          />
         </div>
       </div>
       <ReactTable
@@ -150,6 +162,14 @@ export default function AdminProjectUserManage({
       {showImportModal && (
         <AdminUserImportModal
           handleClickClose={() => setShowImportModal(false)}
+        />
+      )}
+
+      {showExportModal && (
+        <AdminUserExportModal
+          projectName={project.name}
+          handleClickClose={() => setShowExportModal(false)}
+          handleClickDownload={downloadUserExport}
         />
       )}
 
