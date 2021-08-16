@@ -3,10 +3,11 @@ import styled from 'styled-components';
 
 import { Text } from '@atoms';
 import { Button, ReactTable } from '@molecules';
-import { getTeamTableData } from '@repository/adminRepository';
+import { getTeamTableData, exportTeamData } from '@repository/adminRepository';
 import { REGIONS } from '@utils/constants';
 import { AdminTeamExportModal } from '@organisms';
 import { Project } from '@utils/type';
+import { setLoading, useAppDispatch } from '@store';
 
 const Wrapper = styled.div`
   .manage-header {
@@ -126,9 +127,46 @@ export default function AdminTeamManage({ project }: AdminTeamManageProps) {
     });
   }, [project, selectedRegion]);
 
+  const dispatch = useAppDispatch();
+
+  const base64ToArrayBuffer = (base64: string) => {
+    const binaryString = window.atob(base64);
+    const binaryLen = binaryString.length;
+    const bytes = new Uint8Array(binaryLen);
+    for (let i = 0; i < binaryLen; i++) {
+      const ascii = binaryString.charCodeAt(i);
+      bytes[i] = ascii;
+    }
+    return bytes;
+  };
+
   const donwloadTeamExport = () => {
-    // TODO: export 다운로드
-    console.log('DOWNLOAD');
+    dispatch(setLoading({ isLoading: true }));
+
+    console.log(project);
+
+    exportTeamData({
+      project_code: project.project.code,
+      stage_code: project.stage.code,
+    })
+      .then(({ data: { data } }) => {
+        console.log(data);
+        const arrayBuffer = base64ToArrayBuffer(data);
+        const a = window.document.createElement('a');
+
+        a.href = window.URL.createObjectURL(
+          new Blob([arrayBuffer], { type: 'application/vnd.ms-excel' }),
+        );
+        a.download = 'export.xlsx';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        setShowExportModal(false);
+      })
+      .finally(() => {
+        dispatch(setLoading({ isLoading: false }));
+      });
   };
 
   return (

@@ -170,3 +170,14 @@ export const deleteAdminClassOption = async (param: any) => {
     param,
   });
 };
+
+export const exportTeamData = async (param: any) => {
+  console.log('exportTeamData');
+  console.log(param);
+
+  return await api({
+    url: `/api/excel/export`,
+    type: 'post',
+    param,
+  });
+}

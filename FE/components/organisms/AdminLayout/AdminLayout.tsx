@@ -28,7 +28,8 @@ const Wrapper = styled.div`
   }
 `;
 
-const DEFAULT_SELECTED_MENU = ADMIN_MENU_CONTENT.find(({title}) => title === '대시보드')?.id || 0;
+const DEFAULT_SELECTED_MENU =
+  ADMIN_MENU_CONTENT.find(({ title }) => title === '대시보드')?.id || 0;
 
 export default function AdminLayout(): ReactElement {
   const [selectedMenu, setSelectedMenu] = useState(DEFAULT_SELECTED_MENU);
