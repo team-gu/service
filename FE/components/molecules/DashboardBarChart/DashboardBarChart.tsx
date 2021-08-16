@@ -32,7 +32,9 @@ export default function DashBoardBarChart({
   legend = true,
 }: DashBoardBarChartProps) {
   // TODO: 애니메이션이 mount 될 때만 발생 -> 이후에 data 바뀌어도 애니메이션 없음.
-  const chartData = useMemo(() => data.slice(), [data]);
+  // const chartData = useMemo(() => data.slice(), [data]);
+  // 이렇게 하면 애니메이션은 나타나지만, 프로젝트를 바꿔도 반영되지 않음.
+  const chartData = useMemo(() => data.slice(), []);
 
   return (
     <>
