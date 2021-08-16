@@ -89,8 +89,8 @@ export default function AdminMenuSidebarLeft({
   defaultSelectedMenu,
 }: AdminMenuSidebarLeftProps): ReactElement {
 
-  const projectOptions = projects.map(({ id, name }) => {
-    return { id, name, value: id, label: name };
+  const projectOptions = projects.map((project) => {
+    return { ...project, value: project.id, label: project.name };
   });
 
   const [selectedMenu, setSelectedMenu] = useState(defaultSelectedMenu);
