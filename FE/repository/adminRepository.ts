@@ -1,5 +1,7 @@
 import api from '@context/serverContext';
 
+/////////////// 프로젝트 관리
+
 export const getAdminProject = async () => {
   console.log('getAdminProject');
 
@@ -74,6 +76,10 @@ export const deleteAdminProjectOption = async (param: any) => {
   });
 };
 
+/////////////// 프로젝트 관리
+
+/////////////// 대시보드
+
 export const getChartData = async (param: any) => {
   console.log('getChartData');
   console.log(param);
@@ -94,6 +100,10 @@ export const getProjectUserTableData = async (param: any) => {
   });
 };
 
+/////////////// 대시보드
+
+/////////////// 팀 관리
+
 export const getTeamTableData = async (param: any) => {
   console.log('getTeamTableData');
   console.log(param);
@@ -104,6 +114,48 @@ export const getTeamTableData = async (param: any) => {
     param,
   })
 }
+
+export const exportTeamData = async (param: any) => {
+  console.log('exportTeamData');
+  console.log(param);
+
+  return await api({
+    url: `/api/excel/export`,
+    type: 'post',
+    param,
+  });
+};
+
+
+/////////////// 팀 관리
+
+/////////////// 교육생 관리
+
+export const addStudentToProject = async (param: any) => {
+  console.log('addStudentToProject');
+  console.log(param);
+
+  return await api({
+    url: `/api/admin/project/add`,
+    type: 'post',
+    param,
+  });
+};
+
+export const excludeStudentFromProject = async (param: any) => {
+  console.log('excludeStudentFromProject');
+  console.log(param);
+
+  return await api({
+    url: `​/api​/admin​/project​/exclude`,
+    type: 'post',
+    param,
+  });
+};
+
+/////////////// 교육생 관리
+
+/////////////// 전체 교육생 관리
 
 export const getUserTableData = async (param: any) => {
   console.log('getUserTableData');
@@ -116,34 +168,12 @@ export const getUserTableData = async (param: any) => {
   });
 };
 
-export const uploadExcelFile = async (param: any) => {
-  console.log('uploadExcelFile');
-  console.log(param);
-
-  return await api({
-    url: `/api/excel/read`,
-    type: 'post',
-    param,
-  });
-};
-
 export const getAdminClassOption = async (param: any) => {
   console.log('getAdminClassOption');
   console.log(param);
 
   return await api({
     url: `/api/admin/user/class`,
-    type: 'post',
-    param,
-  });
-};
-
-export const registUsers = async (param: any) => {
-  console.log('registUsers');
-  console.log(param);
-
-  return await api({
-    url: `/api/auth/regist/users`,
     type: 'post',
     param,
   });
@@ -171,13 +201,13 @@ export const deleteAdminClassOption = async (param: any) => {
   });
 };
 
-export const exportTeamData = async (param: any) => {
-  console.log('exportTeamData');
+export const signupUsersByExcel = async (param: any) => {
+  console.log('signupUsersByExcel');
   console.log(param);
 
   return await api({
-    url: `/api/excel/export`,
+    url: `/api/excel/user/insert`,
     type: 'post',
     param,
   });
-}
+};
