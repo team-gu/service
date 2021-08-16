@@ -36,6 +36,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.teamgu.api.dto.UserRegistDto;
 import com.teamgu.api.dto.req.TeamWithUserToExcelReqDto;
+import com.teamgu.api.dto.req.UserProjectExcelReqDto;
 import com.teamgu.api.dto.res.BaseResDto;
 import com.teamgu.api.dto.res.BasicResponse;
 import com.teamgu.api.dto.res.CommonResponse;
@@ -43,6 +44,7 @@ import com.teamgu.api.dto.res.ErrorResponse;
 import com.teamgu.api.dto.res.HorizontalByTeamResDto;
 import com.teamgu.api.dto.res.UserInfoByTeam;
 import com.teamgu.api.dto.res.VerticalByUserResDto;
+import com.teamgu.api.service.AdminServiceImpl;
 import com.teamgu.api.service.ExcelServiceImpl;
 import com.teamgu.api.service.TeamServiceImpl;
 import com.teamgu.api.service.UserServiceImpl;
@@ -69,6 +71,9 @@ public class ExcelController {
 	
 	@Autowired
 	ExcelServiceImpl excelService;
+	
+	@Autowired
+	AdminServiceImpl adminService;
 	
 	@PostMapping("/user/insert")
 	@ApiOperation(value="엑셀 파일을 삽입하여 삽입된 유저의 목록을 회원 가입시킨다")
@@ -204,5 +209,75 @@ public class ExcelController {
 		}
 		return ResponseEntity.noContent().build();
 	}
+	
+	@PostMapping("/userproject/insert")
+	@ApiOperation(value="엑셀 파일을 삽입하여 삽입된 유저의 목록을 특정 프로젝트에 추가한다")
+	@ApiResponses({
+		@ApiResponse(code = 200, message = "파일을 읽고 Dto화 성공. 그리고 유저 추가 성공"),
+		@ApiResponse(code = 400, message = "잘못된 파일 형식 또는 잘못된 데이터 또는 유저의 추가 실패"),
+		@ApiResponse(code = 500, message = "이미 프로젝트에 존재하는 유저의 목록(실패한 유저의 이메일)을 반환한다")
+	})
+	public ResponseEntity<? extends BasicResponse> excelToUsersProject(@RequestBody UserProjectExcelReqDto userProjectExcelReqDto){
+		Long project_id = userProjectExcelReqDto.getProject_id();
+		MultipartFile file = userProjectExcelReqDto.getFile();
 		
+		String extension = FilenameUtils.getExtension(file.getOriginalFilename());
+		
+		//엑셀 파일 형식이 아닌 경우 에러
+		if(!extension.equals("xlsx") && !extension.equals("xls")) {
+			log.error("엑셀 파일 형식이 아닙니다");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					.body(new ErrorResponse("엑셀 파일 형식이 아닙니다."));
+		}
+		Workbook workbook = null;
+		try {
+			if(extension.equals("xlsx")) 
+				workbook = new XSSFWorkbook(file.getInputStream());
+			else
+				workbook = new HSSFWorkbook(file.getInputStream());
+		}
+		catch(Exception e) {
+			log.error("엑셀 파일 로딩 실패");
+			e.printStackTrace();
+		}
+		
+		Sheet worksheet = workbook.getSheetAt(0);
+		
+		//1. 이메일로 userId를 가져온다
+		List<Long> userids = new ArrayList<Long>();
+		List<String> emails = new ArrayList<String>();
+		//첫 행은 컬럼명이므로 제외
+		for(int i = 1; i<worksheet.getPhysicalNumberOfRows();i++) {
+			Row row = worksheet.getRow(i);
+			String email;
+			try {
+				email = row.getCell(0).getStringCellValue();
+				emails.add(email);
+			}catch(Exception e) {
+				//잘못된 데이터가 있다면 에러 반환
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+						.body(new ErrorResponse(i+"번째 행 데이터가 잘못되었습니다."));
+			}	
+		}
+		
+		// get userid by email
+		for(int i = 0;i<emails.size();i++) {			
+			User user = userService.getUserByEmail(emails.get(i)).get();
+			userids.add(user.getId());
+		}
+		
+		List<String> errorEmails = new ArrayList<String>();//에러 발생한 이메일
+		for(int i = 0;i<userids.size();i++) {
+			if(adminService.checkUserProjectDetail(userids.get(i), project_id)) { // User가 이 프로젝트에 존재하지 않으면
+				adminService.addStudentToProject(userids.get(i), project_id);	
+			}else {
+				errorEmails.add(emails.get(i));
+			}
+		}
+		
+        if (errorEmails.size()==0)
+            return ResponseEntity.ok(new CommonResponse<String>("모든 유저 등록 성공"));
+        else
+            return ResponseEntity.status(500).body(new CommonResponse<List<String>>(errorEmails));
+	}
 }
