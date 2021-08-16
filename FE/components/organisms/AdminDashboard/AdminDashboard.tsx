@@ -122,7 +122,7 @@ const Wrapper = styled.div`
 `;
 
 const TableWrapper = styled.div`
-  margin-top: 30px;  
+  margin-top: 30px;
 `;
 
 interface AdminDashboardProps {
