@@ -2,20 +2,31 @@ package com.teamgu.api.service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Comparator;
 import java.util.List;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.teamgu.api.dto.req.TeamWithUserToExcelReqDto;
+import com.teamgu.api.dto.res.ErrorResponse;
 import com.teamgu.api.dto.res.HorizontalByTeamResDto;
 import com.teamgu.api.dto.res.UserInfoByTeam;
 import com.teamgu.api.dto.res.VerticalByUserResDto;
+import com.teamgu.database.entity.User;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -38,6 +49,12 @@ public class ExcelServiceImpl implements ExcelService{
 		
 		//시트 열 너비 설정
 //				sheet.setColumnWidth(columnIndex, width);
+
+		sheet.trackAllColumnsForAutoSizing();
+		for(int i = 0; i<=6;i++) {
+			sheet.autoSizeColumn(i);
+			sheet.setColumnWidth(i, (sheet.getColumnWidth(i))+(short)1024);
+		}
 		
 		//헤더 행 생성
 		Row headerRow = sheet.createRow(0);
@@ -120,6 +137,12 @@ public class ExcelServiceImpl implements ExcelService{
 		
 		//시트 열 너비 설정
 //						sheet.setColumnWidth(columnIndex, width);
+		
+		sheet.trackAllColumnsForAutoSizing();
+		for(int i = 0; i<=6;i++) {
+			sheet.autoSizeColumn(i);
+			sheet.setColumnWidth(i, (sheet.getColumnWidth(i))+(short)1024);
+		}
 		
 		//헤더 행 생성
 		Row headerRow = sheet.createRow(0);
