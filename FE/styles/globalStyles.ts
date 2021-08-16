@@ -1110,5 +1110,10 @@ export default createGlobalStyle`
 
     body {
         font-family: 'Noto Sans KR';
+        background-color: ${({
+          theme: {
+            colors: { backgroundGray },
+          },
+        }) => backgroundGray};
     }
 `;
