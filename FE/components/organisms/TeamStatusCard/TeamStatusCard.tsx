@@ -26,11 +26,15 @@ const Wrapper = styled.div<{ isComplete: boolean }>`
     height: 100%;
     background-color: gray;
     opacity: 0.5;
+    border-radius: 18px;
   }
 
   ${({ isComplete }) =>
     isComplete &&
     `
+    :hover {
+      transform: none;
+    }
     .completed-team-overlay {
       display: block;
     }
