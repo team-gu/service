@@ -86,9 +86,9 @@ interface UserStatusCardProps {
   onClickInviteIcon?: () => void;
   currentUserIsLeader: boolean;
   handleSendRtcLink: (
-    teamId: number,
-    leaderId: number,
-    inviteeId?: number,
+    from: number,
+    target: number,
+    isRoom?: boolean,
   ) => Promise<void> | any;
 }
 
