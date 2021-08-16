@@ -6,7 +6,7 @@ import { ModalWrapper } from '@organisms';
 
 const Wrapper = styled.div`
   position: relative;
-  width: 350px;
+  width: 500px;
   padding: 30px;
 
   .modal-header {
@@ -66,8 +66,6 @@ interface AdminUserImportModalProps {
 export default function AdminUserImportModal({
   handleClickClose,
 }: AdminUserImportModalProps) {
-  const [beforeUploadData, setBeforeUploadData] = useState<any[]>([]);
-
   const onSelectFile: ChangeEventHandler<HTMLInputElement> = (event: {
     target: HTMLInputElement;
   }) => {
@@ -86,14 +84,14 @@ export default function AdminUserImportModal({
     <ModalWrapper modalName="adminUserImportModal">
       <Wrapper>
         <div className="modal-header">
-          <Text text="교육생 import" fontSetting="n26b" />
+          <Text text="교육생 정보 가져오기 (import)" fontSetting="n26b" />
           <div className="close-btn">
             <Icon iconName="close" func={handleClickClose} />
           </div>
         </div>
         <div className="modal-description">
           <Text
-            text="엑셀 파일(.xlsx, .xls)을 업로드하여 한 번에 교육생 정보를 입력할 수 있습니다. 해당 엑셀 파일은 [학번]에 대한 데이터를 담고 있어야합니다. "
+            text="엑셀 파일(.xlsx, .xls)을 업로드하여 한 번에 교육생 정보를 추가할 수 있습니다. 해당 엑셀 파일은 [학번]에 대한 데이터를 담고 있어야합니다. "
             isLineBreak
           />
         </div>

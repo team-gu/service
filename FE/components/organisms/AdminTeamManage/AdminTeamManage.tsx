@@ -5,10 +5,33 @@ import { Text } from '@atoms';
 import { Button, ReactTable } from '@molecules';
 import { getTeamTableData } from '@repository/adminRepository';
 import { REGIONS } from '@utils/constants';
+import { ModalWrapper } from '@organisms';
+import AdminTeamExportModal from '../AdminTeamExportModal';
 
 const Wrapper = styled.div`
   .manage-header {
+    display: flex;
+    align-items: center;
     margin: 20px 0;
+    justify-content: space-between;
+
+    > div {
+      display: inline-flex;
+      align-items: center;
+      > i {
+        font-size: 30px;
+      }
+      > div {
+        margin-right: 10px;
+      }
+    }
+
+    .manage-header-export {
+      > button {
+        padding: 0 10px;
+        box-shadow: none;
+      }
+    }
   }
 
   .region-btns {
@@ -68,6 +91,7 @@ interface AdminTeamManageProps {
 }
 
 export default function AdminTeamManage({ projectId }: AdminTeamManageProps) {
+  const [showExportModal, setShowExportModal] = useState(false);
   const [selectedRegion, setSelectedRegion] = useState(0);
   const [teamData, setTeamData] = useState<TeamDataRow[]>([]);
 
@@ -76,7 +100,6 @@ export default function AdminTeamManage({ projectId }: AdminTeamManageProps) {
       projectId,
       regionCode: selectedRegion,
     }).then(({ data: { data } }: { data: { data: TeamData[] } }) => {
-
       setTeamData(
         data.map((row) => {
           const leaderIdx = row.members
@@ -103,10 +126,25 @@ export default function AdminTeamManage({ projectId }: AdminTeamManageProps) {
     });
   }, [projectId, selectedRegion]);
 
+  const donwloadTeamExport = () => {
+    // TODO: export 다운로드
+    console.log('DOWNLOAD');
+  };
+
   return (
     <Wrapper>
       <div className="manage-header">
-        <Text text="팀 목록" fontSetting="n26b" />
+        <div>
+          <Text text="팀 목록" fontSetting="n26b" />
+        </div>
+
+        <div className="manage-header-export">
+          <Button
+            title="export"
+            func={() => setShowExportModal(true)}
+            width="auto"
+          />
+        </div>
       </div>
       <div className="region-btns">
         {REGIONS.map((r) => (
@@ -119,10 +157,15 @@ export default function AdminTeamManage({ projectId }: AdminTeamManageProps) {
         ))}
       </div>
       <ReactTable data={teamData} columns={TEAM_TABLE_COLUMNS} />
+      {showExportModal && (
+        <AdminTeamExportModal
+          handleClickClose={() => setShowExportModal(false)}
+          handleClickDownload={() => donwloadTeamExport()}
+        />
+      )}
     </Wrapper>
   );
 }
-
 
 const TEAM_TABLE_COLUMNS = [
   {
