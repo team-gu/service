@@ -21,10 +21,16 @@ interface FloatingButtonProps {
 
 const Wrapper = styled(motion.div)<{ isRtc: boolean }>`
   ${({ theme: { flexRow } }) => flexRow()}
+  background-color: ${({
+    theme: {
+      colors: { samsungLightBlue },
+    },
+  }) => samsungLightBlue};
 
   position: fixed;
   &,
   i {
+    color: white;
     cursor: pointer;
   }
   ${({ isRtc }) =>
@@ -52,11 +58,6 @@ const Wrapper = styled(motion.div)<{ isRtc: boolean }>`
     border-radius: 80px;
 
     box-shadow: 0 6px 12px 0 rgba(4, 4, 161, 0.1);
-    background-color: ${({
-      theme: {
-        colors: { samsungLightBlue },
-      },
-    }) => samsungLightBlue};
 
     :hover {
       opacity: 0.8;
