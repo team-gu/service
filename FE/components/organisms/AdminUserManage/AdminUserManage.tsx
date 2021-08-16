@@ -7,7 +7,7 @@ import { AdminUserManageModal, AdminUserImportModal } from '@organisms';
 import { getUserTableData } from '@repository/adminRepository';
 import { REGIONS } from '@utils/constants';
 import { ModalWrapper } from '@organisms';
-import { removeWindowResize } from '@hooks/useWindow';
+import { Project } from '@utils/type';
 
 const Wrapper = styled.div`
   i {
@@ -119,10 +119,10 @@ interface UserDataRow {
 }
 
 interface AdminUserManageProps {
-  projectId: number;
+  project: Project;
 }
 
-export default function AdminUserManage({ projectId }: AdminUserManageProps) {
+export default function AdminUserManage({ project }: AdminUserManageProps) {
   const [selectedRegion, setSelectedRegion] = useState(0);
   const [teamStatusTableData, setTeamStatusTableData] = useState<UserDataRow[]>(
     [],
@@ -134,12 +134,12 @@ export default function AdminUserManage({ projectId }: AdminUserManageProps) {
   const [editTarget, setEditTarget] = useState<UserDataRow>();
 
   useEffect(() => {
-    getUserTableData({ projectId, regionCode: selectedRegion }).then(
+    getUserTableData({ projectId: project.id, regionCode: selectedRegion }).then(
       ({ data: { data } }) => {
         setTeamStatusTableData(data);
       },
     );
-  }, [projectId, selectedRegion]);
+  }, [project, selectedRegion]);
 
   const handleSelectedRow = (row: { type: string; data: UserDataRow }) => {
     if (row.type === 'edit') {
@@ -210,12 +210,12 @@ export default function AdminUserManage({ projectId }: AdminUserManageProps) {
           <AdminUserManageModal
             handleClickClose={handleCloseEditModal}
             defaultValue={editTarget}
-            projectId={projectId}
+            projectId={project.id}
           />
         ) : (
           <AdminUserManageModal
             handleClickClose={() => setShowManageModal(false)}
-            projectId={projectId}
+            projectId={project.id}
           />
         ))}
 

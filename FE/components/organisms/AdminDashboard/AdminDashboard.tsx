@@ -6,6 +6,7 @@ import { Text } from '@atoms';
 import { ReactTable, DashboardBarChart } from '@molecules';
 import { getChartData, getTableData } from '@repository/adminRepository';
 import { ADMIN_DASHBOARD_TABLE_COLUMNS } from '@utils/constants';
+import { Project } from '@utils/type';
 
 const COLOR_MAP = {
   COMPLETE: '#32CD32',
@@ -123,7 +124,7 @@ const TableWrapper = styled.div`
 `;
 
 interface AdminDashboardProps {
-  projectId: number;
+  project: Project;
 }
 
 interface DashboardData {
@@ -137,15 +138,15 @@ interface DataItem {
 }
 
 export default function AdminDashboard({
-  projectId,
+  project,
 }: AdminDashboardProps): ReactElement {
   const [regionTeamData, setRegionTeamData] = useState<any[]>();
   const [trackTeamData, setTrackTeamData] = useState<any[]>([]);
   const [teamStatusTableData, setTeamStatusTableData] = useState<any[]>([]);
 
   useEffect(() => {
-    if (projectId) {
-      getChartData({ projectId }).then(({ data: { data } }) => {
+    if (project) {
+      getChartData({ projectId: project.id }).then(({ data: { data } }) => {
         const regionData = data.region
           .sort((a: DashboardData, b: DashboardData) =>
             a.title === '전국' ? -1 : 1,
@@ -168,11 +169,11 @@ export default function AdminDashboard({
         setTrackTeamData(trackData);
       });
 
-      getTableData({ projectId }).then(({ data: { data } }) => {
+      getTableData({ projectId: project.id }).then(({ data: { data } }) => {
         setTeamStatusTableData(data);
       });
     }
-  }, [projectId]);
+  }, [project]);
 
   const tableColumns = useMemo(() => {
     return ADMIN_DASHBOARD_TABLE_COLUMNS;

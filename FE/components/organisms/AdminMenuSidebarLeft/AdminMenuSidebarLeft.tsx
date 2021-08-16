@@ -77,7 +77,7 @@ const Wrapper = styled.div`
 
 interface AdminMenuSidebarLeftProps {
   onChangeMenu: (selectedMenu: number) => void;
-  onChangeProject: (selectedProjectId: number) => void;
+  onChangeProject: (selectedProject: Project) => void;
   projects: Project[];
   defaultSelectedMenu: number;
 }
@@ -124,7 +124,7 @@ export default function AdminMenuSidebarLeft({
         label: project.name,
         value: project.id,
       });
-      onChangeProject(project.id);
+      onChangeProject(project);
     }
   };
 

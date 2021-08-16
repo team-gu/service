@@ -233,7 +233,7 @@ interface UserDataRow {
 interface AdminUserCreateModalProps {
   handleClickClose: () => void;
   defaultValue?: UserDataRow;
-  projectId: number;
+  projectId: number | undefined;
 }
 
 export default function AdminUserManageModal({

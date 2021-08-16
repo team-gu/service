@@ -32,7 +32,7 @@ const DEFAULT_SELECTED_MENU = ADMIN_MENU_CONTENT.find(({title}) => title === '�
 
 export default function AdminLayout(): ReactElement {
   const [selectedMenu, setSelectedMenu] = useState(DEFAULT_SELECTED_MENU);
-  const [selectedProject, setSelectedProject] = useState<number>();
+  const [selectedProject, setSelectedProject] = useState<Project>();
   const [projects, setProjects] = useState<Project[]>([]);
 
   useEffect(() => {
@@ -43,8 +43,8 @@ export default function AdminLayout(): ReactElement {
     setSelectedMenu(menuIndex);
   };
 
-  const handleChangeProject = (projectId: number) => {
-    setSelectedProject(projectId);
+  const handleChangeProject = (project: Project) => {
+    setSelectedProject(project);
   };
 
   const fetchProjects = () => {
@@ -64,7 +64,7 @@ export default function AdminLayout(): ReactElement {
           name: `${p.stage.codeName} ${p.project.codeName} 프로젝트`,
         })),
       );
-      setSelectedProject(data[data.length - 1].id);
+      setSelectedProject(data[data.length - 1]);
     });
   };
 
@@ -91,13 +91,13 @@ export default function AdminLayout(): ReactElement {
                   />
                 ),
                 [ADMIN_MENU_CONTENT[2].id]: selectedProject && (
-                  <AdminDashboard projectId={selectedProject} />
+                  <AdminDashboard project={selectedProject} />
                 ),
                 [ADMIN_MENU_CONTENT[3].id]: selectedProject && (
-                  <AdminUserManage projectId={selectedProject} />
+                  <AdminUserManage project={selectedProject} />
                 ),
                 [ADMIN_MENU_CONTENT[4].id]: selectedProject && (
-                  <AdminTeamManage projectId={selectedProject} />
+                  <AdminTeamManage project={selectedProject} />
                 ),
                 [ADMIN_MENU_CONTENT[5].id]: <div>공지사항 관리</div>,
               }[ADMIN_MENU_CONTENT[selectedMenu].id]

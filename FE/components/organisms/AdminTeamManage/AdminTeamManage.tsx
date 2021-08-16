@@ -5,8 +5,8 @@ import { Text } from '@atoms';
 import { Button, ReactTable } from '@molecules';
 import { getTeamTableData } from '@repository/adminRepository';
 import { REGIONS } from '@utils/constants';
-import { ModalWrapper } from '@organisms';
-import AdminTeamExportModal from '../AdminTeamExportModal';
+import { AdminTeamExportModal } from '@organisms';
+import { Project } from '@utils/type';
 
 const Wrapper = styled.div`
   .manage-header {
@@ -87,17 +87,17 @@ interface TeamDataRow extends TeamData {
 }
 
 interface AdminTeamManageProps {
-  projectId: number;
+  project: Project;
 }
 
-export default function AdminTeamManage({ projectId }: AdminTeamManageProps) {
+export default function AdminTeamManage({ project }: AdminTeamManageProps) {
   const [showExportModal, setShowExportModal] = useState(false);
   const [selectedRegion, setSelectedRegion] = useState(0);
   const [teamData, setTeamData] = useState<TeamDataRow[]>([]);
 
   useEffect(() => {
     getTeamTableData({
-      projectId,
+      projectId: project.id,
       regionCode: selectedRegion,
     }).then(({ data: { data } }: { data: { data: TeamData[] } }) => {
       setTeamData(
@@ -124,7 +124,7 @@ export default function AdminTeamManage({ projectId }: AdminTeamManageProps) {
         }),
       );
     });
-  }, [projectId, selectedRegion]);
+  }, [project, selectedRegion]);
 
   const donwloadTeamExport = () => {
     // TODO: export 다운로드
