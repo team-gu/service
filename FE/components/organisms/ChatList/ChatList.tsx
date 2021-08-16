@@ -9,10 +9,15 @@ interface UserList {
   room_name: string;
   last_chat_message: string;
   send_date_time: string;
-  unread_message_count: number | string;
+  unread_message_count: number;
 }
+
 interface ChatListProps {
-  handleToChatRoom: (id: number, room_name: string) => Promise<void>;
+  handleToChatRoom: (
+    id: number,
+    room_name: string,
+    unread_message_count: number,
+  ) => Promise<void>;
   handleGetChatLists: () => Promise<void>;
   userList: UserList[];
 }
@@ -70,7 +75,13 @@ export default function ChatList({
                 isActive={false}
                 time={send_date_time}
                 alertNumber={unread_message_count}
-                func={() => handleToChatRoom(chat_room_id, room_name)}
+                func={() =>
+                  handleToChatRoom(
+                    chat_room_id,
+                    room_name,
+                    unread_message_count,
+                  )
+                }
               />
             ),
           )

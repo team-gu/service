@@ -5,7 +5,7 @@ import { Session } from 'openvidu-browser';
 
 import { ChatInput, ChatBubble } from '@molecules';
 
-import { postExitRoom, getRoomUserList } from '@repository/chatRepository';
+import { postExitRoom } from '@repository/chatRepository';
 import { Chat, ChatNormal } from '@types/chat-type';
 import { useAuthState } from '@store';
 
@@ -20,6 +20,7 @@ interface ChatRoomProps {
   handleClickSend: (msg: string) => Promise<void>;
   roomId?: number;
   opponentId?: number;
+  unreadMessageCount?: number;
 }
 
 const Wrapper = styled.div<{ disabled: boolean }>`
@@ -54,17 +55,24 @@ export default function ChatRoom({
   handleClickSend,
   roomId,
   opponentId,
+  unreadMessageCount = 0,
 }: ChatRoomProps): ReactElement {
   const {
     user: { id },
   } = useAuthState();
 
   const chatBoxRef: any = useRef<HTMLInputElement>(null);
+  const [unreadPosition, setUnreadPosition]: any = useState<HTMLInputElement>();
 
   const handleScrollToEnd = () => {
     chatBoxRef.current.scrollTo({
       top: chatBoxRef.current.scrollHeight - chatBoxRef.current.clientHeight,
-      left: 0,
+    });
+  };
+
+  const handleScrollToUnread = () => {
+    chatBoxRef.current.scrollTo({
+      top: unreadPosition.offsetTop,
     });
   };
 
@@ -79,12 +87,16 @@ export default function ChatRoom({
   };
 
   useEffect(() => {
+    if (unreadPosition) {
+      handleScrollToUnread();
+    }
+  }, [unreadPosition]);
+
+  useEffect(() => {
     return () => handleUnmount();
   }, [roomId]);
 
   useEffect(() => {
-    handleScrollToEnd();
-
     const interval = setInterval(() => {
       setMessageList([...messageList]);
     }, 60000);
@@ -163,6 +175,12 @@ export default function ChatRoom({
                   chatId={chat_id}
                   teamId={team_id}
                   id={id}
+                  ref={
+                    index === messageList.length - unreadMessageCount - 1
+                      ? setUnreadPosition
+                      : null
+                  }
+                  handleScrollToUnread={handleScrollToUnread}
                 />
               ),
             )}

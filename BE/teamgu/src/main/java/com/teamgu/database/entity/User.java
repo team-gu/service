@@ -32,6 +32,10 @@ public class User extends BaseEntity{
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	String password;
 
+	@JsonIgnore
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	String tempPassword;
+
 	String refreshToken;
 	@Column(length = 7)
 	String studentNumber;
@@ -121,7 +125,7 @@ public class User extends BaseEntity{
 
 
 	@Builder
-    public User(Long id, String email, String password, String name, String studentNumber, short role, String profileExtension, String profileServerName, String profileOriginName){
+    public User(Long id, String email, String password, String name, String studentNumber, short role, String profileExtension, String profileServerName, String profileOriginName, short major){
         this.id = id;
         this.email = email;
         this.password = password;
@@ -131,6 +135,7 @@ public class User extends BaseEntity{
         this.profileExtension = profileExtension;
         this.profileServerName = profileServerName;
         this.profileOriginName = profileOriginName;
+        this.major = major;
     }
 
 }

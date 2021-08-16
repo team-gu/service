@@ -2,7 +2,8 @@ import { ReactElement, SyntheticEvent, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 import { Input, Text } from '@atoms';
-import { useAppDispatch, setLogin } from '@store';
+import { useAppDispatch, setLogin, displayModal } from '@store';
+import { MODALS } from '@utils/constants';
 import { Label, Button } from '@molecules';
 import styled from 'styled-components';
 
@@ -95,6 +96,12 @@ const Wrapper = styled.div`
   }
 `;
 
+const FindPassword = styled.div`
+  margin-top: 8px;
+  ${({ theme: { flexRow } }) => flexRow()};
+  cursor: pointer;
+`;
+
 export default function Home(): ReactElement {
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -103,6 +110,14 @@ export default function Home(): ReactElement {
   const passwordRef: any = useRef<HTMLInputElement>(null);
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+
+  const findPassword = async () => {
+    dispatch(
+      displayModal({
+        modalName: MODALS.FINDPASSWORD_MODAL,
+      }),
+    );
+  };
 
   const handleLogin = async (e: SyntheticEvent) => {
     e.preventDefault();
@@ -190,6 +205,9 @@ export default function Home(): ReactElement {
             <div className="form-btn">
               <Button title="로그인" type="submit" width={'90%'} />
             </div>
+            <FindPassword onClick={findPassword}>
+              <Text text="비밀번호 찾기" color="#a9aeb4" />
+            </FindPassword>
           </div>
         </div>
       </form>

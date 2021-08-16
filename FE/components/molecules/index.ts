@@ -1,6 +1,7 @@
 import Button from './Button';
 import ChatBubble from './ChatBubble';
 import ChatBubbleSelect from './ChatBubbleSelect';
+import ChatLoading from './ChatLoading';
 import ChatInput from './ChatInput';
 import Checkbox from './Checkbox';
 import DropdownMenu from './DropdownMenu';
@@ -31,6 +32,7 @@ export {
   Button,
   ChatBubble,
   ChatBubbleSelect,
+  ChatLoading,
   ChatInput,
   Checkbox,
   DropdownMenu,

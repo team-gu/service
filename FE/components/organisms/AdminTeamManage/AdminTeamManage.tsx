@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { Text } from '@atoms';
 import { Button, ReactTable } from '@molecules';
 import { getTeamTableData } from '@repository/adminRepository';
-import { REGIONS, TEAM_TABLE_COLUMNS } from '@utils/constants';
+import { REGIONS } from '@utils/constants';
 
 const Wrapper = styled.div`
   .manage-header {
@@ -76,7 +76,6 @@ export default function AdminTeamManage({ projectId }: AdminTeamManageProps) {
       projectId,
       regionCode: selectedRegion,
     }).then(({ data: { data } }: { data: { data: TeamData[] } }) => {
-      console.log(data);
 
       setTeamData(
         data.map((row) => {
@@ -97,6 +96,7 @@ export default function AdminTeamManage({ projectId }: AdminTeamManageProps) {
             member5: row.members[3]?.name,
             member6: row.members[4]?.name,
             member7: row.members[5]?.name,
+            member8: row.members[6]?.name,
           };
         }),
       );
@@ -110,22 +110,75 @@ export default function AdminTeamManage({ projectId }: AdminTeamManageProps) {
       </div>
       <div className="region-btns">
         {REGIONS.map((r) => (
-          <RegionButtonWrapper selected={selectedRegion === r.code}>
-            <Button
-              title={r.name}
-              key={r.code}
-              func={() => setSelectedRegion(r.code)}
-            />
+          <RegionButtonWrapper
+            key={r.code}
+            selected={selectedRegion === r.code}
+          >
+            <Button title={r.name} func={() => setSelectedRegion(r.code)} />
           </RegionButtonWrapper>
         ))}
       </div>
-      <ReactTable
-        data={teamData}
-        columns={TEAM_TABLE_COLUMNS}
-        grouping
-        pagination={false}
-        fullWidth={false}
-      />
+      <ReactTable data={teamData} columns={TEAM_TABLE_COLUMNS} />
     </Wrapper>
   );
 }
+
+
+const TEAM_TABLE_COLUMNS = [
+  {
+    Header: '지역',
+    accessor: 'region',
+  },
+  {
+    Header: '팀 이름',
+    accessor: 'teamName',
+    disableGroupBy: true,
+  },
+  {
+    Header: '트랙',
+    accessor: 'track',
+  },
+  {
+    Header: '현재 인원',
+    accessor: 'memberCnt',
+  },
+  {
+    Header: '완료 여부',
+    accessor: 'completeYn',
+  },
+  {
+    Header: '팀장',
+    accessor: 'member1',
+    disableGroupBy: true,
+  },
+  {
+    Header: '팀원1',
+    accessor: 'member2',
+    disableGroupBy: true,
+  },
+  {
+    Header: '팀원2',
+    accessor: 'member3',
+    disableGroupBy: true,
+  },
+  {
+    Header: '팀원3',
+    accessor: 'member4',
+    disableGroupBy: true,
+  },
+  {
+    Header: '팀원4',
+    accessor: 'member5',
+    disableGroupBy: true,
+  },
+  {
+    Header: '팀원5',
+    accessor: 'member6',
+    disableGroupBy: true,
+  },
+  {
+    Header: '팀원6',
+    accessor: 'member7',
+    disableGroupBy: true,
+  },
+];

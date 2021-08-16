@@ -10,6 +10,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.teamgu.api.dto.res.AdminTeamManagementResDto;
+import com.teamgu.api.dto.res.AdminUserManagementResDto;
 import com.teamgu.api.dto.res.CodeResDto;
 import com.teamgu.api.dto.res.DashBoardDetailInfoResDto;
 import com.teamgu.api.dto.res.DashBoardDetailResDto;
@@ -315,6 +316,19 @@ public class AdminServiceImpl implements AdminService {
 		// TODO Auto-generated method stub
 		return adminRepositorySupport.getTeamManagementData(projectId, regionCode);
 	}
+	
+	// Select Dash Board Info
+	@Override
+	public List<DashBoardTableResDto> getDashBoardTableInfo(Long projectId) {
+		return adminRepositorySupport.getDashBoardTableInfo(projectId);
+	}
+
+	// Select User Status to manage
+	@Override
+	public List<AdminUserManagementResDto> getUserManagamentData(Long projectId, int regionCode) {
+		return adminRepositorySupport.getUserManagamentData(projectId, regionCode);
+	}
+
 	/*
 	 * Select Code
 	 */
@@ -370,9 +384,69 @@ public class AdminServiceImpl implements AdminService {
 		return adminRepositorySupport.checkProjectDeletion(projectCode);
 	}
 
+	// Check Project Validation
 	@Override
-	public List<DashBoardTableResDto> getDashBoardTableInfo(Long projectId) {
-		return adminRepositorySupport.getDashBoardTableInfo(projectId);
+	public boolean checkProjectValidation(Long projectId) {
+		return adminRepositorySupport.checkProjectValidation(projectId);
+	}
+
+	// Class Select Box
+	@Override
+	public List<CodeResDto> selectStudentClass(Long projectId, int regionCode) {
+		
+		return adminRepositorySupport.selectStudentClass(projectId, regionCode);
+	}
+	// Check Student Class Deletion
+	@Override
+	public boolean checkStudentClassDeletion(Long classId) {
+		return adminRepositorySupport.checkStudentClassDeletion(classId);
+	}
+
+	//Delete Student Class
+	@Override
+	public List<CodeResDto> deleteStudentClass(Long classId) {
+		return adminRepositorySupport.deleteStudentClass(classId);
+	}
+	
+	// Check Region Code
+	@Override
+	public int checkRegionCode(String region) {
+		return adminRepositorySupport.checkRegionCode(region);
+	}
+
+	// Project별 Student Class Duplication Check
+	@Override
+	public boolean checkStudentClassDuplication(Long projectId, int regionCode, int name) {
+		return adminRepositorySupport.checkStudentClassDuplication(projectId, regionCode, name);
+	}
+
+	// Insert Student Class
+	@Override
+	public List<CodeResDto> insertStudentClass(Long projectId, int regionCode, int name) {
+		return adminRepositorySupport.insertStudentClass(projectId, regionCode, name);
+	}
+
+	// Check User in Project
+	@Override
+	public boolean checkUserProjectDetail(Long userId, Long projectId) {
+		return adminRepositorySupport.checkUserProjectDetail(userId, projectId);
+	}
+
+	// add Student to project
+	@Override
+	public void addStudentToProject(Long userId, Long projectId) {
+		adminRepositorySupport.addStudentToProject(userId, projectId);
+	}
+
+	// exclude student to project
+	@Override
+	public void excludeStudentFromProject(Long userId, Long projectId) {
+		adminRepositorySupport.excludeStudentFromProject(userId, projectId);
+	}
+
+	@Override
+	public AdminTeamManagementResDto getStudentProjectTeamInfo(Long userId, Long projectId) {
+		return adminRepositorySupport.getStudentProjectTeamInfo(userId, projectId);
 	}
 
 }

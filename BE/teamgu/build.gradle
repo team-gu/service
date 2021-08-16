@@ -126,7 +126,6 @@ dependencies {
 	//민감정보 암호화
 	implementation("com.github.ulisesbocchio:jasypt-spring-boot-starter:1.17")
 
-
     implementation("com.auth0:java-jwt:3.10.3")
     implementation group: 'io.jsonwebtoken', name: 'jjwt', version: '0.2'
         
@@ -157,6 +156,9 @@ dependencies {
 
 	implementation 'org.springframework.boot:spring-boot-starter-validation' //for notnull
     testImplementation('org.springframework.boot:spring-boot-starter-test')
+
+    //이메일 발송 의존성 추가
+    implementation("org.springframework.boot:spring-boot-starter-mail")
 }
 
 //  test {

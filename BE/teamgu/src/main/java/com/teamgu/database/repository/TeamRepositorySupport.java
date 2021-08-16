@@ -3,7 +3,6 @@ package com.teamgu.database.repository;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -12,7 +11,6 @@ import javax.persistence.PersistenceUnit;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 
-import org.hibernate.sql.Select;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -25,9 +23,9 @@ import com.teamgu.api.dto.req.TrackReqDto;
 import com.teamgu.api.dto.res.HorizontalByTeamResDto;
 import com.teamgu.api.dto.res.SkillResDto;
 import com.teamgu.api.dto.res.TeamAutoCorrectResDto;
-import com.teamgu.api.dto.res.TeamListResDto;
 import com.teamgu.api.dto.res.TeamMemberInfoResDto;
 import com.teamgu.api.dto.res.UserInfoByTeam;
+import com.teamgu.api.dto.res.VerticalByUserResDto;
 import com.teamgu.database.entity.QCodeDetail;
 import com.teamgu.database.entity.QMapping;
 import com.teamgu.database.entity.QTeam;
@@ -265,23 +263,34 @@ public class TeamRepositorySupport {
 	public boolean checkTeamBuilding(Long userId, String trackName) {
 		
 		EntityManager em = emf.createEntityManager();
+		List<Long> chk = new ArrayList<>();
+		try {
+			
+			String jpql = "select user_id from user_team where team_id in " 
+					+ "(select id from team where mapping_id in "
+					+		"(select id from mapping where project_code in "
+					+			"(select distinct project_code from mapping where track_code = (select code_detail from code_detail where name = :trackName))"
+					+		"and stage_code in "
+					+			"(select distinct stage_code from mapping where track_code = (select code_detail from code_detail where name = :trackName))))"
+					+	"and user_id = :userId";
+			
+			Query query = em.createNativeQuery(jpql)
+			.setParameter("userId", userId)
+			.setParameter("trackName", trackName);
+			
+			chk = query.getResultList();
+			
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+			
+		} finally {
+
+			em.close();
+		}
 		
-		String jpql = "select user_id from user_team where team_id in " 
-				+ "(select id from team where mapping_id in "
-				+		"(select id from mapping where project_code in "
-				+			"(select distinct project_code from mapping where track_code = (select code_detail from code_detail where name = ?2))"
-				+		"and stage_code in "
-				+			"(select distinct stage_code from mapping where track_code = (select code_detail from code_detail where name = ?2))))"
-				+	"and user_id = ?1";
-		
-		Query query = em.createNativeQuery(jpql)
-		.setParameter(1, userId)
-		.setParameter(2, trackName);
-		
-		List<Long> chk = query.getResultList();
 		int size = chk.size();
 		
-		em.close();
 		
 		if(size == 0) {
 			return true;
@@ -365,7 +374,7 @@ public class TeamRepositorySupport {
 			
 			for(int i = 0; i<skillsSize; i++) {
 				if(i == 0) {
-					skillFilter.append("in (");
+					skillFilter.append(" and team_skill.skill_code in (");
 				}
 				skillFilter.append(skills.get(i).getCode());
 				if(i == (skillsSize -1)) {
@@ -382,7 +391,7 @@ public class TeamRepositorySupport {
 
 			for(int i = 0; i<tracksSize; i++) {
 				if(i == 0) {
-					trackFilter.append("in (");
+					trackFilter.append(" and track_code in (");
 				}
 				trackFilter.append(tracks.get(i).getCode());
 				if(i == (tracksSize -1)) {
@@ -395,14 +404,16 @@ public class TeamRepositorySupport {
 			
 			jqpl = 
 					"select distinct team.id\r\n" + 
-					"from team left outer join team_skill\r\n" + 
-					"on team.id = team_skill.team_id\r\n" + 
+					"from team \r\n" + 
 					"left outer join mapping\r\n" + 
 					"on team.mapping_id = mapping.id\r\n" + 
-					"where team_skill.skill_code " + skillFilter.toString() + "\r\n" + 
-					"and mapping_id in\r\n" + 
-					"(select id from mapping where project_code = " + projectCode + " and stage_code = "+stageCode+" and track_code " + trackFilter.toString()  +")\r\n" + 
+					"left outer join team_skill\r\n" + 
+					"on team.id = team_skill.team_id\r\n" + 
+					"where mapping_id in\r\n" + 
+					"(select id from mapping where project_code = " + projectCode + " and stage_code = " + stageCode + trackFilter.toString() + ")\r\n" + 
+					skillFilter.toString() + 
 					"order by team.complete_yn, " + orderBy;
+			System.out.println(jqpl);
 		}
 		else { // 검색 인 경우
 			
@@ -600,5 +611,74 @@ public class TeamRepositorySupport {
 			em.close();
 		}
 		return teamsInfo;
+	}
+	
+	/**
+	 * 기수, 프로젝트코드를 입력 받으면 해당하는 유저들의 현재 팀 정보와 유저 정보를 반환
+	 * @param stage_code
+	 * @param project_code
+	 * @return
+	 */
+	public List<VerticalByUserResDto> getUserListByTeamVertical(int stage_code, int project_code){
+		EntityManager em = emf.createEntityManager();
+		List<VerticalByUserResDto> results = new ArrayList<VerticalByUserResDto>();
+		try {
+			String jpql = "SELECT u.id, u.student_number, u.name, u.email, ifnull(t.id,'팀 없음') team_code, ifnull(t.team_name, '팀 없음') team_name,\r\n" + 
+					"		(CASE\r\n" + 
+					"            WHEN t.leader_id = u.id\r\n" + 
+					"            THEN '팀장'\r\n" + 
+					"            WHEN t.leader_id != u.id\r\n" + 
+					"            THEN '팀원'\r\n" + 
+					"            ELSE '팀 없음'\r\n" + 
+					"		END) role, ifnull(t.track_name,\"트랙 없음\") track_name\r\n" + 
+					"FROM user_project_detail upd\r\n" + 
+					"LEFT JOIN user u\r\n" + 
+					"ON u.id = upd.user_id\r\n" + 
+					"LEFT JOIN (select t.id, t.name as team_name, t.leader_id, ut.team_id, ut.user_id, cd.name as track_name\r\n" + 
+					"			from team t\r\n" + 
+					"			left join user_team ut\r\n" + 
+					"			on ut.team_id = t.id\r\n" + 
+					"			left join mapping m\r\n" + 
+					"			on m.id = t.mapping_id\r\n" + 
+					"			left join (select * from code_detail\r\n" + 
+					"						where code_id = 'TR') cd\r\n" + 
+					"			on cd.code_detail = m.track_code\r\n" + 
+					"			where m.stage_code=:stage_code and m.project_code=:project_code) t\r\n" + 
+					"ON t.user_id = upd.user_id\r\n" + 
+					"WHERE upd.project_detail_project_code=:project_code AND upd.project_detail_stage_code=:stage_code";
+			List<Object[]> ol = em.createNativeQuery(jpql)
+									.setParameter("stage_code", stage_code)
+									.setParameter("project_code", project_code)
+									.getResultList();
+			/**
+			 * 0:user_id
+			 * 1:student_number
+			 * 2:user_name
+			 * 3:email
+			 * 4:team_code(team_id)
+			 * 5:team_name
+			 * 6:role (팀장, 팀원, 팀 없음)
+			 * 7:trcak_name (트랙명, 트랙 없음)
+			 */					
+			for(int i = 0;i<ol.size();i++) {
+				Object[] o = ol.get(i);
+				VerticalByUserResDto userinfo = VerticalByUserResDto.builder()
+													.student_number(o[1].toString())
+													.name(o[2].toString())
+													.email(o[3].toString())
+													.team_code(o[4].toString())
+													.team_name(o[5].toString())
+													.team_role(o[6].toString())
+													.track_name(o[7].toString())
+													.build();
+				results.add(userinfo);
+			}
+		}catch(Exception e) {
+			log.error("유저 세로비 쿼리 에러 발생");
+			e.printStackTrace();
+		}finally {
+			em.close();
+		}
+		return results;
 	}
 }

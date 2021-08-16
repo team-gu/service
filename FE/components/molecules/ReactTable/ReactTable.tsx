@@ -1,4 +1,4 @@
-import { ReactElement, useState, useMemo } from 'react';
+import { ReactElement, useState, useMemo, forwardRef } from 'react';
 import {
   useTable,
   useFilters,
@@ -8,6 +8,7 @@ import {
   useExpanded,
   useAsyncDebounce,
   usePagination,
+  useRowSelect,
 } from 'react-table';
 import styled from 'styled-components';
 
@@ -17,7 +18,7 @@ const Wrapper = styled.div<{ fullWidth: boolean }>`
   i {
     cursor: pointer;
   }
-  
+
   table {
     border-spacing: 0;
     border: 1px solid gainsboro;
@@ -239,12 +240,22 @@ function DefaultColumnFilter({
   );
 }
 
+const IndeterminateCheckbox = forwardRef(({ indeterminate, ...rest }, ref) => {
+  return (
+    <>
+      <Icon iconName="edit" {...rest} />
+    </>
+  );
+});
+
 interface TableProps {
   columns: any[];
   data: any[];
   grouping?: boolean;
   pagination?: boolean;
   fullWidth?: boolean;
+  selectable?: boolean;
+  onSelectRow?: (row: any) => void;
 }
 
 export default function ReactTable({
@@ -253,13 +264,12 @@ export default function ReactTable({
   grouping = true,
   pagination = true,
   fullWidth = true,
+  selectable,
+  onSelectRow,
 }: TableProps): ReactElement {
   const filterTypes = useMemo(
     () => ({
-      // Add a new fuzzyTextFilterFn filter type.
       fuzzyText: fuzzyTextFilterFn,
-      // Or, override the default text filter to use
-      // "startWith"
       text: (rows, id, filterValue) => {
         return rows.filter((row) => {
           const rowValue = row.values[id];
@@ -279,7 +289,7 @@ export default function ReactTable({
       // Let's set up our default Filter UI
       Filter: DefaultColumnFilter,
     }),
-    [],
+    [selectable],
   );
 
   const {
@@ -307,15 +317,31 @@ export default function ReactTable({
     {
       columns,
       data,
-      defaultColumn, // Be sure to pass the defaultColumn option
+      defaultColumn,
       filterTypes,
     },
-    useFilters, // useFilters!
-    useGlobalFilter, // useGlobalFilter!
+    useFilters,
+    useGlobalFilter,
     useGroupBy,
     useSortBy,
     useExpanded,
     usePagination,
+    useRowSelect,
+    (hooks) => {
+      if (selectable && onSelectRow) {
+        hooks.visibleColumns.push((columns) => [
+          {
+            id: 'selection',
+            Cell: ({ row }) => (
+              <div onClick={() => onSelectRow(row.original)}>
+                <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
+              </div>
+            ),
+          },
+          ...columns,
+        ]);
+      }
+    },
   );
 
   const [showTooltip, setShowTooltip] = useState(false);
@@ -406,14 +432,16 @@ export default function ReactTable({
                     <span
                       className="header-text"
                       onClick={() => {
-                        column.toggleSortBy(
-                          typeof column.isSortedDesc === 'undefined'
-                            ? false
-                            : column.isSortedDesc === false
-                            ? true
-                            : undefined,
-                          true,
-                        );
+                        if (column.canSort) {
+                          column.toggleSortBy(
+                            typeof column.isSortedDesc === 'undefined'
+                              ? false
+                              : column.isSortedDesc === false
+                              ? true
+                              : undefined,
+                            true,
+                          );
+                        }
                       }}
                     >
                       {column.render('Header')}

@@ -17,6 +17,7 @@ import com.teamgu.api.dto.res.TeamAutoCorrectResDto;
 import com.teamgu.api.dto.res.TeamIsCreateResDto;
 import com.teamgu.api.dto.res.TeamListResDto;
 import com.teamgu.api.dto.res.TeamMemberInfoResDto;
+import com.teamgu.api.dto.res.VerticalByUserResDto;
 import com.teamgu.database.entity.Mapping;
 import com.teamgu.database.entity.Team;
 import com.teamgu.database.entity.User;
@@ -398,5 +399,10 @@ public class TeamServiceImpl implements TeamService {
 	@Override
 	public List<HorizontalByTeamResDto> getHorizontalByTeamInfo(int project_code, int stage_code) {
 		return teamRepositorySupport.getUserListByTeam(teamRepositorySupport.getTeamList(project_code, stage_code));
+	}
+	
+	@Override
+	public List<VerticalByUserResDto> getVerticalByUserInfo(int project_code, int stage_code) {
+		return teamRepositorySupport.getUserListByTeamVertical(stage_code, project_code);
 	}
 }
