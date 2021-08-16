@@ -16,7 +16,7 @@ const theme: DefaultTheme = {
     lightBlue: '#E1EDFF',
     backgroundGray: '#F5F5F7',
     samsungBlue: '#053699',
-    samsungLightBlue: '#0378F2',
+    samsungLightBlue: '#034EA2',
   },
   layout: {
     pageMaxWidth: '1440px',
