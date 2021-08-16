@@ -5,12 +5,13 @@ import {
   AdminMenuSidebarLeft,
   AdminTeamManage,
   AdminUserManage,
+  AdminDashboard,
+  AdminProjectManage,
+  AdminProjectUserManage,
 } from '@organisms';
 import { Text } from '@atoms';
 import { Project } from '@utils/type';
 import { ADMIN_MENU_CONTENT } from '@utils/constants';
-import { AdminProjectManage } from '@organisms';
-import { AdminDashboard } from '@organisms';
 import { getAdminProject } from '@repository/adminRepository';
 import { DateTime } from 'luxon';
 
@@ -84,7 +85,9 @@ export default function AdminLayout(): ReactElement {
           <div className="content">
             {
               {
-                [ADMIN_MENU_CONTENT[0].id]: <div>전체 교육생 목록</div>,
+                [ADMIN_MENU_CONTENT[0].id]: selectedProject && (
+                  <AdminUserManage project={selectedProject} />
+                ),
                 [ADMIN_MENU_CONTENT[1].id]: (
                   <AdminProjectManage
                     projects={projects}
@@ -95,7 +98,7 @@ export default function AdminLayout(): ReactElement {
                   <AdminDashboard project={selectedProject} />
                 ),
                 [ADMIN_MENU_CONTENT[3].id]: selectedProject && (
-                  <AdminUserManage project={selectedProject} />
+                  <AdminProjectUserManage project={selectedProject} />
                 ),
                 [ADMIN_MENU_CONTENT[4].id]: selectedProject && (
                   <AdminTeamManage project={selectedProject} />
