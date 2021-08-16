@@ -51,8 +51,7 @@ export default function AdminLayout(): ReactElement {
 
   const fetchProjects = () => {
     getAdminProject().then(({ data: { data } }) => {
-      setProjects(
-        data.map((p: any) => ({
+      const tmpProjects = data.map((p: any) => ({
           ...p,
           activeDate: p.activeDate
             ? DateTime.fromISO(p.activeDate).toFormat('yyyy-MM-dd')
@@ -64,9 +63,9 @@ export default function AdminLayout(): ReactElement {
             ? DateTime.fromISO(p.endDate).toFormat('yyyy-MM-dd')
             : null,
           name: `${p.stage.codeName} ${p.project.codeName} 프로젝트`,
-        })),
-      );
-      setSelectedProject(data[data.length - 1]);
+        }));
+      setProjects(tmpProjects);
+      setSelectedProject(tmpProjects[tmpProjects.length - 1]);
     });
   };
 
