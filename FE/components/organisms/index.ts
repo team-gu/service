@@ -26,6 +26,7 @@ import AdminProjectManageModal from './AdminProjectManageModal';
 import AdminDashboard from './AdminDashboard';
 import AdminTeamManage from './AdminTeamManage';
 import AdminUserManage from './AdminUserManage';
+import AdminProjectUserManage from './AdminProjectUserManage';
 import AdminUserManageModal from './AdminUserManageModal';
 import AdminUserImportModal from './AdminUserImportModal';
 import AdminTeamExportModal from './AdminTeamExportModal';
@@ -58,6 +59,7 @@ export {
   AdminDashboard,
   AdminTeamManage,
   AdminUserManage,
+  AdminProjectUserManage,
   AdminUserManageModal,
   AdminUserImportModal,
   AdminTeamExportModal,
