@@ -161,7 +161,7 @@ export default function UserStatus(): ReactElement {
             },
           } = await postByFilteredUsers(payload);
 
-          setUsers(dataList);
+          setUsers([...dataList]);
           setPageCount(totPageCnt);
         } catch ({
           response: {
@@ -373,7 +373,7 @@ export default function UserStatus(): ReactElement {
           </div>
         </WrapFilter>
 
-        {users && users.length === 0 ? (
+        {(users && users.length) === 0 ? (
           <WrapFilter>일치하는 유저가 없습니다.</WrapFilter>
         ) : (
           <>
@@ -388,9 +388,9 @@ export default function UserStatus(): ReactElement {
                 handleSendRtcLink={handleSendRtcLink}
               />
             ))}
-            {pageCount > 0 && (
+            {pageCount >= 0 && (
               <Pagination
-                pageCount={pageCount}
+                pageCount={pageCount + 1}
                 previousLabel={'<'}
                 nextLabel={'>'}
                 marginPagesDisplayed={2}
