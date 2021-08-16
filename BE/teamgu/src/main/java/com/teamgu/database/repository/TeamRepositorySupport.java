@@ -25,6 +25,7 @@ import com.teamgu.api.dto.res.SkillResDto;
 import com.teamgu.api.dto.res.TeamAutoCorrectResDto;
 import com.teamgu.api.dto.res.TeamMemberInfoResDto;
 import com.teamgu.api.dto.res.UserInfoByTeam;
+import com.teamgu.api.dto.res.VerticalByUserResDto;
 import com.teamgu.database.entity.QCodeDetail;
 import com.teamgu.database.entity.QMapping;
 import com.teamgu.database.entity.QTeam;
@@ -610,5 +611,74 @@ public class TeamRepositorySupport {
 			em.close();
 		}
 		return teamsInfo;
+	}
+	
+	/**
+	 * 기수, 프로젝트코드를 입력 받으면 해당하는 유저들의 현재 팀 정보와 유저 정보를 반환
+	 * @param stage_code
+	 * @param project_code
+	 * @return
+	 */
+	public List<VerticalByUserResDto> getUserListByTeamVertical(int stage_code, int project_code){
+		EntityManager em = emf.createEntityManager();
+		List<VerticalByUserResDto> results = new ArrayList<VerticalByUserResDto>();
+		try {
+			String jpql = "SELECT u.id, u.student_number, u.name, u.email, ifnull(t.id,'팀 없음') team_code, ifnull(t.team_name, '팀 없음') team_name,\r\n" + 
+					"		(CASE\r\n" + 
+					"            WHEN t.leader_id = u.id\r\n" + 
+					"            THEN '팀장'\r\n" + 
+					"            WHEN t.leader_id != u.id\r\n" + 
+					"            THEN '팀원'\r\n" + 
+					"            ELSE '팀 없음'\r\n" + 
+					"		END) role, ifnull(t.track_name,\"트랙 없음\") track_name\r\n" + 
+					"FROM user_project_detail upd\r\n" + 
+					"LEFT JOIN user u\r\n" + 
+					"ON u.id = upd.user_id\r\n" + 
+					"LEFT JOIN (select t.id, t.name as team_name, t.leader_id, ut.team_id, ut.user_id, cd.name as track_name\r\n" + 
+					"			from team t\r\n" + 
+					"			left join user_team ut\r\n" + 
+					"			on ut.team_id = t.id\r\n" + 
+					"			left join mapping m\r\n" + 
+					"			on m.id = t.mapping_id\r\n" + 
+					"			left join (select * from code_detail\r\n" + 
+					"						where code_id = 'TR') cd\r\n" + 
+					"			on cd.code_detail = m.track_code\r\n" + 
+					"			where m.stage_code=:stage_code and m.project_code=:project_code) t\r\n" + 
+					"ON t.user_id = upd.user_id\r\n" + 
+					"WHERE upd.project_detail_project_code=:project_code AND upd.project_detail_stage_code=:stage_code";
+			List<Object[]> ol = em.createNativeQuery(jpql)
+									.setParameter("stage_code", stage_code)
+									.setParameter("project_code", project_code)
+									.getResultList();
+			/**
+			 * 0:user_id
+			 * 1:student_number
+			 * 2:user_name
+			 * 3:email
+			 * 4:team_code(team_id)
+			 * 5:team_name
+			 * 6:role (팀장, 팀원, 팀 없음)
+			 * 7:trcak_name (트랙명, 트랙 없음)
+			 */					
+			for(int i = 0;i<ol.size();i++) {
+				Object[] o = ol.get(i);
+				VerticalByUserResDto userinfo = VerticalByUserResDto.builder()
+													.student_number(o[1].toString())
+													.name(o[2].toString())
+													.email(o[3].toString())
+													.team_code(o[4].toString())
+													.team_name(o[5].toString())
+													.team_role(o[6].toString())
+													.track_name(o[7].toString())
+													.build();
+				results.add(userinfo);
+			}
+		}catch(Exception e) {
+			log.error("유저 세로비 쿼리 에러 발생");
+			e.printStackTrace();
+		}finally {
+			em.close();
+		}
+		return results;
 	}
 }

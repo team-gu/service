@@ -36,12 +36,16 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.teamgu.api.dto.UserRegistDto;
 import com.teamgu.api.dto.req.TeamWithUserToExcelReqDto;
+import com.teamgu.api.dto.req.UserProjectExcelReqDto;
 import com.teamgu.api.dto.res.BaseResDto;
 import com.teamgu.api.dto.res.BasicResponse;
 import com.teamgu.api.dto.res.CommonResponse;
 import com.teamgu.api.dto.res.ErrorResponse;
 import com.teamgu.api.dto.res.HorizontalByTeamResDto;
 import com.teamgu.api.dto.res.UserInfoByTeam;
+import com.teamgu.api.dto.res.VerticalByUserResDto;
+import com.teamgu.api.service.AdminServiceImpl;
+import com.teamgu.api.service.ExcelServiceImpl;
 import com.teamgu.api.service.TeamServiceImpl;
 import com.teamgu.api.service.UserServiceImpl;
 import com.teamgu.database.entity.User;
@@ -64,6 +68,12 @@ public class ExcelController {
 	
 	@Autowired
 	UserServiceImpl userService;
+	
+	@Autowired
+	ExcelServiceImpl excelService;
+	
+	@Autowired
+	AdminServiceImpl adminService;
 	
 	@PostMapping("/user/insert")
 	@ApiOperation(value="엑셀 파일을 삽입하여 삽입된 유저의 목록을 회원 가입시킨다")
@@ -144,7 +154,7 @@ public class ExcelController {
 	}
 	
 
-	@PostMapping("/export")
+	@PostMapping("/team/export")
 	@ApiOperation(value="기수-프로젝트도메인에 맞는 팀을 가로비 정렬하여 Excel파일로 export한다")
 //	@ApiResponses({
 //		@ApiResponse(code = 200, message = "파일을 읽고 Dto화 성공"),
@@ -158,104 +168,116 @@ public class ExcelController {
 		List<HorizontalByTeamResDto> results = teamService.getHorizontalByTeamInfo(project_code, stage_code);
 		if(results.size()==0||results.isEmpty()) {
 			log.error("empty dto");
-			return null;
-//			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-//					.body(new ErrorResponse("결과 값이 존재하지 않습니다."));
+			return ResponseEntity.noContent().build();
 		}
-		
-		//2. 컬럼 갯수를 파악하기 위해 최대 인원 구성 수를 파악한다
-		int maxMembers = 0;
-		for(int i =0;i<results.size();i++) {
-			maxMembers = Integer.max(results.get(i).getMembers().size(),maxMembers);			
-		}
-		
-		//3. 엑셀 파일의 초기 설정을 한다
-		SXSSFWorkbook workbook = new SXSSFWorkbook();
-		
-		//시트생성
-		SXSSFSheet sheet = workbook.createSheet("팀별 가로비");
-		
-		//시트 열 너비 설정
-//		sheet.setColumnWidth(columnIndex, width);
-		
-		//헤더 행 생성
-		Row headerRow = sheet.createRow(0);
-		//해당 행의 열 셀 생성
-		Cell headerCell =null;
-		
-		//공통 정보에 대한 헤더 생성
-		String[] headers = {"기수","프로젝트","트랙","팀명"};
-		for(int i=0;i<headers.length;i++) {
-			headerCell = headerRow.createCell(i);
-			headerCell.setCellValue(headers[i]);			
-		}
-		//멤버 정보에 대한 헤더 생성
-		headerCell = headerRow.createCell(headers.length);
-		headerCell.setCellValue("팀장");
-		for(int i =headers.length+1;i<headers.length+maxMembers;i++) {			
-			headerCell = headerRow.createCell(i);
-			headerCell.setCellValue("팀원"+(i-headers.length));//팀원1, 팀원2 ,,,,
-		}
-		
-		//4. 내용 행 및 셀 생성
-		Row bodyRow = null;
-		Cell bodyCell = null;
-		for(int i =0;i<results.size();i++) {
-			HorizontalByTeamResDto info = results.get(i);
-			
-			//행 생성
-			bodyRow = sheet.createRow(i+1);//header 다음 줄부터
-			
-			//데이터 기수 표시
-			bodyCell = bodyRow.createCell(0);
-			bodyCell.setCellValue(info.getStage_name());
-			
-			//데이터 프로젝트 도메인 표시
-			bodyCell = bodyRow.createCell(1);
-			bodyCell.setCellValue(info.getProject_name());
-			
-			//데이터 트랙 표시
-			bodyCell = bodyRow.createCell(2);
-			bodyCell.setCellValue(info.getTrack_name());
-			
-			//데이터 팀명 표시
-			bodyCell = bodyRow.createCell(3);
-			bodyCell.setCellValue(info.getName());
-			
-			//데이터 멤버 표시
-			//우선 팀장을 가장 위로 정렬해준다(셀 맨 앞이 팀장이므로)
-			info.getMembers().sort(new Comparator<UserInfoByTeam>() {
-				@Override
-				public int compare(UserInfoByTeam o1, UserInfoByTeam o2) {					
-					if(o1.getRole().equals("팀장"))
-						return -1;
-					else return 0;
-				}
-			});
-			for(int j=0;j<info.getMembers().size();j++) {
-				UserInfoByTeam userInfo = info.getMembers().get(j); 
-				bodyCell = bodyRow.createCell(j+4);
-				//이름(학번) 형태로 기재
-				bodyCell.setCellValue(userInfo.getName()+"("+userInfo.getStudentNumber()+")");				
-			}
-		}
-		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		try {
-			log.info("wirte stream");
-			workbook.write(outputStream);
-			
-			//base64 인코딩
-			String bres = Base64.getEncoder().encodeToString(outputStream.toByteArray());
-			
-			workbook.close();
+			String base64res = excelService.createExcelToTeam(results);			
 			HttpHeaders httpHeaders = new HttpHeaders();
 			httpHeaders.add("Content-Disposition", "attachment; filename=test.xlsx");
-			return ResponseEntity.ok(new CommonResponse<String>(bres));
+			return ResponseEntity.ok(new CommonResponse<String>(base64res));
 		} catch (IOException e) {
 			log.error("엑셀 파일 Export 실패");
 			e.printStackTrace();
 		}
-		return null;
+		return ResponseEntity.noContent().build();
 	}
+	
+	@PostMapping("/user/export")
+	@ApiOperation(value="기수-프로젝트도메인에 맞는 유저를 세로비 정렬하여 Excel파일로 export한다")
+//	@ApiResponses({
+//		@ApiResponse(code = 200, message = "파일을 읽고 Dto화 성공"),
+//		@ApiResponse(code = 400, message = "잘못된 파일 형식 또는 잘못된 데이터",response = BaseResDto.class)
+//	})
+	public ResponseEntity<? extends BasicResponse> UsersByTeamVerticalToExcel(@RequestBody TeamWithUserToExcelReqDto teamWithUserToExcelReqDto){
+		log.info("Excel export");
+		//1. 엑셀파일로 만들 데이터들을 객체화한다.		
+		int project_code = teamWithUserToExcelReqDto.getProject_code();
+		int stage_code = teamWithUserToExcelReqDto.getStage_code();
+		List<VerticalByUserResDto> results = teamService.getVerticalByUserInfo(project_code, stage_code);
+		if(results.size()==0||results.isEmpty()) {
+			log.error("empty dto");
+			return ResponseEntity.noContent().build();
+		}
+		try {
+			String base64res = excelService.createExcelToUser(results);			
+			HttpHeaders httpHeaders = new HttpHeaders();
+			httpHeaders.add("Content-Disposition", "attachment; filename=test.xlsx");
+			return ResponseEntity.ok(new CommonResponse<String>(base64res));
+		} catch (IOException e) {
+			log.error("엑셀 파일 Export 실패");
+			e.printStackTrace();
+		}
+		return ResponseEntity.noContent().build();
+	}
+	
+	@PostMapping("/userproject/insert")
+	@ApiOperation(value="엑셀 파일을 삽입하여 삽입된 유저의 목록을 특정 프로젝트에 추가한다")
+	@ApiResponses({
+		@ApiResponse(code = 200, message = "파일을 읽고 Dto화 성공. 그리고 유저 추가 성공"),
+		@ApiResponse(code = 400, message = "잘못된 파일 형식 또는 잘못된 데이터 또는 유저의 추가 실패"),
+		@ApiResponse(code = 500, message = "이미 프로젝트에 존재하는 유저의 목록(실패한 유저의 이메일)을 반환한다")
+	})
+	public ResponseEntity<? extends BasicResponse> excelToUsersProject(@RequestBody UserProjectExcelReqDto userProjectExcelReqDto){
+		Long project_id = userProjectExcelReqDto.getProject_id();
+		MultipartFile file = userProjectExcelReqDto.getFile();
 		
+		String extension = FilenameUtils.getExtension(file.getOriginalFilename());
+		
+		//엑셀 파일 형식이 아닌 경우 에러
+		if(!extension.equals("xlsx") && !extension.equals("xls")) {
+			log.error("엑셀 파일 형식이 아닙니다");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					.body(new ErrorResponse("엑셀 파일 형식이 아닙니다."));
+		}
+		Workbook workbook = null;
+		try {
+			if(extension.equals("xlsx")) 
+				workbook = new XSSFWorkbook(file.getInputStream());
+			else
+				workbook = new HSSFWorkbook(file.getInputStream());
+		}
+		catch(Exception e) {
+			log.error("엑셀 파일 로딩 실패");
+			e.printStackTrace();
+		}
+		
+		Sheet worksheet = workbook.getSheetAt(0);
+		
+		//1. 이메일로 userId를 가져온다
+		List<Long> userids = new ArrayList<Long>();
+		List<String> emails = new ArrayList<String>();
+		//첫 행은 컬럼명이므로 제외
+		for(int i = 1; i<worksheet.getPhysicalNumberOfRows();i++) {
+			Row row = worksheet.getRow(i);
+			String email;
+			try {
+				email = row.getCell(0).getStringCellValue();
+				emails.add(email);
+			}catch(Exception e) {
+				//잘못된 데이터가 있다면 에러 반환
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+						.body(new ErrorResponse(i+"번째 행 데이터가 잘못되었습니다."));
+			}	
+		}
+		
+		// get userid by email
+		for(int i = 0;i<emails.size();i++) {			
+			User user = userService.getUserByEmail(emails.get(i)).get();
+			userids.add(user.getId());
+		}
+		
+		List<String> errorEmails = new ArrayList<String>();//에러 발생한 이메일
+		for(int i = 0;i<userids.size();i++) {
+			if(adminService.checkUserProjectDetail(userids.get(i), project_id)) { // User가 이 프로젝트에 존재하지 않으면
+				adminService.addStudentToProject(userids.get(i), project_id);	
+			}else {
+				errorEmails.add(emails.get(i));
+			}
+		}
+		
+        if (errorEmails.size()==0)
+            return ResponseEntity.ok(new CommonResponse<String>("모든 유저 등록 성공"));
+        else
+            return ResponseEntity.status(500).body(new CommonResponse<List<String>>(errorEmails));
+	}
 }
