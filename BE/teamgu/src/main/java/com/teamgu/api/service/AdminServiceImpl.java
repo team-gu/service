@@ -404,8 +404,8 @@ public class AdminServiceImpl implements AdminService {
 
 	//Delete Student Class
 	@Override
-	public void deleteStudentClass(Long classId) {
-		adminRepositorySupport.deleteStudentClass(classId);
+	public List<CodeResDto> deleteStudentClass(Long classId) {
+		return adminRepositorySupport.deleteStudentClass(classId);
 	}
 	
 	// Check Region Code
@@ -420,9 +420,33 @@ public class AdminServiceImpl implements AdminService {
 		return adminRepositorySupport.checkStudentClassDuplication(projectId, regionCode, name);
 	}
 
+	// Insert Student Class
 	@Override
-	public void insertStudentClass(Long projectId, int regionCode, int name) {
-		adminRepositorySupport.insertStudentClass(projectId, regionCode, name);
+	public List<CodeResDto> insertStudentClass(Long projectId, int regionCode, int name) {
+		return adminRepositorySupport.insertStudentClass(projectId, regionCode, name);
+	}
+
+	// Check User in Project
+	@Override
+	public boolean checkUserProjectDetail(Long userId, Long projectId) {
+		return adminRepositorySupport.checkUserProjectDetail(userId, projectId);
+	}
+
+	// add Student to project
+	@Override
+	public void addStudentToProject(Long userId, Long projectId) {
+		adminRepositorySupport.addStudentToProject(userId, projectId);
+	}
+
+	// exclude student to project
+	@Override
+	public void excludeStudentFromProject(Long userId, Long projectId) {
+		adminRepositorySupport.excludeStudentFromProject(userId, projectId);
+	}
+
+	@Override
+	public AdminTeamManagementResDto getStudentProjectTeamInfo(Long userId, Long projectId) {
+		return adminRepositorySupport.getStudentProjectTeamInfo(userId, projectId);
 	}
 
 }
