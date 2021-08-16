@@ -28,10 +28,10 @@ const Wrapper = styled.div`
   }
 `;
 
-const defaultSelectedMenu = 2;
+const DEFAULT_SELECTED_MENU = ADMIN_MENU_CONTENT.find(({title}) => title === '대시보드')?.id || 0;
 
 export default function AdminLayout(): ReactElement {
-  const [selectedMenu, setSelectedMenu] = useState(defaultSelectedMenu);
+  const [selectedMenu, setSelectedMenu] = useState(DEFAULT_SELECTED_MENU);
   const [selectedProject, setSelectedProject] = useState<number>();
   const [projects, setProjects] = useState<Project[]>([]);
 
@@ -77,7 +77,7 @@ export default function AdminLayout(): ReactElement {
               onChangeMenu={handleChangeMenu}
               onChangeProject={handleChangeProject}
               projects={projects}
-              defaultSelectedMenu={defaultSelectedMenu}
+              defaultSelectedMenu={DEFAULT_SELECTED_MENU}
             />
           </div>
           <div className="content">
