@@ -100,7 +100,6 @@ export const ADMIN_DASHBOARD_TABLE_COLUMNS = [
   },
 ];
 
-
 export const REGIONS = [
   {
     name: '전국',
@@ -188,3 +187,10 @@ export const TEAM_TABLE_COLUMNS = [
     disableGroupBy: true,
   },
 ];
+
+export const ROUTE_TO_KOREAN = {
+  humanpool: '인력풀',
+  team: '팀빌딩',
+  mypage: '마이페이지',
+  userdetail: '유저정보',
+};

@@ -5,9 +5,10 @@ import { useRouter } from 'next/router';
 import styled from 'styled-components';
 
 import { DropdownMenu } from '@molecules';
+import { Text } from '@atoms';
 import { useAuthState, useAppDispatch, setLogout } from '@store';
 import { useScrollPosition } from '@hooks/useWindow';
-import { getImageURL } from '@utils/constants';
+import { getImageURL, ROUTE_TO_KOREAN } from '@utils/constants';
 
 const Wrapper = styled.nav<{ isShowByScroll: Boolean }>`
   font-family: 'Roboto', sans-serif;
@@ -27,6 +28,15 @@ const Wrapper = styled.nav<{ isShowByScroll: Boolean }>`
     ${({ theme: { flexRow } }) => flexRow('space-between')};
     width: 70%;
 
+    .logo {
+      ${({ theme: { flexRow } }) => flexRow()};
+      .route {
+        ${({ theme: { flexRow } }) => flexRow()};
+        height: 30px;
+        border-left: 1px solid grey;
+        padding-left: 20px;
+      }
+    }
     ul {
       display: flex;
       cursor: pointer;
@@ -141,6 +151,11 @@ export default function Navbar(): ReactElement {
               </a>
             </Link>
           )}
+          <Text
+            text={ROUTE_TO_KOREAN[router.pathname.split('/')[1]]}
+            className="route"
+            color="gray"
+          />
         </div>
         <div>
           <ul>
