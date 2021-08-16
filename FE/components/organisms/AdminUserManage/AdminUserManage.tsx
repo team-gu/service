@@ -167,7 +167,7 @@ export default function AdminUserManage({ projectId }: AdminUserManageProps) {
 
     setShowManageModal(false);
     setEditTarget(undefined);
-  }
+  };
 
   return (
     <Wrapper>
@@ -191,12 +191,11 @@ export default function AdminUserManage({ projectId }: AdminUserManageProps) {
       </div>
       <div className="region-btns">
         {REGIONS.map((r) => (
-          <RegionButtonWrapper selected={selectedRegion === r.code}>
-            <Button
-              title={r.name}
-              key={r.code}
-              func={() => setSelectedRegion(r.code)}
-            />
+          <RegionButtonWrapper
+            selected={selectedRegion === r.code}
+            key={r.code}
+          >
+            <Button title={r.name} func={() => setSelectedRegion(r.code)} />
           </RegionButtonWrapper>
         ))}
       </div>
@@ -226,23 +225,22 @@ export default function AdminUserManage({ projectId }: AdminUserManageProps) {
         />
       )}
 
-      {showDeleteModal &&
-        editTarget && (
-          <ModalWrapper modalName="adminUserDeleteConfirmModal">
-            <UserDeleteConfirmModal>
-              <div className="confirm-text">
-                <Text
-                  text={`[${editTarget.name}] 교육생 정보를 삭제하시겠습니까?`}
-                  fontSetting="n20m"
-                />
-              </div>
-              <div className="confirm-btns">
-                <Button title="취소" func={handleDeleteConfirmCancel} />
-                <Button title="예" func={handleDeleteConfirm} />
-              </div>
-            </UserDeleteConfirmModal>
-          </ModalWrapper>
-        )}
+      {showDeleteModal && editTarget && (
+        <ModalWrapper modalName="adminUserDeleteConfirmModal">
+          <UserDeleteConfirmModal>
+            <div className="confirm-text">
+              <Text
+                text={`[${editTarget.name}] 교육생 정보를 삭제하시겠습니까?`}
+                fontSetting="n20m"
+              />
+            </div>
+            <div className="confirm-btns">
+              <Button title="취소" func={handleDeleteConfirmCancel} />
+              <Button title="예" func={handleDeleteConfirm} />
+            </div>
+          </UserDeleteConfirmModal>
+        </ModalWrapper>
+      )}
     </Wrapper>
   );
 }
