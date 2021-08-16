@@ -16,8 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.teamgu.api.dto.req.AdminManagementReqDto;
+import com.teamgu.api.dto.req.AdminUserProjectManagementReqDto;
 import com.teamgu.api.dto.req.ProjectCodeReqDto;
 import com.teamgu.api.dto.req.StdClassReqDto;
+import com.teamgu.api.dto.req.TeamMemberReqDto;
 import com.teamgu.api.dto.res.AdminTeamManagementResDto;
 import com.teamgu.api.dto.res.AdminUserManagementResDto;
 import com.teamgu.api.dto.res.BasicResponse;
@@ -28,6 +30,7 @@ import com.teamgu.api.dto.res.DashBoardTableResDto;
 import com.teamgu.api.dto.res.ErrorResponse;
 import com.teamgu.api.dto.res.ProjectInfoResDto;
 import com.teamgu.api.service.AdminServiceImpl;
+import com.teamgu.api.service.TeamServiceImpl;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -40,6 +43,9 @@ public class AdminController {
 
 	@Autowired
 	AdminServiceImpl adminService;
+	
+	@Autowired
+	TeamServiceImpl teamService;
 	
 	@ApiOperation(value = "프로젝트 조회")
 	@GetMapping("/project")
@@ -162,8 +168,8 @@ public class AdminController {
 				.body(new ErrorResponse("존재하지 않는 프로젝트입니다"));
 	}
 	
-	@ApiOperation(value = "DashBoard Table 조회")
-	@GetMapping("/dashboardtable/{projectId}")
+	@ApiOperation(value = "Project에 참여중인 교육생 조회")
+	@GetMapping("/project/{projectId}")
 	public ResponseEntity<? extends BasicResponse> getTeamBuildingTable(@PathVariable Long projectId) {
 
 		if(adminService.checkProjectValidation(projectId)) { // 존재하는 프로젝트일 경우
@@ -258,9 +264,9 @@ public class AdminController {
 		
 		if(adminService.checkStudentClassDuplication(projectId, regionCode, name)) {
 			
-			adminService.insertStudentClass(projectId, regionCode, name);
+			List<CodeResDto> list = adminService.insertStudentClass(projectId, regionCode, name);
 			return ResponseEntity.status(HttpStatus.OK)
-					.body(new CommonResponse<String>("반 등록이 완료 되었습니다"));	
+					.body(new CommonResponse<List<CodeResDto>>(list));	
 
 		}
 		
@@ -293,9 +299,9 @@ public class AdminController {
 	public ResponseEntity<? extends BasicResponse> deleteStudentClass(@PathVariable Long classId){
 		
 		if(adminService.checkStudentClassDeletion(classId)) { // 해당 클래스 검사
-			adminService.deleteStudentClass(classId);
+			List<CodeResDto> list = adminService.deleteStudentClass(classId);
 			return ResponseEntity.status(HttpStatus.OK)
-					.body(new CommonResponse<String>("삭제가 완료 되었습니다."));
+					.body(new CommonResponse<List<CodeResDto>>(list));
 			
 		}
 
@@ -303,4 +309,84 @@ public class AdminController {
 				.body(new ErrorResponse("삭제할 수 없는 항목입니다. 데이터를 확인하기 바랍니다.")); 
 		
 	}
+
+	@ApiOperation(value = "Project에 Student 추가")
+	@PostMapping("/project/add")
+	public ResponseEntity<? extends BasicResponse> addStudentToProject(@RequestBody AdminUserProjectManagementReqDto adminUserProjectManagementReqDto){
+		
+		Long userId = adminUserProjectManagementReqDto.getUserId();
+		Long projectId = adminUserProjectManagementReqDto.getProjectId();
+		
+		if(adminService.checkUserProjectDetail(userId, projectId)) { // User가 이 프로젝트에 존재하지 않으면
+			adminService.addStudentToProject(userId, projectId);
+			
+			List<DashBoardTableResDto> dashBoardTable = adminService.getDashBoardTableInfo(projectId);
+			
+			return ResponseEntity.ok(new CommonResponse<List<DashBoardTableResDto>>(dashBoardTable));
+			
+		}
+		
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+				.body(new ErrorResponse("이미 프로젝트에 존재하는 교육생입니다")); 
+		
+	}
+	
+
+	@ApiOperation(value = "Project에 Student 제외")
+	@PostMapping("/project/exclude")
+	public ResponseEntity<? extends BasicResponse> excludeStudentFromProject(@RequestBody AdminUserProjectManagementReqDto adminUserProjectManagementReqDto){
+		
+		Long userId = adminUserProjectManagementReqDto.getUserId();
+		Long projectId = adminUserProjectManagementReqDto.getProjectId();
+		
+		AdminTeamManagementResDto team = adminService.getStudentProjectTeamInfo(userId, projectId);
+		
+		if(team == null) {
+			adminService.excludeStudentFromProject(userId, projectId);
+			return ResponseEntity.ok(new CommonResponse<String>("프로젝트에서 제외가 완료되었습니다"));
+		}
+		else {
+			
+			Long teamId = team.getTeamId();
+			Long leaderId = team.getLeaderId();
+		
+			List<Long> ids = teamService.getTeamMemberIdbyTeamId(teamId);
+			int teamMebmerCount = ids.size();
+
+			adminService.excludeStudentFromProject(userId, projectId);
+			
+			if(teamMebmerCount == 1) {
+				teamService.deleteTeam(teamId);
+				
+				return ResponseEntity.ok(new CommonResponse<String>("팀을 삭제하고 프로젝트에서 제외가 완료되었습니다"));
+
+			}else {
+				for(Long id : ids) {
+					if(id == leaderId) continue;
+					
+					TeamMemberReqDto newLeader = TeamMemberReqDto.builder()
+							.teamId(teamId)
+							.userId(id)
+							.build()
+							;
+					TeamMemberReqDto exitTeam = TeamMemberReqDto.builder()
+							.teamId(teamId)
+							.userId(userId)
+							.build();
+					
+					teamService.changeTeamLeader(newLeader);
+					teamService.exitTeam(exitTeam);
+					
+					return ResponseEntity.ok(new CommonResponse<String>("팀에서 탈퇴하고 프로젝트에서 제외가 완료되었습니다"));
+					
+				}
+				
+			}
+		}
+		
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+				.body(new ErrorResponse("이미 프로젝트에 존재하지 않는 교육생입니다")); 
+		
+	}
+	
 }

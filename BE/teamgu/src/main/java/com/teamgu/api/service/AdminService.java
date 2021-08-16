@@ -9,10 +9,6 @@ import com.teamgu.api.dto.res.DashBoardResDto;
 import com.teamgu.api.dto.res.DashBoardTableResDto;
 import com.teamgu.api.dto.res.ProjectInfoResDto;
 
-/**
- * @author naann
- *
- */
 public interface AdminService {
 	
 	/**
@@ -177,7 +173,7 @@ public interface AdminService {
 	 * 교육생 반을 삭제한다.
 	 * @param classId
 	 */
-	public void deleteStudentClass(Long classId);
+	public List<CodeResDto> deleteStudentClass(Long classId);
 
 	/**
 	 * Check Region Code
@@ -206,5 +202,41 @@ public interface AdminService {
 	 * @param regionCode
 	 * @param name
 	 */
-	public void insertStudentClass(Long projectId, int regionCode, int name);
+	public List<CodeResDto> insertStudentClass(Long projectId, int regionCode, int name);
+
+	/**
+	 * Check User in Project
+	 * Project에 User가 존재하는지 체크
+	 * 존재하지 않으면 true, 존재하면 false를 반환한다.
+	 * @param userId
+	 * @param projectId
+	 * @return
+	 */
+	public boolean checkUserProjectDetail(Long userId, Long projectId);
+	
+	/**
+	 * add Student to project
+	 * Project에 User를 추가
+	 * @param userId
+	 * @param projectId
+	 */
+	public void addStudentToProject(Long userId, Long projectId);
+	
+	/**
+	 * exclude student to project
+	 * Project에서 User를 삭제
+	 * @param userId
+	 * @param projectId
+	 */
+	public void excludeStudentFromProject(Long userId, Long projectId);
+
+	/**
+	 * get Team Information student belongs to
+	 * 교육생이 속한 팀의 정보를 가져온다. 없으면 NULL
+	 * @param userId
+	 * @param projectId
+	 * @return
+	 */
+	public AdminTeamManagementResDto getStudentProjectTeamInfo(Long userId, Long projectId);
+	
 }
