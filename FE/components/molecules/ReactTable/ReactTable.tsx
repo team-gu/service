@@ -241,16 +241,22 @@ function DefaultColumnFilter({
 }
 
 const IndeterminateCheckbox = ({
+  editable,
+  deletable,
   onClickEdit,
   onClickDelete,
 }: {
+  editable: boolean | undefined;
+  deletable: boolean | undefined;
   onClickEdit: () => void;
   onClickDelete: () => void;
 }) => {
   return (
     <>
-      <Icon iconName="edit" color="green" func={onClickEdit} />
-      <Icon iconName="delete" color="crimson" func={onClickDelete} />
+      {editable && <Icon iconName="edit" color="green" func={onClickEdit} />}
+      {deletable && (
+        <Icon iconName="delete" color="crimson" func={onClickDelete} />
+      )}
     </>
   );
 };
@@ -261,7 +267,10 @@ interface TableProps {
   grouping?: boolean;
   pagination?: boolean;
   fullWidth?: boolean;
-  selectable?: boolean;
+  selectable?: {
+    selectable: boolean;
+    type?: { edit: boolean; delete: boolean };
+  };
   onSelectRow?: (row: any) => void;
 }
 
@@ -335,13 +344,15 @@ export default function ReactTable({
     usePagination,
     useRowSelect,
     (hooks) => {
-      if (selectable && onSelectRow) {
+      if (selectable?.selectable && onSelectRow) {
         hooks.visibleColumns.push((columns) => [
           {
             id: 'selection',
             Cell: ({ row }) => (
               <div>
                 <IndeterminateCheckbox
+                  editable={selectable.type?.edit}
+                  deletable={selectable.type?.delete}
                   onClickDelete={() =>
                     onSelectRow({ type: 'delete', data: { ...row.original } })
                   }
