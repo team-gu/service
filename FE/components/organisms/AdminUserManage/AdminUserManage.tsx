@@ -6,6 +6,8 @@ import { ReactTable, Button } from '@molecules';
 import { AdminUserManageModal, AdminUserImportModal } from '@organisms';
 import { getUserTableData } from '@repository/adminRepository';
 import { REGIONS } from '@utils/constants';
+import { ModalWrapper } from '@organisms';
+import { removeWindowResize } from '@hooks/useWindow';
 
 const Wrapper = styled.div`
   i {
@@ -68,6 +70,41 @@ const RegionButtonWrapper = styled.span<{ selected: boolean }>`
   }
 `;
 
+const UserDeleteConfirmModal = styled.div`
+  padding: 50px;
+
+  .confirm-text {
+    margin-bottom: 20px;
+    text-align: center;
+  } 
+
+  .create-confirm-btns {
+    text-align: center;
+
+    button {
+      width: 90px;
+      margin 0 10px;
+    }
+
+    > button:nth-child(1) {
+      background-color: forestgreen;
+    }
+  }
+
+  .confirm-btns {
+    text-align: center;
+
+    button {
+      width: 90px;
+      margin 0 10px;
+    }
+
+    > button:nth-child(2) {
+      background-color: crimson;
+    }
+  }
+`;
+
 interface UserDataRow {
   completeYn: string | null;
   major: string;
@@ -92,27 +129,45 @@ export default function AdminUserManage({ projectId }: AdminUserManageProps) {
   );
   const [showManageModal, setShowManageModal] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [editable, setEditable] = useState(false);
   const [editTarget, setEditTarget] = useState<UserDataRow>();
 
   useEffect(() => {
     getUserTableData({ projectId, regionCode: selectedRegion }).then(
       ({ data: { data } }) => {
-        console.log(data);
         setTeamStatusTableData(data);
       },
     );
   }, [projectId, selectedRegion]);
 
-  const handleEditRow = (row: UserDataRow) => {
-    setShowManageModal(true);
-    setEditTarget(row);
+  const handleSelectedRow = (row: { type: string; data: UserDataRow }) => {
+    if (row.type === 'edit') {
+      setShowManageModal(true);
+      setEditTarget(row.data);
+    } else if (row.type === 'delete') {
+      setShowDeleteModal(true);
+      setEditTarget(row.data);
+    }
   };
 
   const handleCloseEditModal = () => {
     setShowManageModal(false);
     setEditTarget(undefined);
   };
+
+  const handleDeleteConfirmCancel = () => {
+    setShowManageModal(false);
+    setEditTarget(undefined);
+  };
+
+  const handleDeleteConfirm = () => {
+    // TODO: 사용자 삭제 API 호출 후 사용자 목록 리렌더링
+    console.log(editTarget);
+
+    setShowManageModal(false);
+    setEditTarget(undefined);
+  }
 
   return (
     <Wrapper>
@@ -149,7 +204,7 @@ export default function AdminUserManage({ projectId }: AdminUserManageProps) {
         data={teamStatusTableData}
         columns={USER_TABLE_COLUMNS}
         selectable={editable}
-        onSelectRow={handleEditRow}
+        onSelectRow={handleSelectedRow}
       />
       {showManageModal &&
         (editTarget ? (
@@ -164,12 +219,30 @@ export default function AdminUserManage({ projectId }: AdminUserManageProps) {
             projectId={projectId}
           />
         ))}
-      
+
       {showImportModal && (
         <AdminUserImportModal
           handleClickClose={() => setShowImportModal(false)}
         />
       )}
+
+      {showDeleteModal &&
+        editTarget && (
+          <ModalWrapper modalName="adminUserDeleteConfirmModal">
+            <UserDeleteConfirmModal>
+              <div className="confirm-text">
+                <Text
+                  text={`[${editTarget.name}] 교육생 정보를 삭제하시겠습니까?`}
+                  fontSetting="n20m"
+                />
+              </div>
+              <div className="confirm-btns">
+                <Button title="취소" func={handleDeleteConfirmCancel} />
+                <Button title="예" func={handleDeleteConfirm} />
+              </div>
+            </UserDeleteConfirmModal>
+          </ModalWrapper>
+        )}
     </Wrapper>
   );
 }
