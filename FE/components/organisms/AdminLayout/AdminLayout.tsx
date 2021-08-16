@@ -19,7 +19,6 @@ const Wrapper = styled.div`
   min-height: 100vh;
 
   .sidebar {
-    
     flex: 0 0 200px;
   }
 
@@ -29,8 +28,10 @@ const Wrapper = styled.div`
   }
 `;
 
+const defaultSelectedMenu = 2;
+
 export default function AdminLayout(): ReactElement {
-  const [selectedMenu, setSelectedMenu] = useState(0);
+  const [selectedMenu, setSelectedMenu] = useState(defaultSelectedMenu);
   const [selectedProject, setSelectedProject] = useState<number>();
   const [projects, setProjects] = useState<Project[]>([]);
 
@@ -76,28 +77,30 @@ export default function AdminLayout(): ReactElement {
               onChangeMenu={handleChangeMenu}
               onChangeProject={handleChangeProject}
               projects={projects}
+              defaultSelectedMenu={defaultSelectedMenu}
             />
           </div>
           <div className="content">
             {
               {
-                [ADMIN_MENU_CONTENT[0]]: (
+                [ADMIN_MENU_CONTENT[0].id]: <div>전체 교육생 목록</div>,
+                [ADMIN_MENU_CONTENT[1].id]: (
                   <AdminProjectManage
                     projects={projects}
                     fetchProjects={fetchProjects}
                   />
                 ),
-                [ADMIN_MENU_CONTENT[1]]: selectedProject && (
+                [ADMIN_MENU_CONTENT[2].id]: selectedProject && (
                   <AdminDashboard projectId={selectedProject} />
                 ),
-                [ADMIN_MENU_CONTENT[2]]: selectedProject && (
+                [ADMIN_MENU_CONTENT[3].id]: selectedProject && (
                   <AdminUserManage projectId={selectedProject} />
                 ),
-                [ADMIN_MENU_CONTENT[3]]: selectedProject && (
+                [ADMIN_MENU_CONTENT[4].id]: selectedProject && (
                   <AdminTeamManage projectId={selectedProject} />
                 ),
-                [ADMIN_MENU_CONTENT[4]]: <div>공지사항 관리</div>,
-              }[ADMIN_MENU_CONTENT[selectedMenu]]
+                [ADMIN_MENU_CONTENT[5].id]: <div>공지사항 관리</div>,
+              }[ADMIN_MENU_CONTENT[selectedMenu].id]
             }
           </div>
         </>

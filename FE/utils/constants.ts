@@ -30,14 +30,6 @@ export const FILTER_TITLE: any = {
   '전공/비전공': 'isMajor',
 };
 
-export const ADMIN_MENU_CONTENT = [
-  '프로젝트 관리',
-  '대시보드',
-  '교육생 관리',
-  '팀 관리',
-  '공지사항 관리',
-];
-
 export const SSAFY_REGION = ['서울', '대전', '구미', '광주'];
 export const SSAFY_CLASS = ['미정', '1', '2', '3', '4', '5', '6'];
 export const SSAFY_TRACK = ['웹 기술', '웹 디자인', '웹 IoT'];
@@ -126,5 +118,32 @@ export const REGIONS = [
   {
     name: '부울경',
     code: 105,
+  },
+];
+
+export const ADMIN_MENU_CONTENT = [
+  {
+    id: 0,
+    title: '전체 교육생 관리',
+  },
+  {
+    id: 1,
+    title: '프로젝트 관리',
+  },
+  {
+    id: 2,
+    title: '대시보드',
+  },
+  {
+    id: 3,
+    title: '교육생 관리',
+  },
+  {
+    id: 4,
+    title: '팀 관리',
+  },
+  {
+    id: 5,
+    title: '공지사항 관리',
   },
 ];
