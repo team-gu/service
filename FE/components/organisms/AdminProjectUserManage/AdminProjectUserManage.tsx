@@ -3,7 +3,11 @@ import styled from 'styled-components';
 
 import { Text, Icon } from '@atoms';
 import { ReactTable, Button } from '@molecules';
-import { getProjectUserTableData } from '@repository/adminRepository';
+import {
+  getProjectUserTableData,
+  addStudentToProject,
+  excludeStudentFromProject,
+} from '@repository/adminRepository';
 import { Project } from '@utils/type';
 
 import AdminProjectUserDeleteModal from './AdminProjectUserDeleteModal';
@@ -67,7 +71,7 @@ interface AdminUserManageProps {
 export default function AdminProjectUserManage({
   project,
 }: AdminUserManageProps) {
-  const [teamStatusTableData, setTeamStatusTableData] = useState<UserDataRow[]>(
+  const [userTableData, setUserTableData] = useState<UserDataRow[]>(
     [],
   );
   const [showAddModal, setShowAddModal] = useState(false);
@@ -81,7 +85,7 @@ export default function AdminProjectUserManage({
     getProjectUserTableData({
       projectId: project.id,
     }).then(({ data: { data } }) => {
-      setTeamStatusTableData(data);
+      setUserTableData(data);
     });
   }, [project]);
 
@@ -105,7 +109,16 @@ export default function AdminProjectUserManage({
   const deleteUser = () => {
     // TODO: 사용자 삭제 API 호출 후 사용자 목록 리렌더링
     console.log('DELETE USER');
-    console.log(editTarget);
+    console.log('TARGET: ', editTarget);
+
+    // if (editTarget && editTarget.userid) {
+    //   excludeStudentFromProject({
+    //     projectId: project.id,
+    //     userId: editTarget.userid,
+    //   }).then(({ data: { data } }) => {
+    //     console.log(data);
+    //   });
+    // }
 
     closeDeleteModal();
   };
@@ -113,15 +126,21 @@ export default function AdminProjectUserManage({
   const addUser = () => {
     // TODO: 사용자 추가 API 호출 후 사용자 목록 리렌더링
     console.log('ADD USER');
-    console.log(editTarget);
+
+    // addStudentToProject({
+    //   projectId: project.id,
+    //   userId: ??,
+    // }).then(({ data: { data } }) => {
+    //   console.log(data);
+    // });
 
     closeAddModal();
   };
 
   const downloadUserExport = () => {
     // TODO: 사용자 export 결과 다운로드 API 호출
-    console.log("DOWNLOAD USER EXPORT");
-  }
+    console.log('DOWNLOAD USER EXPORT');
+  };
 
   return (
     <Wrapper>
@@ -149,7 +168,7 @@ export default function AdminProjectUserManage({
         </div>
       </div>
       <ReactTable
-        data={teamStatusTableData}
+        data={userTableData}
         columns={ADMIN_USER_TABLE_COLUMNS}
         selectable={{
           selectable: editable,
