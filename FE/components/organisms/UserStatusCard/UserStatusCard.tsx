@@ -15,6 +15,7 @@ const Wrapper = styled.div`
   :hover {
     transform: scale(1.02);
   }
+  width: calc(100% - 40px);
   padding: 20px;
 
   min-height: 200px;

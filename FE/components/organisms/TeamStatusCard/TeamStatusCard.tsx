@@ -15,6 +15,7 @@ const Wrapper = styled.div<{ isComplete: boolean }>`
   :hover {
     transform: scale(1.02);
   }
+  width: calc(100% - 40px);
   padding: 20px;
 
   .completed-team-overlay {
