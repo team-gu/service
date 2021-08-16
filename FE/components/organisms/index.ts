@@ -27,7 +27,6 @@ import AdminDashboard from './AdminDashboard';
 import AdminTeamManage from './AdminTeamManage';
 import AdminUserManage from './AdminUserManage';
 import AdminProjectUserManage from './AdminProjectUserManage';
-import AdminUserManageModal from './AdminUserManageModal';
 
 export {
   ChatList,
@@ -58,5 +57,4 @@ export {
   AdminTeamManage,
   AdminUserManage,
   AdminProjectUserManage,
-  AdminUserManageModal,
 };

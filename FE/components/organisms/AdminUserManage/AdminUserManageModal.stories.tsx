@@ -8,6 +8,7 @@ export default {
 };
 
 const defaultValue = {
+  userId: 100,
   email: 'ssafy@ssafy.com',
   name: '김싸피',
   studentNumber: '0540011',

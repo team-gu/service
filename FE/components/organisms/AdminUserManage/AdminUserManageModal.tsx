@@ -218,6 +218,7 @@ const CLASS_OPTIONS = [
 ];
 
 interface UserDataRow {
+  userId: number,
   completeYn: string | null;
   major: string;
   name: string;
@@ -228,6 +229,7 @@ interface UserDataRow {
   studentNumber: string;
   teamId: number | null;
   teamName: string | null;
+  email: string;
 }
 
 interface AdminUserCreateModalProps {
@@ -452,7 +454,7 @@ export default function AdminUserManageModal({
         </div>
         <div className="modal-content">
           {!defaultValue && (
-            <div style={{ margin: '20px 0'}}>
+            <div style={{ margin: '20px 0' }}>
               <Text text="프로젝트에 추가할 교육생의 학번을 입력해주세요." />
             </div>
           )}
@@ -474,43 +476,44 @@ export default function AdminUserManageModal({
             </Label>
           </div>
 
+          <div className="input-container">
+            <Label text="이름">
+              <Input
+                type="text"
+                width="100%"
+                height="40px"
+                ref={userNameInputRef}
+                refValue={
+                  defaultValue && defaultValue.name ? defaultValue.name : ''
+                }
+                placeHolder="예) 김싸피"
+                readOnly={!!defaultValue}
+              />
+            </Label>
+          </div>
+
+          <div className="input-container">
+            <Label text="이메일">
+              <Input
+                type="email"
+                width="100%"
+                height="40px"
+                ref={userEmailInputRef}
+                refValue={
+                  defaultValue && defaultValue.email ? defaultValue.email : ''
+                }
+                placeHolder="예) example@ssafy.com"
+                readOnly={!!defaultValue}
+              />
+            </Label>
+          </div>
+
           {defaultValue && (
             <>
-              <div className="input-container">
-                <Label text="이름">
-                  <Input
-                    type="text"
-                    width="100%"
-                    height="40px"
-                    ref={userNameInputRef}
-                    refValue={
-                      defaultValue && defaultValue.name ? defaultValue.name : ''
-                    }
-                    placeHolder="예) 김싸피"
-                    readOnly={!!defaultValue}
-                  />
-                </Label>
-              </div>
-
-              {/* <div className="input-container">
-                <Label text="이메일">
-                  <Input
-                    type="email"
-                    width="100%"
-                    height="40px"
-                    ref={userEmailInputRef}
-                    refValue={
-                      defaultValue && defaultValue.email
-                        ? defaultValue.email
-                        : ''
-                    }
-                    placeHolder="예) example@ssafy.com"
-                  />
-                </Label>
-              </div> */}
               <div className="select-container">
                 <Label text="전공/비전공">
                   <Select
+                    isSearchable={false}
                     cacheOptions
                     defaultOptions
                     value={stringToOption(userMajor) || null}
@@ -561,6 +564,7 @@ export default function AdminUserManageModal({
               <div className="select-container">
                 <Label text="교육생/퇴소생">
                   <Select
+                    isSearchable={false}
                     cacheOptions
                     defaultOptions
                     value={stringToOption(userRole) || null}
@@ -577,6 +581,7 @@ export default function AdminUserManageModal({
               <div className="select-container">
                 <Label text="프로젝트 활성/비활성">
                   <Select
+                    isSearchable={false}
                     cacheOptions
                     defaultOptions
                     value={stringToOption(userRegist) || null}
