@@ -127,47 +127,45 @@ export default function ChatRoom({
                 />
               ),
             )
-          : messageList
-              .slice(-30)
-              ?.map(
-                (
-                  {
-                    create_date_time,
-                    message,
-                    sender_id,
-                    sender_name,
-                    type,
-                    chat_id,
-                    team_id,
-                  }: ChatNormal,
-                  index: number,
-                ) => (
-                  <ChatBubble
-                    key={index}
-                    userName={sender_name}
-                    profileSrc="/profile.png"
-                    time={
-                      DateTime.now()
-                        .diff(DateTime.fromISO(create_date_time))
-                        .toMillis() < 60000
-                        ? '지금 막'
-                        : DateTime.fromISO(create_date_time)
-                            .setLocale('ko')
-                            .toRelative()
-                    }
-                    message={message}
-                    handleGetChatRoomMessages={handleGetChatRoomMessages}
-                    isMe={sender_id === id}
-                    func={sendMessage}
-                    type={type}
-                    roomId={roomId}
-                    opponentId={opponentId}
-                    chatId={chat_id}
-                    teamId={team_id}
-                    id={id}
-                  />
-                ),
-              )}
+          : messageList?.map(
+              (
+                {
+                  create_date_time,
+                  message,
+                  sender_id,
+                  sender_name,
+                  type,
+                  chat_id,
+                  team_id,
+                }: ChatNormal,
+                index: number,
+              ) => (
+                <ChatBubble
+                  key={index}
+                  userName={sender_name}
+                  profileSrc="/profile.png"
+                  time={
+                    DateTime.now()
+                      .diff(DateTime.fromISO(create_date_time))
+                      .toMillis() < 60000
+                      ? '지금 막'
+                      : DateTime.fromISO(create_date_time)
+                          .setLocale('ko')
+                          .toRelative()
+                  }
+                  message={message}
+                  handleGetChatRoomMessages={handleGetChatRoomMessages}
+                  isMe={sender_id === id}
+                  func={sendMessage}
+                  type={type}
+                  roomId={roomId}
+                  opponentId={opponentId}
+                  chatId={chat_id}
+                  teamId={team_id}
+                  id={id}
+                />
+              ),
+            )}
       </div>
       <div className="chat-input">
         <ChatInput func={sendMessage} />
