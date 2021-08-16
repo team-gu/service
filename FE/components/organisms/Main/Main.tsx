@@ -65,6 +65,11 @@ const Wrapper = styled.div`
       margin-top: 50px;
       > button {
         box-shadow: none;
+        background-color: ${({
+          theme: {
+            colors: { samsungLightBlue },
+          },
+        }) => samsungLightBlue};
       }
     }
 

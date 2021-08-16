@@ -67,9 +67,9 @@ const Wrapper = styled(motion.div)`
     height: 40px;
     background-color: ${({
       theme: {
-        colors: { daangn },
+        colors: { samsungLightBlue },
       },
-    }) => daangn};
+    }) => samsungLightBlue};
 
     border-radius: 10px 10px 0px 0px;
 

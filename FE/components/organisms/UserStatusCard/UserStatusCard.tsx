@@ -48,6 +48,8 @@ const Wrapper = styled.div`
       grid-row: 1 / 3;
 
       .item-container {
+        padding-top: 20px;
+
         display: grid;
         grid-template-columns: 0.75fr 1.25fr;
         grid-template-rows: auto auto;
@@ -158,7 +160,7 @@ export default function UserStatusCard({
           </div>
           <div className="description">
             <Text text="소개" color="gray" />
-            <Text text={introduce} isLineBreak fontSetting="n18m" />
+            <Text text={introduce} isLineBreak fontSetting="n16m" />
           </div>
         </div>
       </div>
