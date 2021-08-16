@@ -42,6 +42,8 @@ import com.teamgu.api.dto.res.CommonResponse;
 import com.teamgu.api.dto.res.ErrorResponse;
 import com.teamgu.api.dto.res.HorizontalByTeamResDto;
 import com.teamgu.api.dto.res.UserInfoByTeam;
+import com.teamgu.api.dto.res.VerticalByUserResDto;
+import com.teamgu.api.service.ExcelServiceImpl;
 import com.teamgu.api.service.TeamServiceImpl;
 import com.teamgu.api.service.UserServiceImpl;
 import com.teamgu.database.entity.User;
@@ -64,6 +66,9 @@ public class ExcelController {
 	
 	@Autowired
 	UserServiceImpl userService;
+	
+	@Autowired
+	ExcelServiceImpl excelService;
 	
 	@PostMapping("/user/insert")
 	@ApiOperation(value="엑셀 파일을 삽입하여 삽입된 유저의 목록을 회원 가입시킨다")
@@ -144,7 +149,7 @@ public class ExcelController {
 	}
 	
 
-	@PostMapping("/export")
+	@PostMapping("/team/export")
 	@ApiOperation(value="기수-프로젝트도메인에 맞는 팀을 가로비 정렬하여 Excel파일로 export한다")
 //	@ApiResponses({
 //		@ApiResponse(code = 200, message = "파일을 읽고 Dto화 성공"),
@@ -158,104 +163,46 @@ public class ExcelController {
 		List<HorizontalByTeamResDto> results = teamService.getHorizontalByTeamInfo(project_code, stage_code);
 		if(results.size()==0||results.isEmpty()) {
 			log.error("empty dto");
-			return null;
-//			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-//					.body(new ErrorResponse("결과 값이 존재하지 않습니다."));
+			return ResponseEntity.noContent().build();
 		}
-		
-		//2. 컬럼 갯수를 파악하기 위해 최대 인원 구성 수를 파악한다
-		int maxMembers = 0;
-		for(int i =0;i<results.size();i++) {
-			maxMembers = Integer.max(results.get(i).getMembers().size(),maxMembers);			
-		}
-		
-		//3. 엑셀 파일의 초기 설정을 한다
-		SXSSFWorkbook workbook = new SXSSFWorkbook();
-		
-		//시트생성
-		SXSSFSheet sheet = workbook.createSheet("팀별 가로비");
-		
-		//시트 열 너비 설정
-//		sheet.setColumnWidth(columnIndex, width);
-		
-		//헤더 행 생성
-		Row headerRow = sheet.createRow(0);
-		//해당 행의 열 셀 생성
-		Cell headerCell =null;
-		
-		//공통 정보에 대한 헤더 생성
-		String[] headers = {"기수","프로젝트","트랙","팀명"};
-		for(int i=0;i<headers.length;i++) {
-			headerCell = headerRow.createCell(i);
-			headerCell.setCellValue(headers[i]);			
-		}
-		//멤버 정보에 대한 헤더 생성
-		headerCell = headerRow.createCell(headers.length);
-		headerCell.setCellValue("팀장");
-		for(int i =headers.length+1;i<headers.length+maxMembers;i++) {			
-			headerCell = headerRow.createCell(i);
-			headerCell.setCellValue("팀원"+(i-headers.length));//팀원1, 팀원2 ,,,,
-		}
-		
-		//4. 내용 행 및 셀 생성
-		Row bodyRow = null;
-		Cell bodyCell = null;
-		for(int i =0;i<results.size();i++) {
-			HorizontalByTeamResDto info = results.get(i);
-			
-			//행 생성
-			bodyRow = sheet.createRow(i+1);//header 다음 줄부터
-			
-			//데이터 기수 표시
-			bodyCell = bodyRow.createCell(0);
-			bodyCell.setCellValue(info.getStage_name());
-			
-			//데이터 프로젝트 도메인 표시
-			bodyCell = bodyRow.createCell(1);
-			bodyCell.setCellValue(info.getProject_name());
-			
-			//데이터 트랙 표시
-			bodyCell = bodyRow.createCell(2);
-			bodyCell.setCellValue(info.getTrack_name());
-			
-			//데이터 팀명 표시
-			bodyCell = bodyRow.createCell(3);
-			bodyCell.setCellValue(info.getName());
-			
-			//데이터 멤버 표시
-			//우선 팀장을 가장 위로 정렬해준다(셀 맨 앞이 팀장이므로)
-			info.getMembers().sort(new Comparator<UserInfoByTeam>() {
-				@Override
-				public int compare(UserInfoByTeam o1, UserInfoByTeam o2) {					
-					if(o1.getRole().equals("팀장"))
-						return -1;
-					else return 0;
-				}
-			});
-			for(int j=0;j<info.getMembers().size();j++) {
-				UserInfoByTeam userInfo = info.getMembers().get(j); 
-				bodyCell = bodyRow.createCell(j+4);
-				//이름(학번) 형태로 기재
-				bodyCell.setCellValue(userInfo.getName()+"("+userInfo.getStudentNumber()+")");				
-			}
-		}
-		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		try {
-			log.info("wirte stream");
-			workbook.write(outputStream);
-			
-			//base64 인코딩
-			String bres = Base64.getEncoder().encodeToString(outputStream.toByteArray());
-			
-			workbook.close();
+			String base64res = excelService.createExcelToTeam(results);			
 			HttpHeaders httpHeaders = new HttpHeaders();
 			httpHeaders.add("Content-Disposition", "attachment; filename=test.xlsx");
-			return ResponseEntity.ok(new CommonResponse<String>(bres));
+			return ResponseEntity.ok(new CommonResponse<String>(base64res));
 		} catch (IOException e) {
 			log.error("엑셀 파일 Export 실패");
 			e.printStackTrace();
 		}
-		return null;
+		return ResponseEntity.noContent().build();
+	}
+	
+	@PostMapping("/user/export")
+	@ApiOperation(value="기수-프로젝트도메인에 맞는 유저를 세로비 정렬하여 Excel파일로 export한다")
+//	@ApiResponses({
+//		@ApiResponse(code = 200, message = "파일을 읽고 Dto화 성공"),
+//		@ApiResponse(code = 400, message = "잘못된 파일 형식 또는 잘못된 데이터",response = BaseResDto.class)
+//	})
+	public ResponseEntity<? extends BasicResponse> UsersByTeamVerticalToExcel(@RequestBody TeamWithUserToExcelReqDto teamWithUserToExcelReqDto){
+		log.info("Excel export");
+		//1. 엑셀파일로 만들 데이터들을 객체화한다.		
+		int project_code = teamWithUserToExcelReqDto.getProject_code();
+		int stage_code = teamWithUserToExcelReqDto.getStage_code();
+		List<VerticalByUserResDto> results = teamService.getVerticalByUserInfo(project_code, stage_code);
+		if(results.size()==0||results.isEmpty()) {
+			log.error("empty dto");
+			return ResponseEntity.noContent().build();
+		}
+		try {
+			String base64res = excelService.createExcelToUser(results);			
+			HttpHeaders httpHeaders = new HttpHeaders();
+			httpHeaders.add("Content-Disposition", "attachment; filename=test.xlsx");
+			return ResponseEntity.ok(new CommonResponse<String>(base64res));
+		} catch (IOException e) {
+			log.error("엑셀 파일 Export 실패");
+			e.printStackTrace();
+		}
+		return ResponseEntity.noContent().build();
 	}
 		
 }

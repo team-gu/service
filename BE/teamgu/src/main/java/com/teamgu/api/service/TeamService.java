@@ -7,6 +7,7 @@ import com.teamgu.api.dto.req.TeamMemberReqDto;
 import com.teamgu.api.dto.req.TeamAutoCorrectReqDto;
 import com.teamgu.api.dto.res.TeamIsCreateResDto;
 import com.teamgu.api.dto.res.TeamListResDto;
+import com.teamgu.api.dto.res.VerticalByUserResDto;
 import com.teamgu.api.dto.res.HorizontalByTeamResDto;
 import com.teamgu.api.dto.res.TeamAutoCorrectResDto;
 
@@ -73,4 +74,14 @@ public interface TeamService {
 	 * @return
 	 */
 	List<HorizontalByTeamResDto> getHorizontalByTeamInfo(int project_code, int stage_code);
+	
+	/**
+	 * 특정 기수, 프로젝트 도메인 코드를 입력하면
+	 * 해당 조건에 맞는 모든 유저와 해당 유저가 속한 팀의 정보를
+	 * 엑셀 데이터 출력에 맞게 반환한다.
+	 * @param project_code
+	 * @param stage_code
+	 * @return
+	 */
+	List<VerticalByUserResDto> getVerticalByUserInfo(int project_code,int stage_code);
 }
