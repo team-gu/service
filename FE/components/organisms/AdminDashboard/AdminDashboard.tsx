@@ -4,8 +4,10 @@ import CountUp from 'react-countup';
 
 import { Text } from '@atoms';
 import { ReactTable, DashboardBarChart } from '@molecules';
-import { getChartData, getTableData } from '@repository/adminRepository';
-import { ADMIN_DASHBOARD_TABLE_COLUMNS } from '@utils/constants';
+import {
+  getChartData,
+  getProjectUserTableData,
+} from '@repository/adminRepository';
 import { Project } from '@utils/type';
 
 const COLOR_MAP = {
@@ -169,15 +171,13 @@ export default function AdminDashboard({
         setTrackTeamData(trackData);
       });
 
-      getTableData({ projectId: project.id }).then(({ data: { data } }) => {
-        setTeamStatusTableData(data);
-      });
+      getProjectUserTableData({ projectId: project.id }).then(
+        ({ data: { data } }) => {
+          setTeamStatusTableData(data);
+        },
+      );
     }
   }, [project]);
-
-  const tableColumns = useMemo(() => {
-    return ADMIN_DASHBOARD_TABLE_COLUMNS;
-  }, []);
 
   return (
     <Wrapper>
@@ -253,9 +253,58 @@ export default function AdminDashboard({
           </div>
         </div>
         <TableWrapper>
-          <ReactTable data={teamStatusTableData} columns={tableColumns} />
+          <ReactTable
+            data={teamStatusTableData}
+            columns={ADMIN_USER_TABLE_COLUMNS}
+          />
         </TableWrapper>
       </div>
     </Wrapper>
   );
 }
+
+const ADMIN_USER_TABLE_COLUMNS = [
+  {
+    Header: '학번',
+    accessor: 'studentNumber',
+    disableGroupBy: true,
+  },
+  {
+    Header: '이름',
+    accessor: 'name',
+    disableGroupBy: true,
+  },
+  {
+    Header: '이메일',
+    accessor: 'email',
+    disableGroupBy: true,
+  },
+  {
+    Header: '지역',
+    accessor: 'region',
+  },
+  {
+    Header: '반',
+    accessor: 'studentClass',
+  },
+  {
+    Header: '팀 유무',
+    accessor: 'teamYn',
+  },
+  {
+    Header: '팀 식별자',
+    accessor: 'teamId',
+  },
+  {
+    Header: '리더 여부',
+    accessor: 'leaderYn',
+  },
+  {
+    Header: '전공/비전공',
+    accessor: 'major',
+  },
+  {
+    Header: '희망 포지션',
+    accessor: 'position',
+  },
+];

@@ -48,52 +48,6 @@ export const getImageURL = (image: string) => {
   return 'https://i5a202.p.ssafy.io:8080/api/file/display?url=profile/c21f969b5f03d33d43e04f8f136e7682.png';
 };
 
-export const ADMIN_DASHBOARD_TABLE_COLUMNS = [
-  {
-    Header: '학번',
-    accessor: 'studentNumber',
-    disableGroupBy: true,
-  },
-  {
-    Header: '이름',
-    accessor: 'name',
-    disableGroupBy: true,
-  },
-  {
-    Header: '이메일',
-    accessor: 'email',
-    disableGroupBy: true,
-  },
-  {
-    Header: '지역',
-    accessor: 'region',
-  },
-  {
-    Header: '반',
-    accessor: 'studentClass',
-  },
-  {
-    Header: '팀 유무',
-    accessor: 'teamYn',
-  },
-  {
-    Header: '팀 식별자',
-    accessor: 'teamId',
-  },
-  {
-    Header: '리더 여부',
-    accessor: 'leaderYn',
-  },
-  {
-    Header: '전공/비전공',
-    accessor: 'major',
-  },
-  {
-    Header: '희망 포지션',
-    accessor: 'position',
-  },
-];
-
 export const REGIONS = [
   {
     name: '전국',
