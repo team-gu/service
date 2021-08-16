@@ -8,7 +8,12 @@ import { getImageURL } from '@utils/constants';
 
 const Wrapper = styled.div<{ isComplete: boolean }>`
   position: relative;
-  box-shadow: 0 12px 20px 0 rgba(0, 0, 0, 0.15);
+  border-radius: 18px;
+  box-shadow: 2px 4px 12px rgb(0 0 0 / 8%);
+  transition: all 0.3s cubic-bezier(0, 0, 0.5, 1);
+  :hover {
+    transform: scale(1.02);
+  }
   padding: 20px;
 
   .completed-team-overlay {

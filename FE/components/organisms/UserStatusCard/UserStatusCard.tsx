@@ -8,7 +8,12 @@ import { Tag, ProfileImage } from '@molecules';
 
 const Wrapper = styled.div`
   position: relative;
-  box-shadow: 0 6px 12px 0 rgba(4, 4, 161, 0.1);
+  border-radius: 18px;
+  box-shadow: 2px 4px 12px rgb(0 0 0 / 8%);
+  transition: all 0.3s cubic-bezier(0, 0, 0.5, 1);
+  :hover {
+    transform: scale(1.02);
+  }
   padding: 10px;
   margin: 10px;
 
