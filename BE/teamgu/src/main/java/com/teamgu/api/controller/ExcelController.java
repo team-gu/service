@@ -1,6 +1,11 @@
 package com.teamgu.api.controller;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Comparator;
 import java.util.List;
 
@@ -14,7 +19,12 @@ import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.InputStreamSource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,6 +43,8 @@ import com.teamgu.api.dto.res.ErrorResponse;
 import com.teamgu.api.dto.res.HorizontalByTeamResDto;
 import com.teamgu.api.dto.res.UserInfoByTeam;
 import com.teamgu.api.service.TeamServiceImpl;
+import com.teamgu.api.service.UserServiceImpl;
+import com.teamgu.database.entity.User;
 
 import io.jsonwebtoken.lang.Collections;
 import io.swagger.annotations.Api;
@@ -50,14 +62,16 @@ public class ExcelController {
 	@Autowired
 	TeamServiceImpl teamService;
 	
-	@PostMapping("/read")
-	@ApiOperation(value="엑셀 파일을 삽입하여 삽입된 유저의 목록을 반환한다. 유저를 직접 생성하진 않는다.")
+	@Autowired
+	UserServiceImpl userService;
+	
+	@PostMapping("/user/insert")
+	@ApiOperation(value="엑셀 파일을 삽입하여 삽입된 유저의 목록을 회원 가입시킨다")
 	@ApiResponses({
-		@ApiResponse(code = 200, message = "파일을 읽고 Dto화 성공"),
-		@ApiResponse(code = 400, message = "잘못된 파일 형식 또는 잘못된 데이터",response = BaseResDto.class)
+		@ApiResponse(code = 200, message = "파일을 읽고 Dto화 성공. 그리고 유저 추가 성공"),
+		@ApiResponse(code = 400, message = "잘못된 파일 형식 또는 잘못된 데이터 또는 유저의 가입 실패",response = BaseResDto.class)
 	})
 	public ResponseEntity<? extends BasicResponse> excelToUsers(@RequestParam("excelFile") MultipartFile file){
-		List<UserRegistDto> userRegistDtoList = new ArrayList<UserRegistDto>();
 		String extension = FilenameUtils.getExtension(file.getOriginalFilename());
 		
 		//엑셀 파일 형식이 아닌 경우 에러
@@ -79,6 +93,7 @@ public class ExcelController {
 		}
 		
 		Sheet worksheet = workbook.getSheetAt(0);
+		List<User> users = new ArrayList<User>();
 		
 		//첫 행은 컬럼명이므로 제외
 		for(int i = 1; i<worksheet.getPhysicalNumberOfRows();i++) {
@@ -87,7 +102,7 @@ public class ExcelController {
 			String name;
 			String studentNumber;
 			String stringMajor;
-			long longMajor;
+			int intMajor;
 			try {
 				email = row.getCell(0).getStringCellValue();
 				name = row.getCell(1).getStringCellValue();
@@ -96,21 +111,36 @@ public class ExcelController {
 				if(!stringMajor.equals("전공")&&!stringMajor.equals("비전공"))
 					return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 							.body(new ErrorResponse(i+"번째 행 전공데이터는 반드시 전공 또는 비전공이라고 입력해 주세요."));
-				longMajor = stringMajor.equals("전공")?1:2;//전공은 1, 비전공은 2
+				intMajor = stringMajor.equals("전공")?1:2;//전공은 1, 비전공은 2
 			}catch(Exception e) {
 				//잘못된 데이터가 있다면 에러 반환
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 						.body(new ErrorResponse(i+"번째 행 데이터가 잘못되었습니다."));
-			}
-			UserRegistDto userRegistDto = UserRegistDto.builder()
-												.email(email)
-												.name(name)
-												.studentNumber(studentNumber)
-												.major(longMajor)
-												.build();
-			userRegistDtoList.add(userRegistDto);
+			}	
+    		String password = studentNumber;//초기 패스워드는 email과 동일하게 설정
+    		short role = 1;
+    		User user = User.builder()
+    				.email(email)
+    				.password(password)//초기패스워드는 본인의 학번
+    				.name(name)
+    				.role(role)
+    				.major((short)intMajor)
+    				.profileExtension("png")
+    				.profileServerName("c21f969b5f03d33d43e04f8f136e7682")
+    				.profileOriginName("default")
+    				.studentNumber(studentNumber)
+    				.build();
+    		users.add(user);
 		}
-		return ResponseEntity.ok(new CommonResponse<List<UserRegistDto>>(userRegistDtoList));		
+		
+		if(users.size()==0)//user가 없는 경우
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					.body(new ErrorResponse("가입을 요청한 유저 데이터가 없습니다"));
+    	
+        if (userService.saveAll(users))
+            return ResponseEntity.ok(new CommonResponse<String>("회원 등록 성공"));
+        else
+            return ResponseEntity.status(500).body(new CommonResponse<String>("회원 등록 실패"));
 	}
 	
 
@@ -121,13 +151,16 @@ public class ExcelController {
 //		@ApiResponse(code = 400, message = "잘못된 파일 형식 또는 잘못된 데이터",response = BaseResDto.class)
 //	})
 	public ResponseEntity<? extends BasicResponse> UsersByTeamsToExcel(@RequestBody TeamWithUserToExcelReqDto teamWithUserToExcelReqDto){
+		log.info("Excel export");
 		//1. 엑셀파일로 만들 데이터들을 객체화한다.		
 		int project_code = teamWithUserToExcelReqDto.getProject_code();
 		int stage_code = teamWithUserToExcelReqDto.getStage_code();
 		List<HorizontalByTeamResDto> results = teamService.getHorizontalByTeamInfo(project_code, stage_code);
 		if(results.size()==0||results.isEmpty()) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-					.body(new ErrorResponse("결과 값이 존재하지 않습니다."));
+			log.error("empty dto");
+			return null;
+//			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+//					.body(new ErrorResponse("결과 값이 존재하지 않습니다."));
 		}
 		
 		//2. 컬럼 갯수를 파악하기 위해 최대 인원 구성 수를 파악한다
@@ -151,7 +184,7 @@ public class ExcelController {
 		Cell headerCell =null;
 		
 		//공통 정보에 대한 헤더 생성
-		String[] headers = {"기수","프로젝트","트랙"};
+		String[] headers = {"기수","프로젝트","트랙","팀명"};
 		for(int i=0;i<headers.length;i++) {
 			headerCell = headerRow.createCell(i);
 			headerCell.setCellValue(headers[i]);			
@@ -206,8 +239,23 @@ public class ExcelController {
 				bodyCell.setCellValue(userInfo.getName()+"("+userInfo.getStudentNumber()+")");				
 			}
 		}
-		
-		return  ResponseEntity.ok(new CommonResponse<SXSSFWorkbook>(workbook));
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		try {
+			log.info("wirte stream");
+			workbook.write(outputStream);
+			
+			//base64 인코딩
+			String bres = Base64.getEncoder().encodeToString(outputStream.toByteArray());
+			
+			workbook.close();
+			HttpHeaders httpHeaders = new HttpHeaders();
+			httpHeaders.add("Content-Disposition", "attachment; filename=test.xlsx");
+			return ResponseEntity.ok(new CommonResponse<String>(bres));
+		} catch (IOException e) {
+			log.error("엑셀 파일 Export 실패");
+			e.printStackTrace();
+		}
+		return null;
 	}
 		
 }
