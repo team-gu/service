@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 import { Text, Icon } from '@atoms';
 import { ReactTable, Button } from '@molecules';
-import { AdminUserManageModal, AdminUserImport } from '@organisms';
+import { AdminUserManageModal, AdminUserImportModal } from '@organisms';
 import { getUserTableData } from '@repository/adminRepository';
 import { REGIONS } from '@utils/constants';
 
@@ -16,11 +16,24 @@ const Wrapper = styled.div`
     display: flex;
     align-items: center;
     margin: 20px 0;
+    justify-content: space-between;
+
     > div {
-      margin-right: 10px;
+      display: inline-flex;
+      align-items: center;
+      > i {
+        font-size: 30px;
+      }
+      > div {
+        margin-right: 10px;
+      }
     }
-    > i {
-      font-size: 30px;
+
+    .manage-header-import {
+      > button {
+        padding: 0 10px;
+        box-shadow: none;
+      }
     }
   }
 
@@ -78,6 +91,7 @@ export default function AdminUserManage({ projectId }: AdminUserManageProps) {
     [],
   );
   const [showManageModal, setShowManageModal] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
   const [editable, setEditable] = useState(false);
   const [editTarget, setEditTarget] = useState<UserDataRow>();
 
@@ -103,12 +117,22 @@ export default function AdminUserManage({ projectId }: AdminUserManageProps) {
   return (
     <Wrapper>
       <div className="manage-header">
-        <Text text="교육생 목록" fontSetting="n26b" />
-        <Icon iconName="add_box" func={() => setShowManageModal(true)} />
-        <Icon
-          iconName="settings_applications"
-          func={() => setEditable(!editable)}
-        />
+        <div>
+          <Text text="교육생 목록" fontSetting="n26b" />
+          <Icon iconName="add_box" func={() => setShowManageModal(true)} />
+          <Icon
+            iconName="settings_applications"
+            func={() => setEditable(!editable)}
+          />
+        </div>
+
+        <div className="manage-header-import">
+          <Button
+            title="import"
+            func={() => setShowImportModal(true)}
+            width="auto"
+          />
+        </div>
       </div>
       <div className="region-btns">
         {REGIONS.map((r) => (
@@ -139,16 +163,13 @@ export default function AdminUserManage({ projectId }: AdminUserManageProps) {
             handleClickClose={() => setShowManageModal(false)}
             projectId={projectId}
           />
-        ))
-      }
-      <div className="manage-header">
-        <Text text="교육생 Import" fontSetting="n26b" />
-      </div>
-      <Text
-        text="엑셀 파일(.xlsx, .xls)을 업로드하여 한 번에 교육생 정보를 입력할 수 있습니다. 해당 엑셀 파일은 [이메일, 이름, 학번, 전공여부]에 대한 데이터를 담고 있어야합니다. "
-        isLineBreak
-      />
-      <AdminUserImport />
+        ))}
+      
+      {showImportModal && (
+        <AdminUserImportModal
+          handleClickClose={() => setShowImportModal(false)}
+        />
+      )}
     </Wrapper>
   );
 }

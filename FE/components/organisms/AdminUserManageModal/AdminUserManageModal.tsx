@@ -1,12 +1,11 @@
 import { useRef, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import CreatableSelect from 'react-select/creatable';
-import Select, { OptionTypeBase, ActionMeta, OptionsType } from 'react-select';
+import Select, { OptionTypeBase, ActionMeta } from 'react-select';
 
 import { Text, Icon, Input } from '@atoms';
 import { Button, Label } from '@molecules';
 import { ModalWrapper } from '@organisms';
-import { Code } from '@utils/type';
 import {
   createAdminClassOption,
   getAdminClassOption,
