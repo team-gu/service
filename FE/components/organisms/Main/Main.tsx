@@ -133,7 +133,7 @@ export default function Home(): ReactElement {
               className="fixed-logo"
               alt="팀구"
               src="/teamgu_logo.png"
-              width={250}
+              width={150}
               height={150}
             />
           </div>

@@ -118,7 +118,7 @@ export default function Navbar(): ReactElement {
                 alt="팀구"
                 src="/logo.png"
                 width={120}
-                height={50}
+                height={60}
               />
             </a>
           </Link>
