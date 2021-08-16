@@ -9,6 +9,6 @@ export default {
 
 const Template: Story = () => <ChatLoading />;
 
-export const checkbox = Template.bind({});
+export const chatLoading = Template.bind({});
 
-checkbox.args = {};
+chatLoading.args = {};
