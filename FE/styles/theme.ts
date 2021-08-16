@@ -44,6 +44,11 @@ const theme: DefaultTheme = {
       font-size: 26px;
       line-height: 38px;
     `,
+    n24b: css`
+      font-weight: ${fontWeight.bold};
+      font-size: 24px;
+      line-height: 36px;
+    `,
     n24m: css`
       font-weight: ${fontWeight.medium};
       font-size: 24px;
