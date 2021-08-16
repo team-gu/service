@@ -114,4 +114,5 @@ export const setLogout = (router: NextRouter) => (dispatch: AppDispatch) => {
   removeItem('refreshToken');
 
   router.push('/');
+  location.reload();
 };
