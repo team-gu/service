@@ -53,6 +53,9 @@ const Wrapper = styled.div<{ img: string }>`
 
   .form-btn {
     margin-top: 50px;
+    > button {
+      box-shadow: none;
+    }
   }
 
   .errorMessage {
