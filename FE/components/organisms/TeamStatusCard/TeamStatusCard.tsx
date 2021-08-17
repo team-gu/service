@@ -86,10 +86,10 @@ const Wrapper = styled.div<{ isComplete: boolean }>`
         margin-bottom: 20px;
 
         .skills-tags {
-          margin-top: 10px;
+          margin-top: 5px;
           > div {
             display: inline-block;
-            margin: 0 5px 5px;
+            margin: 0 5px 5px 0px;
           }
         }
       }
@@ -131,7 +131,7 @@ export default function TeamStatusCard({
               .map((item) => (
                 <div className="profile" key={item.id}>
                   <ProfileImage
-                    size={80}
+                    size={75}
                     src={item.img ? getImageURL(item.img) : undefined}
                   />
                   {item.id === team.leaderId ? (

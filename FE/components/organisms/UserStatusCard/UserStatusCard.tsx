@@ -1,5 +1,6 @@
 import { ReactElement } from 'react';
 import styled from 'styled-components';
+import Link from 'next/link';
 
 import { useRouter } from 'next/router';
 
@@ -46,8 +47,13 @@ const Wrapper = styled.div`
               padding-right: 5px;
             }
 
-            border: 3px solid lightgray;
-            border-radius: 20px;
+            border: 3px solid
+              ${({
+                theme: {
+                  colors: { samsungBlue },
+                },
+              }) => samsungBlue};
+            border-radius: 30px;
           }
         }
       }
@@ -69,9 +75,10 @@ const Wrapper = styled.div`
           margin-bottom: 20px;
 
           .items-tags {
+            margin-top: 5px;
             > div {
               display: inline-block;
-              margin: 2px 5px 2px 0px;
+              margin: 0 5px 5px 0px;
             }
           }
         }
@@ -126,12 +133,16 @@ export default function UserStatusCard({
                 {currentUserIsLeader && (
                   <Icon iconName="person_add_alt" func={onClickInviteIcon} />
                 )}
-                <Icon
-                  iconName="info_outline"
-                  func={() =>
-                    router.push({ pathname: `/userdetail/${opponentId}` })
+                <div
+                  onClick={async () =>
+                    await router.push({
+                      pathname: `/userdetail/[id]`,
+                      query: { id: opponentId },
+                    })
                   }
-                />
+                >
+                  <Icon iconName="info_outline" />
+                </div>
               </div>
             </div>
           </div>
