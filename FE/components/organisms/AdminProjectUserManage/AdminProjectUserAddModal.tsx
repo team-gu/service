@@ -1,10 +1,11 @@
-import { useRef, useState, useEffect } from 'react';
+import { useState } from 'react';
 import styled from 'styled-components';
 
 import { Text, Icon, Input } from '@atoms';
-import { Button, Label, UserSelectTeamAutoComplete } from '@molecules';
+import { Button, Label, UserSelectProjectAutoComplete } from '@molecules';
 import { ModalWrapper } from '@organisms';
 import { MemberOption } from '@utils/type';
+import { projectCard } from 'components/molecules/ProjectCard/ProjectCard.stories';
 
 const Wrapper = styled.div<{ containsUserId: number | undefined }>`
   input {
@@ -17,24 +18,6 @@ const Wrapper = styled.div<{ containsUserId: number | undefined }>`
   position: relative;
   width: 400px;
   padding: 0 50px;
-  max-height: 80vh;
-  overflow: auto;
-
-  ::-webkit-scrollbar-thumb {
-    background-color: #2f3542;
-    border-radius: 5px;
-  }
-  ::-webkit-scrollbar {
-    width: 5px;
-  }
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-  ::-webkit-scrollbar-track-piece:start {
-    margin-top: 10px;
-  }
-  ::-webkit-scrollbar-track-piece:end {
-    margin-bottom: 10px;
-  }
 
   .modal-header {
     text-align: center;
@@ -92,22 +75,24 @@ const Wrapper = styled.div<{ containsUserId: number | undefined }>`
 
     > button {
       ${({ containsUserId }) =>
-        
-        !containsUserId ?
-        `
-        opacity: 0.5;
-        cursor: not-allowed;
-        ` : ''}
+        !containsUserId
+          ? `
+            opacity: 0.5;
+            cursor: not-allowed;
+            `
+          : ''}
     }
   }
 `;
 
 interface AdminProjectUserAddModalProps {
+  projectId: number;
   handleClickClose: () => void;
   handleClickAdd: (userId: number) => void;
 }
 
 export default function AdminProjectUserAddModal({
+  projectId,
   handleClickClose,
   handleClickAdd,
 }: AdminProjectUserAddModalProps) {
@@ -135,7 +120,8 @@ export default function AdminProjectUserAddModal({
           </div>
           <div className="input-container">
             <Label text="이름">
-              <UserSelectTeamAutoComplete
+              <UserSelectProjectAutoComplete
+                projectId={projectId}
                 handleChangeUserSelect={handleChangeUserSelect}
               />
             </Label>

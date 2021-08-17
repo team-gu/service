@@ -175,6 +175,17 @@ export const importUserData = async (param: any) => {
   });
 }
 
+export const getProjectUsersContainsName = async (param: any) => {
+  console.log('getProjectUsersContainsName');
+  console.log(param);
+
+  return await api({
+    url: `/api/admin/project/search`,
+    type: 'post',
+    param,
+  })
+}
+
 /////////////// 교육생 관리
 
 /////////////// 전체 교육생 관리

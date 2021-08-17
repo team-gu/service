@@ -295,8 +295,9 @@ export default function AdminProjectUserManage({
         />
       )}
 
-      {showAddModal && (
+      {showAddModal && project.id && (
         <AdminProjectUserAddModal
+          projectId={project.id}
           handleClickClose={() => setShowAddModal(false)}
           handleClickAdd={addUser}
         />
