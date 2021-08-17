@@ -269,10 +269,22 @@ export default function AdminDashboard({
 
 const ADMIN_USER_TABLE_COLUMNS = [
   {
+    Header: '#',
+    width: 30,
+    disableGroupBy: true,
+    disableSortBy: true,
+    disableFilters: true,
+    Cell: (content: any) => {
+      return (
+        <div style={{ textAlign: 'center' }}>{Number(content.row.id) + 1}</div>
+      );
+    },
+  },
+  {
     Header: '학번',
     accessor: 'studentNumber',
     disableGroupBy: true,
-    width: 80,
+    width: 1,
     Cell: (content: any) => (
       <div style={{ textAlign: 'center' }}>{content.value}</div>
     ),
@@ -318,7 +330,7 @@ const ADMIN_USER_TABLE_COLUMNS = [
   {
     Header: '팀 식별자',
     accessor: 'teamId',
-    width: 100,
+    width: 120,
     Cell: (content: any) => (
       <div style={{ textAlign: 'center' }}>{content.value}</div>
     ),
@@ -326,7 +338,7 @@ const ADMIN_USER_TABLE_COLUMNS = [
   {
     Header: '리더 여부',
     accessor: 'leaderYn',
-    width: 100,
+    width: 120,
     Cell: (content: any) => (
       <div style={{ textAlign: 'center' }}>{content.value}</div>
     ),
@@ -334,7 +346,7 @@ const ADMIN_USER_TABLE_COLUMNS = [
   {
     Header: '전공 여부',
     accessor: 'major',
-    width: 100,
+    width: 120,
     Cell: (content: any) => (
       <div style={{ textAlign: 'center' }}>{content.value}</div>
     ),
@@ -342,6 +354,7 @@ const ADMIN_USER_TABLE_COLUMNS = [
   {
     Header: '희망 포지션',
     accessor: 'position',
+    width: 180,
     Cell: (content: any) => (
       <div style={{ textAlign: 'center' }}>{content.value}</div>
     ),
