@@ -1,10 +1,8 @@
 package com.teamgu.database.repository;
 
-import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.teamgu.api.dto.req.UserPoolNameReqDto;
 import com.teamgu.api.dto.req.UserPoolPageReqDto;
-import com.teamgu.api.dto.res.UserPoolNameResDto;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,8 +80,9 @@ public class UserPoolRepositoryImpl implements UserPoolRepositoryCustom {
         majorCode = userPoolNameReqDto.getIsMajor();
 
         String whereStmt = makeFilterWhere(false);
+        String havingStmt = makeFilterHaving();
 
-        return getAutoUserList(whereStmt);
+        return getAutoUserList(whereStmt, havingStmt);
     }
 
     private String makeFilterWhere(boolean flag) {
@@ -137,12 +136,13 @@ public class UserPoolRepositoryImpl implements UserPoolRepositoryCustom {
         else
             sb.append(" ").append("and u.major != " + majorCode);
 
-        if (flag && !StringUtils.isEmpty(email))
+        if (flag && !StringUtils.isEmpty(email)) //인력풀 검색버튼 누르게되면 동작하는 where문
             sb.append(" ").append("and u.email = '" + email + "'");
 
-        if(!flag) {
+        if(!flag) { //인력풀 자동완성에서 동작하는 where문
             sb.append(" ").append("and (u.email like '%" + target + "%' or u.email like '%" + target + "%')");
         }
+
         return sb.toString();
     }
 
@@ -169,7 +169,7 @@ public class UserPoolRepositoryImpl implements UserPoolRepositoryCustom {
         return sb.toString();
     }
 
-    private List<Object[]> getAutoUserList(String whereStmt) {
+    private List<Object[]> getAutoUserList(String whereStmt, String havingStmt) {
         StringBuilder jpql = new StringBuilder();
         EntityManager em = emf.createEntityManager();
         List<Object[]> res = null;
@@ -183,6 +183,8 @@ public class UserPoolRepositoryImpl implements UserPoolRepositoryCustom {
         jpql.append("left outer join (select s.user_id, group_concat(s.skill_code) as gs from skill s group by s.user_id) as b on u.id = b.user_id").append(" ");
         jpql.append("left outer join user_team ut on u.id = ut.user_id").append(" ");
         jpql.append(whereStmt).append(" ");
+        jpql.append("group by u.id, u.name").append(" ");
+        jpql.append(havingStmt);
 
         res = em.createNativeQuery(jpql.toString()).getResultList();
 

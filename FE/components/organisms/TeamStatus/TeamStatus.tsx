@@ -136,6 +136,13 @@ export default function TeamStatus(): ReactElement {
     getTeamsFiltered(payloadTemp).then(({ data: { data } }) => {
       setTeams(data);
     });
+    getUserHasTeam({
+      userId,
+      project: { code: projectCode },
+    }).then(({ data: { data } }) => {
+      setUserHasTeam(data.hasTeam);
+      setUserTeam(data.team);
+    });
   };
 
   const handleProjectChange = ({ value }: { value: number }) => {

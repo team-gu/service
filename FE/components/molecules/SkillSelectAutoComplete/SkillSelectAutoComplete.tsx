@@ -3,6 +3,8 @@ import Select, { OptionsType } from 'react-select';
 import { Skill, SkillOption } from '@utils/type';
 import { getEachFiltersCodeList } from '@repository/filterRepository';
 import { useAuthState } from '@store';
+import { skillColor } from '@utils/constants';
+
 interface SkillSelectAutoCompleteProps {
   onChangeSkills?: (newValue: OptionsType<SkillOption>) => void;
   value?: Skill[] | null;
@@ -37,13 +39,14 @@ export default function SkillSelectAutoComplete({
       )?.backgroundColor;
       return {
         ...styles,
-        backgroundColor: color ? color : '#eeeeee',
+        color: skillColor.get(data.codeName)[0],
+        backgroundColor: skillColor.get(data.codeName)[1],
       };
     },
     multiValueLabel: (styles: object, { data }: any) => ({
       ...styles,
-      color: skillOptions.find((option) => option.codeName === data.name)
-        ?.color,
+      color: skillColor.get(data.codeName)[0],
+      backgroundColor: skillColor.get(data.codeName)[1],
       fontWeight: '900',
     }),
   };

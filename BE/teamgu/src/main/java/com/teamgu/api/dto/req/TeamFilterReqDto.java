@@ -34,5 +34,10 @@ public class TeamFilterReqDto {
 	
 	@ApiModelProperty(name = "sort type", example = "true")
 	boolean sortAsc;
-	
+
+	@ApiModelProperty(name = "원하는 페이지 번호", example = "0")
+	private int pageNum;
+
+	@ApiModelProperty(name = "한 페이지에 들어갈 데이터 개수", example = "10")
+	private int pageSize;
 }

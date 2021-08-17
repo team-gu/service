@@ -2,11 +2,13 @@ package com.teamgu.api.service;
 
 import java.util.List;
 
+import com.teamgu.api.dto.req.AdminUserManagementReqDto;
+import com.teamgu.api.dto.req.AdminUserProjectManagementReqDto;
 import com.teamgu.api.dto.res.AdminTeamManagementResDto;
 import com.teamgu.api.dto.res.AdminUserManagementResDto;
 import com.teamgu.api.dto.res.CodeResDto;
 import com.teamgu.api.dto.res.DashBoardResDto;
-import com.teamgu.api.dto.res.DashBoardTableResDto;
+import com.teamgu.api.dto.res.AdminUserProjectManagementResDto;
 import com.teamgu.api.dto.res.ProjectInfoResDto;
 
 public interface AdminService {
@@ -122,12 +124,12 @@ public interface AdminService {
 	public DashBoardResDto getTeamBuildingStatus(Long projectId);
 
 	/**
-	 * Select Dashboard Table Data
-	 * Project Id를 통해 Dash Board 하단 테이블 데이터를 조회한다
+	 * Select User Information In Project to manage
+	 * Project Id를 통해 프로젝트별 참여중인 교육생을 조회한다.
 	 * @param projectId
 	 * @return
 	 */
-	public List<DashBoardTableResDto> getDashBoardTableInfo(Long projectId);
+	public List<AdminUserProjectManagementResDto> getUserInProjectManagementData(Long projectId);
 	
 	
 	/**
@@ -228,7 +230,7 @@ public interface AdminService {
 	 * @param userId
 	 * @param projectId
 	 */
-	public void excludeStudentFromProject(Long userId, Long projectId);
+	public String excludeStudentFromProject(Long userId, Long projectId);
 
 	/**
 	 * get Team Information student belongs to
@@ -239,4 +241,11 @@ public interface AdminService {
 	 */
 	public AdminTeamManagementResDto getStudentProjectTeamInfo(Long userId, Long projectId);
 	
+	//
+	/**
+	 * Update Student Information
+	 * 교육생의 반, 전공/비전공, 퇴소 여부를 수정한다.
+	 * @param adminUserProjectManagementReqDto
+	 */
+	public void updateStudentInformation(AdminUserManagementReqDto adminUserManagementReqDto);
 }

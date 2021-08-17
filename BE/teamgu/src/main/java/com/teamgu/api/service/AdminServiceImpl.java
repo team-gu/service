@@ -7,15 +7,21 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.teamgu.api.dto.req.AdminUserManagementReqDto;
+import com.teamgu.api.dto.req.TeamMemberReqDto;
 import com.teamgu.api.dto.res.AdminTeamManagementResDto;
 import com.teamgu.api.dto.res.AdminUserManagementResDto;
 import com.teamgu.api.dto.res.CodeResDto;
+import com.teamgu.api.dto.res.CommonResponse;
 import com.teamgu.api.dto.res.DashBoardDetailInfoResDto;
 import com.teamgu.api.dto.res.DashBoardDetailResDto;
 import com.teamgu.api.dto.res.DashBoardResDto;
-import com.teamgu.api.dto.res.DashBoardTableResDto;
+import com.teamgu.api.dto.res.AdminUserProjectManagementResDto;
+import com.teamgu.api.dto.res.ErrorResponse;
 import com.teamgu.api.dto.res.ProjectInfoResDto;
 import com.teamgu.database.entity.Mapping;
 import com.teamgu.database.entity.ProjectDetail;
@@ -35,6 +41,9 @@ public class AdminServiceImpl implements AdminService {
 
 	@Autowired
 	CodeDetailRepositorySupport codeDetailRepositorySupport;
+	
+	@Autowired
+	TeamServiceImpl	teamService;
 
 	@Autowired
 	MappingRepository mappingRepository;
@@ -319,8 +328,8 @@ public class AdminServiceImpl implements AdminService {
 	
 	// Select Dash Board Info
 	@Override
-	public List<DashBoardTableResDto> getDashBoardTableInfo(Long projectId) {
-		return adminRepositorySupport.getDashBoardTableInfo(projectId);
+	public List<AdminUserProjectManagementResDto> getUserInProjectManagementData(Long projectId) {
+		return adminRepositorySupport.getUserInProjectManagementData(projectId);
 	}
 
 	// Select User Status to manage
@@ -440,13 +449,85 @@ public class AdminServiceImpl implements AdminService {
 
 	// exclude student to project
 	@Override
-	public void excludeStudentFromProject(Long userId, Long projectId) {
+	public String excludeStudentFromProject(Long userId, Long projectId) {
+
+		AdminTeamManagementResDto team = getStudentProjectTeamInfo(userId, projectId);
+	
 		adminRepositorySupport.excludeStudentFromProject(userId, projectId);
+
+		if(team == null) {
+			return "프로젝트에서 제외가 완료되었습니다";
+		}
+		else {
+			
+			Long teamId = team.getTeamId();
+			Long leaderId = team.getLeaderId();
+		
+			List<Long> ids = teamService.getTeamMemberIdbyTeamId(teamId);
+			int teamMebmerCount = ids.size();
+
+			if(teamMebmerCount == 1) {
+				teamService.deleteTeam(teamId);
+				
+				return "팀을 삭제하고 프로젝트에서 제외가 완료되었습니다";
+
+			}else {
+				for(Long id : ids) {
+					if(id == leaderId) continue;
+					
+					TeamMemberReqDto newLeader = TeamMemberReqDto.builder()
+							.teamId(teamId)
+							.userId(id)
+							.build()
+							;
+					TeamMemberReqDto exitTeam = TeamMemberReqDto.builder()
+							.teamId(teamId)
+							.userId(userId)
+							.build();
+					
+					teamService.changeTeamLeader(newLeader);
+					teamService.exitTeam(exitTeam);
+					
+					return "팀에서 탈퇴하고 프로젝트에서 제외가 완료되었습니다";
+					
+				}
+				
+			}
+		}
+		return "이미 프로젝트에서 제외되었습니다";
+		
 	}
 
 	@Override
 	public AdminTeamManagementResDto getStudentProjectTeamInfo(Long userId, Long projectId) {
 		return adminRepositorySupport.getStudentProjectTeamInfo(userId, projectId);
+	}
+
+	@Override
+	public void updateStudentInformation(AdminUserManagementReqDto adminUserManagementReqDto) {
+		Long userId = adminUserManagementReqDto.getUserId();
+		Long projectId = adminUserManagementReqDto.getProjectId();
+		Long classId = adminUserManagementReqDto.getClassId();
+		short role = adminUserManagementReqDto.getRole();
+		short major = adminUserManagementReqDto.getMajor();
+		
+		// 회원 정보 수정
+		adminRepositorySupport.updateStudentInformation(userId, role, major);
+
+		// 반 정보 수정
+		if(classId == null) classId = (long) 0; // 초기 설정된 반이 없을 경우 null이므로 0으로 초기화
+		
+		Long originClassId = adminRepositorySupport.getUserClass(userId, projectId);
+		
+		if(originClassId != classId) {
+			if(originClassId != 0) adminRepositorySupport.excludeStudentFromClass(userId, projectId);
+			if(classId != 0) adminRepositorySupport.addStudentToClass(userId, classId);
+		}
+		
+		// 퇴소시 프로젝트에서 제거
+		if(role == 2) {
+			excludeStudentFromProject(userId, projectId);
+		}
 	}
 
 }

@@ -1,9 +1,7 @@
 package com.teamgu.api.service;
 
 import com.teamgu.api.dto.res.CodeDetailResDto;
-import com.teamgu.database.entity.CodeDetail;
 import com.teamgu.database.repository.CodeDetailRepository;
-import com.teamgu.mapper.CodeDetailMapper;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,7 +22,7 @@ public class CodeServiceImpl implements CodeService {
         String stage = studentNumber.substring(0, 2);
         HashMap<String, List<CodeDetailResDto>> retHash = initHash();
         List<CodeDetailResDto> stgList = codeDetailRepository.getStgCodeDetail(),
-                prjList = codeDetailRepository.getPrjCodeDetail(),
+                prjList = codeDetailRepository.getPrjCodeDetail(stage),
                 trkList = codeDetailRepository.getTrkCodeDetail(stage),
                 sklList = codeDetailRepository.getSklCodeDetail(),
                 posList = codeDetailRepository.getPosCodeDetail(),
@@ -36,6 +34,17 @@ public class CodeServiceImpl implements CodeService {
         retHash.put("스킬", sklList);
         retHash.put("역할", posList);
         retHash.put("지역", regList);
+
+        return retHash;
+    }
+
+    @Override
+    public HashMap<String, List<CodeDetailResDto>> getTrackCode(String studentNumber, int projectCode) {
+        String stage = studentNumber.substring(0, 2);
+        HashMap<String, List<CodeDetailResDto>> retHash = new HashMap<>();
+        List<CodeDetailResDto> trkList = codeDetailRepository.getFilteredTrkDetail(stage, projectCode);
+
+        retHash.put("트랙", trkList);
 
         return retHash;
     }
