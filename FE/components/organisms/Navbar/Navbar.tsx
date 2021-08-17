@@ -160,7 +160,9 @@ export default function Navbar(): ReactElement {
         <div>
           <ul>
             <li>
-              <a>공지사항</a>
+              <Link href="/notice">
+                <a>공지사항</a>
+              </Link>
             </li>
 
             <li>
