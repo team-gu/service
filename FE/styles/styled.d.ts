@@ -12,7 +12,7 @@ declare module 'styled-components' {
       lightBlue: string;
       backgroundGray: string;
       samsungBlue: string;
-      samsungLightBlue: stirng;
+      samsungLightBlue: string;
     };
     layout: {
       pageMaxWidth: string;
