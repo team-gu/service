@@ -9,8 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.teamgu.api.dto.req.AdminUserAddReqDto;
 import com.teamgu.api.dto.req.AdminUserManagementReqDto;
 import com.teamgu.api.dto.req.TeamMemberReqDto;
 import com.teamgu.api.dto.res.AdminTeamManagementResDto;
@@ -25,14 +27,19 @@ import com.teamgu.api.dto.res.ErrorResponse;
 import com.teamgu.api.dto.res.ProjectInfoResDto;
 import com.teamgu.database.entity.Mapping;
 import com.teamgu.database.entity.ProjectDetail;
+import com.teamgu.database.entity.User;
 import com.teamgu.database.repository.AdminRepositorySupport;
 import com.teamgu.database.repository.CodeDetailRepositorySupport;
 import com.teamgu.database.repository.MappingRepository;
 import com.teamgu.database.repository.ProjectDetailRepository;
+import com.teamgu.database.repository.UserRepository;
 
 @Service("adminService")
 public class AdminServiceImpl implements AdminService {
 
+	@Autowired
+	UserRepository userRepository;
+	
 	@Autowired
 	AdminRepositorySupport adminRepositorySupport;
 
@@ -47,6 +54,9 @@ public class AdminServiceImpl implements AdminService {
 
 	@Autowired
 	MappingRepository mappingRepository;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
 	/*
 	 * Select Project Infomation (프로젝트 정보 조회)
 	 */
@@ -498,18 +508,22 @@ public class AdminServiceImpl implements AdminService {
 		
 	}
 
+	// get Team Information student belongs to
+	// 교육생이 속한 팀의 정보를 가져온다. 없으면 NULL
 	@Override
 	public AdminTeamManagementResDto getStudentProjectTeamInfo(Long userId, Long projectId) {
 		return adminRepositorySupport.getStudentProjectTeamInfo(userId, projectId);
 	}
 
+	// Update Student Information
+	// 교육생의 반, 전공/비전공, 퇴소 여부를 수정한다.
 	@Override
 	public void updateStudentInformation(AdminUserManagementReqDto adminUserManagementReqDto) {
 		Long userId = adminUserManagementReqDto.getUserId();
 		Long projectId = adminUserManagementReqDto.getProjectId();
 		Long classId = adminUserManagementReqDto.getClassId();
-		short role = adminUserManagementReqDto.getRole();
-		short major = adminUserManagementReqDto.getMajor();
+		short role = changeRoleFromStringToShort(adminUserManagementReqDto.getRole());
+		short major = changeMajorFromStringToShort(adminUserManagementReqDto.getMajor());
 		
 		// 회원 정보 수정
 		adminRepositorySupport.updateStudentInformation(userId, role, major);
@@ -528,6 +542,68 @@ public class AdminServiceImpl implements AdminService {
 		if(role == 2) {
 			excludeStudentFromProject(userId, projectId);
 		}
+	}
+
+	// Add User
+	// 사용자를 추가한다 (이메일, 이름, 학번, 교육생여부, 전공)
+	@Override
+	public User addUserToTeamguByIndividual(AdminUserAddReqDto adminUserAddReqDto) {
+		
+		String email = adminUserAddReqDto.getEmail();
+		String name = adminUserAddReqDto.getName();
+		String studentNumber = adminUserAddReqDto.getStudentNumber();
+		String major = adminUserAddReqDto.getMajor();
+		String role = adminUserAddReqDto.getRole();
+		String password = studentNumber;
+		
+		User user = User.builder()
+				.email(email)
+				.password(password)
+				.name(name)
+				.role(changeRoleFromStringToShort(role))
+				.major(changeMajorFromStringToShort(major))
+				.profileExtension("png")
+				.profileServerName("c21f969b5f03d33d43e04f8f136e7682")
+				.profileOriginName("default")
+				.studentNumber(studentNumber)
+				.build();
+		
+		user.setPassword(passwordEncoder.encode(password));
+		
+		return userRepository.save(user);
+	}
+
+	// Change Role String To Role Short 
+	// 문자열로 들어온 역할을 숫자로 변환
+	@Override
+	public short changeRoleFromStringToShort(String role) {
+		if(role.equals("교육생")) {
+			return 1;
+		}
+		else if(role.equals("퇴소생")) {
+			return 2;
+		}
+		else if(role.equals("프로")) {
+			return 3;
+		}
+		else if(role.equals("관리자")) {
+			return 4;
+		}
+		return 0;
+	}
+
+	// Change Major String To Major Short 
+	// 문자열로 들어온 전공 여부를 숫자로 변환
+	@Override
+	public short changeMajorFromStringToShort(String major) {
+		if(major.equals("전공")) {
+			return 1;
+		}
+		else if(major.equals("비전공")) {
+			return 2;
+		}
+		else
+			return 0;
 	}
 
 }
