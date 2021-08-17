@@ -424,7 +424,9 @@ export default function ReactTable({
           {headerGroups.map((headerGroup) => (
             <tr {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map((column) => (
-                <th {...column.getHeaderProps()}>
+                <th {...column.getHeaderProps({
+                  style: { width: column.width }
+                })}>
                   <TableHeaderItem>
                     <div>
                       {grouping && column.canGroupBy ? (
@@ -485,22 +487,20 @@ export default function ReactTable({
                 {row.cells.map((cell) => {
                   return (
                     <CellWrapper
-                      // For educational purposes, let's color the
-                      // cell depending on what type it is given
-                      // from the useGroupBy hook
-                      {...cell.getCellProps()}
-                      style={{
-                        background: cell.isGrouped
-                          ? '#0aff0082'
-                          : cell.isAggregated
-                          ? '#ffa50078'
-                          : cell.isPlaceholder
-                          ? '#ff000042'
-                          : 'white',
-                      }}
+                      {...cell.getCellProps({
+                        style: {
+                          background: cell.isGrouped
+                            ? '#0aff0082'
+                            : cell.isAggregated
+                            ? '#ffa50078'
+                            : cell.isPlaceholder
+                            ? '#ff000042'
+                            : 'white',
+                          width: cell.column.width,
+                        },
+                      })}
                     >
                       {cell.isGrouped ? (
-                        // If it's a grouped cell, add an expander and row count
                         <div className="grouped-cell">
                           <span
                             {...row.getToggleRowExpandedProps()}
@@ -519,11 +519,8 @@ export default function ReactTable({
                           </span>
                         </div>
                       ) : cell.isAggregated ? (
-                        // If the cell is aggregated, use the Aggregated
-                        // renderer for cell
                         cell.render('Aggregated')
-                      ) : cell.isPlaceholder ? null : ( // For cells with repeated values, render null
-                        // Otherwise, just render the regular cell
+                      ) : cell.isPlaceholder ? null : (
                         cell.render('Cell')
                       )}
                     </CellWrapper>

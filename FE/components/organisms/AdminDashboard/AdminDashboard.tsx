@@ -121,6 +121,10 @@ const Wrapper = styled.div`
   }
 `;
 
+const TextAlignCenter = styled.div`
+  text-align: center;
+`;
+
 const TableWrapper = styled.div`
   margin-top: 30px;
 `;
@@ -268,11 +272,19 @@ const ADMIN_USER_TABLE_COLUMNS = [
     Header: '학번',
     accessor: 'studentNumber',
     disableGroupBy: true,
+    width: 80,
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
   },
   {
     Header: '이름',
     accessor: 'name',
     disableGroupBy: true,
+    width: 100,
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
   },
   {
     Header: '이메일',
@@ -282,29 +294,56 @@ const ADMIN_USER_TABLE_COLUMNS = [
   {
     Header: '지역',
     accessor: 'region',
+    width: 70,
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
   },
   {
     Header: '반',
     accessor: 'studentClass',
+    width: 110,
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
   },
   {
     Header: '팀 유무',
     accessor: 'teamYn',
+    width: 80,
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
   },
   {
     Header: '팀 식별자',
     accessor: 'teamId',
+    width: 100,
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
   },
   {
     Header: '리더 여부',
     accessor: 'leaderYn',
+    width: 100,
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
   },
   {
-    Header: '전공여부',
+    Header: '전공 여부',
     accessor: 'major',
+    width: 100,
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
   },
   {
     Header: '희망 포지션',
     accessor: 'position',
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
   },
 ];
