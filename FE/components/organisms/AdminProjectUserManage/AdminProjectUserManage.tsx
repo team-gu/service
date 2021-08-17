@@ -98,45 +98,48 @@ export default function AdminProjectUserManage({
     }
   };
 
-  const closeAddModal = () => {
-    setShowAddModal(false);
-    setEditTarget(undefined);
-  };
-
   const closeDeleteModal = () => {
     setShowDeleteModal(false);
     setEditTarget(undefined);
   };
 
   const deleteUser = () => {
-    // TODO: 사용자 삭제 API 호출 후 사용자 목록 리렌더링
     console.log('DELETE USER');
     console.log('TARGET: ', editTarget);
+
+    // TODO: data에 userid가 생기면 해당 아이디로 삭제 고고
+    // dispatch(setLoading({ isLoading: true }));
 
     // if (editTarget && editTarget.userid) {
     //   excludeStudentFromProject({
     //     projectId: project.id,
     //     userId: editTarget.userid,
-    //   }).then(({ data: { data } }) => {
-    //     console.log(data);
-    //   });
+    //   })
+    //     .then(({ data: { data } }) => {
+    //       setUserTableData(data);
+    //     })
+    //     .finally(() => {
+    //       closeDeleteModal();
+    //       dispatch(setLoading({ isLoading: false }));
+    //     });
+    // } else {
+    //   console.error('삭제할 행이 선택되지 않았습니다.');
     // }
-
-    closeDeleteModal();
   };
 
-  const addUser = () => {
-    // TODO: 사용자 추가 API 호출 후 사용자 목록 리렌더링
-    console.log('ADD USER');
-
-    // addStudentToProject({
-    //   projectId: project.id,
-    //   userId: ??,
-    // }).then(({ data: { data } }) => {
-    //   console.log(data);
-    // });
-
-    closeAddModal();
+  const addUser = (userId: number) => {
+    dispatch(setLoading({ isLoading: true }));
+    addStudentToProject({
+      projectId: project.id,
+      userId,
+    })
+      .then(({ data: { data } }) => {
+        setUserTableData(data);
+      })
+      .finally(() => {
+        setShowAddModal(false);
+        dispatch(setLoading({ isLoading: false }));
+      });
   };
 
   const base64ToArrayBuffer = (base64: string) => {
@@ -235,7 +238,7 @@ export default function AdminProjectUserManage({
 
       {showAddModal && (
         <AdminProjectUserAddModal
-          handleClickClose={closeAddModal}
+          handleClickClose={() => setShowAddModal(false)}
           handleClickAdd={addUser}
         />
       )}
