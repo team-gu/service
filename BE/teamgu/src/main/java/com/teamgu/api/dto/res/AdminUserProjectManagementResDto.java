@@ -12,8 +12,11 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ApiModel(description = "Dash Board Table Response Model")
-public class DashBoardTableResDto {
+@ApiModel(description = "Studnet Information In project")
+public class AdminUserProjectManagementResDto {
+	
+	@ApiModelProperty(name = "교육생 고유 ID", example = "1")
+	Long userId;
 
 	@ApiModelProperty(name = "학번", example = "0510000")
 	String studentNumber;

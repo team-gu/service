@@ -14,11 +14,17 @@ import lombok.NoArgsConstructor;
 @ApiModel(description = "Admin User Status Response Model")
 public class AdminUserManagementResDto {
 
+	@ApiModelProperty(name = "교육생 ID", example = "")
+	Long userId;
+	
 	@ApiModelProperty(name = "학번", example = "0540000")
 	String studentNumber;
 
 	@ApiModelProperty(name = "이름", example = "김싸피")
 	String name;
+
+	@ApiModelProperty(name = "교육생 이메일", example = "ssafy@ssafy.com")
+	String email;
 
 	@ApiModelProperty(name = "지역", example = "서울")
 	String region;
