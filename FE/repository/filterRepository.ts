@@ -28,3 +28,12 @@ export const postSearchUserListByName = async (param: {
     type: 'post',
     param,
   });
+
+export const getEachFiltersCodeListTracks = async (
+  studentNumber: string,
+  projectCode: number,
+) =>
+  await api({
+    url: `/api/codeDetail/user/trackList?projectCode=${projectCode}&studentNumber=${studentNumber}`,
+    type: 'get',
+  });

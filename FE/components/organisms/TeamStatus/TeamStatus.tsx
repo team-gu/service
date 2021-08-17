@@ -8,6 +8,7 @@ import {
   UserSelectTeamAutoComplete,
   Button,
   SimpleSelect,
+  Pagination,
 } from '@molecules';
 
 import { Title } from '@molecules';
@@ -15,7 +16,10 @@ import { TeamStatusCard, TeamManageModal, LookupLayout } from '@organisms';
 import { FILTER_TITLE } from '@utils/constants';
 import { MemberOption, Team } from '@utils/type';
 import { useAuthState } from '@store';
-import { getEachFiltersCodeList } from '@repository/filterRepository';
+import {
+  getEachFiltersCodeList,
+  getEachFiltersCodeListTracks,
+} from '@repository/filterRepository';
 import { getTeamsFiltered, getUserHasTeam } from '@repository/teamRepository';
 
 const WrapFilter = styled.div`
@@ -64,7 +68,9 @@ export default function TeamStatus(): ReactElement {
   const [containsUserId, setContainsUserId] = useState<number>();
   const [userHasTeam, setUserHasTeam] = useState<boolean>();
   const [userTeam, setUserTeam] = useState<Team>();
-  const [searchWhat, setSearchWhat] = useState(false);
+  const [searchWhat, setSearchWhat] = useState();
+  const [pageCount, setPageCount] = useState(0);
+  const [trackList, setTrackList] = useState([]);
 
   const SERACH_BY_FILTER = true;
   const SEARCH_BY_USERID = false;
@@ -131,11 +137,25 @@ export default function TeamStatus(): ReactElement {
       sortAsc,
       userId: by === SERACH_BY_FILTER ? 0 : containsUserId || 0,
       studentNumber,
+      pageNum: payload?.pageNum || 0,
+      pageSize: 3,
     };
 
-    getTeamsFiltered(payloadTemp).then(({ data: { data } }) => {
-      setTeams(data);
-    });
+    getTeamsFiltered(payloadTemp).then(
+      async ({
+        data: {
+          data: { dataList, totPageCnt },
+        },
+      }) => {
+        setTeams(dataList);
+        setPageCount(totPageCnt);
+
+        const {
+          data: { data },
+        } = await getEachFiltersCodeListTracks(studentNumber, projectCode);
+        setTrackList(data['트랙']);
+      },
+    );
     getUserHasTeam({
       userId,
       project: { code: projectCode },
@@ -218,6 +238,8 @@ export default function TeamStatus(): ReactElement {
     setSortAsc(!sortAsc);
   };
 
+  console.log(payload);
+
   return (
     <LookupLayout showTeamCreateBtn={!userHasTeam}>
       <div className="filter-container">
@@ -249,7 +271,7 @@ export default function TeamStatus(): ReactElement {
         {filterContents &&
           Object.keys(filterContents).map(
             (each, index) =>
-              (each === '스킬' || each === '트랙') &&
+              each === '스킬' &&
               (filterContents[each].length < 5 ? (
                 <Filter
                   title={each}
@@ -268,9 +290,10 @@ export default function TeamStatus(): ReactElement {
                 />
               )),
           )}
+        <Filter title={'트랙'} contents={trackList} func={handleFilterArray} />
       </div>
       <div className="team-status-list-container">
-        <WrapFilter className="team-status-header">
+        <div className="team-status-header">
           <UserSelectTeamAutoComplete
             handleChangeUserSelect={handleChangeUserSelect}
             clear={searchWhat === SERACH_BY_FILTER}
@@ -297,7 +320,7 @@ export default function TeamStatus(): ReactElement {
               />
             </div>
           )}
-        </WrapFilter>
+        </div>
 
         {userTeam && (
           <>
@@ -311,18 +334,35 @@ export default function TeamStatus(): ReactElement {
             <hr />
           </>
         )}
-        {(!teams || teams.length === 0) && (
+        {teams && teams?.length === 0 ? (
           <WrapFilter>
             현재 등록된 팀이 없거나, 필터링 조건에 일치하는 팀이 없습니다.
           </WrapFilter>
+        ) : (
+          <>
+            {teams?.map((item, index) => (
+              <TeamStatusCard
+                key={index}
+                team={item}
+                onClickTeamManage={handleTeamManageModal}
+              />
+            ))}
+            {pageCount >= 0 && (
+              <Pagination
+                pageCount={pageCount}
+                previousLabel={'<'}
+                nextLabel={'>'}
+                marginPagesDisplayed={2}
+                pageRangeDisplayed={5}
+                breakLabel={'...'}
+                onPageChange={({ selected }: { selected: number }) =>
+                  setPayload((prev) => ({ ...prev, pageNum: selected }))
+                }
+                forcePage={payload?.pageNum}
+              />
+            )}
+          </>
         )}
-        {teams.map((item, index) => (
-          <TeamStatusCard
-            key={index}
-            team={item}
-            onClickTeamManage={handleTeamManageModal}
-          />
-        ))}
       </div>
       {showTeamManageModal && (
         <TeamManageModal
