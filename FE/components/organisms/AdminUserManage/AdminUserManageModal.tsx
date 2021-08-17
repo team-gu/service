@@ -205,6 +205,8 @@ const ACTIVATE_OPTIONS = [
 const ROLE_OPTIONS = [
   { value: '교육생', label: '교육생' },
   { value: '퇴소생', label: '퇴소생' },
+  { value: '부관리자', label: '부관리자' },
+  { value: '관리자', label: '관리자' },
 ];
 
 const MAJOR_OPTIONS = [
