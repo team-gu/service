@@ -246,11 +246,17 @@ public class ExcelController {
 		List<Long> userids = new ArrayList<Long>();
 		List<String> emails = new ArrayList<String>();
 		//첫 행은 컬럼명이므로 제외
+		log.info("줄 갯수 : "+worksheet.getPhysicalNumberOfRows());
 		for(int i = 1; i<worksheet.getPhysicalNumberOfRows();i++) {
 			Row row = worksheet.getRow(i);
 			String email;
 			try {
 				email = row.getCell(0).getStringCellValue();
+				if(email.isEmpty()||email.equals("")) {
+					log.error("공백 문자가 들어왔습니다");
+					break;
+				}
+				
 				emails.add(email);
 			}catch(Exception e) {
 				//잘못된 데이터가 있다면 에러 반환
