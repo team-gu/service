@@ -23,6 +23,7 @@ import UserSelectTeamAutoComplete from './UserSelectTeamAutoComplete';
 import UserSelectChatAutoComplete from './UserSelectChatAutoComplete';
 import SkillSelectAutoComplete from './SkillSelectAutoComplete';
 import ProjectCard from './ProjectCard';
+import QuillEditor from './QuillEditor';
 import DonutChart from './DonutChart';
 import BigDonutChart from './BigDonutChart';
 import ReactTable from './ReactTable';
@@ -54,6 +55,7 @@ export {
   SkillSelectAutoComplete,
   UserSelectTeamAutoComplete,
   ProjectCard,
+  QuillEditor,
   DonutChart,
   BigDonutChart,
   ReactTable,
