@@ -3,9 +3,11 @@ package com.teamgu.api.service;
 import java.util.List;
 
 import com.teamgu.api.dto.req.AdminUserAddReqDto;
+import com.teamgu.api.dto.req.AdminUserAutoCorrectReqDto;
 import com.teamgu.api.dto.req.AdminUserManagementReqDto;
 import com.teamgu.api.dto.req.AdminUserProjectManagementReqDto;
 import com.teamgu.api.dto.res.AdminTeamManagementResDto;
+import com.teamgu.api.dto.res.AdminUserAutoCorrectResDto;
 import com.teamgu.api.dto.res.AdminUserManagementResDto;
 import com.teamgu.api.dto.res.CodeResDto;
 import com.teamgu.api.dto.res.DashBoardResDto;
@@ -273,5 +275,13 @@ public interface AdminService {
 	 * @return
 	 */
 	public short changeMajorFromStringToShort(String major);
+	
+	/**
+	 * Admin User Auto Corret
+	 * 관리자의 교육생 자동완성 검색 기능
+	 * @param adminUserAutoCorrectReqDto (검색하는 부분인 search와 검색되고 있는 프로젝트의 project id를 받는다)
+	 * @return
+	 */
+	public List<AdminUserAutoCorrectResDto> getUserAutoCorrect(AdminUserAutoCorrectReqDto adminUserAutoCorrectReqDto);
 	
 }

@@ -17,12 +17,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.teamgu.api.dto.req.AdminManagementReqDto;
 import com.teamgu.api.dto.req.AdminUserAddReqDto;
+import com.teamgu.api.dto.req.AdminUserAutoCorrectReqDto;
 import com.teamgu.api.dto.req.AdminUserManagementReqDto;
 import com.teamgu.api.dto.req.AdminUserProjectManagementReqDto;
 import com.teamgu.api.dto.req.ProjectCodeReqDto;
 import com.teamgu.api.dto.req.StdClassReqDto;
 import com.teamgu.api.dto.req.TeamMemberReqDto;
 import com.teamgu.api.dto.res.AdminTeamManagementResDto;
+import com.teamgu.api.dto.res.AdminUserAutoCorrectResDto;
 import com.teamgu.api.dto.res.AdminUserManagementResDto;
 import com.teamgu.api.dto.res.BasicResponse;
 import com.teamgu.api.dto.res.CodeResDto;
@@ -374,5 +376,16 @@ public class AdminController {
 		return ResponseEntity.status(HttpStatus.OK)
 				.body(new CommonResponse<String>(result));
 	}
+
+	@ApiOperation(value = "관리자 자동 완성 기능")
+	@PostMapping("/project/search")
+	public ResponseEntity<? extends BasicResponse> getUserAutoCorrect(@RequestBody AdminUserAutoCorrectReqDto adminUserAutoCorrectReqDto){
+
+		List<AdminUserAutoCorrectResDto> list = adminService.getUserAutoCorrect(adminUserAutoCorrectReqDto);
+
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(new CommonResponse<List<AdminUserAutoCorrectResDto>>(list));
+	}
+	
 	
 }

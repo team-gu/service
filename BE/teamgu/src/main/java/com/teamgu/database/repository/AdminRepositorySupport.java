@@ -17,8 +17,10 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.teamgu.api.dto.req.AdminUserAutoCorrectReqDto;
 import com.teamgu.api.dto.res.AdminTeamManagementHumanResDto;
 import com.teamgu.api.dto.res.AdminTeamManagementResDto;
+import com.teamgu.api.dto.res.AdminUserAutoCorrectResDto;
 import com.teamgu.api.dto.res.AdminUserManagementResDto;
 import com.teamgu.api.dto.res.CodeResDto;
 import com.teamgu.api.dto.res.AdminUserProjectManagementResDto;
@@ -330,7 +332,7 @@ public class AdminRepositorySupport {
 
 	}
 	
-	// Dash Board Table Infomation
+	// Project 별 교육생 조회
 	
 	public List<AdminUserProjectManagementResDto> getUserInProjectManagementData(Long projectId){
 		List<AdminUserProjectManagementResDto> dashBoardTable = new ArrayList<>();
@@ -375,14 +377,15 @@ public class AdminRepositorySupport {
 					"on u.id = t.user_id\r\n" + 
 					"left Outer Join (select user_class.user_id , std.name, std.region_code\r\n" + 
 					"	from user_class\r\n" + 
-					"	left outer join (select * \r\n" + 
+					"	right outer join (select * \r\n" + 
 					"		from std_class\r\n" + 
 					"		where project_code = \r\n" + 
 					"			(select project_code from project_detail where id = ?1)\r\n" + 
 					"		and stage_code =\r\n" + 
 					"			(select stage_code from project_detail where id = ?1)) std\r\n" + 
 					"on user_class.class_id = std.id) s\r\n" + 
-					"on u.id = s.user_id";
+					"on u.id = s.user_id\r\n" + 
+					"order by u.id";
 			List<Object[]> datas = em.createNativeQuery(jpql)
 					.setParameter(1, projectId)
 					.getResultList();
@@ -447,7 +450,8 @@ public class AdminRepositorySupport {
 					"where project_code = (\r\n" + 
 					"select project_code from project_detail where id = :projectId)\r\n" + 
 					"and stage_code = (\r\n" + 
-					"select stage_code from project_detail where id = :projectId))\r\n" + sb.toString();
+					"select stage_code from project_detail where id = :projectId))\r\n" + sb.toString() + 
+					"\r\n order by team.complete_yn, team.id";
 			
 			
 			List<Object[]> datas = em.createNativeQuery(jpql)
@@ -523,7 +527,7 @@ public class AdminRepositorySupport {
 					"	, u.name, u.email\r\n" + 
 					"    , if(uc.name is null, \"반이 없음\", concat((select code_detail.name from code_detail where code_detail.code_detail = uc.region_code and code_detail.code_id = \"RE\"), \" \", uc.name, \"반\")) as class \r\n" + 
 					"    , ifnull((select code_detail.name from code_detail where code_detail = (substr(u.student_number, 3, 1) + 100) and code_detail.code_id = \"RE\"), \"지역 없음\") as region\r\n" + 
-					"    , if(u.role = 1, \"교육생\", if(u.role = 2, \"퇴소생\", \"관리자\")) as role\r\n" + 
+					"    , if(u.role = 1, \"교육생\", if(u.role = 2, \"퇴소생\",if(u.role = 3,\"부관리자\" , \"관리자\"))) as role\r\n" + 
 					"     , if(u.major = 1, \"전공\", if(u.major = 2, \"비전공\", \"분류 안됨\")) as major\r\n" + 
 					"    , if(isnull(upd.project_detail_id), \"비활성\", \"활성\") as project\r\n" + 
 					"    , ut.complete_yn\r\n" + 
@@ -532,7 +536,7 @@ public class AdminRepositorySupport {
 					"    , (select code_detail.name from code_detail where code_detail.code_detail =\r\n" + 
 					"        (select track_code from mapping where mapping.id = ut.mapping_id)\r\n" + 
 					"        and code_detail.code_id = \"TR\") as track\r\n" + 
-					"from (select * from user where (substr(user.student_number, 1, 2) + 100) = (select project_detail.stage_code from project_detail where project_detail.id = :projectId) and role in (1, 2)) u\r\n" + 
+					"from (select * from user where (substr(user.student_number, 1, 2) + 100) = (select project_detail.stage_code from project_detail where project_detail.id = :projectId)) u\r\n" + 
 					"left outer join (select * from user_project_detail where user_project_detail.project_detail_id = :projectId ) upd\r\n" + 
 					"on u.id = upd.user_id\r\n" + 
 					"left outer join (select user_class.user_id, std_class.name, std_class.region_code\r\n" + 
@@ -550,7 +554,8 @@ public class AdminRepositorySupport {
 					"		where mapping.project_code = (select project_detail.project_code from project_detail where project_detail.id = :projectId)\r\n" + 
 					"			and mapping.stage_code = (select project_detail.stage_code from project_detail where project_detail.id = :projectId ))) t\r\n" + 
 					"	on t.id = user_team.team_id) ut\r\n" + 
-					"on u.id = ut.user_id\r\n" + sb.toString();
+					"on u.id = ut.user_id\r\n" + sb.toString() + 
+					"order by u.role desc, u.id";
 
 			List<Object[]> datas = em.createNativeQuery(jpql)
 					.setParameter("projectId", projectId)
@@ -1126,7 +1131,7 @@ public class AdminRepositorySupport {
 		
 	}
 	
-	// 
+	// Check User Information Duplication 유저 등록 시 중복 체크
 	public boolean checkUserInformationDuplication(String condition, String result ) {
 		
 	    BooleanBuilder builder = new BooleanBuilder();
@@ -1153,4 +1158,57 @@ public class AdminRepositorySupport {
 		
 	}
 	
+	// Admin User Auto Correct 관리자의 프로젝트에 포함되어 있지 않은 인원들의 자동 완성
+	public List<AdminUserAutoCorrectResDto> getUserAutoCorrect(AdminUserAutoCorrectReqDto adminUserAutoCorrectReqDto){
+		
+		String search = adminUserAutoCorrectReqDto.getSearch();
+		Long projectId = adminUserAutoCorrectReqDto.getProjectId();
+		
+		List<AdminUserAutoCorrectResDto> list = new ArrayList<>();
+		
+
+		EntityManager em = emf.createEntityManager();
+		
+		try {
+			String jpql = "select *\r\n" + 
+					"from (select user.id, user.email, user.name, user.student_number \r\n" + 
+					"	from user \r\n" + 
+					"    where user.id not in \r\n" + 
+					"		(select user_project_detail.user_id \r\n" + 
+					"        from user_project_detail \r\n" + 
+					"        where user_project_detail.project_detail_id = :projectId)\r\n" + 
+					"	and substr(user.student_number, 1, 2) + 100 = (\r\n" + 
+					"		select project_detail.stage_code\r\n" + 
+					"        from project_detail\r\n" + 
+					"        where project_detail.id = :projectId)) u\r\n" + 
+					"where u.name = :search or u.student_number like  :search or u.email like  :search";
+
+			List<Object[]> datas = em.createNativeQuery(jpql)
+					.setParameter("projectId", projectId)
+					.setParameter("search", "%" + search + "%" )
+					.getResultList();
+			
+			for (Object[] data : datas) {
+				list.add(AdminUserAutoCorrectResDto.builder()
+						.id(Long.parseLong(data[0].toString()))
+						.email(data[1].toString())
+						.name(data[2].toString())
+						.studentNumber(data[3].toString())
+						.build());
+			}
+			
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+			
+		} finally {
+			
+			em.close();
+			
+		}
+		
+		return list;
+		
+	}
+
 }
