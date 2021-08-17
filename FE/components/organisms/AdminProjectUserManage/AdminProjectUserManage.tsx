@@ -236,7 +236,7 @@ export default function AdminProjectUserManage({
     <Wrapper>
       <div className="manage-header">
         <div>
-          <Text text="프로젝트 참여 교육생 목록" fontSetting="n26b" />
+          <Text text={`${project.name || '현재 프로젝트'} 교육생 목록`} fontSetting="n26b" />
           <Icon iconName="add_box" func={() => setShowAddModal(true)} />
           <Icon
             iconName="settings_applications"
