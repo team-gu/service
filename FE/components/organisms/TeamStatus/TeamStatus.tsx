@@ -309,9 +309,9 @@ export default function TeamStatus(): ReactElement {
           </>
         )}
         {(!teams || teams.length === 0) && (
-          <div>
+          <WrapFilter>
             현재 등록된 팀이 없거나, 필터링 조건에 일치하는 팀이 없습니다.
-          </div>
+          </WrapFilter>
         )}
         {teams.map((item, index) => (
           <TeamStatusCard

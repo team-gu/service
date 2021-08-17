@@ -404,6 +404,7 @@ export default function UserStatus(): ReactElement {
                 onPageChange={({ selected }: { selected: number }) =>
                   setPayload((prev) => ({ ...prev, pageNum: selected }))
                 }
+                forcePage={payload?.pageNum}
               />
             )}
           </>
