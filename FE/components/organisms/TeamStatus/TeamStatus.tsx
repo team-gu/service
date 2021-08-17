@@ -87,10 +87,6 @@ export default function TeamStatus(): ReactElement {
       studentNumber,
     });
 
-    const project =
-      projectCodes && projectCodes.length > 0
-        ? projectCodes[projectCodes.length - 1]
-        : 101;
     getUserHasTeam({
       userId,
       project: { code: projectCode },
@@ -139,6 +135,13 @@ export default function TeamStatus(): ReactElement {
 
     getTeamsFiltered(payloadTemp).then(({ data: { data } }) => {
       setTeams(data);
+    });
+    getUserHasTeam({
+      userId,
+      project: { code: projectCode },
+    }).then(({ data: { data } }) => {
+      setUserHasTeam(data.hasTeam);
+      setUserTeam(data.team);
     });
   };
 
