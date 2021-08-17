@@ -8,6 +8,7 @@ import {
   UserSelectTeamAutoComplete,
   Button,
   SimpleSelect,
+  Pagination,
 } from '@molecules';
 
 import { Title } from '@molecules';
@@ -57,7 +58,7 @@ export default function TeamStatus(): ReactElement {
   const [payload, setPayload] = useState<Payload>({});
   const [showTeamManageModal, setShowTeamManageModal] = useState(false);
   const [selectedTeamInfo, setSelectedTeaminfo] = useState<Team>();
-  const [teams, setTeams] = useState<Team[]>();
+  const [teams, setTeams] = useState<Team[]>([]);
 
   const [sortBy, setSortBy] = useState(sortByOptions[0].value);
   const [sortAsc, setSortAsc] = useState(true);
@@ -65,6 +66,7 @@ export default function TeamStatus(): ReactElement {
   const [userHasTeam, setUserHasTeam] = useState<boolean>();
   const [userTeam, setUserTeam] = useState<Team>();
   const [searchWhat, setSearchWhat] = useState();
+  const [pageCount, setPageCount] = useState(0);
 
   const SERACH_BY_FILTER = true;
   const SEARCH_BY_USERID = false;
@@ -131,11 +133,21 @@ export default function TeamStatus(): ReactElement {
       sortAsc,
       userId: by === SERACH_BY_FILTER ? 0 : containsUserId || 0,
       studentNumber,
+      pageNum: 0,
+      pageSize: 10,
     };
 
-    getTeamsFiltered(payloadTemp).then(({ data: { data } }) => {
-      setTeams(data);
-    });
+    getTeamsFiltered(payloadTemp).then(
+      ({
+        data: {
+          data: { dataList, totPageCnt },
+        },
+      }) => {
+        console.log(dataList);
+        setTeams(dataList);
+        setPageCount(totPageCnt);
+      },
+    );
     getUserHasTeam({
       userId,
       project: { code: projectCode },
@@ -316,13 +328,29 @@ export default function TeamStatus(): ReactElement {
             현재 등록된 팀이 없거나, 필터링 조건에 일치하는 팀이 없습니다.
           </WrapFilter>
         ) : (
-          teams?.map((item, index) => (
-            <TeamStatusCard
-              key={index}
-              team={item}
-              onClickTeamManage={handleTeamManageModal}
-            />
-          ))
+          <>
+            {teams?.map((item, index) => (
+              <TeamStatusCard
+                key={index}
+                team={item}
+                onClickTeamManage={handleTeamManageModal}
+              />
+            ))}
+            {pageCount >= 0 && (
+              <Pagination
+                pageCount={pageCount + 1}
+                previousLabel={'<'}
+                nextLabel={'>'}
+                marginPagesDisplayed={2}
+                pageRangeDisplayed={5}
+                breakLabel={'...'}
+                onPageChange={({ selected }: { selected: number }) =>
+                  setPayload((prev) => ({ ...prev, pageNum: selected }))
+                }
+                forcePage={payload?.pageNum}
+              />
+            )}
+          </>
         )}
       </div>
       {showTeamManageModal && (
