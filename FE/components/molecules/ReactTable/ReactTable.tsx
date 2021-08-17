@@ -13,6 +13,7 @@ import {
 import styled from 'styled-components';
 
 import { Icon, Text } from '@atoms';
+import { Pagination } from '@molecules';
 
 const Wrapper = styled.div<{ fullWidth: boolean }>`
   i {
@@ -424,9 +425,11 @@ export default function ReactTable({
           {headerGroups.map((headerGroup) => (
             <tr {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map((column) => (
-                <th {...column.getHeaderProps({
-                  style: { width: column.width }
-                })}>
+                <th
+                  {...column.getHeaderProps({
+                    style: { width: column.width },
+                  })}
+                >
                   <TableHeaderItem>
                     <div>
                       {grouping && column.canGroupBy ? (
@@ -533,41 +536,15 @@ export default function ReactTable({
       </table>
 
       {pagination && (
-        <PaginationContainer>
-          <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
-            {'<<'}
-          </button>{' '}
-          <button onClick={() => previousPage()} disabled={!canPreviousPage}>
-            {'<'}
-          </button>{' '}
-          <div className="pagination-text">
-            <Text
-              text={`${state.pageIndex + 1} / ${pageOptions.length}`}
-              fontSetting="n16m"
-            />
-          </div>
-          <button onClick={() => nextPage()} disabled={!canNextPage}>
-            {'>'}
-          </button>{' '}
-          <button
-            onClick={() => gotoPage(pageCount - 1)}
-            disabled={!canNextPage}
-          >
-            {'>>'}
-          </button>{' '}
-          <select
-            value={state.pageSize}
-            onChange={(e) => {
-              setPageSize(Number(e.target.value));
-            }}
-          >
-            {[10, 20, 30, 40, 50].map((pageSize) => (
-              <option key={pageSize} value={pageSize}>
-                {pageSize}개씩
-              </option>
-            ))}
-          </select>
-        </PaginationContainer>
+        <Pagination
+          pageCount={pageOptions.length}
+          previousLabel={'<'}
+          nextLabel={'>'}
+          marginPagesDisplayed={2}
+          pageRangeDisplayed={5}
+          breakLabel={'...'}
+          onPageChange={({ selected }: { selected: number }) => gotoPage(selected)}
+        />
       )}
     </Wrapper>
   );
