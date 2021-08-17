@@ -21,12 +21,7 @@ import {
 import useSockStomp from '@hooks/useSockStomp';
 
 import { ChatList, ChatRoom, Modal } from '@organisms';
-import {
-  UserSelectChatAutoComplete,
-  Button,
-  DropdownMenu,
-  Tooltip,
-} from '@molecules';
+import { UserSelectChatAutoComplete, Button, DropdownMenu } from '@molecules';
 import { Text, Icon } from '@atoms';
 import { MODALS } from '@utils/constants';
 
@@ -147,6 +142,8 @@ export default function ChatRoute(): ReactElement {
 
   const [isEdit, setIsEdit] = useState(false);
 
+  const [unreadMessageCount, setUnreadMessageCount] = useState(0);
+
   const {
     handleSendMessage,
     handleSendRtcLink,
@@ -172,7 +169,7 @@ export default function ChatRoute(): ReactElement {
       dispatch(setChatOpen({ isChatOpen: false }));
     }
 
-    if (!editRef?.current?.contains(target)) {
+    if (editRef.current && !editRef?.current?.contains(target)) {
       setIsEdit(false);
     }
   }
@@ -212,13 +209,22 @@ export default function ChatRoute(): ReactElement {
         const {
           data: { data },
         } = await getRoomUserList(room_id);
-        setOpponentId(data.filter(({ user_id }) => id !== user_id)[0].user_id);
+
+        setOpponentId(
+          data.filter(({ user_id }: { user_id: number }) => id !== user_id)[0]
+            .user_id,
+        );
       })();
     }
   }, [room_id]);
 
-  const handleToChatRoom = async (id: number, room_name: string) => {
+  const handleToChatRoom = async (
+    id: number,
+    room_name: string,
+    unread_message_count: number,
+  ) => {
     await setRoomId(id);
+    setUnreadMessageCount(unread_message_count);
     setRoomName(room_name);
     setRoute(CHAT_ROOM);
     const {
@@ -245,7 +251,7 @@ export default function ChatRoute(): ReactElement {
         if (route === CHAT_LIST) {
           const {
             data: {
-              data: { chat_room_id, room_name },
+              data: { chat_room_id, room_name, unread_message_count },
             },
           } = await postCreateRoom({
             userids: [
@@ -254,7 +260,7 @@ export default function ChatRoute(): ReactElement {
             ],
           });
 
-          handleToChatRoom(chat_room_id, room_name);
+          handleToChatRoom(chat_room_id, room_name, unread_message_count);
           return handleGetChatLists();
         }
 
@@ -463,6 +469,8 @@ export default function ChatRoute(): ReactElement {
                 setRoomId={setRoomId}
                 handleClickSend={handleClickSend}
                 roomId={room_id}
+                opponentId={opponentId}
+                unreadMessageCount={unreadMessageCount}
               />
             ),
           }[route]

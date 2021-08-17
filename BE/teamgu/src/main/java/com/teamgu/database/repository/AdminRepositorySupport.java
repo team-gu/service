@@ -2,6 +2,7 @@ package com.teamgu.database.repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -568,7 +569,6 @@ public class AdminRepositorySupport {
 							.build());
 				}
 				else {
-					System.out.println("아니야");
 					adminList.add(AdminUserManagementResDto.builder()
 							.studentNumber(data[0].toString()) 	// 학번
 							.name(data[1].toString()) 			// 이름
@@ -669,7 +669,7 @@ public class AdminRepositorySupport {
 	}
 	
 	// Insert Student Class
-	public void insertStudentClass(Long projectId, int regionCode, int name) {
+	public List<CodeResDto> insertStudentClass(Long projectId, int regionCode, int name) {
 
 		EntityManager em = emf.createEntityManager();
 		EntityTransaction et = em.getTransaction();
@@ -701,6 +701,8 @@ public class AdminRepositorySupport {
 			em.close();
 			
 		}
+		
+		return selectStudentClass(projectId, 0);
 		
 	}
 	
@@ -859,13 +861,177 @@ public class AdminRepositorySupport {
 	
 	// 프로젝트 반 삭제
 	@Transactional
-	public void deleteStudentClass(Long classId) {
+	public List<CodeResDto>  deleteStudentClass(Long classId) {
+		
+		int regionCode = 0;
+		
+		Long projectId = 
+				jpaQueryFactory
+				.select(qProjectDetail.id)
+				.from(qProjectDetail)
+				.where(qProjectDetail.stageCode.eq(JPAExpressions
+						.select(qStdClass.stageCode)
+						.from(qStdClass)
+						.where(qStdClass.id.eq(classId)))
+						.and(qProjectDetail.projectCode.eq(JPAExpressions
+								.select(qStdClass.projectCode)
+								.from(qStdClass)
+								.where(qStdClass.id.eq(classId)))))
+				.fetchOne();
 
 		jpaQueryFactory
 		.delete(qStdClass)
 		.where(qStdClass.id.eq(classId))
 		.execute();
 		
+
+		return selectStudentClass(projectId, regionCode);
+		
 	}
 	
+	// Project에 User가 존재하는지 체크
+	public boolean checkUserProjectDetail(Long userId, Long projectId) {
+		
+		List<Long> list = 
+				jpaQueryFactory
+				.select(qUserProjectDetail.user.id)
+				.from(qUserProjectDetail)
+				.where(qUserProjectDetail.user.id.eq(userId)
+						.and(qUserProjectDetail.projectDetail.id.eq(projectId)))
+				.fetch();
+		
+		
+		if(list.size() == 0) {
+			return true;
+		}
+		else {
+			return false;
+		}
+		
+	}
+	
+	// Project에 User를 추가
+	public void addStudentToProject(Long userId, Long projectId) {
+		EntityManager em = emf.createEntityManager();
+		EntityTransaction et = em.getTransaction();
+		
+		try {
+
+			et.begin();
+
+			String jpql = "insert into user_project_detail\r\n" + 
+					"value(:userId\r\n" + 
+					"	, :projectId\r\n" + 
+					"    ,(select project_detail.project_code from project_detail where project_detail.id = :projectId)\r\n" + 
+					"    , (select project_detail.stage_code from project_detail where project_detail.id = :projectId)\r\n" + 
+					")";
+
+			em.createNativeQuery(jpql)
+			.setParameter("userId", userId)
+			.setParameter("projectId", projectId)
+			.executeUpdate();
+
+			et.commit();
+			
+		} catch (Exception e) {
+			
+			et.rollback();
+			e.printStackTrace();
+			
+		} finally {
+
+			em.close();
+			
+		}
+		
+	}
+	
+	// Project에서 User를 삭제
+	@Transactional
+	public void excludeStudentFromProject(Long userId, Long projectId) {
+		EntityManager em = emf.createEntityManager();
+		EntityTransaction et = em.getTransaction();
+		
+		try {
+
+			et.begin();
+
+			String jpql = "delete from user_project_detail\r\n" + 
+					"where user_id = :userId and project_detail_id = :projectId";
+
+			em.createNativeQuery(jpql)
+			.setParameter("userId", userId)
+			.setParameter("projectId", projectId)
+			.executeUpdate();
+
+			et.commit();
+			
+		} catch (Exception e) {
+			
+			et.rollback();
+			e.printStackTrace();
+			
+		} finally {
+
+			em.close();
+			
+		}
+	}
+	
+	// ProjectId와 userId로 팀 조회
+	public AdminTeamManagementResDto getStudentProjectTeamInfo(Long userId, Long projectId) {
+		
+		EntityManager em = emf.createEntityManager();
+		AdminTeamManagementResDto team = null;
+		
+		try {
+			String jpql = "select t.id, t.name, t.now_member, t.complete_yn, t.leader_id\r\n" + 
+					"from (select * \r\n" + 
+					"from team\r\n" + 
+					"where mapping_id in (\r\n" + 
+					"	select mapping.id \r\n" + 
+					"    from mapping\r\n" + 
+					"    where mapping.stage_code = (\r\n" + 
+					"		select project_detail.stage_code\r\n" + 
+					"        from project_detail\r\n" + 
+					"        where project_detail.id = :projectId\r\n" + 
+					"    )\r\n" + 
+					"		and mapping.project_code = (\r\n" + 
+					"			select project_detail.project_code\r\n" + 
+					"            from project_detail\r\n" + 
+					"            where project_detail.id = :projectId\r\n" + 
+					"        )\r\n" + 
+					")) t\r\n" + 
+					"left outer join user_team ut\r\n" + 
+					"on ut.team_id = t.id\r\n" + 
+					"where ut.user_id = :userId";
+			
+			List<Object[]> datas =  em.createNativeQuery(jpql)
+					.setParameter("userId", userId)
+					.setParameter("projectId", projectId)
+					.getResultList();
+			
+			
+			
+			if(datas == null) {
+				
+			}
+			else {
+				for (Object[] data : datas) {
+					team = AdminTeamManagementResDto.builder()
+							.teamId(Long.parseLong(data[0].toString()))
+							.teamName(data[1].toString())
+							.memberCnt(Integer.parseInt(data[2].toString())).completeYn(data[3].toString())
+							.leaderId(Long.parseLong(data[4].toString())).build();
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			em.close();
+		}
+		
+		return team;
+		
+	}
 }
