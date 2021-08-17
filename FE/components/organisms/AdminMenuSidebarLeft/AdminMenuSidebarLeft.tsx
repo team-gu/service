@@ -25,9 +25,9 @@ const Wrapper = styled.div`
 
     border: ${({
       theme: {
-        colors: { samsungLightBlue },
+        colors: { samsungBlue },
       },
-    }) => `solid 2px ${samsungLightBlue}`};
+    }) => `solid 2px ${samsungBlue}`};
     background-color: #e8eaf6;
 
     .selected-project-info {
@@ -69,9 +69,9 @@ const Wrapper = styled.div`
 
     background-color: ${({
       theme: {
-        colors: { samsungLightBlue },
+        colors: { samsungBlue },
       },
-    }) => samsungLightBlue};
+    }) => samsungBlue};
     color: white;
     padding: 30px 0;
 
