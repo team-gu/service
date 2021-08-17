@@ -348,10 +348,6 @@ export default function AdminUserManageModal({
       myAlert('전공여부을 입력해주세요');
       return;
     }
-    if (!studentClass) {
-      myAlert('반을 입력해주세요');
-      return;
-    }
     if (!userRole) {
       myAlert('역할을 입력해주세요');
       return;
