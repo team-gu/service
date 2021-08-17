@@ -17,6 +17,7 @@ import {
   setChatOpen,
   displayModal,
   removeModal,
+  useUiState,
 } from '@store';
 import useSockStomp from '@hooks/useSockStomp';
 
@@ -120,6 +121,7 @@ const CHAT_ROOM = 1;
 export default function ChatRoute(): ReactElement {
   const dispatch = useAppDispatch();
   const isShow = useModalState();
+  const { passedOpponentId } = useUiState();
 
   const {
     user: { id, projectCodes },
@@ -217,6 +219,30 @@ export default function ChatRoute(): ReactElement {
       })();
     }
   }, [room_id]);
+
+  useEffect(() => {
+    (async () => {
+      if (passedOpponentId && passedOpponentId !== 0) {
+        try {
+          if (route === CHAT_LIST) {
+            const {
+              data: {
+                data: { chat_room_id, room_name, unread_message_count },
+              },
+            } = await postCreateRoom({
+              userids: [id, passedOpponentId],
+            });
+
+            handleToChatRoom(chat_room_id, room_name, unread_message_count);
+            return handleGetChatLists();
+          }
+        } catch (error) {
+          return console.error(error);
+        }
+        dispatch(setChatOpen({ isChatOpen: true, passedOpponentId: 0 }));
+      }
+    })();
+  }, [passedOpponentId]);
 
   const handleToChatRoom = async (
     id: number,
