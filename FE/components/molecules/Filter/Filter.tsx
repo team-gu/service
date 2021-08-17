@@ -76,7 +76,7 @@ export default function Filter({
             </RadioButton>
           )}
           {/* TODO: each의 타입 정의  */}
-          {contents.length < 5 ? (
+          {contents.length < 5 && title !== '트랙' ? (
             contents?.map(({ codeName, code }) =>
               isRadioButton ? (
                 <RadioButton

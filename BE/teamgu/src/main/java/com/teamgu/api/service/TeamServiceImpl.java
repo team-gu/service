@@ -87,6 +87,8 @@ public class TeamServiceImpl implements TeamService {
 		int startIdx = teamFilterReqDto.getPageNum() * teamFilterReqDto.getPageSize();
 		int endIdx = startIdx + teamFilterReqDto.getPageSize();
 
+		if(size % teamFilterReqDto.getPageSize() != 0) totPageCnt++;
+
 		for(int i = startIdx; i<size && i < endIdx; i++) {
 			
 			Long teamId = Long.parseLong(String.valueOf(teamIdList.get(i)));
