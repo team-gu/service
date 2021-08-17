@@ -365,7 +365,7 @@ const ADMIN_USER_TABLE_COLUMNS = [
     ),
   },
   {
-    Header: '팀 식별자',
+    Header: '팀 번호',
     accessor: 'teamId',
     width: 120,
     Cell: (content: any) => (
