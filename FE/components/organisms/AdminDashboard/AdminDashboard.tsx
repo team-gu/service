@@ -9,6 +9,7 @@ import {
   getProjectUserTableData,
 } from '@repository/adminRepository';
 import { Project } from '@utils/type';
+import { setLoading, useAppDispatch } from '@store';
 
 const COLOR_MAP = {
   COMPLETE: '#32CD32',
@@ -146,9 +147,11 @@ interface DataItem {
 export default function AdminDashboard({
   project,
 }: AdminDashboardProps): ReactElement {
+  const dispatch = useAppDispatch();
   const [regionTeamData, setRegionTeamData] = useState<any[]>();
   const [trackTeamData, setTrackTeamData] = useState<any[]>([]);
   const [teamStatusTableData, setTeamStatusTableData] = useState<any[]>([]);
+  const [loadingRegionTeamData, setLoadingRegionTeamData] = useState(false);
 
   useEffect(() => {
     if (project) {
@@ -183,6 +186,15 @@ export default function AdminDashboard({
     }
   }, [project]);
 
+  useEffect(() => {
+    dispatch(setLoading({ isLoading: true }));
+    setLoadingRegionTeamData(true);
+    setTimeout(() => {
+      setLoadingRegionTeamData(false);
+      dispatch(setLoading({ isLoading: false }));
+    }, 500);
+  }, [regionTeamData]);
+
   return (
     <Wrapper>
       <div className="team-status-chart">
@@ -190,36 +202,38 @@ export default function AdminDashboard({
           <Text text="팀 구성 현황" fontSetting="n26b" />
         </div>
         <div className="chart-container">
-          {regionTeamData && regionTeamData.length > 0 && (
-            <>
-              <div className="entire-chart">
-                <DashboardBarChart
-                  data={regionTeamData.slice(0, 1)}
-                  width={300}
-                  height={500}
-                  color={{
-                    미소속: COLOR_MAP.NONE,
-                    진행중: COLOR_MAP.ONGOING,
-                    완료: COLOR_MAP.COMPLETE,
-                  }}
-                  legend={false}
-                />
-              </div>
+          {!loadingRegionTeamData &&
+            regionTeamData &&
+            regionTeamData.length > 0 && (
+              <>
+                <div className="entire-chart">
+                  <DashboardBarChart
+                    data={regionTeamData.slice(0, 1)}
+                    width={300}
+                    height={500}
+                    color={{
+                      미소속: COLOR_MAP.NONE,
+                      진행중: COLOR_MAP.ONGOING,
+                      완료: COLOR_MAP.COMPLETE,
+                    }}
+                    legend={false}
+                  />
+                </div>
 
-              <div className="region-chart">
-                <DashboardBarChart
-                  data={regionTeamData.slice(1)}
-                  width={800}
-                  height={300}
-                  color={{
-                    미소속: COLOR_MAP.NONE,
-                    진행중: COLOR_MAP.ONGOING,
-                    완료: COLOR_MAP.COMPLETE,
-                  }}
-                />
-              </div>
-            </>
-          )}
+                <div className="region-chart">
+                  <DashboardBarChart
+                    data={regionTeamData.slice(1)}
+                    width={800}
+                    height={300}
+                    color={{
+                      미소속: COLOR_MAP.NONE,
+                      진행중: COLOR_MAP.ONGOING,
+                      완료: COLOR_MAP.COMPLETE,
+                    }}
+                  />
+                </div>
+              </>
+            )}
 
           <div className="count-up-container">
             {trackTeamData && trackTeamData.length > 0 && (
