@@ -10,7 +10,8 @@ import java.util.List;
  */
 public interface CodeDetailRepositoryCustom {
     List<CodeDetailResDto> getStgCodeDetail();
-    List<CodeDetailResDto> getPrjCodeDetail();
+    List<CodeDetailResDto> getPrjCodeDetail(String stage);
+    List<CodeDetailResDto> getFilteredTrkDetail(String stage, int prjCode);
     List<CodeDetailResDto> getTrkCodeDetail(String stage);
     List<CodeDetailResDto> getSklCodeDetail();
     List<CodeDetailResDto> getPosCodeDetail();
