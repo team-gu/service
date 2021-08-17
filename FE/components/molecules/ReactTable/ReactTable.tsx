@@ -332,7 +332,7 @@ export default function ReactTable({
           {
             id: 'selection',
             Cell: ({ row }) => (
-              <div>
+              <div style={{ width: 'max-content' }}>
                 <IndeterminateCheckbox
                   editable={selectable.type?.edit}
                   deletable={selectable.type?.delete}
@@ -345,6 +345,7 @@ export default function ReactTable({
                 />
               </div>
             ),
+            width: '',
           },
           ...columns,
         ]);
