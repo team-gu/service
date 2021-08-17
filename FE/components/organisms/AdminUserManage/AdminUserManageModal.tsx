@@ -218,7 +218,7 @@ const CLASS_OPTIONS = [
 ];
 
 interface UserDataRow {
-  userId: number,
+  userId: number;
   completeYn: string | null;
   major: string;
   name: string;
@@ -445,7 +445,7 @@ export default function AdminUserManageModal({
       <Wrapper>
         <div className="modal-header">
           <Text
-            text={defaultValue ? '교육생 정보 수정' : '교육생 추가'}
+            text={defaultValue ? '교육생 정보 수정' : '교육생 회원가입'}
             fontSetting="n26b"
           />
           <div className="close-btn">
@@ -455,7 +455,14 @@ export default function AdminUserManageModal({
         <div className="modal-content">
           {!defaultValue && (
             <div style={{ margin: '20px 0' }}>
-              <Text text="프로젝트에 추가할 교육생의 학번을 입력해주세요." />
+              <Text
+                text="교육생 정보를 팀구 서비스에 추가합니다."
+                isLineBreak
+              />
+              <Text
+                text="[학번, 이름, 이메일, 전공/비전공]을 입력해주세요."
+                isLineBreak
+              />
             </div>
           )}
           <div className="input-container">
@@ -508,24 +515,25 @@ export default function AdminUserManageModal({
             </Label>
           </div>
 
+          <div className="select-container">
+            <Label text="전공/비전공">
+              <Select
+                isSearchable={false}
+                cacheOptions
+                defaultOptions
+                value={stringToOption(userMajor) || null}
+                options={MAJOR_OPTIONS}
+                onChange={onChangeMajor}
+                styles={customStyles}
+                defaultValue={
+                  defaultValue ? stringToOption(defaultValue.major) : null
+                }
+              />
+            </Label>
+          </div>
+
           {defaultValue && (
             <>
-              <div className="select-container">
-                <Label text="전공/비전공">
-                  <Select
-                    isSearchable={false}
-                    cacheOptions
-                    defaultOptions
-                    value={stringToOption(userMajor) || null}
-                    options={MAJOR_OPTIONS}
-                    onChange={onChangeMajor}
-                    styles={customStyles}
-                    defaultValue={
-                      defaultValue ? stringToOption(defaultValue.major) : null
-                    }
-                  />
-                </Label>
-              </div>
               <div className="select-container">
                 {studentClassOptions.length > 0 && (
                   <>
