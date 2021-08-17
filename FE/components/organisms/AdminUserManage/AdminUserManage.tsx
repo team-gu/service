@@ -66,11 +66,19 @@ const RegionButtonWrapper = styled.span<{ selected: boolean }>`
       color: gray;
     }
 
-    ${({ selected }) =>
+    :hover {
+      opacity: 1;
+    }
+
+    ${({
+      selected,
+      theme: {
+        colors: { samsungLightBlue },
+      },
+    }) =>
       selected &&
       `
-        background-color: black;
-        border: 1px solid black;
+        background-color: ${samsungLightBlue};
         border-radius: none;
         > div {
           color: white;
@@ -237,7 +245,7 @@ export default function AdminUserManage({ project }: AdminUserManageProps) {
 
         <div className="manage-header-import">
           <Button
-            title="import"
+            title="Import"
             func={() => setShowImportModal(true)}
             width="auto"
           />

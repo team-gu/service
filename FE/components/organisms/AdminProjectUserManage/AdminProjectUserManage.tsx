@@ -250,12 +250,12 @@ export default function AdminProjectUserManage({
 
         <div className="manage-header-import">
           <Button
-            title="import"
+            title="Import"
             func={() => setShowImportModal(true)}
             width="auto"
           />
           <Button
-            title="export"
+            title="Export"
             func={() => setShowExportModal(true)}
             width="auto"
           />
