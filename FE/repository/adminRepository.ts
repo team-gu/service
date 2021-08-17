@@ -190,6 +190,17 @@ export const getUserTableData = async (param: any) => {
   });
 };
 
+export const updateUser = async (param: any) => {
+  console.log('updateUser');
+  console.log(param);
+
+  return await api({
+    url: `/api/admin/user/${param.userId}`,
+    type: 'put',
+    param,
+  })
+}
+
 export const getAdminClassOption = async (param: any) => {
   console.log('getAdminClassOption');
   console.log(param);
@@ -218,7 +229,7 @@ export const deleteAdminClassOption = async (param: any) => {
 
   return await api({
     url: `/api/admin/user/class/${param.classId}`,
-    type: 'post',
+    type: 'delete',
     param,
   });
 };

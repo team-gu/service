@@ -11,6 +11,9 @@ import {
   getAdminClassOption,
   deleteAdminClassOption,
 } from '@repository/adminRepository';
+import { displayModal, useAppDispatch } from '@store';
+import { MODALS } from '@utils/constants';
+import { Code } from '@utils/type';
 
 const Wrapper = styled.div`
   input {
@@ -209,14 +212,6 @@ const MAJOR_OPTIONS = [
   { value: '비전공', label: '비전공' },
 ];
 
-const CLASS_OPTIONS = [
-  { value: 1, label: '서울 1반' },
-  { value: 2, label: '서울 2반' },
-  { value: 3, label: '서울 3반' },
-  { value: 4, label: '서울 4반' },
-  { value: 5, label: '서울 5반' },
-];
-
 interface UserDataRow {
   userId: number;
   completeYn: string | null;
@@ -234,6 +229,8 @@ interface UserDataRow {
 
 interface AdminUserCreateModalProps {
   handleClickClose: () => void;
+  handleUpdateUser?: (param: any) => void;
+  handleCreateUser?: (param: any) => void;
   defaultValue?: UserDataRow;
   projectId: number | undefined;
 }
@@ -242,16 +239,17 @@ export default function AdminUserManageModal({
   handleClickClose,
   defaultValue,
   projectId,
+  handleUpdateUser,
+  handleCreateUser,
 }: AdminUserCreateModalProps) {
+  const dispatch = useAppDispatch();
   const [studentClassOptions, setStudentClassOptions] = useState<
     OptionTypeBase[]
   >([]);
 
   useEffect(() => {
-    // TODO: 서버에서 반 목록 가져오기
     fetchStudentClass();
-    setStudentClassOptions(CLASS_OPTIONS);
-  }, []);
+  }, [projectId]);
 
   const [userMajor, setUserMajor] = useState<string | undefined>(
     defaultValue ? defaultValue.major : undefined,
@@ -273,24 +271,37 @@ export default function AdminUserManageModal({
   const userNameInputRef = useRef<HTMLInputElement>(null);
   const userStudentNumberInputRef = useRef<HTMLInputElement>(null);
 
-  const handleCreateUser = () => {
+  const myAlert = (content: string) => {
+    dispatch(
+      displayModal({
+        modalName: MODALS.ALERT_MODAL,
+        content: content,
+      }),
+    );
+  };
+
+  const onClickCreate = () => {
+    if (!handleCreateUser) {
+      return;
+    }
+
     if (!userEmailInputRef.current || userEmailInputRef.current.value === '') {
-      console.log('이메일 없음');
+      myAlert('이메일을 입력해주세요');
       return;
     }
     if (!userNameInputRef.current || userNameInputRef.current.value === '') {
-      console.log('이름 없음');
+      myAlert('이름을 입력해주세요');
       return;
     }
     if (
       !userStudentNumberInputRef.current ||
       userStudentNumberInputRef.current.value === ''
     ) {
-      console.log('학번 없음');
+      myAlert('학번을 입력해주세요');
       return;
     }
     if (!userMajor) {
-      console.log('전공/비전공 없음');
+      myAlert('전공여부을 입력해주세요');
       return;
     }
 
@@ -301,18 +312,20 @@ export default function AdminUserManageModal({
       major: userMajor,
     };
 
-    console.log('CREATE USER');
-    console.log(param);
-    // TODO: 유저 생성 API 호출
+    handleCreateUser(param);
   };
 
-  const handleUpdateUser = () => {
+  const onClickUpdate = () => {
+    if (!defaultValue || !handleUpdateUser) {
+      return;
+    }
+
     if (!userEmailInputRef.current || userEmailInputRef.current.value === '') {
-      console.log('이메일 없음');
+      myAlert('이메일을 입력해주세요');
       return;
     }
     if (!userNameInputRef.current || userNameInputRef.current.value === '') {
-      console.log('이름 없음');
+      myAlert('이름을 입력해주세요');
       return;
     }
     if (
@@ -320,38 +333,35 @@ export default function AdminUserManageModal({
       userStudentNumberInputRef.current.value === ''
     ) {
       console.log('학번 없음');
+      myAlert('학번을 입력해주세요');
       return;
     }
     if (!userMajor) {
-      console.log('전공/비전공 없음');
+      myAlert('전공여부을 입력해주세요');
       return;
     }
     if (!studentClass) {
-      console.log('반 없음');
+      myAlert('반을 입력해주세요');
       return;
     }
     if (!userRole) {
-      console.log('교육생/퇴소생 없음');
+      myAlert('교육생/퇴소생을 입력해주세요');
       return;
     }
     if (!userRegist) {
-      console.log('활성/비활성 없음');
+      myAlert('프로젝트 활성/비활성을 입력해주세요');
       return;
     }
 
     const param = {
-      name: userNameInputRef.current.value,
-      email: userEmailInputRef.current.value,
-      studnetNumber: userStudentNumberInputRef.current.value,
+      userId: defaultValue.userId,
+      projectId,
       major: userMajor,
-      studentClass,
+      classId: studentClassOptions.find((c) => c.label === studentClass)?.value,
       role: userRole,
-      regist: userRegist,
     };
 
-    console.log('UPDATE USER');
-    console.log(param);
-    // TODO: 유저 수정 API 호출
+    handleUpdateUser(param);
   };
 
   const findDefaultStudentClass = () => {
@@ -377,9 +387,8 @@ export default function AdminUserManageModal({
       projectId,
     }).then(({ data: { data } }) => {
       console.log(data);
-      // TODO: 생성 결과 필요
-      // setStudentClassOptions(리턴 결과)
-      // setStudentClass(리턴결과 중 내가 추가했던거)
+      setStudentClassOptions(codesToOption(data));
+      setStudentClass(data.find((c: Code) => c.codeName === inputValue).codeName);
       setIsLoadingStudentClass(false);
     });
   };
@@ -400,10 +409,8 @@ export default function AdminUserManageModal({
       classId: deletedValue.code,
     }).then(({ data: { data } }) => {
       console.log(data);
-      // TODO: 삭제 결과 필요
-      // setCategoryOptions(codesToOption(리턴 결과));
-      // TODO: 반 삭제 시 선택했던거 초기화
-      // setCategory(null);
+      setStudentClassOptions(codesToOption(data));
+      setStudentClass(null);
     });
   };
 
@@ -460,7 +467,7 @@ export default function AdminUserManageModal({
                 isLineBreak
               />
               <Text
-                text="[학번, 이름, 이메일, 전공/비전공]을 입력해주세요."
+                text="[학번, 이름, 이메일, 전공여부]을 입력해주세요."
                 isLineBreak
               />
             </div>
@@ -516,7 +523,7 @@ export default function AdminUserManageModal({
           </div>
 
           <div className="select-container">
-            <Label text="전공/비전공">
+            <Label text="전공여부">
               <Select
                 isSearchable={false}
                 cacheOptions
@@ -535,38 +542,34 @@ export default function AdminUserManageModal({
           {defaultValue && (
             <>
               <div className="select-container">
-                {studentClassOptions.length > 0 && (
-                  <>
-                    <Label text="반">
-                      <CreatableSelect
-                        isClearable
-                        value={stringToOption(studentClass) || null}
-                        isDisabled={isLoadingStudentClass}
-                        isLoading={isLoadingStudentClass}
-                        cacheOptions
-                        defaultOptions
-                        options={studentClassOptions}
-                        onChange={onChangeStudentClassOption}
-                        defaultValue={findDefaultStudentClass()}
-                        styles={customStyles}
-                        onCreateOption={handleCreateStudentClassOption}
-                        placeholder="예) 서울 0반"
-                      />
-                    </Label>
-                    <div className="studnet-number-message">
-                      <span>
-                        "<Underline>[지역] [N]반</Underline>"의 규칙으로
-                        입력해주세요. (예. 서울 1반)
-                      </span>
-                    </div>
-                    <div
-                      className="setting-icon"
-                      onClick={() => setShowEditOptionsModal(true)}
-                    >
-                      <Icon iconName="settings" />
-                    </div>
-                  </>
-                )}
+                <Label text="반">
+                  <CreatableSelect
+                    isClearable
+                    value={stringToOption(studentClass) || null}
+                    isDisabled={isLoadingStudentClass}
+                    isLoading={isLoadingStudentClass}
+                    cacheOptions
+                    defaultOptions
+                    options={studentClassOptions}
+                    onChange={onChangeStudentClassOption}
+                    defaultValue={findDefaultStudentClass()}
+                    styles={customStyles}
+                    onCreateOption={handleCreateStudentClassOption}
+                    placeholder="예) 서울 0반"
+                  />
+                </Label>
+                <div className="studnet-number-message">
+                  <span>
+                    "<Underline>[지역] [N]반</Underline>"의 규칙으로
+                    입력해주세요. (예. 서울 1반)
+                  </span>
+                </div>
+                <div
+                  className="setting-icon"
+                  onClick={() => setShowEditOptionsModal(true)}
+                >
+                  <Icon iconName="settings" />
+                </div>
               </div>
 
               <div className="select-container">
@@ -608,7 +611,7 @@ export default function AdminUserManageModal({
         <div className="modal-footer">
           <Button
             title={defaultValue ? '저장' : '추가'}
-            func={defaultValue ? handleUpdateUser : handleCreateUser}
+            func={defaultValue ? onClickUpdate : onClickCreate}
           />
         </div>
 
