@@ -317,7 +317,7 @@ const USER_TABLE_COLUMNS = [
     accessor: 'studentClass',
   },
   {
-    Header: '전공/비전공',
+    Header: '전공여부',
     accessor: 'major',
   },
   {

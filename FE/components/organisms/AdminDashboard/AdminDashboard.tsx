@@ -300,7 +300,7 @@ const ADMIN_USER_TABLE_COLUMNS = [
     accessor: 'leaderYn',
   },
   {
-    Header: '전공/비전공',
+    Header: '전공여부',
     accessor: 'major',
   },
   {
