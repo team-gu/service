@@ -236,38 +236,41 @@ export default function AdminDashboard({
             )}
 
           <div className="count-up-container">
-            {trackTeamData && trackTeamData.length > 0 && (
-              <>
-                {trackTeamData.map((each: any, idx: number) => (
-                  <div key={idx} className="count-up">
-                    <CountUp
-                      end={
-                        each.data.find(({ name }: DataItem) => name === '완료')
-                          .value
-                      }
-                      duration={4}
-                      useEasing
-                      className="countup-complete"
-                    />
-                    <span className="countup-ongoing">
-                      {' + '}
+            {!loadingRegionTeamData &&
+              trackTeamData &&
+              trackTeamData.length > 0 && (
+                <>
+                  {trackTeamData.map((each: any, idx: number) => (
+                    <div key={idx} className="count-up">
                       <CountUp
                         end={
                           each.data.find(
-                            ({ name }: DataItem) => name === '진행중',
+                            ({ name }: DataItem) => name === '완료',
                           ).value
                         }
                         duration={4}
                         useEasing
+                        className="countup-complete"
                       />
-                    </span>
+                      <span className="countup-ongoing">
+                        {' + '}
+                        <CountUp
+                          end={
+                            each.data.find(
+                              ({ name }: DataItem) => name === '진행중',
+                            ).value
+                          }
+                          duration={4}
+                          useEasing
+                        />
+                      </span>
 
-                    <Text text={each.title} fontSetting="n16m" />
-                    <span className="tooltiptext">진행중</span>
-                  </div>
-                ))}
-              </>
-            )}
+                      <Text text={each.title} fontSetting="n16m" />
+                      <span className="tooltiptext">진행중</span>
+                    </div>
+                  ))}
+                </>
+              )}
           </div>
         </div>
         <TableWrapper>
