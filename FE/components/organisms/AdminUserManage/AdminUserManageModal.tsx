@@ -185,6 +185,7 @@ const customStyles = {
   menuList: (base: any) => ({
     ...base,
     paddingTop: 0,
+    paddingBottom: 0,
     maxHeight: '120px',
   }),
   menu: (base: any) => ({
@@ -259,10 +260,10 @@ export default function AdminUserManageModal({
   const [studentClass, setStudentClass] = useState(
     defaultValue ? defaultValue.studentClass : null,
   );
-  const [userRole, setUserRole] = useState<string | undefined>(
+  const [userRole, setUserRole] = useState(
     defaultValue ? defaultValue.role : undefined,
   );
-  const [userRegist, setUserRegist] = useState<string | undefined>(
+  const [isActivate, setIsActivate] = useState(
     defaultValue ? defaultValue.regist : undefined,
   );
 
@@ -306,12 +307,17 @@ export default function AdminUserManageModal({
       myAlert('전공여부을 입력해주세요');
       return;
     }
+    if (!userRole) {
+      myAlert('역할을 입력해주세요');
+      return;
+    }
 
     const param = {
       name: userNameInputRef.current.value,
       email: userEmailInputRef.current.value,
-      studnetNumber: userStudentNumberInputRef.current.value,
+      studentNumber: userStudentNumberInputRef.current.value,
       major: userMajor,
+      role: userRole,
     };
 
     handleCreateUser(param);
@@ -350,7 +356,7 @@ export default function AdminUserManageModal({
       myAlert('역할을 입력해주세요');
       return;
     }
-    if (!userRegist) {
+    if (!isActivate) {
       myAlert('프로젝트 활성/비활성을 입력해주세요');
       return;
     }
@@ -390,7 +396,9 @@ export default function AdminUserManageModal({
     }).then(({ data: { data } }) => {
       console.log(data);
       setStudentClassOptions(codesToOption(data));
-      setStudentClass(data.find((c: Code) => c.codeName === inputValue).codeName);
+      setStudentClass(
+        data.find((c: Code) => c.codeName === inputValue).codeName,
+      );
       setIsLoadingStudentClass(false);
     });
   };
@@ -427,7 +435,18 @@ export default function AdminUserManageModal({
     }
   };
 
-  const onChangeExitYn = (
+  const onChangeProjectActivate = (
+    selectedValue: OptionTypeBase | null,
+    action: ActionMeta<OptionTypeBase>,
+  ) => {
+    if (selectedValue) {
+      setIsActivate(selectedValue.value);
+    } else {
+      setIsActivate(undefined);
+    }
+  };
+
+  const onChangeRole = (
     selectedValue: OptionTypeBase | null,
     action: ActionMeta<OptionTypeBase>,
   ) => {
@@ -438,23 +457,12 @@ export default function AdminUserManageModal({
     }
   };
 
-  const onChangeProjectActivate = (
-    selectedValue: OptionTypeBase | null,
-    action: ActionMeta<OptionTypeBase>,
-  ) => {
-    if (selectedValue) {
-      setUserRegist(selectedValue.value);
-    } else {
-      setUserRegist(undefined);
-    }
-  };
-
   return (
     <ModalWrapper modalName="createUserModal" zIndex={101}>
       <Wrapper>
         <div className="modal-header">
           <Text
-            text={defaultValue ? '교육생 정보 수정' : '교육생 회원가입'}
+            text={defaultValue ? '사용자 정보 수정' : '사용자 회원가입'}
             fontSetting="n26b"
           />
           <div className="close-btn">
@@ -469,7 +477,7 @@ export default function AdminUserManageModal({
                 isLineBreak
               />
               <Text
-                text="[학번, 이름, 이메일, 전공여부]을 입력해주세요."
+                text="[학번, 이름, 이메일, 전공여부, 역할]을 입력해주세요."
                 isLineBreak
               />
             </div>
@@ -541,6 +549,23 @@ export default function AdminUserManageModal({
             </Label>
           </div>
 
+          <div className="select-container">
+            <Label text="역할">
+              <Select
+                isSearchable={false}
+                cacheOptions
+                defaultOptions
+                value={stringToOption(userRole) || null}
+                options={ROLE_OPTIONS}
+                onChange={onChangeRole}
+                styles={customStyles}
+                defaultValue={
+                  defaultValue ? stringToOption(defaultValue.role) : null
+                }
+              />
+            </Label>
+          </div>
+
           {defaultValue && (
             <>
               <div className="select-container">
@@ -575,34 +600,17 @@ export default function AdminUserManageModal({
               </div>
 
               <div className="select-container">
-                <Label text="역할">
-                  <Select
-                    isSearchable={false}
-                    cacheOptions
-                    defaultOptions
-                    value={stringToOption(userRole) || null}
-                    options={ROLE_OPTIONS}
-                    onChange={onChangeProjectActivate}
-                    styles={customStyles}
-                    defaultValue={
-                      defaultValue ? stringToOption(defaultValue.role) : null
-                    }
-                  />
-                </Label>
-              </div>
-
-              <div className="select-container">
                 <Label text="프로젝트 활성/비활성">
                   <Select
                     isSearchable={false}
                     cacheOptions
                     defaultOptions
-                    value={stringToOption(userRegist) || null}
+                    value={stringToOption(isActivate) || null}
                     options={ACTIVATE_OPTIONS}
-                    onChange={onChangeExitYn}
+                    onChange={onChangeProjectActivate}
                     styles={customStyles}
                     defaultValue={
-                      defaultValue ? stringToOption(userRegist) || null : null
+                      defaultValue ? stringToOption(isActivate) || null : null
                     }
                   />
                 </Label>

@@ -7,6 +7,7 @@ import {
   getUserTableData,
   signupUsersByExcel,
   updateUser,
+  createUser,
 } from '@repository/adminRepository';
 import { MODALS, REGIONS } from '@utils/constants';
 import { Project } from '@utils/type';
@@ -197,33 +198,32 @@ export default function AdminUserManage({ project }: AdminUserManageProps) {
         errorAlert(err);
       })
       .finally(() => {
-        handleCloseEditModal();
+        setShowManageModal(false);
         dispatch(setLoading({ isLoading: false }));
       });
   };
 
   const handleCreateUser = (param: any) => {
-    console.log('CREATE USER');
-
-    // TODO: 회원가입 API 호출
-    // dispatch(setLoading({ isLoading: true }));
-    // createUser(param)
-    //   .then(({ data: { data } }) => {
-    //     console.log(data);
-    //   })
-    //   .catch(err => {
-    //     console.log(err);
-    //   })
-    //   .finally(() => {
-    //     dispatch(setLoading({ isLoading: false }));
-    //   });
+    dispatch(setLoading({ isLoading: true }));
+    createUser(param)
+      .then(({ data: { data } }) => {
+        console.log(data);
+        fetchUsers();
+      })
+      .catch(err => {
+        errorAlert(err);
+      })
+      .finally(() => {
+        handleCloseEditModal();
+        dispatch(setLoading({ isLoading: false }));
+      });
   };
 
   return (
     <Wrapper>
       <div className="manage-header">
         <div>
-          <Text text={`${project.stage.codeName || ''} 교육생 목록`} fontSetting="n26b" />
+          <Text text={`${project.stage.codeName || ''} 사용자 목록`} fontSetting="n26b" />
           <Icon iconName="add_box" func={() => setShowManageModal(true)} />
           <Icon
             iconName="settings_applications"

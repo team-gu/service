@@ -190,6 +190,17 @@ export const getUserTableData = async (param: any) => {
   });
 };
 
+export const createUser = async (param: any) => {
+  console.log('createUser');
+  console.log(param);
+
+  return await api({
+    url: `/api/admin/user/add`,
+    type: 'post',
+    param,
+  });
+};
+
 export const updateUser = async (param: any) => {
   console.log('updateUser');
   console.log(param);

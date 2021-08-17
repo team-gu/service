@@ -78,7 +78,7 @@ export const REGIONS = [
 export const ADMIN_MENU_CONTENT = [
   {
     id: 0,
-    title: '전체 교육생 관리',
+    title: '전체 사용자 관리',
   },
   {
     id: 1,
