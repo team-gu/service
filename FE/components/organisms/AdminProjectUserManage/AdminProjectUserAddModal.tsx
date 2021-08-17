@@ -2,10 +2,11 @@ import { useRef, useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 import { Text, Icon, Input } from '@atoms';
-import { Button, Label } from '@molecules';
+import { Button, Label, UserSelectTeamAutoComplete } from '@molecules';
 import { ModalWrapper } from '@organisms';
+import { MemberOption } from '@utils/type';
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<{ containsUserId: number | undefined }>`
   input {
     box-sizing: border-box;
   }
@@ -88,21 +89,40 @@ const Wrapper = styled.div`
     text-align: center;
     padding-top: 30px;
     padding-bottom: 30px;
+
+    > button {
+      ${({ containsUserId }) =>
+        
+        !containsUserId ?
+        `
+        opacity: 0.5;
+        cursor: not-allowed;
+        ` : ''}
+    }
   }
 `;
 
 interface AdminProjectUserAddModalProps {
   handleClickClose: () => void;
-  handleClickAdd: () => void;
+  handleClickAdd: (userId: number) => void;
 }
 
 export default function AdminProjectUserAddModal({
   handleClickClose,
   handleClickAdd,
 }: AdminProjectUserAddModalProps) {
+  const [containsUserId, setContainsUserId] = useState<number>();
+  const handleChangeUserSelect = (selectedUser: MemberOption | null) => {
+    if (selectedUser) {
+      setContainsUserId(selectedUser.id);
+    } else {
+      setContainsUserId(undefined);
+    }
+  };
+
   return (
     <ModalWrapper modalName="createUserModal" zIndex={101}>
-      <Wrapper>
+      <Wrapper containsUserId={containsUserId}>
         <div className="modal-header">
           <Text text="교육생 추가" fontSetting="n26b" />
           <div className="close-btn">
@@ -115,17 +135,22 @@ export default function AdminProjectUserAddModal({
           </div>
           <div className="input-container">
             <Label text="이름">
-              <Input
-                type="text"
-                width="100%"
-                height="40px"
-                placeHolder="예) 김싸피"
+              <UserSelectTeamAutoComplete
+                handleChangeUserSelect={handleChangeUserSelect}
               />
             </Label>
           </div>
         </div>
         <div className="modal-footer">
-          <Button title="추가" func={handleClickAdd} width={'100px'} />
+          {containsUserId ? (
+            <Button
+              title="추가"
+              func={() => handleClickAdd(containsUserId)}
+              width={'100px'}
+            />
+          ) : (
+            <Button title="교육생을 선택해주세요" width={'200px'} />
+          )}
         </div>
       </Wrapper>
     </ModalWrapper>
