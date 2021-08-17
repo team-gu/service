@@ -312,13 +312,11 @@ export default function TeamStatus(): ReactElement {
             </span>
           </div>
           {!userHasTeam && (
-            <div>
-              <Button
-                title="팀 만들기"
-                func={handleOpenManageTeamModal}
-                width="90px"
-              />
-            </div>
+            <Button
+              title="팀 만들기"
+              func={handleOpenManageTeamModal}
+              width="90px"
+            />
           )}
         </div>
 
