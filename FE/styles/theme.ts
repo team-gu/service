@@ -14,6 +14,9 @@ const theme: DefaultTheme = {
     daangn: '#E49143',
     microBlue: '#F3F8FF',
     lightBlue: '#E1EDFF',
+    backgroundGray: '#F5F5F7',
+    samsungBlue: '#053699',
+    samsungLightBlue: '#034EA2',
   },
   layout: {
     pageMaxWidth: '1440px',

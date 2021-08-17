@@ -10,6 +10,9 @@ interface ProfileImageProps {
 
 const Wrapper = styled.div<{ size: number; isActive: boolean }>`
   border-radius: ${({ size }) => size}px;
+  img {
+    border-radius: ${({ size }) => size}px;
+  }
   width: ${({ size }) => size}px;
   height: ${({ size }) => size}px;
   border: 3px solid

@@ -21,7 +21,7 @@ interface FilterProps {
 const Wrapper = styled.div`
   padding: 10px;
   margin: 10px;
-  box-shadow: 0 6px 12px 0 rgba(4, 4, 161, 0.1);
+  background-color: white;
   > div > div {
     width: 100%;
   }

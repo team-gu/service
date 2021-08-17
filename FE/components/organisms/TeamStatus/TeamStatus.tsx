@@ -21,7 +21,7 @@ import { getTeamsFiltered, getUserHasTeam } from '@repository/teamRepository';
 const WrapFilter = styled.div`
   padding: 10px;
   margin: 10px;
-  box-shadow: 0 6px 12px 0 rgba(4, 4, 161, 0.1);
+  background-color: white;
   > div > div {
     width: 100%;
   }
@@ -267,7 +267,7 @@ export default function TeamStatus(): ReactElement {
           )}
       </div>
       <div className="team-status-list-container">
-        <div className="team-status-header">
+        <WrapFilter className="team-status-header">
           <UserSelectTeamAutoComplete
             handleChangeUserSelect={handleChangeUserSelect}
             clear={searchWhat === SERACH_BY_FILTER}
@@ -294,7 +294,7 @@ export default function TeamStatus(): ReactElement {
               />
             </div>
           )}
-        </div>
+        </WrapFilter>
 
         {userTeam && (
           <>
@@ -309,9 +309,9 @@ export default function TeamStatus(): ReactElement {
           </>
         )}
         {(!teams || teams.length === 0) && (
-          <div>
+          <WrapFilter>
             현재 등록된 팀이 없거나, 필터링 조건에 일치하는 팀이 없습니다.
-          </div>
+          </WrapFilter>
         )}
         {teams.map((item, index) => (
           <TeamStatusCard
