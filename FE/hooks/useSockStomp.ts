@@ -3,7 +3,7 @@ import SockJS from 'sockjs-client';
 import Stomp from 'stompjs';
 import { useRouter } from 'next/router';
 
-import { useAuthState } from '@store';
+import { useAuthState, useAppDispatch, setChatOpen } from '@store';
 import { getChatRoomMessages, postCheckRoom } from '@repository/chatRepository';
 import { ChatNormal } from '@types/chat-type';
 
@@ -15,6 +15,7 @@ const URL = 'https://i5a202.p.ssafy.io:8080/stomp/chat';
 
 export default function useSockStomp({ room_id = 0 }: useSockStompProps) {
   // TODO: login response에 profileSrc가 추가되면 store에서 가져오도록 변경
+  const dispatch = useAppDispatch();
   const router = useRouter();
   const {
     user: { id },
@@ -90,6 +91,7 @@ export default function useSockStomp({ room_id = 0 }: useSockStompProps) {
           invitee_id: inviteeId,
         }),
       );
+      dispatch(setChatOpen({ isChatOpen: true, passedOpponentId: inviteeId }));
 
       clientRef.current?.disconnect();
     });
