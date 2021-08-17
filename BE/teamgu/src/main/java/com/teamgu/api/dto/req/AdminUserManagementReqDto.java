@@ -18,9 +18,9 @@ public class AdminUserManagementReqDto {
 	Long classId;
 	
 	@ApiModelProperty(name = "교육생 전공", example = "1")
-	short major;
+	String major;
 	
 	@ApiModelProperty(name = "교육생 / 퇴소생", example = "1")
-	short role;
+	String role;
 
 }

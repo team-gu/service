@@ -2,6 +2,7 @@ package com.teamgu.api.service;
 
 import java.util.List;
 
+import com.teamgu.api.dto.req.AdminUserAddReqDto;
 import com.teamgu.api.dto.req.AdminUserManagementReqDto;
 import com.teamgu.api.dto.req.AdminUserProjectManagementReqDto;
 import com.teamgu.api.dto.res.AdminTeamManagementResDto;
@@ -10,6 +11,7 @@ import com.teamgu.api.dto.res.CodeResDto;
 import com.teamgu.api.dto.res.DashBoardResDto;
 import com.teamgu.api.dto.res.AdminUserProjectManagementResDto;
 import com.teamgu.api.dto.res.ProjectInfoResDto;
+import com.teamgu.database.entity.User;
 
 public interface AdminService {
 	
@@ -241,11 +243,35 @@ public interface AdminService {
 	 */
 	public AdminTeamManagementResDto getStudentProjectTeamInfo(Long userId, Long projectId);
 	
-	//
 	/**
 	 * Update Student Information
 	 * 교육생의 반, 전공/비전공, 퇴소 여부를 수정한다.
 	 * @param adminUserProjectManagementReqDto
 	 */
 	public void updateStudentInformation(AdminUserManagementReqDto adminUserManagementReqDto);
+	
+	/**
+	 * Add User
+	 * 사용자를 추가한다 (이메일, 이름, 학번, 교육생여부, 전공)
+	 * @param adminUserAddReqDto
+	 * @return
+	 */
+	public String addUserToTeamguByIndividual(AdminUserAddReqDto adminUserAddReqDto);
+	
+	/**
+	 * Change Role String To Role Short 
+	 * 문자열로 들어온 역할을 숫자로 변환
+	 * @param role
+	 * @return
+	 */
+	public short changeRoleFromStringToShort(String role);
+	
+	/**
+	 * Change Major String To Major Short 
+	 * 문자열로 들어온 전공 여부를 숫자로 변환
+	 * @param major
+	 * @return
+	 */
+	public short changeMajorFromStringToShort(String major);
+	
 }

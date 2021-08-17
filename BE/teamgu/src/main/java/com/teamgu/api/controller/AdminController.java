@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.teamgu.api.dto.req.AdminManagementReqDto;
+import com.teamgu.api.dto.req.AdminUserAddReqDto;
 import com.teamgu.api.dto.req.AdminUserManagementReqDto;
 import com.teamgu.api.dto.req.AdminUserProjectManagementReqDto;
 import com.teamgu.api.dto.req.ProjectCodeReqDto;
@@ -32,6 +33,7 @@ import com.teamgu.api.dto.res.ErrorResponse;
 import com.teamgu.api.dto.res.ProjectInfoResDto;
 import com.teamgu.api.service.AdminServiceImpl;
 import com.teamgu.api.service.TeamServiceImpl;
+import com.teamgu.database.entity.User;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -359,6 +361,16 @@ public class AdminController {
 		
 		String result = adminService.excludeStudentFromProject(userId, projectId);
 
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(new CommonResponse<String>(result));
+	}
+	
+	@ApiOperation(value = "개별 User 추가")
+	@PostMapping("/user/add")
+	public ResponseEntity<? extends BasicResponse> addUserToTeamguByIndividual(@RequestBody AdminUserAddReqDto adminUserAddReqDto){
+
+		String result = adminService.addUserToTeamguByIndividual(adminUserAddReqDto);
+		
 		return ResponseEntity.status(HttpStatus.OK)
 				.body(new CommonResponse<String>(result));
 	}

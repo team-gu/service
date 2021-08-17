@@ -1125,4 +1125,32 @@ public class AdminRepositorySupport {
 		.execute();
 		
 	}
+	
+	// 
+	public boolean checkUserInformationDuplication(String condition, String result ) {
+		
+	    BooleanBuilder builder = new BooleanBuilder();
+		if(condition.equals("studentNumber"))
+		{
+			builder.and(qUser.studentNumber.eq(result));
+		}
+		else if(condition.equals("email")) {
+			builder.and(qUser.email.eq(result));
+		}
+		
+		List<Long> list = jpaQueryFactory
+		.select(qUser.id)
+		.from(qUser)
+		.where(builder)
+		.fetch();
+		
+		if(list.size() == 0) {
+			return true;
+		}
+		else {
+			return false;
+		}
+		
+	}
+	
 }
