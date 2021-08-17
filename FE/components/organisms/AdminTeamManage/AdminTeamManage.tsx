@@ -208,59 +208,111 @@ export default function AdminTeamManage({ project }: AdminTeamManageProps) {
 
 const TEAM_TABLE_COLUMNS = [
   {
+    Header: '#',
+    width: 30,
+    disableGroupBy: true,
+    disableSortBy: true,
+    disableFilters: true,
+    Cell: (content: any) => {
+      return (
+        <div style={{ textAlign: 'center' }}>
+          {content.row.id && !isNaN(parseInt(content.row.id))
+            ? parseInt(content.row.id) + 1
+            : ' '}
+        </div>
+      );
+    },
+  },
+  {
     Header: '지역',
     accessor: 'region',
+    width: 70,
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
   },
   {
     Header: '팀 이름',
     accessor: 'teamName',
+    width: 300,
     disableGroupBy: true,
   },
   {
     Header: '트랙',
     accessor: 'track',
+    width: 120,
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
   },
   {
-    Header: '현재 인원',
+    Header: '인원 수',
     accessor: 'memberCnt',
+    width: 80,
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
   },
   {
     Header: '완료 여부',
     accessor: 'completeYn',
+    width: 100,
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
   },
   {
     Header: '팀장',
     accessor: 'member1',
     disableGroupBy: true,
+    width: 100,
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
   },
   {
     Header: '팀원1',
     accessor: 'member2',
     disableGroupBy: true,
+    width: 100,
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
   },
   {
     Header: '팀원2',
     accessor: 'member3',
     disableGroupBy: true,
+    width: 100,
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
   },
   {
     Header: '팀원3',
     accessor: 'member4',
     disableGroupBy: true,
+    width: 100,
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
   },
   {
     Header: '팀원4',
     accessor: 'member5',
     disableGroupBy: true,
+    width: 100,
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
   },
   {
     Header: '팀원5',
     accessor: 'member6',
     disableGroupBy: true,
-  },
-  {
-    Header: '팀원6',
-    accessor: 'member7',
-    disableGroupBy: true,
+    width: 100,
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
   },
 ];
