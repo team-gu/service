@@ -302,14 +302,34 @@ export default function AdminUserManage({ project }: AdminUserManageProps) {
 
 const USER_TABLE_COLUMNS = [
   {
+    Header: '#',
+    width: 30,
+    disableGroupBy: true,
+    disableSortBy: true,
+    disableFilters: true,
+    Cell: (content: any) => {
+      return (
+        <div style={{ textAlign: 'center' }}>{Number(content.row.id) + 1}</div>
+      );
+    },
+  },
+  {
     Header: '학번',
     accessor: 'studentNumber',
     disableGroupBy: true,
+    width: 80,
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
   },
   {
     Header: '이름',
     accessor: 'name',
     disableGroupBy: true,
+    width: 100,
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
   },
   {
     Header: '이메일',
@@ -319,17 +339,33 @@ const USER_TABLE_COLUMNS = [
   {
     Header: '반',
     accessor: 'studentClass',
+    width: 110,
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
   },
   {
     Header: '전공여부',
     accessor: 'major',
+    width: 120,
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
   },
   {
     Header: '역할',
     accessor: 'role',
+    width: 120,
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
   },
   {
     Header: '프로젝트 활성여부',
     accessor: 'regist',
+    width: 250,
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
   },
 ];

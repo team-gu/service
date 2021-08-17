@@ -284,7 +284,7 @@ const ADMIN_USER_TABLE_COLUMNS = [
     Header: '학번',
     accessor: 'studentNumber',
     disableGroupBy: true,
-    width: 1,
+    width: 80,
     Cell: (content: any) => (
       <div style={{ textAlign: 'center' }}>{content.value}</div>
     ),
