@@ -7,7 +7,7 @@ import { Project, Code } from '@utils/type';
 import { Input, Text, Icon } from '@atoms';
 import { Label, Button } from '@molecules';
 import { ModalWrapper } from '@organisms';
-import { CODE_ID } from '@utils/constants';
+import { CODE_ID, MODALS } from '@utils/constants';
 import {
   getAdminProjectCode,
   createAdminProjectOption,
@@ -15,6 +15,7 @@ import {
   createAdminProject,
   updateAdminProject,
 } from '@repository/adminRepository';
+import { displayModal, useAppDispatch } from '@store';
 
 const Wrapper = styled.div`
   input {
@@ -279,6 +280,7 @@ export default function ProjectManageModal({
   handleClickClose,
   closeModalAndRerender,
 }: ProjectManageModalProps): ReactElement {
+  const dispatch = useAppDispatch();
   const [stageOptions, setStageOptions] = useState<OptionTypeBase[]>([]);
   const [categoryOptions, setCategoryOptions] = useState<OptionTypeBase[]>([]);
   const [trackOptions, setTrackOptions] = useState<OptionTypeBase[]>([]);
@@ -343,36 +345,66 @@ export default function ProjectManageModal({
 
   const validateAndMakeProject = () => {
     if (!stage) {
-      console.log('기수 없음');
+      dispatch(
+        displayModal({
+          modalName: MODALS.ALERT_MODAL,
+          content: '기수를 입력해주세요',
+        }),
+      );
       return;
     }
     if (!category) {
-      console.log('구분 없음');
+      dispatch(
+        displayModal({
+          modalName: MODALS.ALERT_MODAL,
+          content: '구분을 입력해주세요',
+        }),
+      );
       return;
     }
     if (tracks.length == 0) {
-      console.log('트랙 없음');
+      dispatch(
+        displayModal({
+          modalName: MODALS.ALERT_MODAL,
+          content: '트랙을 입력해주세요',
+        }),
+      );
       return;
     }
     if (
       !projcetActiveDateInputRef.current ||
       projcetActiveDateInputRef.current.value === ''
     ) {
-      console.log('활성화 날짜 없음');
+      dispatch(
+        displayModal({
+          modalName: MODALS.ALERT_MODAL,
+          content: '활성화 날짜를 입력해주세요',
+        }),
+      );
       return;
     }
     if (
       !projcetStartDateInputRef.current ||
       projcetStartDateInputRef.current.value === ''
     ) {
-      console.log('프로젝트 시작 날짜 없음');
+      dispatch(
+        displayModal({
+          modalName: MODALS.ALERT_MODAL,
+          content: '프로젝트 시작 날짜를 입력해주세요',
+        }),
+      );
       return;
     }
     if (
       !projcetEndDateInputRef.current ||
       projcetEndDateInputRef.current.value === ''
     ) {
-      console.log('프로젝트 종료 날짜 없음');
+      dispatch(
+        displayModal({
+          modalName: MODALS.ALERT_MODAL,
+          content: '프로젝트 종료 날짜를 입력해주세요',
+        }),
+      );
       return;
     }
 
