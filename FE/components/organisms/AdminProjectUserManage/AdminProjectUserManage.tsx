@@ -1,5 +1,6 @@
 import { useState, useEffect, ChangeEventHandler } from 'react';
 import styled from 'styled-components';
+import { AxiosError } from 'axios';
 
 import { Text, Icon } from '@atoms';
 import { ReactTable, Button } from '@molecules';
@@ -109,6 +110,26 @@ export default function AdminProjectUserManage({
     setEditTarget(undefined);
   };
 
+  const myAlert = (content: string) => {
+    dispatch(
+      displayModal({
+        modalName: MODALS.ALERT_MODAL,
+        content: content,
+      }),
+    );
+  };
+
+  const myAlertError = (err: AxiosError) => {
+    dispatch(
+      displayModal({
+        modalName: MODALS.ALERT_MODAL,
+        content:
+          'ERROR' +
+          (err.response?.data ? ': ' + JSON.stringify(err.response.data) : ''),
+      }),
+    );
+  };
+
   const deleteUser = () => {
     dispatch(setLoading({ isLoading: true }));
 
@@ -120,25 +141,15 @@ export default function AdminProjectUserManage({
         .then(() => {
           fetchProjectUserTableData();
         })
-        .catch(err => {
-          dispatch(
-            displayModal({
-              modalName: MODALS.ALERT_MODAL,
-              content: 'ERROR' + (err.response ? ': ' + err.response.data : ''),
-            }),
-          );
+        .catch((err) => {
+          myAlertError(err);
         })
         .finally(() => {
           closeDeleteModal();
           dispatch(setLoading({ isLoading: false }));
         });
     } else {
-      dispatch(
-        displayModal({
-          modalName: MODALS.ALERT_MODAL,
-          content: '삭제할 행이 선택되지 않았습니다.',
-        }),
-      );
+      myAlert('삭제할 행이 선택되지 않았습니다.');
     }
   };
 
@@ -187,12 +198,7 @@ export default function AdminProjectUserManage({
         document.body.removeChild(a);
       })
       .catch((err) => {
-        dispatch(
-          displayModal({
-            modalName: MODALS.ALERT_MODAL,
-            content: 'ERROR' + (err.response ? ': ' + err.response.data : ''),
-          }),
-        );
+        myAlertError(err);
       })
       .finally(() => {
         setShowExportModal(false);
@@ -218,12 +224,7 @@ export default function AdminProjectUserManage({
           fetchProjectUserTableData();
         })
         .catch((err) => {
-          dispatch(
-            displayModal({
-              modalName: MODALS.ALERT_MODAL,
-              content: 'ERROR' + (err.response ? ': ' + err.response.data : ''),
-            }),
-          );
+          myAlertError(err);
         })
         .finally(() => {
           setShowImportModal(false);
@@ -236,7 +237,10 @@ export default function AdminProjectUserManage({
     <Wrapper>
       <div className="manage-header">
         <div>
-          <Text text={`${project.name || '현재 프로젝트'} 교육생 목록`} fontSetting="n26b" />
+          <Text
+            text={`${project.name || '현재 프로젝트'} 교육생 목록`}
+            fontSetting="n26b"
+          />
           <Icon iconName="add_box" func={() => setShowAddModal(true)} />
           <Icon
             iconName="settings_applications"
