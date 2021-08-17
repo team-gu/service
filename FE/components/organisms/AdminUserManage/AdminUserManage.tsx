@@ -309,7 +309,11 @@ const USER_TABLE_COLUMNS = [
     disableFilters: true,
     Cell: (content: any) => {
       return (
-        <div style={{ textAlign: 'center' }}>{Number(content.row.id) + 1}</div>
+        <div style={{ textAlign: 'center' }}>
+          {content.row.id && !isNaN(parseInt(content.row.id))
+            ? parseInt(content.row.id) + 1
+            : ' '}
+        </div>
       );
     },
   },
