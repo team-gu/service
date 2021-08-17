@@ -406,7 +406,7 @@ export default function UserStatus(): ReactElement {
                 handleSendRtcLink={handleSendRtcLink}
               />
             ))}
-            {pageCount >= 0 && (
+            {pageCount >= 1 && (
               <Pagination
                 pageCount={pageCount}
                 previousLabel={'<'}

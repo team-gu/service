@@ -345,7 +345,7 @@ export default function TeamStatus(): ReactElement {
                 onClickTeamManage={handleTeamManageModal}
               />
             ))}
-            {pageCount >= 0 && (
+            {pageCount >= 1 && (
               <Pagination
                 pageCount={pageCount}
                 previousLabel={'<'}
