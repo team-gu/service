@@ -137,11 +137,9 @@ export default function TeamStatus(): ReactElement {
       sortAsc,
       userId: by === SERACH_BY_FILTER ? 0 : containsUserId || 0,
       studentNumber,
-      pageNum: 0,
+      pageNum: payload?.pageNum || 0,
       pageSize: 10,
     };
-
-    console.log(trackList);
 
     getTeamsFiltered(payloadTemp).then(
       async ({
@@ -210,8 +208,6 @@ export default function TeamStatus(): ReactElement {
     setPayload(payloadTemp);
   };
 
-  console.log(payload);
-
   const handleOpenManageTeamModal = () => {
     setShowTeamManageModal(true);
   };
@@ -241,6 +237,8 @@ export default function TeamStatus(): ReactElement {
   const handleClickSort = () => {
     setSortAsc(!sortAsc);
   };
+
+  console.log(payload);
 
   return (
     <LookupLayout showTeamCreateBtn={!userHasTeam}>
