@@ -58,17 +58,23 @@ export default function AdminTeamExportModal({
   handleClickDownload,
 }: AdminTeamExportModalProps) {
   return (
-    <ModalWrapper modalName="adminTeamExportModal">
+    <ModalWrapper modalName="adminTeamExportModal" zIndex={99}>
       <Wrapper>
         <div className="modal-header">
-          <Text text="교육생 정보 내보내기 (export)" fontSetting="n26b" isLineBreak/>
+          <Text
+            text="교육생 정보 내보내기 (export)"
+            fontSetting="n26b"
+            isLineBreak
+          />
           <div className="close-btn">
             <Icon iconName="close" func={handleClickClose} />
           </div>
         </div>
         <div className="modal-description">
           <Text
-            text={`[${projectName || '현재 프로젝트'}]의 전체적인 교육생 정보를 엑셀로 다운로드받을 수 있습니다.`}
+            text={`[${
+              projectName || '현재 프로젝트'
+            }]의 전체적인 교육생 정보를 엑셀로 다운로드받을 수 있습니다.`}
             isLineBreak
           />
         </div>

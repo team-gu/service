@@ -58,7 +58,7 @@ export default function AdminTeamExportModal({
   handleClickDownload,
 }: AdminTeamExportModalProps) {
   return (
-    <ModalWrapper modalName="adminTeamExportModal">
+    <ModalWrapper modalName="adminTeamExportModal" zIndex={99}>
       <Wrapper>
         <div className="modal-header">
           <Text text="팀 정보 내보내기 (export)" fontSetting="n26b" />

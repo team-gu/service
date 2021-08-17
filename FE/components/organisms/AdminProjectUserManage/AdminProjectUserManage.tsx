@@ -7,13 +7,14 @@ import {
   getProjectUserTableData,
   addStudentToProject,
   excludeStudentFromProject,
+  exportUserData,
 } from '@repository/adminRepository';
 import { Project } from '@utils/type';
-
 import AdminProjectUserDeleteModal from './AdminProjectUserDeleteModal';
 import AdminProjectUserAddModal from './AdminProjectUserAddModal';
 import AdminUserImportModal from './AdminUserImportModal';
 import AdminUserExportModal from './AdminUserExportModal';
+import { setLoading, useAppDispatch } from '@store';
 
 const Wrapper = styled.div`
   i {
@@ -73,9 +74,8 @@ interface AdminUserManageProps {
 export default function AdminProjectUserManage({
   project,
 }: AdminUserManageProps) {
-  const [userTableData, setUserTableData] = useState<UserDataRow[]>(
-    [],
-  );
+  const dispatch = useAppDispatch();
+  const [userTableData, setUserTableData] = useState<UserDataRow[]>([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
@@ -139,9 +139,40 @@ export default function AdminProjectUserManage({
     closeAddModal();
   };
 
+  const base64ToArrayBuffer = (base64: string) => {
+    const binaryString = window.atob(base64);
+    const binaryLen = binaryString.length;
+    const bytes = new Uint8Array(binaryLen);
+    for (let i = 0; i < binaryLen; i++) {
+      const ascii = binaryString.charCodeAt(i);
+      bytes[i] = ascii;
+    }
+    return bytes;
+  };
+
   const downloadUserExport = () => {
-    // TODO: 사용자 export 결과 다운로드 API 호출
-    console.log('DOWNLOAD USER EXPORT');
+    dispatch(setLoading({ isLoading: true }));
+    exportUserData({
+      project_code: project.project.code,
+      stage_code: project.stage.code,
+    })
+      .then(({ data: { data } }) => {
+        console.log(data);
+        const arrayBuffer = base64ToArrayBuffer(data);
+        const a = window.document.createElement('a');
+
+        a.href = window.URL.createObjectURL(
+          new Blob([arrayBuffer], { type: 'application/vnd.ms-excel' }),
+        );
+        a.download = 'export.xlsx';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      })
+      .finally(() => {
+        setShowExportModal(false);
+        dispatch(setLoading({ isLoading: false }));
+      });
   };
 
   return (

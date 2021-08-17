@@ -120,7 +120,7 @@ export const exportTeamData = async (param: any) => {
   console.log(param);
 
   return await api({
-    url: `/api/excel/export`,
+    url: `/api/excel/team/export`,
     type: 'post',
     param,
   });
@@ -148,6 +148,17 @@ export const excludeStudentFromProject = async (param: any) => {
 
   return await api({
     url: `​/api​/admin​/project​/exclude`,
+    type: 'post',
+    param,
+  });
+};
+
+export const exportUserData = async (param: any) => {
+  console.log('exportUserData');
+  console.log(param);
+
+  return await api({
+    url: `/api/excel/user/export`,
     type: 'post',
     param,
   });

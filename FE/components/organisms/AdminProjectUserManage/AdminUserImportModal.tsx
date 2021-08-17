@@ -73,18 +73,22 @@ export default function AdminUserImportModal({
       const formData = new FormData();
       formData.append('excelFile', event.target.files[0]);
 
-      // TODO: 응답에 따라 
+      // TODO: 응답에 따라
       //   OK  -> 교육생 목록 리렌더링
-      //   ERR -> 에러 메시지 모달 
+      //   ERR -> 에러 메시지 모달
       console.log(formData);
     }
   };
 
   return (
-    <ModalWrapper modalName="adminUserImportModal">
+    <ModalWrapper modalName="adminUserImportModal" zIndex={99}>
       <Wrapper>
         <div className="modal-header">
-          <Text text="교육생 정보 가져오기 (import)" fontSetting="n26b" isLineBreak />
+          <Text
+            text="교육생 정보 가져오기 (import)"
+            fontSetting="n26b"
+            isLineBreak
+          />
           <div className="close-btn">
             <Icon iconName="close" func={handleClickClose} />
           </div>

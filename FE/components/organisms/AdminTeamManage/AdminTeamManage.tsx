@@ -30,7 +30,7 @@ const Wrapper = styled.div`
 
     .manage-header-export {
       > button {
-        padding: 0 10px;
+        padding: 0 15px;
         box-shadow: none;
       }
     }
@@ -143,15 +143,11 @@ export default function AdminTeamManage({ project }: AdminTeamManageProps) {
 
   const donwloadTeamExport = () => {
     dispatch(setLoading({ isLoading: true }));
-
-    console.log(project);
-
     exportTeamData({
       project_code: project.project.code,
       stage_code: project.stage.code,
     })
       .then(({ data: { data } }) => {
-        console.log(data);
         const arrayBuffer = base64ToArrayBuffer(data);
         const a = window.document.createElement('a');
 
@@ -162,10 +158,9 @@ export default function AdminTeamManage({ project }: AdminTeamManageProps) {
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
-
-        setShowExportModal(false);
       })
       .finally(() => {
+        setShowExportModal(false);
         dispatch(setLoading({ isLoading: false }));
       });
   };
