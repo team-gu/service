@@ -5,6 +5,7 @@ import com.teamgu.common.util.DateTimeUtil;
 import com.teamgu.common.util.MD5GenUtil;
 import com.teamgu.database.entity.NoticeFile;
 import com.teamgu.mapper.NoticeFileMapper;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -15,10 +16,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
 /**
  * 공지사항 첨부파일 I/O 핸들러 클래스
  */
+@Log4j2
+@Component
 public class NoticeFileHandler {
 
     @Autowired
@@ -27,13 +29,63 @@ public class NoticeFileHandler {
     @Autowired
     DateTimeUtil dateTimeUtil;
 
+    private static final String serverUrl = "https://i5a202.p.ssafy.io:8080/api/file/display?url=notice/images/";
+
+    public String parseNoticeImgInfo(MultipartFile multipartFile) {
+        String retStr = null;
+
+        if(!ObjectUtils.isEmpty(multipartFile)) {
+            String absolutePath = new File("").getAbsolutePath() + File.separator + File.separator;
+            String path = "notice" + File.separator + "images";
+            File file = new File(path);
+
+            if(!file.exists()) {
+                file.mkdirs();
+            }
+
+            try {
+                String[] dotSplitArr = multipartFile.getOriginalFilename().split("\\.");
+                int size = dotSplitArr.length;
+                StringBuilder originalName = new StringBuilder();
+                String extension = dotSplitArr[size - 1];
+
+                for(int i = 0; i < size - 1; i++) {
+                    originalName.append(dotSplitArr[i]).append(".");
+                }
+
+                originalName.setLength(originalName.length() - 1);
+
+                String md5Name = new MD5GenUtil(originalName.toString()).toString();
+
+                file = new File(absolutePath
+                        + File.separator
+                        + path
+                        + File.separator
+                        + md5Name
+                        + "."
+                        + extension);
+                multipartFile.transferTo(file);
+
+                retStr = serverUrl + md5Name + "." + extension;
+
+                //파일 읽기쓰기 권한 세팅
+                file.setWritable(true);
+                file.setReadable(true);
+            } catch (Exception e) {
+                log.error("md5 변환 에러");
+            }
+        }
+
+        return retStr;
+    }
+
     /**
      * MD5, 날짜를 기반으로 MultiPartFile을 File로 전환 및 저장하는 함수
-     *
+     * 첨부파일 업로드 Handler
      * @param multipartFiles
      * @return
      */
-    public List<NoticeFile> parseFileInfo(List<MultipartFile> multipartFiles) {
+    public List<NoticeFile> parseNoticeFileInfo(List<MultipartFile> multipartFiles) {
         List<NoticeFile> fileList = new ArrayList<>();
 
         if (!CollectionUtils.isEmpty(multipartFiles)) { //생성할 파일 목록이 존재 하는 경우
@@ -101,7 +153,7 @@ public class NoticeFileHandler {
 
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error("md5 변환 에러");
             }
         }
 
