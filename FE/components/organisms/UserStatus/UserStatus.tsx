@@ -191,8 +191,6 @@ export default function UserStatus(): ReactElement {
     }
   }, [payload]);
 
-  console.log(trackList);
-
   const handleToggleFilter = (title: string, code: string) => {
     if (code === '전체') {
       const payloadTemp: any = { ...payload, pageNum: 0, sort: 'asc' };

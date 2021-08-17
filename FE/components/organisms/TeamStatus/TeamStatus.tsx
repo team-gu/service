@@ -16,7 +16,10 @@ import { TeamStatusCard, TeamManageModal, LookupLayout } from '@organisms';
 import { FILTER_TITLE } from '@utils/constants';
 import { MemberOption, Team } from '@utils/type';
 import { useAuthState } from '@store';
-import { getEachFiltersCodeList } from '@repository/filterRepository';
+import {
+  getEachFiltersCodeList,
+  getEachFiltersCodeListTracks,
+} from '@repository/filterRepository';
 import { getTeamsFiltered, getUserHasTeam } from '@repository/teamRepository';
 
 const WrapFilter = styled.div`
@@ -67,6 +70,7 @@ export default function TeamStatus(): ReactElement {
   const [userTeam, setUserTeam] = useState<Team>();
   const [searchWhat, setSearchWhat] = useState();
   const [pageCount, setPageCount] = useState(0);
+  const [trackList, setTrackList] = useState([]);
 
   const SERACH_BY_FILTER = true;
   const SEARCH_BY_USERID = false;
@@ -137,15 +141,21 @@ export default function TeamStatus(): ReactElement {
       pageSize: 10,
     };
 
+    console.log(trackList);
+
     getTeamsFiltered(payloadTemp).then(
-      ({
+      async ({
         data: {
           data: { dataList, totPageCnt },
         },
       }) => {
-        console.log(dataList);
         setTeams(dataList);
         setPageCount(totPageCnt);
+
+        const {
+          data: { data },
+        } = await getEachFiltersCodeListTracks(studentNumber, projectCode);
+        setTrackList(data['트랙']);
       },
     );
     getUserHasTeam({
@@ -199,6 +209,8 @@ export default function TeamStatus(): ReactElement {
 
     setPayload(payloadTemp);
   };
+
+  console.log(payload);
 
   const handleOpenManageTeamModal = () => {
     setShowTeamManageModal(true);
@@ -261,7 +273,7 @@ export default function TeamStatus(): ReactElement {
         {filterContents &&
           Object.keys(filterContents).map(
             (each, index) =>
-              (each === '스킬' || each === '트랙') &&
+              each === '스킬' &&
               (filterContents[each].length < 5 ? (
                 <Filter
                   title={each}
@@ -280,6 +292,7 @@ export default function TeamStatus(): ReactElement {
                 />
               )),
           )}
+        <Filter title={'트랙'} contents={trackList} func={handleFilterArray} />
       </div>
       <div className="team-status-list-container">
         <WrapFilter className="team-status-header">
