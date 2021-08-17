@@ -219,7 +219,7 @@ public class ExcelController {
 		@ApiResponse(code = 500, message = "이미 프로젝트에 존재하는 유저의 목록(실패한 유저의 이메일)을 반환한다")
 	})
 	public ResponseEntity<? extends BasicResponse> excelToUsersProject(@RequestPart(value="project_id") Long project_id, @RequestPart(value="file") MultipartFile file){
-		
+		log.info("입력된 project_id : "+project_id);
 		String extension = FilenameUtils.getExtension(file.getOriginalFilename());
 		
 		//엑셀 파일 형식이 아닌 경우 에러
@@ -257,10 +257,12 @@ public class ExcelController {
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 						.body(new ErrorResponse(i+"번째 행 데이터가 잘못되었습니다."));
 			}	
+			log.info("엑셀에서 추출한 이메일 데이터 : "+email);
 		}
 		
 		// get userid by email
 		for(int i = 0;i<emails.size();i++) {			
+			log.info("email존재 userService 체크 : "+emails.get(i));
 			User user = userService.getUserByEmail(emails.get(i)).get();
 			userids.add(user.getId());
 		}
