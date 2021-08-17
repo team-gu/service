@@ -1,4 +1,4 @@
-import { ReactElement, useState, useMemo, forwardRef } from 'react';
+import { ReactElement, useState, useMemo } from 'react';
 import {
   useTable,
   useFilters,
@@ -127,18 +127,6 @@ const GlobalFilterWrapper = styled.span`
     :focus {
       outline: none;
     }
-  }
-`;
-
-const PaginationContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 10px;
-
-  .pagination-text {
-    display: inline-block;
-    margin: 0 10px;
   }
 `;
 
@@ -322,14 +310,8 @@ export default function ReactTable({
     setGlobalFilter,
 
     page,
-    canPreviousPage,
-    canNextPage,
     pageOptions,
-    pageCount,
     gotoPage,
-    nextPage,
-    previousPage,
-    setPageSize,
   } = useTable(
     {
       columns,
@@ -543,7 +525,9 @@ export default function ReactTable({
           marginPagesDisplayed={2}
           pageRangeDisplayed={5}
           breakLabel={'...'}
-          onPageChange={({ selected }: { selected: number }) => gotoPage(selected)}
+          onPageChange={({ selected }: { selected: number }) =>
+            gotoPage(selected)
+          }
         />
       )}
     </Wrapper>
