@@ -12,6 +12,15 @@ const Wrapper = styled.div<{ showTeamCreateBtn: boolean }>`
   grid-template-rows: auto;
   gap: 20px;
 
+  .filter-container {
+    position: sticky
+    top: 0px;
+    height: fit-content;
+    border-radius: 14px;
+    background-color: white;
+    box-shadow: 2px 4px 12px rgb(0 0 0 / 8%);
+  }
+
   .sort-container {
     display: flex;
     align-items: center;
@@ -39,9 +48,14 @@ const Wrapper = styled.div<{ showTeamCreateBtn: boolean }>`
     justify-items: center;
     gap: 10px;
 
+    border-radius: 14px;
+    background-color: white;
+    box-shadow: 2px 4px 12px rgb(0 0 0 / 8%);
+
     > div {
       width: 100%;
     }
+    padding: 15px 20px;
   }
 
   .team-status-list-container {

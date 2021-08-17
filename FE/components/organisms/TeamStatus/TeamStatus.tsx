@@ -138,7 +138,7 @@ export default function TeamStatus(): ReactElement {
       userId: by === SERACH_BY_FILTER ? 0 : containsUserId || 0,
       studentNumber,
       pageNum: payload?.pageNum || 0,
-      pageSize: 10,
+      pageSize: 3,
     };
 
     getTeamsFiltered(payloadTemp).then(
@@ -293,7 +293,7 @@ export default function TeamStatus(): ReactElement {
         <Filter title={'트랙'} contents={trackList} func={handleFilterArray} />
       </div>
       <div className="team-status-list-container">
-        <WrapFilter className="team-status-header">
+        <div className="team-status-header">
           <UserSelectTeamAutoComplete
             handleChangeUserSelect={handleChangeUserSelect}
             clear={searchWhat === SERACH_BY_FILTER}
@@ -320,7 +320,7 @@ export default function TeamStatus(): ReactElement {
               />
             </div>
           )}
-        </WrapFilter>
+        </div>
 
         {userTeam && (
           <>

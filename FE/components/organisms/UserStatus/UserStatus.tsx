@@ -363,35 +363,33 @@ export default function UserStatus(): ReactElement {
         <Filter title={'트랙'} contents={trackList} func={handleFilterArray} />
       </div>
       <div className="team-status-list-container">
-        <WrapFilter>
-          <div className="team-status-header">
-            <UserSelectAutoComplete
-              handleChangeUserSelect={handleChangeUserSelect}
-              payload={payload}
-            />
-            <div className="sort-container">
-              <div className="sort-select">
-                <SimpleSelect
-                  options={sortByOptions}
-                  placeholder={'Sort by...'}
-                  value={sortByOptions[0]}
-                />
-              </div>
-              <span
-                className={
-                  'sort-icon' + (payload?.sort === 'asc' ? ' rotated' : '')
-                }
-              >
-                <Icon
-                  iconName="sort"
-                  func={() =>
-                    handleClickSort(payload?.sort === 'asc' ? 'desc' : 'asc')
-                  }
-                />
-              </span>
+        <div className="team-status-header">
+          <UserSelectAutoComplete
+            handleChangeUserSelect={handleChangeUserSelect}
+            payload={payload}
+          />
+          <div className="sort-container">
+            <div className="sort-select">
+              <SimpleSelect
+                options={sortByOptions}
+                placeholder={'Sort by...'}
+                value={sortByOptions[0]}
+              />
             </div>
+            <span
+              className={
+                'sort-icon' + (payload?.sort === 'asc' ? ' rotated' : '')
+              }
+            >
+              <Icon
+                iconName="sort"
+                func={() =>
+                  handleClickSort(payload?.sort === 'asc' ? 'desc' : 'asc')
+                }
+              />
+            </span>
           </div>
-        </WrapFilter>
+        </div>
 
         {users && users?.length === 0 ? (
           <WrapFilter>일치하는 유저가 없습니다.</WrapFilter>
