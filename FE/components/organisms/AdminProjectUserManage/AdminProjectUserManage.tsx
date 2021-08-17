@@ -307,41 +307,93 @@ export default function AdminProjectUserManage({
 
 const ADMIN_USER_TABLE_COLUMNS = [
   {
+    Header: '#',
+    width: 30,
+    disableGroupBy: true,
+    disableSortBy: true,
+    disableFilters: true,
+    Cell: (content: any) => {
+      return (
+        <div style={{ textAlign: 'center' }}>
+          {content.row.id && !isNaN(parseInt(content.row.id))
+            ? parseInt(content.row.id) + 1
+            : ' '}
+        </div>
+      );
+    },
+  },
+  {
     Header: '학번',
     accessor: 'studentNumber',
     disableGroupBy: true,
+    width: 80,
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
   },
   {
     Header: '이름',
     accessor: 'name',
     disableGroupBy: true,
+    width: 100,
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
   },
   {
     Header: '지역',
     accessor: 'region',
+    width: 70,
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
   },
   {
     Header: '반',
     accessor: 'studentClass',
+    width: 110,
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
   },
   {
     Header: '팀 유무',
     accessor: 'teamYn',
+    width: 80,
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
   },
   {
     Header: '팀 식별자',
     accessor: 'teamId',
+    width: 120,
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
   },
   {
     Header: '리더 여부',
     accessor: 'leaderYn',
+    width: 120,
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
   },
   {
-    Header: '전공여부',
+    Header: '전공 여부',
     accessor: 'major',
+    width: 120,
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
   },
   {
     Header: '희망 포지션',
     accessor: 'position',
+    width: 180,
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
   },
 ];
