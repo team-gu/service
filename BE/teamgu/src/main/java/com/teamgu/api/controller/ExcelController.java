@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -217,10 +218,8 @@ public class ExcelController {
 		@ApiResponse(code = 400, message = "잘못된 파일 형식 또는 잘못된 데이터 또는 유저의 추가 실패"),
 		@ApiResponse(code = 500, message = "이미 프로젝트에 존재하는 유저의 목록(실패한 유저의 이메일)을 반환한다")
 	})
-	public ResponseEntity<? extends BasicResponse> excelToUsersProject(@RequestBody UserProjectExcelReqDto userProjectExcelReqDto){
-		Long project_id = userProjectExcelReqDto.getProject_id();
-		MultipartFile file = userProjectExcelReqDto.getFile();
-		
+	public ResponseEntity<? extends BasicResponse> excelToUsersProject(@RequestPart(value="project_id") Long project_id, @RequestPart(value="file") MultipartFile file){
+		log.info("입력된 project_id : "+project_id);
 		String extension = FilenameUtils.getExtension(file.getOriginalFilename());
 		
 		//엑셀 파일 형식이 아닌 경우 에러
@@ -247,21 +246,29 @@ public class ExcelController {
 		List<Long> userids = new ArrayList<Long>();
 		List<String> emails = new ArrayList<String>();
 		//첫 행은 컬럼명이므로 제외
+		log.info("줄 갯수 : "+worksheet.getPhysicalNumberOfRows());
 		for(int i = 1; i<worksheet.getPhysicalNumberOfRows();i++) {
 			Row row = worksheet.getRow(i);
 			String email;
 			try {
 				email = row.getCell(0).getStringCellValue();
+				if(email.isEmpty()||email.equals("")) {
+					log.error("공백 문자가 들어왔습니다");
+					break;
+				}
+				
 				emails.add(email);
 			}catch(Exception e) {
 				//잘못된 데이터가 있다면 에러 반환
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 						.body(new ErrorResponse(i+"번째 행 데이터가 잘못되었습니다."));
 			}	
+			log.info("엑셀에서 추출한 이메일 데이터 : "+email);
 		}
 		
 		// get userid by email
 		for(int i = 0;i<emails.size();i++) {			
+			log.info("email존재 userService 체크 : "+emails.get(i));
 			User user = userService.getUserByEmail(emails.get(i)).get();
 			userids.add(user.getId());
 		}

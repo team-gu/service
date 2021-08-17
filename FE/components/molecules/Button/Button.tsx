@@ -17,14 +17,12 @@ const WrapEachButton = styled.button<{ width: string }>`
 
   background-color: ${({
     theme: {
-      colors: { black },
+      colors: { samsungLightBlue },
     },
-  }) => black};
+  }) => samsungLightBlue};
 
   border: none;
   border-radius: 8px;
-
-  box-shadow: 0px 0px 4px 2px rgba(55, 53, 47, 0.4);
 
   transition: 300ms;
   animation: 800ms ease fadeIn;

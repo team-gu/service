@@ -10,6 +10,9 @@ declare module 'styled-components' {
       daangn: string;
       microBlue: string;
       lightBlue: string;
+      backgroundGray: string;
+      samsungBlue: string;
+      samsungLightBlue: stirng;
     };
     layout: {
       pageMaxWidth: string;

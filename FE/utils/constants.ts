@@ -101,3 +101,102 @@ export const ADMIN_MENU_CONTENT = [
     title: '공지사항 관리',
   },
 ];
+
+export const TEAM_TABLE_COLUMNS = [
+  {
+    Header: '팀 식별자',
+    accessor: 'teamId',
+    disableGroupBy: true,
+  },
+  {
+    Header: '지역',
+    accessor: 'region',
+    disableGroupBy: true,
+  },
+  {
+    Header: '팀 이름',
+    accessor: 'teamName',
+    disableGroupBy: true,
+  },
+  {
+    Header: '트랙',
+    accessor: 'track',
+  },
+  {
+    Header: '현재 인원',
+    accessor: 'memberCnt',
+    disableGroupBy: true,
+  },
+  {
+    Header: '완료 여부',
+    accessor: 'completeYn',
+  },
+  {
+    Header: '팀장',
+    accessor: 'member1',
+    disableGroupBy: true,
+  },
+  {
+    Header: '팀원1',
+    accessor: 'member2',
+    disableGroupBy: true,
+  },
+  {
+    Header: '팀원2',
+    accessor: 'member3',
+    disableGroupBy: true,
+  },
+  {
+    Header: '팀원3',
+    accessor: 'member4',
+    disableGroupBy: true,
+  },
+  {
+    Header: '팀원4',
+    accessor: 'member5',
+    disableGroupBy: true,
+  },
+  {
+    Header: '팀원5',
+    accessor: 'member6',
+    disableGroupBy: true,
+  },
+];
+
+export const ROUTE_TO_KOREAN = {
+  humanpool: '인력풀',
+  team: '팀빌딩',
+  mypage: '마이페이지',
+  userdetail: '유저정보',
+};
+
+export const skillColor = new Map([
+  ['Java', ['#fff', '#E05141']],
+  ['Python', ['#F2C63E', '#346E9E']],
+  ['C', ['#fff', '#014079']],
+  ['C++', ['#fff', '#014079']],
+  ['C#', ['#fff', '#611F74']],
+  ['Vue', ['#405061', '#00C180']],
+  ['React', ['#fff', '#61DAFB']],
+  ['JavaScript', ['#000', '#DAB92C']],
+  ['Kotlin', ['#000', '#3C7AD1']],
+  ['HTML', ['#000', '#E44D26']],
+  ['CSS', ['#000', '#0B74B8']],
+  ['SQL', ['red', '#2677C7']],
+  ['PHP', ['#000', '#7075AA']],
+  ['Ruby', ['#EEC89A', '#E30D12']],
+  ['Dart', ['#3DBAF2', '#035494']],
+  ['Scala', ['#fff', '#B01704']],
+  ['Perl', ['#fff', '#3E4067']],
+  ['TypeScript', ['#fff', '#2F72BC']],
+  ['.NET', ['#fff', '#621F74']],
+  ['Groovy', ['#fff', '#26667F']],
+  ['R', ['#B3B4B9', '#2265B5']],
+  ['Swift', ['#fff', '#F2652F']],
+  ['Fortran', ['#F9EED9', '#6C5E51']],
+  ['MATLAB', ['#fff', '#C65F2F']],
+  ['Spring', ['#fff', '#6DB43D']],
+  ['MySQL', ['#D88700', '#005C84']],
+  ['WebRTC', ['#000', '#AC2523']],
+  ['JPA', ['#fff', '#010101']],
+]);

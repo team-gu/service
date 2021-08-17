@@ -224,7 +224,7 @@ export default function VideoChat(): ReactElement {
     setPublisher(undefined);
     setIsConfigModalShow(false);
     console.log('Device Config cancel. Redirect to home.');
-    router.push('/');
+    router.push('/humanpool');
   };
 
   const handlerJoinBtn = (

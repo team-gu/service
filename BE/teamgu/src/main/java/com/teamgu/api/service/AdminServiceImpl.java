@@ -7,26 +7,41 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.teamgu.api.dto.req.AdminUserAddReqDto;
+import com.teamgu.api.dto.req.AdminUserAutoCorrectReqDto;
+import com.teamgu.api.dto.req.AdminUserManagementReqDto;
+import com.teamgu.api.dto.req.TeamMemberReqDto;
 import com.teamgu.api.dto.res.AdminTeamManagementResDto;
+import com.teamgu.api.dto.res.AdminUserAutoCorrectResDto;
 import com.teamgu.api.dto.res.AdminUserManagementResDto;
 import com.teamgu.api.dto.res.CodeResDto;
+import com.teamgu.api.dto.res.CommonResponse;
 import com.teamgu.api.dto.res.DashBoardDetailInfoResDto;
 import com.teamgu.api.dto.res.DashBoardDetailResDto;
 import com.teamgu.api.dto.res.DashBoardResDto;
-import com.teamgu.api.dto.res.DashBoardTableResDto;
+import com.teamgu.api.dto.res.AdminUserProjectManagementResDto;
+import com.teamgu.api.dto.res.ErrorResponse;
 import com.teamgu.api.dto.res.ProjectInfoResDto;
 import com.teamgu.database.entity.Mapping;
 import com.teamgu.database.entity.ProjectDetail;
+import com.teamgu.database.entity.User;
 import com.teamgu.database.repository.AdminRepositorySupport;
 import com.teamgu.database.repository.CodeDetailRepositorySupport;
 import com.teamgu.database.repository.MappingRepository;
 import com.teamgu.database.repository.ProjectDetailRepository;
+import com.teamgu.database.repository.UserRepository;
 
 @Service("adminService")
 public class AdminServiceImpl implements AdminService {
 
+	@Autowired
+	UserRepository userRepository;
+	
 	@Autowired
 	AdminRepositorySupport adminRepositorySupport;
 
@@ -35,9 +50,15 @@ public class AdminServiceImpl implements AdminService {
 
 	@Autowired
 	CodeDetailRepositorySupport codeDetailRepositorySupport;
+	
+	@Autowired
+	TeamServiceImpl	teamService;
 
 	@Autowired
 	MappingRepository mappingRepository;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
 	/*
 	 * Select Project Infomation (프로젝트 정보 조회)
 	 */
@@ -319,8 +340,8 @@ public class AdminServiceImpl implements AdminService {
 	
 	// Select Dash Board Info
 	@Override
-	public List<DashBoardTableResDto> getDashBoardTableInfo(Long projectId) {
-		return adminRepositorySupport.getDashBoardTableInfo(projectId);
+	public List<AdminUserProjectManagementResDto> getUserInProjectManagementData(Long projectId) {
+		return adminRepositorySupport.getUserInProjectManagementData(projectId);
 	}
 
 	// Select User Status to manage
@@ -440,13 +461,169 @@ public class AdminServiceImpl implements AdminService {
 
 	// exclude student to project
 	@Override
-	public void excludeStudentFromProject(Long userId, Long projectId) {
+	public String excludeStudentFromProject(Long userId, Long projectId) {
+
+		AdminTeamManagementResDto team = getStudentProjectTeamInfo(userId, projectId);
+	
 		adminRepositorySupport.excludeStudentFromProject(userId, projectId);
+
+		if(team == null) {
+			return "프로젝트에서 제외가 완료되었습니다";
+		}
+		else {
+			
+			Long teamId = team.getTeamId();
+			Long leaderId = team.getLeaderId();
+		
+			List<Long> ids = teamService.getTeamMemberIdbyTeamId(teamId);
+			int teamMebmerCount = ids.size();
+
+			if(teamMebmerCount == 1) {
+				teamService.deleteTeam(teamId);
+				
+				return "팀을 삭제하고 프로젝트에서 제외가 완료되었습니다";
+
+			}else {
+				for(Long id : ids) {
+					if(id == leaderId) continue;
+					
+					TeamMemberReqDto newLeader = TeamMemberReqDto.builder()
+							.teamId(teamId)
+							.userId(id)
+							.build()
+							;
+					TeamMemberReqDto exitTeam = TeamMemberReqDto.builder()
+							.teamId(teamId)
+							.userId(userId)
+							.build();
+					
+					teamService.changeTeamLeader(newLeader);
+					teamService.exitTeam(exitTeam);
+					
+					return "팀에서 탈퇴하고 프로젝트에서 제외가 완료되었습니다";
+					
+				}
+				
+			}
+		}
+		return "이미 프로젝트에서 제외되었습니다";
+		
 	}
 
+	// get Team Information student belongs to
+	// 교육생이 속한 팀의 정보를 가져온다. 없으면 NULL
 	@Override
 	public AdminTeamManagementResDto getStudentProjectTeamInfo(Long userId, Long projectId) {
 		return adminRepositorySupport.getStudentProjectTeamInfo(userId, projectId);
+	}
+
+	// Update Student Information
+	// 교육생의 반, 전공/비전공, 퇴소 여부를 수정한다.
+	@Override
+	public void updateStudentInformation(AdminUserManagementReqDto adminUserManagementReqDto) {
+		Long userId = adminUserManagementReqDto.getUserId();
+		Long projectId = adminUserManagementReqDto.getProjectId();
+		Long classId = adminUserManagementReqDto.getClassId();
+		short role = changeRoleFromStringToShort(adminUserManagementReqDto.getRole());
+		short major = changeMajorFromStringToShort(adminUserManagementReqDto.getMajor());
+		
+		// 회원 정보 수정
+		adminRepositorySupport.updateStudentInformation(userId, role, major);
+
+		// 반 정보 수정
+		if(classId == null) classId = (long) 0; // 초기 설정된 반이 없을 경우 null이므로 0으로 초기화
+		
+		Long originClassId = adminRepositorySupport.getUserClass(userId, projectId);
+		
+		if(originClassId != classId) {
+			if(originClassId != 0) adminRepositorySupport.excludeStudentFromClass(userId, projectId);
+			if(classId != 0) adminRepositorySupport.addStudentToClass(userId, classId);
+		}
+		
+		// 퇴소시 프로젝트에서 제거
+		if(role == 2) {
+			excludeStudentFromProject(userId, projectId);
+		}
+	}
+
+	// Add User
+	// 사용자를 추가한다 (이메일, 이름, 학번, 교육생여부, 전공)
+	@Override
+	public String addUserToTeamguByIndividual(AdminUserAddReqDto adminUserAddReqDto) {
+		
+		String email = adminUserAddReqDto.getEmail();
+		
+		if(!adminRepositorySupport.checkUserInformationDuplication("email", email)) {
+			return "이메일이 중복입니다";
+		}
+		
+		String name = adminUserAddReqDto.getName();
+		String studentNumber = adminUserAddReqDto.getStudentNumber();
+		
+		if(!adminRepositorySupport.checkUserInformationDuplication("studentNumber", studentNumber)) {
+			return "학번이 중복입니다";
+		}
+		
+		String major = adminUserAddReqDto.getMajor();
+		String role = adminUserAddReqDto.getRole();
+		String password = studentNumber;
+		
+		
+		User user = User.builder()
+				.email(email)
+				.password(password)
+				.name(name)
+				.role(changeRoleFromStringToShort(role))
+				.major(changeMajorFromStringToShort(major))
+				.profileExtension("png")
+				.profileServerName("c21f969b5f03d33d43e04f8f136e7682")
+				.profileOriginName("default")
+				.studentNumber(studentNumber)
+				.build();
+		
+		user.setPassword(passwordEncoder.encode(password));
+		
+		userRepository.save(user);
+		
+		return "추가가 완료 되었습니다.";
+	}
+
+	// Change Role String To Role Short 
+	// 문자열로 들어온 역할을 숫자로 변환
+	@Override
+	public short changeRoleFromStringToShort(String role) {
+		if(role.equals("교육생")) {
+			return 1;
+		}
+		else if(role.equals("퇴소생")) {
+			return 2;
+		}
+		else if(role.equals("부관리자")) {
+			return 3;
+		}
+		else if(role.equals("관리자")) {
+			return 4;
+		}
+		return 0;
+	}
+
+	// Change Major String To Major Short 
+	// 문자열로 들어온 전공 여부를 숫자로 변환
+	@Override
+	public short changeMajorFromStringToShort(String major) {
+		if(major.equals("전공")) {
+			return 1;
+		}
+		else if(major.equals("비전공")) {
+			return 2;
+		}
+		else
+			return 0;
+	}
+
+	@Override
+	public List<AdminUserAutoCorrectResDto> getUserAutoCorrect(AdminUserAutoCorrectReqDto adminUserAutoCorrectReqDto) {
+		return adminRepositorySupport.getUserAutoCorrect(adminUserAutoCorrectReqDto);
 	}
 
 }

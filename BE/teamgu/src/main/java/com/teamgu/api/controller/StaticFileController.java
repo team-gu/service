@@ -1,8 +1,10 @@
 package com.teamgu.api.controller;
 
 import com.teamgu.api.dto.res.BasicResponse;
+import com.teamgu.api.dto.res.CommonResponse;
 import com.teamgu.api.dto.res.ErrorResponse;
 import com.teamgu.api.service.NoticeServiceImpl;
+import com.teamgu.handler.NoticeFileHandler;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -16,7 +18,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +37,25 @@ import java.util.HashMap;
 public class StaticFileController {
 
     @Autowired
+    NoticeFileHandler noticeFileHandler;
+
+    @Autowired
     NoticeServiceImpl noticeService;
+
+    @PostMapping("/upload")
+    @ApiOperation(value = "")
+    public ResponseEntity<? extends BasicResponse> uploadNoticeImage(
+            @RequestBody @ApiParam(value = "공지사항 content에 넣을 이미지", required = true) MultipartFile multipartFile
+    ) {
+        String retStr = noticeFileHandler.parseNoticeImgInfo(multipartFile);
+
+        if(StringUtils.isEmpty(retStr)) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse("파일 업로드 실패"));
+        }
+
+        return ResponseEntity.ok(new CommonResponse<String>(retStr));
+    }
 
     /**
      * 파일 다운로드 Api
@@ -42,7 +64,7 @@ public class StaticFileController {
      */
     @GetMapping("/download")
     @ApiOperation(value = "")
-    public ResponseEntity<Resource> downloadFile(
+    public ResponseEntity<Resource> downloadNoticeFile(
             @RequestParam @ApiParam(value = "파일 암호화 이름", required = true) String nfile
     ) {
 

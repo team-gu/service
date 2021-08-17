@@ -44,7 +44,7 @@ const sortByOptions: OptionsType<OptionTypeBase> = [
 const WrapFilter = styled.div`
   padding: 10px;
   margin: 10px;
-  box-shadow: 0 6px 12px 0 rgba(4, 4, 161, 0.1);
+  background-color: white;
   > div > div {
     width: 100%;
   }
@@ -247,12 +247,17 @@ export default function UserStatus(): ReactElement {
 
   const handleProjectChange = ({ value }: { value: number }) => {
     if (projectCodes?.includes(value)) {
-      setPayload({ ...payload, project: value, pageNum: 0, sort: 'asc' });
+      setPayload((prev) => ({
+        ...prev,
+        project: value,
+        pageNum: 0,
+        sort: 'asc',
+      }));
     }
   };
 
   const handleClickSort = (sort: string) => {
-    setPayload({ ...payload, sort, pageNum: 0 });
+    setPayload((prev) => ({ ...prev, sort, pageNum: 0 }));
   };
 
   const handleCloseInviteModal = () => {
@@ -279,7 +284,7 @@ export default function UserStatus(): ReactElement {
     handleSendInvitation(teamId, id, invitedUser.id);
 
     setShowInviteModal(false);
-    setPayload({ ...payload });
+    setPayload((prev) => ({ ...prev }));
   };
 
   return (
@@ -373,7 +378,7 @@ export default function UserStatus(): ReactElement {
           </div>
         </WrapFilter>
 
-        {users && users.length === 0 ? (
+        {(users && users.length) === 0 ? (
           <WrapFilter>일치하는 유저가 없습니다.</WrapFilter>
         ) : (
           <>
@@ -388,9 +393,9 @@ export default function UserStatus(): ReactElement {
                 handleSendRtcLink={handleSendRtcLink}
               />
             ))}
-            {pageCount > 0 && (
+            {pageCount >= 0 && (
               <Pagination
-                pageCount={pageCount}
+                pageCount={pageCount + 1}
                 previousLabel={'<'}
                 nextLabel={'>'}
                 marginPagesDisplayed={2}
@@ -399,6 +404,7 @@ export default function UserStatus(): ReactElement {
                 onPageChange={({ selected }: { selected: number }) =>
                   setPayload((prev) => ({ ...prev, pageNum: selected }))
                 }
+                forcePage={payload?.pageNum}
               />
             )}
           </>

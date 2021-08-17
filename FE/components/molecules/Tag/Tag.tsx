@@ -1,6 +1,7 @@
 import { ReactElement } from 'react';
 import styled from 'styled-components';
 import { Text } from '@atoms';
+import { skillColor } from '@utils/constants';
 
 interface TagProps {
   text: string;
@@ -24,9 +25,15 @@ export default function Tag({
   backgroundColor = '#E1EDFF',
   color = '#3B67D4',
 }: TagProps): ReactElement {
+  const skillFontColor = skillColor.get(text) ? skillColor.get(text)[0] : color;
+
+  const skillBackgroundColor = skillColor.get(text)
+    ? skillColor.get(text)[1]
+    : backgroundColor;
+
   return (
-    <Wrapper backgroundColor={backgroundColor}>
-      <Text text={text} fontSetting="n12b" color={color} />
+    <Wrapper backgroundColor={skillBackgroundColor}>
+      <Text text={text} fontSetting="n12b" color={skillFontColor} />
     </Wrapper>
   );
 }

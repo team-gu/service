@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.teamgu.api.dto.res.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,13 +12,6 @@ import com.teamgu.api.dto.req.TeamAutoCorrectReqDto;
 import com.teamgu.api.dto.req.TeamFilterReqDto;
 import com.teamgu.api.dto.req.TeamMemberReqDto;
 import com.teamgu.api.dto.req.TrackReqDto;
-import com.teamgu.api.dto.res.HorizontalByTeamResDto;
-import com.teamgu.api.dto.res.SkillResDto;
-import com.teamgu.api.dto.res.TeamAutoCorrectResDto;
-import com.teamgu.api.dto.res.TeamIsCreateResDto;
-import com.teamgu.api.dto.res.TeamListResDto;
-import com.teamgu.api.dto.res.TeamMemberInfoResDto;
-import com.teamgu.api.dto.res.VerticalByUserResDto;
 import com.teamgu.database.entity.Mapping;
 import com.teamgu.database.entity.Team;
 import com.teamgu.database.entity.User;
@@ -27,6 +21,7 @@ import com.teamgu.database.repository.MappingRepositorySupport;
 import com.teamgu.database.repository.TeamRepository;
 import com.teamgu.database.repository.TeamRepositorySupport;
 import com.teamgu.database.repository.UserRepository;
+import org.springframework.util.CollectionUtils;
 
 @Service("teamService")
 public class TeamServiceImpl implements TeamService {
@@ -73,22 +68,39 @@ public class TeamServiceImpl implements TeamService {
 	 */	
 	
 	@Override
-	public List<TeamListResDto> getTeamListbyFilter(TeamFilterReqDto teamFilterReqDto) {
-	
+	public TeamPageResDto getTeamListbyFilter(TeamFilterReqDto teamFilterReqDto) {
+		TeamPageResDto teamPageResDto = null;
 		List<TeamListResDto> list = new ArrayList<>();
 		List<Long> teamIdList = teamRepositorySupport.getTeamIdbyFilter(teamFilterReqDto);
-		
-		if(teamIdList == null) return null;
-		
-		for(int i = 0, size=teamIdList.size(); i<size; i++) {
+
+		if(CollectionUtils.isEmpty(teamIdList)) {
+			teamPageResDto = TeamPageResDto.builder()
+					.dataList(null)
+					.totPageCnt(0)
+					.build();
+
+			return teamPageResDto;
+		}
+
+		int size = teamIdList.size();
+		int totPageCnt = size / teamFilterReqDto.getPageSize();
+		int startIdx = teamFilterReqDto.getPageNum() * teamFilterReqDto.getPageSize();
+		int endIdx = startIdx + teamFilterReqDto.getPageSize();
+
+		for(int i = startIdx; i<size && i < endIdx; i++) {
 			
 			Long teamId = Long.parseLong(String.valueOf(teamIdList.get(i)));
 			TeamListResDto team = getTeamInfobyTeamId(teamId);
 			
 			list.add(team);
 		}
-		
-		return list;
+
+		teamPageResDto = TeamPageResDto.builder()
+				.totPageCnt(totPageCnt)
+				.dataList(list)
+				.build();
+
+		return teamPageResDto;
 	}
 	
 	/*

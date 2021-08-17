@@ -10,6 +10,7 @@ interface PaginationProps {
   pageRangeDisplayed: number;
   breakLabel: string;
   onPageChange: any;
+  forcePage: number;
 }
 
 const Wrapper = styled.div`
@@ -35,13 +36,20 @@ const Wrapper = styled.div`
   }
 
   .selected {
-    background-color: #ddd;
+    background-color: ${({
+      theme: {
+        colors: { samsungLightBlue },
+      },
+    }) => samsungLightBlue};
+    > a {
+      color: white;
+    }
   }
 
   .disabled {
     > a {
       cursor: normal;
-      color: lightgrey;
+      color: gray;
     }
   }
 `;

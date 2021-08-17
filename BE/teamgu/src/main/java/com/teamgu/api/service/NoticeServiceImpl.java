@@ -104,7 +104,7 @@ public class NoticeServiceImpl implements NoticeService {
     public boolean createNotice(NoticeReqDto noticeReqDto) {
         String curDate = dateTimeUtil.getDateAndTime();
         User user = userRepository.getOne(noticeReqDto.getUserId());
-        List<NoticeFile> fileList = noticeFileHandler.parseFileInfo(noticeReqDto.getNoticeFiles());
+        List<NoticeFile> fileList = noticeFileHandler.parseNoticeFileInfo(noticeReqDto.getNoticeFiles());
         Notice notice = NoticeDetailMapper.INSTANCE.dtoToNotice(
                 NoticeDetailResDto.builder()
                         .title(noticeReqDto.getTitle())
@@ -143,7 +143,7 @@ public class NoticeServiceImpl implements NoticeService {
             }
         }
 
-        fileList.addAll(noticeFileHandler.parseFileInfo(newFileList));
+        fileList.addAll(noticeFileHandler.parseNoticeFileInfo(newFileList));
 
         if(oNotice.isPresent()) {
             Notice notice = oNotice.get();

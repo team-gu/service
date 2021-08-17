@@ -5,11 +5,7 @@ import java.util.List;
 import com.teamgu.api.dto.req.TeamFilterReqDto;
 import com.teamgu.api.dto.req.TeamMemberReqDto;
 import com.teamgu.api.dto.req.TeamAutoCorrectReqDto;
-import com.teamgu.api.dto.res.TeamIsCreateResDto;
-import com.teamgu.api.dto.res.TeamListResDto;
-import com.teamgu.api.dto.res.VerticalByUserResDto;
-import com.teamgu.api.dto.res.HorizontalByTeamResDto;
-import com.teamgu.api.dto.res.TeamAutoCorrectResDto;
+import com.teamgu.api.dto.res.*;
 
 public interface TeamService {
 
@@ -17,7 +13,7 @@ public interface TeamService {
 	List<TeamListResDto> getTeamList();
 	
 	// Select Team Info by Filter
-	List<TeamListResDto> getTeamListbyFilter(TeamFilterReqDto teamFilterReqDto);
+	TeamPageResDto getTeamListbyFilter(TeamFilterReqDto teamFilterReqDto);
 	
 	// Select  Team Info 
 	TeamListResDto getTeamInfobyTeamId(Long teamId);

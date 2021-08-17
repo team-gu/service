@@ -2,12 +2,18 @@ package com.teamgu.api.service;
 
 import java.util.List;
 
+import com.teamgu.api.dto.req.AdminUserAddReqDto;
+import com.teamgu.api.dto.req.AdminUserAutoCorrectReqDto;
+import com.teamgu.api.dto.req.AdminUserManagementReqDto;
+import com.teamgu.api.dto.req.AdminUserProjectManagementReqDto;
 import com.teamgu.api.dto.res.AdminTeamManagementResDto;
+import com.teamgu.api.dto.res.AdminUserAutoCorrectResDto;
 import com.teamgu.api.dto.res.AdminUserManagementResDto;
 import com.teamgu.api.dto.res.CodeResDto;
 import com.teamgu.api.dto.res.DashBoardResDto;
-import com.teamgu.api.dto.res.DashBoardTableResDto;
+import com.teamgu.api.dto.res.AdminUserProjectManagementResDto;
 import com.teamgu.api.dto.res.ProjectInfoResDto;
+import com.teamgu.database.entity.User;
 
 public interface AdminService {
 	
@@ -122,12 +128,12 @@ public interface AdminService {
 	public DashBoardResDto getTeamBuildingStatus(Long projectId);
 
 	/**
-	 * Select Dashboard Table Data
-	 * Project Id를 통해 Dash Board 하단 테이블 데이터를 조회한다
+	 * Select User Information In Project to manage
+	 * Project Id를 통해 프로젝트별 참여중인 교육생을 조회한다.
 	 * @param projectId
 	 * @return
 	 */
-	public List<DashBoardTableResDto> getDashBoardTableInfo(Long projectId);
+	public List<AdminUserProjectManagementResDto> getUserInProjectManagementData(Long projectId);
 	
 	
 	/**
@@ -228,7 +234,7 @@ public interface AdminService {
 	 * @param userId
 	 * @param projectId
 	 */
-	public void excludeStudentFromProject(Long userId, Long projectId);
+	public String excludeStudentFromProject(Long userId, Long projectId);
 
 	/**
 	 * get Team Information student belongs to
@@ -238,5 +244,44 @@ public interface AdminService {
 	 * @return
 	 */
 	public AdminTeamManagementResDto getStudentProjectTeamInfo(Long userId, Long projectId);
+	
+	/**
+	 * Update Student Information
+	 * 교육생의 반, 전공/비전공, 퇴소 여부를 수정한다.
+	 * @param adminUserProjectManagementReqDto
+	 */
+	public void updateStudentInformation(AdminUserManagementReqDto adminUserManagementReqDto);
+	
+	/**
+	 * Add User
+	 * 사용자를 추가한다 (이메일, 이름, 학번, 교육생여부, 전공)
+	 * @param adminUserAddReqDto
+	 * @return
+	 */
+	public String addUserToTeamguByIndividual(AdminUserAddReqDto adminUserAddReqDto);
+	
+	/**
+	 * Change Role String To Role Short 
+	 * 문자열로 들어온 역할을 숫자로 변환
+	 * @param role
+	 * @return
+	 */
+	public short changeRoleFromStringToShort(String role);
+	
+	/**
+	 * Change Major String To Major Short 
+	 * 문자열로 들어온 전공 여부를 숫자로 변환
+	 * @param major
+	 * @return
+	 */
+	public short changeMajorFromStringToShort(String major);
+	
+	/**
+	 * Admin User Auto Corret
+	 * 관리자의 교육생 자동완성 검색 기능
+	 * @param adminUserAutoCorrectReqDto (검색하는 부분인 search와 검색되고 있는 프로젝트의 project id를 받는다)
+	 * @return
+	 */
+	public List<AdminUserAutoCorrectResDto> getUserAutoCorrect(AdminUserAutoCorrectReqDto adminUserAutoCorrectReqDto);
 	
 }

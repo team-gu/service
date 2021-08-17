@@ -8,7 +8,14 @@ import { getImageURL } from '@utils/constants';
 
 const Wrapper = styled.div<{ isComplete: boolean }>`
   position: relative;
-  box-shadow: 0 12px 20px 0 rgba(0, 0, 0, 0.15);
+  border-radius: 18px;
+  background-color: white;
+  box-shadow: 2px 4px 12px rgb(0 0 0 / 8%);
+  transition: all 0.3s cubic-bezier(0, 0, 0.5, 1);
+  :hover {
+    transform: scale(1.02);
+  }
+  width: calc(100% - 40px);
   padding: 20px;
 
   .completed-team-overlay {
@@ -21,11 +28,15 @@ const Wrapper = styled.div<{ isComplete: boolean }>`
     height: 100%;
     background-color: gray;
     opacity: 0.5;
+    border-radius: 18px;
   }
 
   ${({ isComplete }) =>
     isComplete &&
     `
+    :hover {
+      transform: none;
+    }
     .completed-team-overlay {
       display: block;
     }
@@ -75,10 +86,10 @@ const Wrapper = styled.div<{ isComplete: boolean }>`
         margin-bottom: 20px;
 
         .skills-tags {
-          margin-top: 10px;
+          margin-top: 5px;
           > div {
             display: inline-block;
-            margin: 0 5px 5px;
+            margin: 0 5px 5px 0px;
           }
         }
       }
@@ -120,7 +131,7 @@ export default function TeamStatusCard({
               .map((item) => (
                 <div className="profile" key={item.id}>
                   <ProfileImage
-                    size={80}
+                    size={75}
                     src={item.img ? getImageURL(item.img) : undefined}
                   />
                   {item.id === team.leaderId ? (
