@@ -57,14 +57,14 @@ export default function TeamStatus(): ReactElement {
   const [payload, setPayload] = useState<Payload>({});
   const [showTeamManageModal, setShowTeamManageModal] = useState(false);
   const [selectedTeamInfo, setSelectedTeaminfo] = useState<Team>();
-  const [teams, setTeams] = useState<Team[]>([]);
+  const [teams, setTeams] = useState<Team[]>();
 
   const [sortBy, setSortBy] = useState(sortByOptions[0].value);
   const [sortAsc, setSortAsc] = useState(true);
   const [containsUserId, setContainsUserId] = useState<number>();
   const [userHasTeam, setUserHasTeam] = useState<boolean>();
   const [userTeam, setUserTeam] = useState<Team>();
-  const [searchWhat, setSearchWhat] = useState(false);
+  const [searchWhat, setSearchWhat] = useState();
 
   const SERACH_BY_FILTER = true;
   const SEARCH_BY_USERID = false;
@@ -87,10 +87,6 @@ export default function TeamStatus(): ReactElement {
       studentNumber,
     });
 
-    const project =
-      projectCodes && projectCodes.length > 0
-        ? projectCodes[projectCodes.length - 1]
-        : 101;
     getUserHasTeam({
       userId,
       project: { code: projectCode },
@@ -308,18 +304,19 @@ export default function TeamStatus(): ReactElement {
             <hr />
           </>
         )}
-        {(!teams || teams.length === 0) && (
+        {teams && teams?.length === 0 ? (
           <WrapFilter>
             현재 등록된 팀이 없거나, 필터링 조건에 일치하는 팀이 없습니다.
           </WrapFilter>
+        ) : (
+          teams?.map((item, index) => (
+            <TeamStatusCard
+              key={index}
+              team={item}
+              onClickTeamManage={handleTeamManageModal}
+            />
+          ))
         )}
-        {teams.map((item, index) => (
-          <TeamStatusCard
-            key={index}
-            team={item}
-            onClickTeamManage={handleTeamManageModal}
-          />
-        ))}
       </div>
       {showTeamManageModal && (
         <TeamManageModal

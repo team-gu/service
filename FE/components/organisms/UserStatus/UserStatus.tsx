@@ -19,7 +19,7 @@ import {
   getEachFiltersCodeList,
   postByFilteredUsers,
 } from '@repository/filterRepository';
-import { useAppDispatch, useAuthState, displayModal } from '@store';
+import { useAppDispatch, useAuthState, displayModal, setLoading } from '@store';
 import { FILTER_TITLE } from '@utils/constants';
 import { MemberOption } from '@utils/type';
 import { ModalWrapper } from '@organisms';
@@ -98,7 +98,7 @@ export default function UserStatus(): ReactElement {
   const [filterContents, setFilterContents] = useState<any>();
   const [payload, setPayload] = useState({});
 
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState();
 
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [invitedUser, setInvitedUser] = useState<Users>();
@@ -109,43 +109,46 @@ export default function UserStatus(): ReactElement {
 
   useEffect(() => {
     (async () => {
+      dispatch(setLoading({ isLoading: true }));
+
       const {
         data: { data },
       } = await getEachFiltersCodeList(studentNumber);
 
       setFilterContents(data);
-    })();
 
-    const project = projectCodes[projectCodes.length - 1];
+      const project = projectCodes[projectCodes.length - 1];
 
-    setPayload({
-      project,
-      studentNumber,
-      sort: 'asc',
-      pageNum: 0,
-      pageSize: 10,
-    });
-
-    if (project) {
-      getUserHasTeam({
-        userId: id,
-        project: { code: project },
-      }).then(({ data: { data } }) => {
-        if (data.hasTeam) {
-          if (data.team.leaderId === id) {
-            setTeamId(data.team.id);
-            setIsLeader(true);
-          }
-        }
+      setPayload({
+        project,
+        studentNumber,
+        sort: 'asc',
+        pageNum: 0,
+        pageSize: 10,
       });
-    } else {
-      dispatch(
-        displayModal({
-          modalName: MODALS.ALERT_MODAL,
-          content: '관리자에게 프로젝트 멤버 등록을 요청해주세요',
-        }),
-      );
-    }
+
+      if (project) {
+        getUserHasTeam({
+          userId: id,
+          project: { code: project },
+        }).then(({ data: { data } }) => {
+          if (data.hasTeam) {
+            if (data.team.leaderId === id) {
+              setTeamId(data.team.id);
+              setIsLeader(true);
+            }
+          }
+        });
+      } else {
+        dispatch(
+          displayModal({
+            modalName: MODALS.ALERT_MODAL,
+            content: '관리자에게 프로젝트 멤버 등록을 요청해주세요',
+          }),
+        );
+      }
+      dispatch(setLoading({ isLoading: false }));
+    })();
   }, []);
 
   useEffect(() => {
@@ -378,7 +381,7 @@ export default function UserStatus(): ReactElement {
           </div>
         </WrapFilter>
 
-        {(users && users.length) === 0 ? (
+        {users && users?.length === 0 ? (
           <WrapFilter>일치하는 유저가 없습니다.</WrapFilter>
         ) : (
           <>
