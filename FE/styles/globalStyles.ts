@@ -1116,4 +1116,12 @@ export default createGlobalStyle`
           },
         }) => backgroundGray};
     }
+
+    .ql-editor strong {
+        font-weight:bold;
+    }
+
+    .ql-editor em {
+        font-style: italic;
+    }
 `;
