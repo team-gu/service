@@ -345,7 +345,7 @@ export default function AdminUserManageModal({
       return;
     }
     if (!userRole) {
-      myAlert('교육생/퇴소생을 입력해주세요');
+      myAlert('역할을 입력해주세요');
       return;
     }
     if (!userRegist) {
@@ -573,7 +573,7 @@ export default function AdminUserManageModal({
               </div>
 
               <div className="select-container">
-                <Label text="교육생/퇴소생">
+                <Label text="역할">
                   <Select
                     isSearchable={false}
                     cacheOptions

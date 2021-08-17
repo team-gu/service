@@ -321,7 +321,7 @@ const USER_TABLE_COLUMNS = [
     accessor: 'major',
   },
   {
-    Header: '교육생/퇴소생',
+    Header: '역할',
     accessor: 'role',
   },
   {
