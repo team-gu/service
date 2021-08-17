@@ -157,7 +157,7 @@ export default function ProjectCard({
 
       <div className="project-card-footer">
         <Icon iconName="edit" color="green" func={onClickEdit} />
-        <Icon iconName="delete" color="tomato" func={onClickDelete} />
+        <Icon iconName="delete" color="crimson" func={onClickDelete} />
       </div>
     </Wrapper>
   );

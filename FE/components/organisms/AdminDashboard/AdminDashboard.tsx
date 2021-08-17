@@ -73,7 +73,7 @@ const Wrapper = styled.div`
 
           .countup-ongoing {
             font-size: 52px;
-            color: gainsboro;
+            color: #d4d4d4;
             letter-spacing: -3px;
           }
 
@@ -84,8 +84,12 @@ const Wrapper = styled.div`
           .tooltiptext {
             visibility: hidden;
             width: 60px;
-            background-color: #3848a0;
-            color: #fff;
+            background-color: ${({
+              theme: {
+                colors: { samsungBlue },
+              },
+            }) => samsungBlue};
+            color: white;
             text-align: center;
             border-radius: 6px;
             padding: 5px;
