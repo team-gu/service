@@ -144,11 +144,11 @@ export default function AdminUserManage({ project }: AdminUserManageProps) {
   };
 
   const handleDeleteConfirm = () => {
-    // TODO: 사용자 삭제 API 호출 
+    // TODO: 사용자 삭제 API 호출
     console.log(editTarget);
-
+    myAlert("현재 사용자 삭제는 불가능합니다.");
     // fetchUsers();
-    handleDeleteConfirmCancel();
+    // handleDeleteConfirmCancel();
   };
 
   const myAlert = (content: string) => {
@@ -161,9 +161,11 @@ export default function AdminUserManage({ project }: AdminUserManageProps) {
   };
 
   const errorAlert = (err: AxiosError) => {
-    myAlert('ERROR' +
-          (err.response?.data ? ': ' + JSON.stringify(err.response.data) : ''));
-  }
+    myAlert(
+      'ERROR' +
+        (err.response?.data ? ': ' + JSON.stringify(err.response.data) : ''),
+    );
+  };
 
   const handleUploadImport: ChangeEventHandler<HTMLInputElement> = (event: {
     target: HTMLInputElement;
@@ -207,10 +209,9 @@ export default function AdminUserManage({ project }: AdminUserManageProps) {
     dispatch(setLoading({ isLoading: true }));
     createUser(param)
       .then(({ data: { data } }) => {
-        console.log(data);
         fetchUsers();
       })
-      .catch(err => {
+      .catch((err) => {
         errorAlert(err);
       })
       .finally(() => {
@@ -223,7 +224,10 @@ export default function AdminUserManage({ project }: AdminUserManageProps) {
     <Wrapper>
       <div className="manage-header">
         <div>
-          <Text text={`${project.stage.codeName || ''} 사용자 목록`} fontSetting="n26b" />
+          <Text
+            text={`${project.stage.codeName || ''} 사용자 목록`}
+            fontSetting="n26b"
+          />
           <Icon iconName="add_box" func={() => setShowManageModal(true)} />
           <Icon
             iconName="settings_applications"
@@ -325,8 +329,7 @@ const USER_TABLE_COLUMNS = [
     accessor: 'role',
   },
   {
-    Header: '프로젝트 활성/비활성',
+    Header: '프로젝트 활성여부',
     accessor: 'regist',
-    disableGroupBy: true,
   },
 ];
