@@ -7,7 +7,6 @@ import { SimpleSelect } from '@molecules';
 import { Project } from '@utils/type';
 import { ADMIN_MENU_CONTENT } from '@utils/constants';
 
-
 const Wrapper = styled.div`
   position: fixed;
   width: 200px;
@@ -24,7 +23,11 @@ const Wrapper = styled.div`
     display: flex;
     flex-direction: column;
 
-    border: solid 2px #3848a0;
+    border: ${({
+      theme: {
+        colors: { samsungLightBlue },
+      },
+    }) => `solid 2px ${samsungLightBlue}`};
     background-color: #e8eaf6;
 
     .selected-project-info {
@@ -64,7 +67,11 @@ const Wrapper = styled.div`
     flex-direction: column;
     gap: 40px;
 
-    background-color: #3848a0;
+    background-color: ${({
+      theme: {
+        colors: { samsungLightBlue },
+      },
+    }) => samsungLightBlue};
     color: white;
     padding: 30px 0;
 
@@ -88,7 +95,6 @@ export default function AdminMenuSidebarLeft({
   projects,
   defaultSelectedMenu,
 }: AdminMenuSidebarLeftProps): ReactElement {
-
   const projectOptions = projects.map((project) => {
     return { ...project, value: project.id, label: project.name };
   });
