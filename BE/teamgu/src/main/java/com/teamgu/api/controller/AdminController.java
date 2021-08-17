@@ -369,10 +369,10 @@ public class AdminController {
 	@PostMapping("/user/add")
 	public ResponseEntity<? extends BasicResponse> addUserToTeamguByIndividual(@RequestBody AdminUserAddReqDto adminUserAddReqDto){
 
-		User user = adminService.addUserToTeamguByIndividual(adminUserAddReqDto);
+		String result = adminService.addUserToTeamguByIndividual(adminUserAddReqDto);
 		
 		return ResponseEntity.status(HttpStatus.OK)
-				.body(new CommonResponse<User>(user));
+				.body(new CommonResponse<String>(result));
 	}
 	
 }

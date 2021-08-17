@@ -256,7 +256,7 @@ public interface AdminService {
 	 * @param adminUserAddReqDto
 	 * @return
 	 */
-	public User addUserToTeamguByIndividual(AdminUserAddReqDto adminUserAddReqDto);
+	public String addUserToTeamguByIndividual(AdminUserAddReqDto adminUserAddReqDto);
 	
 	/**
 	 * Change Role String To Role Short 

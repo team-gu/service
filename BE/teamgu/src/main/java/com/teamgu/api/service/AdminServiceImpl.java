@@ -547,14 +547,25 @@ public class AdminServiceImpl implements AdminService {
 	// Add User
 	// 사용자를 추가한다 (이메일, 이름, 학번, 교육생여부, 전공)
 	@Override
-	public User addUserToTeamguByIndividual(AdminUserAddReqDto adminUserAddReqDto) {
+	public String addUserToTeamguByIndividual(AdminUserAddReqDto adminUserAddReqDto) {
 		
 		String email = adminUserAddReqDto.getEmail();
+		
+		if(!adminRepositorySupport.checkUserInformationDuplication("email", email)) {
+			return "이메일이 중복입니다";
+		}
+		
 		String name = adminUserAddReqDto.getName();
 		String studentNumber = adminUserAddReqDto.getStudentNumber();
+		
+		if(!adminRepositorySupport.checkUserInformationDuplication("studentNumber", studentNumber)) {
+			return "학번이 중복입니다";
+		}
+		
 		String major = adminUserAddReqDto.getMajor();
 		String role = adminUserAddReqDto.getRole();
 		String password = studentNumber;
+		
 		
 		User user = User.builder()
 				.email(email)
@@ -570,7 +581,9 @@ public class AdminServiceImpl implements AdminService {
 		
 		user.setPassword(passwordEncoder.encode(password));
 		
-		return userRepository.save(user);
+		userRepository.save(user);
+		
+		return "추가가 완료 되었습니다.";
 	}
 
 	// Change Role String To Role Short 
