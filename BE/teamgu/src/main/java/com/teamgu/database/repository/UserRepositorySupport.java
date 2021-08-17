@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.querydsl.core.types.Projections;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.teamgu.api.dto.req.TrackReqDto;
 import com.teamgu.api.dto.req.UserInfoReqDto;
@@ -201,14 +200,38 @@ public class UserRepositorySupport {
 
     // User Class 조회
     public UserClassResDto selectUserClassByUserId(Long userId, int stage) {
-        UserClassResDto userClassDto = (UserClassResDto) jpaQueryFactory
-                .select(Projections.constructor(UserClassResDto.class, qStdClass.name, qCodeDetail.Name))
-                .from(qUserClass).leftJoin(qUserClass.stdClass, qStdClass).join(qCodeDetail)
-                .on(qStdClass.regionCode.eq(qCodeDetail.codeDetail)).where(qUserClass.user.id.eq(userId)
-                        .and(qStdClass.stageCode.eq(stage + 100)).and(qCodeDetail.code.code.eq("RE")))
-                .fetchOne();
-        return userClassDto;
 
+		EntityManager em = emf.createEntityManager();
+		UserClassResDto userClassDto = null;
+		try {
+			String jpql = "select sc.name, (select code_detail.name from code_detail where code_detail.code_id = \"RE\" and code_detail.code_detail = sc.region_code) as region\r\n" + 
+					"from (select * from user_class where user_class.user_id = :userId) uc\r\n" + 
+					"inner join (select * \r\n" + 
+					"from std_class\r\n" + 
+					"where stage_code = :stage\r\n" + 
+					"and project_code = (select max(project_code) as projectCode from project_detail\r\n" + 
+					"where project_detail.id in (select project_detail_id from user_project_detail where user_id = :userId))) sc\r\n" + 
+					"on uc.class_id = sc.id";
+			
+			List<Object[]> datas = em.createNativeQuery(jpql)
+					.setParameter("userId", userId)
+					.setParameter("stage", stage + 100)
+					.getResultList();
+			
+			for (Object[] data : datas) {
+				userClassDto = UserClassResDto.builder()
+						.stdClassNumber(Integer.parseInt(data[0].toString()))
+						.region(data[1].toString())
+						.build();
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			em.close();
+		}
+
+        return userClassDto;
     }
 
     // User의 ProjectCode List조회

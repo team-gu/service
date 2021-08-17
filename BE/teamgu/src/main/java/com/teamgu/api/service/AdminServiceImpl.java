@@ -13,9 +13,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.teamgu.api.dto.req.AdminUserAddReqDto;
+import com.teamgu.api.dto.req.AdminUserAutoCorrectReqDto;
 import com.teamgu.api.dto.req.AdminUserManagementReqDto;
 import com.teamgu.api.dto.req.TeamMemberReqDto;
 import com.teamgu.api.dto.res.AdminTeamManagementResDto;
+import com.teamgu.api.dto.res.AdminUserAutoCorrectResDto;
 import com.teamgu.api.dto.res.AdminUserManagementResDto;
 import com.teamgu.api.dto.res.CodeResDto;
 import com.teamgu.api.dto.res.CommonResponse;
@@ -596,7 +598,7 @@ public class AdminServiceImpl implements AdminService {
 		else if(role.equals("퇴소생")) {
 			return 2;
 		}
-		else if(role.equals("프로")) {
+		else if(role.equals("부관리자")) {
 			return 3;
 		}
 		else if(role.equals("관리자")) {
@@ -617,6 +619,11 @@ public class AdminServiceImpl implements AdminService {
 		}
 		else
 			return 0;
+	}
+
+	@Override
+	public List<AdminUserAutoCorrectResDto> getUserAutoCorrect(AdminUserAutoCorrectReqDto adminUserAutoCorrectReqDto) {
+		return adminRepositorySupport.getUserAutoCorrect(adminUserAutoCorrectReqDto);
 	}
 
 }
