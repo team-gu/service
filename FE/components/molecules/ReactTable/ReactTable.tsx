@@ -36,6 +36,7 @@ const Wrapper = styled.div<{ fullWidth: boolean }>`
 
     th,
     td {
+      background-color: white;
       margin: 0;
       padding: 10px;
       border-bottom: 1px solid gainsboro;
