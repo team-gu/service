@@ -3,9 +3,9 @@ package com.teamgu.database.repository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.teamgu.api.dto.res.CodeDetailResDto;
-import com.teamgu.database.entity.CodeDetail;
 import com.teamgu.database.entity.QCodeDetail;
 import com.teamgu.database.entity.QMapping;
+import com.teamgu.database.entity.QProjectDetail;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
@@ -17,21 +17,40 @@ public class CodeDetailRepositoryImpl implements CodeDetailRepositoryCustom {
 
     QMapping qMapping = QMapping.mapping;
     QCodeDetail qCodeDetail = QCodeDetail.codeDetail1;
+    QProjectDetail qProjectDetail = QProjectDetail.projectDetail;
 
     @Override
     public List<CodeDetailResDto> getStgCodeDetail() { //기수 코드 정보 반환
         return jpaQueryFactory
                 .select(Projections.constructor(CodeDetailResDto.class, qCodeDetail.Name, qCodeDetail.codeDetail))
                 .from(qCodeDetail)
-                .where(qCodeDetail.code.code.eq("ST")).fetch();
+                .where(qCodeDetail.code.code.eq("ST"))
+                .fetch();
     }
 
     @Override
-    public List<CodeDetailResDto> getPrjCodeDetail() {  //프로젝트 코드 정보 반환
+    public List<CodeDetailResDto> getPrjCodeDetail(String stage) { //프로젝트 코드 정보 반환
+        return jpaQueryFactory
+                .select(Projections.constructor(CodeDetailResDto.class, qCodeDetail.Name, qCodeDetail.codeDetail))
+                .from(qProjectDetail)
+                .innerJoin(qCodeDetail)
+                    .on(qProjectDetail.projectCode.eq(qCodeDetail.codeDetail))
+                .where(qProjectDetail.stageCode.like("%" + stage)
+                        .and(qCodeDetail.code.code.eq("PR")))
+                .fetch();
+    }
+
+    @Override
+    public List<CodeDetailResDto> getFilteredTrkDetail(String stage, int prjCode) { //선택된 프로젝트 코드에 따른 트랙리스트 반환
         return jpaQueryFactory
                 .select(Projections.constructor(CodeDetailResDto.class, qCodeDetail.Name, qCodeDetail.codeDetail))
                 .from(qCodeDetail)
-                .where(qCodeDetail.code.code.eq("PR")).fetch();
+                .innerJoin(qMapping)
+                .on(qCodeDetail.codeDetail.eq(qMapping.trackCode))
+                .where(qMapping.stageCode.like("%" + stage)
+                        .and(qCodeDetail.code.code.eq("TR")
+                                .and(qMapping.projectCode.eq(prjCode))))
+                .fetch();
     }
 
     @Override
@@ -40,8 +59,10 @@ public class CodeDetailRepositoryImpl implements CodeDetailRepositoryCustom {
                 .select(Projections.constructor(CodeDetailResDto.class, qCodeDetail.Name, qCodeDetail.codeDetail))
                 .from(qCodeDetail)
                 .innerJoin(qMapping)
-                .on(qCodeDetail.codeDetail.eq(qMapping.trackCode))
-                .where(qMapping.stageCode.like("%" + stage).and(qCodeDetail.code.code.eq("TR"))).fetch();
+                    .on(qCodeDetail.codeDetail.eq(qMapping.trackCode))
+                .where(qMapping.stageCode.like("%" + stage)
+                        .and(qCodeDetail.code.code.eq("TR")))
+                .fetch();
     }
 
     @Override
@@ -49,7 +70,8 @@ public class CodeDetailRepositoryImpl implements CodeDetailRepositoryCustom {
         return jpaQueryFactory
                 .select(Projections.constructor(CodeDetailResDto.class, qCodeDetail.Name, qCodeDetail.codeDetail))
                 .from(qCodeDetail)
-                .where(qCodeDetail.code.code.eq("SK")).fetch();
+                .where(qCodeDetail.code.code.eq("SK"))
+                .fetch();
     }
 
     @Override
@@ -57,7 +79,8 @@ public class CodeDetailRepositoryImpl implements CodeDetailRepositoryCustom {
         return jpaQueryFactory
                 .select(Projections.constructor(CodeDetailResDto.class, qCodeDetail.Name, qCodeDetail.codeDetail))
                 .from(qCodeDetail)
-                .where(qCodeDetail.code.code.eq("PO")).fetch();
+                .where(qCodeDetail.code.code.eq("PO"))
+                .fetch();
     }
 
     @Override
@@ -65,6 +88,7 @@ public class CodeDetailRepositoryImpl implements CodeDetailRepositoryCustom {
         return jpaQueryFactory
                 .select(Projections.constructor(CodeDetailResDto.class, qCodeDetail.Name, qCodeDetail.codeDetail))
                 .from(qCodeDetail)
-                .where(qCodeDetail.code.code.eq("RE")).fetch();
+                .where(qCodeDetail.code.code.eq("RE"))
+                .fetch();
     }
 }
