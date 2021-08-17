@@ -1,10 +1,8 @@
-import { useState, ChangeEventHandler } from 'react';
+import { ChangeEventHandler } from 'react';
 import styled from 'styled-components';
 
-import { useAppDispatch, setLoading } from '@store';
 import { Text, Icon } from '@atoms';
 import { ModalWrapper } from '@organisms';
-import { signupUsersByExcel } from '@repository/adminRepository';
 
 const Wrapper = styled.div`
   position: relative;
@@ -71,42 +69,15 @@ const Bold = styled.span`
 
 interface AdminUserImportModalProps {
   handleClickClose: () => void;
+  handleImportFile: ChangeEventHandler;
 }
 
 export default function AdminUserImportModal({
   handleClickClose,
+  handleImportFile,
 }: AdminUserImportModalProps) {
-  const dispatch = useAppDispatch();
-
-  const onSelectFile: ChangeEventHandler<HTMLInputElement> = (event: {
-    target: HTMLInputElement;
-  }) => {
-    if (event.target.files && event.target.files.length > 0) {
-      dispatch(setLoading({ isLoading: true }));
-
-      const formData = new FormData();
-      formData.append('excelFile', event.target.files[0]);
-
-      // TODO: 응답에 따라
-      //   OK  -> 교육생 목록 리렌더링
-      //   ERR -> 에러 메시지 모달
-      signupUsersByExcel(formData)
-        .then(({ data: { data } }) => {
-          console.log(data);
-        })
-        .catch((err) => {
-          console.log(err);
-          console.log(err.message);
-          console.log(err.response.data);
-        })
-        .finally(() => {
-          dispatch(setLoading({ isLoading: false }));
-        });
-    }
-  };
-
   return (
-    <ModalWrapper modalName="adminUserImportModal">
+    <ModalWrapper modalName="adminUserImportModal" zIndex={100}>
       <Wrapper>
         <div className="modal-header">
           <Text
@@ -138,7 +109,7 @@ export default function AdminUserImportModal({
           <input
             type="file"
             accept=".xlsx, .xls"
-            onChange={onSelectFile}
+            onChange={handleImportFile}
             id="excel-file-input"
             style={{ display: 'none' }}
           />

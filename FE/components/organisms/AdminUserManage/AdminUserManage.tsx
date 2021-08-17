@@ -1,15 +1,21 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, ChangeEventHandler } from 'react';
 import styled from 'styled-components';
 
 import { Text, Icon } from '@atoms';
 import { ReactTable, Button } from '@molecules';
-import { getUserTableData } from '@repository/adminRepository';
-import { REGIONS } from '@utils/constants';
-import { ModalWrapper } from '@organisms';
+import {
+  getUserTableData,
+  signupUsersByExcel,
+  updateUser,
+} from '@repository/adminRepository';
+import { MODALS, REGIONS } from '@utils/constants';
 import { Project } from '@utils/type';
 
 import AdminUserManageModal from './AdminUserManageModal';
 import AdminUserImportModal from './AdminUserImportModal';
+import AdminUserDeleteModal from './AdminUserDeleteModal';
+import { displayModal, setLoading, useAppDispatch } from '@store';
+import { AxiosError } from 'axios';
 
 const Wrapper = styled.div`
   i {
@@ -72,41 +78,6 @@ const RegionButtonWrapper = styled.span<{ selected: boolean }>`
   }
 `;
 
-const UserDeleteConfirmModal = styled.div`
-  padding: 50px;
-
-  .confirm-text {
-    margin-bottom: 20px;
-    text-align: center;
-  } 
-
-  .create-confirm-btns {
-    text-align: center;
-
-    button {
-      width: 90px;
-      margin 0 10px;
-    }
-
-    > button:nth-child(1) {
-      background-color: forestgreen;
-    }
-  }
-
-  .confirm-btns {
-    text-align: center;
-
-    button {
-      width: 90px;
-      margin 0 10px;
-    }
-
-    > button:nth-child(2) {
-      background-color: crimson;
-    }
-  }
-`;
-
 interface UserDataRow {
   userId: number;
   completeYn: string | null;
@@ -127,6 +98,7 @@ interface AdminUserManageProps {
 }
 
 export default function AdminUserManage({ project }: AdminUserManageProps) {
+  const dispatch = useAppDispatch();
   const [selectedRegion, setSelectedRegion] = useState(0);
   const [teamStatusTableData, setTeamStatusTableData] = useState<UserDataRow[]>(
     [],
@@ -138,13 +110,17 @@ export default function AdminUserManage({ project }: AdminUserManageProps) {
   const [editTarget, setEditTarget] = useState<UserDataRow>();
 
   useEffect(() => {
+    fetchUsers();
+  }, [project, selectedRegion]);
+
+  const fetchUsers = () => {
     getUserTableData({
       projectId: project.id,
       regionCode: selectedRegion,
     }).then(({ data: { data } }) => {
       setTeamStatusTableData(data);
     });
-  }, [project, selectedRegion]);
+  };
 
   const handleSelectedRow = (row: { type: string; data: UserDataRow }) => {
     if (row.type === 'edit') {
@@ -167,18 +143,87 @@ export default function AdminUserManage({ project }: AdminUserManageProps) {
   };
 
   const handleDeleteConfirm = () => {
-    // TODO: 사용자 삭제 API 호출 후 사용자 목록 리렌더링
+    // TODO: 사용자 삭제 API 호출 
     console.log(editTarget);
 
-    setShowDeleteModal(false);
-    setEditTarget(undefined);
+    // fetchUsers();
+    handleDeleteConfirmCancel();
+  };
+
+  const myAlert = (content: string) => {
+    dispatch(
+      displayModal({
+        modalName: MODALS.ALERT_MODAL,
+        content: content,
+      }),
+    );
+  };
+
+  const errorAlert = (err: AxiosError) => {
+    myAlert('ERROR' +
+          (err.response?.data ? ': ' + JSON.stringify(err.response.data) : ''));
+  }
+
+  const handleUploadImport: ChangeEventHandler<HTMLInputElement> = (event: {
+    target: HTMLInputElement;
+  }) => {
+    if (event.target.files && event.target.files.length > 0) {
+      dispatch(setLoading({ isLoading: true }));
+
+      const formData = new FormData();
+      formData.append('excelFile', event.target.files[0]);
+
+      signupUsersByExcel(formData)
+        .then(() => {
+          fetchUsers();
+        })
+        .catch((err) => {
+          errorAlert(err);
+        })
+        .finally(() => {
+          setShowImportModal(false);
+          dispatch(setLoading({ isLoading: false }));
+        });
+    }
+  };
+
+  const handleUpdateUser = (param: any) => {
+    dispatch(setLoading({ isLoading: true }));
+    updateUser(param)
+      .then(() => {
+        fetchUsers();
+      })
+      .catch((err) => {
+        errorAlert(err);
+      })
+      .finally(() => {
+        handleCloseEditModal();
+        dispatch(setLoading({ isLoading: false }));
+      });
+  };
+
+  const handleCreateUser = (param: any) => {
+    console.log('CREATE USER');
+
+    // TODO: 회원가입 API 호출
+    // dispatch(setLoading({ isLoading: true }));
+    // createUser(param)
+    //   .then(({ data: { data } }) => {
+    //     console.log(data);
+    //   })
+    //   .catch(err => {
+    //     console.log(err);
+    //   })
+    //   .finally(() => {
+    //     dispatch(setLoading({ isLoading: false }));
+    //   });
   };
 
   return (
     <Wrapper>
       <div className="manage-header">
         <div>
-          <Text text="교육생 목록" fontSetting="n26b" />
+          <Text text={`${project.stage.codeName || ''} 교육생 목록`} fontSetting="n26b" />
           <Icon iconName="add_box" func={() => setShowManageModal(true)} />
           <Icon
             iconName="settings_applications"
@@ -215,6 +260,7 @@ export default function AdminUserManage({ project }: AdminUserManageProps) {
           },
         }}
         onSelectRow={handleSelectedRow}
+        pagination={false}
       />
       {showManageModal &&
         (editTarget ? (
@@ -222,35 +268,29 @@ export default function AdminUserManage({ project }: AdminUserManageProps) {
             handleClickClose={handleCloseEditModal}
             defaultValue={editTarget}
             projectId={project.id}
+            handleUpdateUser={handleUpdateUser}
           />
         ) : (
           <AdminUserManageModal
             handleClickClose={() => setShowManageModal(false)}
             projectId={project.id}
+            handleCreateUser={handleCreateUser}
           />
         ))}
 
       {showImportModal && (
         <AdminUserImportModal
           handleClickClose={() => setShowImportModal(false)}
+          handleImportFile={handleUploadImport}
         />
       )}
 
       {showDeleteModal && editTarget && (
-        <ModalWrapper modalName="adminUserDeleteConfirmModal">
-          <UserDeleteConfirmModal>
-            <div className="confirm-text">
-              <Text
-                text={`[${editTarget.name}] 교육생 정보를 삭제하시겠습니까?`}
-                fontSetting="n20m"
-              />
-            </div>
-            <div className="confirm-btns">
-              <Button title="취소" func={handleDeleteConfirmCancel} />
-              <Button title="예" func={handleDeleteConfirm} />
-            </div>
-          </UserDeleteConfirmModal>
-        </ModalWrapper>
+        <AdminUserDeleteModal
+          handleClickClose={handleDeleteConfirmCancel}
+          handleClickDelete={handleDeleteConfirm}
+          studnetName={editTarget.name}
+        />
       )}
     </Wrapper>
   );
