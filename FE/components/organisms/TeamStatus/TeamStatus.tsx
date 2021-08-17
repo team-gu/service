@@ -349,7 +349,7 @@ export default function TeamStatus(): ReactElement {
             ))}
             {pageCount >= 0 && (
               <Pagination
-                pageCount={pageCount + 1}
+                pageCount={pageCount}
                 previousLabel={'<'}
                 nextLabel={'>'}
                 marginPagesDisplayed={2}
