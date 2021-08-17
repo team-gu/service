@@ -17,6 +17,7 @@ import useSockStomp from '@hooks/useSockStomp';
 
 import {
   getEachFiltersCodeList,
+  getEachFiltersCodeListTracks,
   postByFilteredUsers,
 } from '@repository/filterRepository';
 import { useAppDispatch, useAuthState, displayModal, setLoading } from '@store';
@@ -105,6 +106,7 @@ export default function UserStatus(): ReactElement {
   const [isLeader, setIsLeader] = useState(false);
   const [teamId, setTeamId] = useState(0);
   const [pageCount, setPageCount] = useState(0);
+  const [trackList, setTrackList] = useState([]);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -166,6 +168,14 @@ export default function UserStatus(): ReactElement {
 
           setUsers(dataList);
           setPageCount(totPageCnt);
+
+          const {
+            data: { data },
+          } = await getEachFiltersCodeListTracks(
+            studentNumber,
+            payload?.project,
+          );
+          setTrackList(data['트랙']);
         } catch ({
           response: {
             data: { errorMessage },
@@ -180,6 +190,8 @@ export default function UserStatus(): ReactElement {
       })();
     }
   }, [payload]);
+
+  console.log(trackList);
 
   const handleToggleFilter = (title: string, code: string) => {
     if (code === '전체') {
@@ -323,6 +335,7 @@ export default function UserStatus(): ReactElement {
             (each) =>
               each !== '기수' &&
               each !== '프로젝트' &&
+              each !== '트랙' &&
               (each !== '전공/비전공' ? (
                 filterContents[each].length < 5 ? (
                   <Filter
@@ -349,6 +362,7 @@ export default function UserStatus(): ReactElement {
                 />
               )),
           )}
+        <Filter title={'트랙'} contents={trackList} func={handleFilterArray} />
       </div>
       <div className="team-status-list-container">
         <WrapFilter>
