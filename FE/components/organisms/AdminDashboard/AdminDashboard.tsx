@@ -273,10 +273,11 @@ const ADMIN_USER_TABLE_COLUMNS = [
     width: 30,
     disableGroupBy: true,
     disableSortBy: true,
-    disableFilters: true,
     Cell: (content: any) => {
       return (
-        <div style={{ textAlign: 'center' }}>{Number(content.row.id) + 1}</div>
+        <div style={{ textAlign: 'center' }}>
+          {content.row.id && !isNaN(parseInt(content.row.id)) ? parseInt(content.row.id) + 1 : ' '}
+        </div>
       );
     },
   },
