@@ -3,11 +3,13 @@ import { createSlice } from '@reduxjs/toolkit';
 interface UIState {
   isLoading: boolean;
   isChatOpen: boolean;
+  passedOpponentId: number;
 }
 
 const initialState: UIState = {
   isLoading: false,
   isChatOpen: false,
+  passedOpponentId: 0,
 };
 
 const uiReducer = createSlice({
@@ -20,10 +22,11 @@ const uiReducer = createSlice({
         isLoading,
       };
     },
-    setChatOpen(state, { payload: { isChatOpen } }) {
+    setChatOpen(state, { payload: { isChatOpen, passedOpponentId } }) {
       return {
         ...state,
         isChatOpen,
+        passedOpponentId,
       };
     },
   },
