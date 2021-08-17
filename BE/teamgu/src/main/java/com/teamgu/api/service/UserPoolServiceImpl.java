@@ -33,6 +33,8 @@ public class UserPoolServiceImpl implements UserPoolService {
         int startIdx = userPoolPageReqDto.getPageNum() * userPoolPageReqDto.getPageSize();
         int endIdx = startIdx + userPoolPageReqDto.getPageSize();
 
+        if(size % userPoolPageReqDto.getPageSize() != 0) totPageCnt++;
+
         for (int i = startIdx; i < size && i < endIdx; i++) {
             Object[] elem = list.get(i);
 
