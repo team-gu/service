@@ -75,7 +75,7 @@ export default function AdminProjectUserDeleteModal({
   handleClickDelete,
 }: AdminProjectUserDeleteModalProps) {
   return (
-    <ModalWrapper modalName="createUserModal" zIndex={101}>
+    <ModalWrapper modalName="deleteProjectUserModal" zIndex={101}>
       <Wrapper>
         <div className="modal-header">
           <Text text="교육생 제외" fontSetting="n26b" />
