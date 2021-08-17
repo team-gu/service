@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, ChangeEventHandler } from 'react';
 import styled from 'styled-components';
 
 import { Text, Icon } from '@atoms';
@@ -8,13 +8,15 @@ import {
   addStudentToProject,
   excludeStudentFromProject,
   exportUserData,
+  importUserData,
 } from '@repository/adminRepository';
 import { Project } from '@utils/type';
 import AdminProjectUserDeleteModal from './AdminProjectUserDeleteModal';
 import AdminProjectUserAddModal from './AdminProjectUserAddModal';
 import AdminUserImportModal from './AdminUserImportModal';
 import AdminUserExportModal from './AdminUserExportModal';
-import { setLoading, useAppDispatch } from '@store';
+import { displayModal, setLoading, useAppDispatch } from '@store';
+import { MODALS } from '@utils/constants';
 
 const Wrapper = styled.div`
   i {
@@ -53,7 +55,7 @@ const Wrapper = styled.div`
 `;
 
 interface UserDataRow {
-  userid: number;
+  userId: number;
   completeYn: string | null;
   major: string;
   name: string;
@@ -84,12 +86,16 @@ export default function AdminProjectUserManage({
   const [editTarget, setEditTarget] = useState<UserDataRow>();
 
   useEffect(() => {
+    fetchProjectUserTableData();
+  }, [project]);
+
+  const fetchProjectUserTableData = () => {
     getProjectUserTableData({
       projectId: project.id,
     }).then(({ data: { data } }) => {
       setUserTableData(data);
     });
-  }, [project]);
+  };
 
   const handleSelectedRow = (row: { type: string; data: UserDataRow }) => {
     if (row.type === 'delete') {
@@ -104,27 +110,36 @@ export default function AdminProjectUserManage({
   };
 
   const deleteUser = () => {
-    console.log('DELETE USER');
-    console.log('TARGET: ', editTarget);
+    dispatch(setLoading({ isLoading: true }));
 
-    // TODO: data에 userid가 생기면 해당 아이디로 삭제 고고
-    // dispatch(setLoading({ isLoading: true }));
-
-    // if (editTarget && editTarget.userid) {
-    //   excludeStudentFromProject({
-    //     projectId: project.id,
-    //     userId: editTarget.userid,
-    //   })
-    //     .then(({ data: { data } }) => {
-    //       setUserTableData(data);
-    //     })
-    //     .finally(() => {
-    //       closeDeleteModal();
-    //       dispatch(setLoading({ isLoading: false }));
-    //     });
-    // } else {
-    //   console.error('삭제할 행이 선택되지 않았습니다.');
-    // }
+    if (editTarget && editTarget.userId) {
+      excludeStudentFromProject({
+        projectId: project.id,
+        userId: editTarget.userId,
+      })
+        .then(() => {
+          fetchProjectUserTableData();
+        })
+        .catch(err => {
+          dispatch(
+            displayModal({
+              modalName: MODALS.ALERT_MODAL,
+              content: 'ERROR' + (err.response ? ': ' + err.response.data : ''),
+            }),
+          );
+        })
+        .finally(() => {
+          closeDeleteModal();
+          dispatch(setLoading({ isLoading: false }));
+        });
+    } else {
+      dispatch(
+        displayModal({
+          modalName: MODALS.ALERT_MODAL,
+          content: '삭제할 행이 선택되지 않았습니다.',
+        }),
+      );
+    }
   };
 
   const addUser = (userId: number) => {
@@ -160,7 +175,6 @@ export default function AdminProjectUserManage({
       stage_code: project.stage.code,
     })
       .then(({ data: { data } }) => {
-        console.log(data);
         const arrayBuffer = base64ToArrayBuffer(data);
         const a = window.document.createElement('a');
 
@@ -172,10 +186,50 @@ export default function AdminProjectUserManage({
         a.click();
         document.body.removeChild(a);
       })
+      .catch((err) => {
+        dispatch(
+          displayModal({
+            modalName: MODALS.ALERT_MODAL,
+            content: 'ERROR' + (err.response ? ': ' + err.response.data : ''),
+          }),
+        );
+      })
       .finally(() => {
         setShowExportModal(false);
         dispatch(setLoading({ isLoading: false }));
       });
+  };
+
+  const uploadUserImport: ChangeEventHandler<HTMLInputElement> = (event: {
+    target: HTMLInputElement;
+  }) => {
+    if (event.target.files && event.target.files.length > 0 && project.id) {
+      dispatch(setLoading({ isLoading: true }));
+
+      const formData = new FormData();
+      formData.append('file', event.target.files[0]);
+      formData.append(
+        'project_id',
+        new Blob([project.id + ''], { type: 'application/json' }),
+      );
+
+      importUserData(formData)
+        .then(() => {
+          fetchProjectUserTableData();
+        })
+        .catch((err) => {
+          dispatch(
+            displayModal({
+              modalName: MODALS.ALERT_MODAL,
+              content: 'ERROR' + (err.response ? ': ' + err.response.data : ''),
+            }),
+          );
+        })
+        .finally(() => {
+          setShowImportModal(false);
+          dispatch(setLoading({ isLoading: false }));
+        });
+    }
   };
 
   return (
@@ -217,6 +271,7 @@ export default function AdminProjectUserManage({
       {showImportModal && (
         <AdminUserImportModal
           handleClickClose={() => setShowImportModal(false)}
+          handleImportExcel={uploadUserImport}
         />
       )}
 

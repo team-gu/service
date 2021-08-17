@@ -147,7 +147,7 @@ export const excludeStudentFromProject = async (param: any) => {
   console.log(param);
 
   return await api({
-    url: `​/api​/admin​/project​/exclude`,
+    url: '/api/admin/project/exclude',
     type: 'post',
     param,
   });
@@ -163,6 +163,17 @@ export const exportUserData = async (param: any) => {
     param,
   });
 };
+
+export const importUserData = async (param: any) => {
+  console.log('importUserData');
+  console.log(param);
+
+  return await api({
+    url: `/api/excel/userproject/insert`,
+    type: 'post',
+    param,
+  });
+}
 
 /////////////// 교육생 관리
 

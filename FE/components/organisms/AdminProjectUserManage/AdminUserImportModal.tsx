@@ -61,25 +61,13 @@ const Wrapper = styled.div`
 
 interface AdminUserImportModalProps {
   handleClickClose: () => void;
+  handleImportExcel: ChangeEventHandler<HTMLInputElement>;
 }
 
 export default function AdminUserImportModal({
   handleClickClose,
+  handleImportExcel,
 }: AdminUserImportModalProps) {
-  const onSelectFile: ChangeEventHandler<HTMLInputElement> = (event: {
-    target: HTMLInputElement;
-  }) => {
-    if (event.target.files && event.target.files.length > 0) {
-      const formData = new FormData();
-      formData.append('excelFile', event.target.files[0]);
-
-      // TODO: 응답에 따라
-      //   OK  -> 교육생 목록 리렌더링
-      //   ERR -> 에러 메시지 모달
-      console.log(formData);
-    }
-  };
-
   return (
     <ModalWrapper modalName="adminUserImportModal" zIndex={99}>
       <Wrapper>
@@ -95,7 +83,7 @@ export default function AdminUserImportModal({
         </div>
         <div className="modal-description">
           <Text
-            text="엑셀 파일(.xlsx, .xls)을 업로드하여 한 번에 교육생 정보를 추가할 수 있습니다. 해당 엑셀 파일은 [학번]에 대한 데이터를 담고 있어야합니다. "
+            text="엑셀 파일(.xlsx, .xls)을 업로드하여 한 번에 교육생 정보를 추가할 수 있습니다. 해당 엑셀 파일은 [이메일]에 대한 데이터를 담고 있어야합니다. "
             isLineBreak
           />
         </div>
@@ -107,7 +95,7 @@ export default function AdminUserImportModal({
           <input
             type="file"
             accept=".xlsx, .xls"
-            onChange={onSelectFile}
+            onChange={handleImportExcel}
             id="excel-file-input"
             style={{ display: 'none' }}
           />
