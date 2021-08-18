@@ -1181,7 +1181,7 @@ public class AdminRepositorySupport {
 					"		select project_detail.stage_code\r\n" + 
 					"        from project_detail\r\n" + 
 					"        where project_detail.id = :projectId)) u\r\n" + 
-					"where u.name = :search or u.student_number like  :search or u.email like  :search";
+					"where u.name like :search or u.student_number like  :search or u.email like  :search";
 
 			List<Object[]> datas = em.createNativeQuery(jpql)
 					.setParameter("projectId", projectId)
