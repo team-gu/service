@@ -11,6 +11,12 @@ const Wrapper = styled.div`
   box-shadow: 0px 0px 5px 2px rgba(55, 53, 47, 0.2);
   width: 240px;
   height: fit-content;
+  background-color: white;
+
+  transition: all 0.3s cubic-bezier(0, 0, 0.5, 1);
+  :hover {
+    transform: scale(1.02);
+  }
 
   .project-name-container {
     margin-bottom: 20px;
@@ -151,7 +157,7 @@ export default function ProjectCard({
 
       <div className="project-card-footer">
         <Icon iconName="edit" color="green" func={onClickEdit} />
-        <Icon iconName="delete" color="tomato" func={onClickDelete} />
+        <Icon iconName="delete" color="crimson" func={onClickDelete} />
       </div>
     </Wrapper>
   );

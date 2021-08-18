@@ -1,4 +1,4 @@
-import { ReactElement, useState, useMemo, forwardRef } from 'react';
+import { ReactElement, useState, useMemo } from 'react';
 import {
   useTable,
   useFilters,
@@ -13,6 +13,7 @@ import {
 import styled from 'styled-components';
 
 import { Icon, Text } from '@atoms';
+import { Pagination } from '@molecules';
 
 const Wrapper = styled.div<{ fullWidth: boolean }>`
   i {
@@ -35,6 +36,7 @@ const Wrapper = styled.div<{ fullWidth: boolean }>`
 
     th,
     td {
+      background-color: white;
       margin: 0;
       padding: 10px;
       border-bottom: 1px solid gainsboro;
@@ -126,18 +128,6 @@ const GlobalFilterWrapper = styled.span`
     :focus {
       outline: none;
     }
-  }
-`;
-
-const PaginationContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 10px;
-
-  .pagination-text {
-    display: inline-block;
-    margin: 0 10px;
   }
 `;
 
@@ -240,13 +230,26 @@ function DefaultColumnFilter({
   );
 }
 
-const IndeterminateCheckbox = forwardRef(({ indeterminate, ...rest }, ref) => {
+const IndeterminateCheckbox = ({
+  editable,
+  deletable,
+  onClickEdit,
+  onClickDelete,
+}: {
+  editable: boolean | undefined;
+  deletable: boolean | undefined;
+  onClickEdit: () => void;
+  onClickDelete: () => void;
+}) => {
   return (
     <>
-      <Icon iconName="edit" {...rest} />
+      {editable && <Icon iconName="edit" color="green" func={onClickEdit} />}
+      {deletable && (
+        <Icon iconName="delete" color="crimson" func={onClickDelete} />
+      )}
     </>
   );
-});
+};
 
 interface TableProps {
   columns: any[];
@@ -254,7 +257,10 @@ interface TableProps {
   grouping?: boolean;
   pagination?: boolean;
   fullWidth?: boolean;
-  selectable?: boolean;
+  selectable?: {
+    selectable: boolean;
+    type?: { edit: boolean; delete: boolean };
+  };
   onSelectRow?: (row: any) => void;
 }
 
@@ -305,14 +311,8 @@ export default function ReactTable({
     setGlobalFilter,
 
     page,
-    canPreviousPage,
-    canNextPage,
     pageOptions,
-    pageCount,
     gotoPage,
-    nextPage,
-    previousPage,
-    setPageSize,
   } = useTable(
     {
       columns,
@@ -328,15 +328,25 @@ export default function ReactTable({
     usePagination,
     useRowSelect,
     (hooks) => {
-      if (selectable && onSelectRow) {
+      if (selectable?.selectable && onSelectRow) {
         hooks.visibleColumns.push((columns) => [
           {
             id: 'selection',
             Cell: ({ row }) => (
-              <div onClick={() => onSelectRow(row.original)}>
-                <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
+              <div style={{ width: 'max-content' }}>
+                <IndeterminateCheckbox
+                  editable={selectable.type?.edit}
+                  deletable={selectable.type?.delete}
+                  onClickDelete={() =>
+                    onSelectRow({ type: 'delete', data: { ...row.original } })
+                  }
+                  onClickEdit={() =>
+                    onSelectRow({ type: 'edit', data: { ...row.original } })
+                  }
+                />
               </div>
             ),
+            width: '',
           },
           ...columns,
         ]);
@@ -375,7 +385,7 @@ export default function ReactTable({
                     </div>
                     <div>
                       여러번 클릭하여 오름차순, 내림차순을 변경할 수 있습니다.
-                      또한 여러 칼럼을 선택하여 <Bold>다중 중렬</Bold>을 할 수
+                      또한 여러 칼럼을 선택하여 <Bold>다중 정렬</Bold>을 할 수
                       있습니다.
                     </div>
                     {grouping && (
@@ -399,7 +409,11 @@ export default function ReactTable({
           {headerGroups.map((headerGroup) => (
             <tr {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map((column) => (
-                <th {...column.getHeaderProps()}>
+                <th
+                  {...column.getHeaderProps({
+                    style: { width: column.width },
+                  })}
+                >
                   <TableHeaderItem>
                     <div>
                       {grouping && column.canGroupBy ? (
@@ -460,22 +474,20 @@ export default function ReactTable({
                 {row.cells.map((cell) => {
                   return (
                     <CellWrapper
-                      // For educational purposes, let's color the
-                      // cell depending on what type it is given
-                      // from the useGroupBy hook
-                      {...cell.getCellProps()}
-                      style={{
-                        background: cell.isGrouped
-                          ? '#0aff0082'
-                          : cell.isAggregated
-                          ? '#ffa50078'
-                          : cell.isPlaceholder
-                          ? '#ff000042'
-                          : 'white',
-                      }}
+                      {...cell.getCellProps({
+                        style: {
+                          background: cell.isGrouped
+                            ? '#0aff0082'
+                            : cell.isAggregated
+                            ? '#ffa50078'
+                            : cell.isPlaceholder
+                            ? '#ff000042'
+                            : 'white',
+                          width: cell.column.width,
+                        },
+                      })}
                     >
                       {cell.isGrouped ? (
-                        // If it's a grouped cell, add an expander and row count
                         <div className="grouped-cell">
                           <span
                             {...row.getToggleRowExpandedProps()}
@@ -494,11 +506,8 @@ export default function ReactTable({
                           </span>
                         </div>
                       ) : cell.isAggregated ? (
-                        // If the cell is aggregated, use the Aggregated
-                        // renderer for cell
                         cell.render('Aggregated')
-                      ) : cell.isPlaceholder ? null : ( // For cells with repeated values, render null
-                        // Otherwise, just render the regular cell
+                      ) : cell.isPlaceholder ? null : (
                         cell.render('Cell')
                       )}
                     </CellWrapper>
@@ -511,41 +520,17 @@ export default function ReactTable({
       </table>
 
       {pagination && (
-        <PaginationContainer>
-          <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
-            {'<<'}
-          </button>{' '}
-          <button onClick={() => previousPage()} disabled={!canPreviousPage}>
-            {'<'}
-          </button>{' '}
-          <div className="pagination-text">
-            <Text
-              text={`${state.pageIndex + 1} / ${pageOptions.length}`}
-              fontSetting="n16m"
-            />
-          </div>
-          <button onClick={() => nextPage()} disabled={!canNextPage}>
-            {'>'}
-          </button>{' '}
-          <button
-            onClick={() => gotoPage(pageCount - 1)}
-            disabled={!canNextPage}
-          >
-            {'>>'}
-          </button>{' '}
-          <select
-            value={state.pageSize}
-            onChange={(e) => {
-              setPageSize(Number(e.target.value));
-            }}
-          >
-            {[10, 20, 30, 40, 50].map((pageSize) => (
-              <option key={pageSize} value={pageSize}>
-                {pageSize}개씩
-              </option>
-            ))}
-          </select>
-        </PaginationContainer>
+        <Pagination
+          pageCount={pageOptions.length}
+          previousLabel={'<'}
+          nextLabel={'>'}
+          marginPagesDisplayed={2}
+          pageRangeDisplayed={5}
+          breakLabel={'...'}
+          onPageChange={({ selected }: { selected: number }) =>
+            gotoPage(selected)
+          }
+        />
       )}
     </Wrapper>
   );

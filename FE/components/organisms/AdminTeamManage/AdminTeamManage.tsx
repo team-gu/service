@@ -3,12 +3,37 @@ import styled from 'styled-components';
 
 import { Text } from '@atoms';
 import { Button, ReactTable } from '@molecules';
-import { getTeamTableData } from '@repository/adminRepository';
+import { getTeamTableData, exportTeamData } from '@repository/adminRepository';
 import { REGIONS } from '@utils/constants';
+import { Project } from '@utils/type';
+import { setLoading, useAppDispatch } from '@store';
+
+import AdminTeamExportModal from './AdminTeamExportModal';
 
 const Wrapper = styled.div`
   .manage-header {
+    display: flex;
+    align-items: center;
     margin: 20px 0;
+    justify-content: space-between;
+
+    > div {
+      display: inline-flex;
+      align-items: center;
+      > i {
+        font-size: 30px;
+      }
+      > div {
+        margin-right: 10px;
+      }
+    }
+
+    .manage-header-export {
+      > button {
+        padding: 0 15px;
+        box-shadow: none;
+      }
+    }
   }
 
   .region-btns {
@@ -29,11 +54,19 @@ const RegionButtonWrapper = styled.span<{ selected: boolean }>`
       color: gray;
     }
 
-    ${({ selected }) =>
+    :hover {
+      opacity: 1;
+    }
+
+    ${({
+      selected,
+      theme: {
+        colors: { samsungLightBlue },
+      },
+    }) =>
       selected &&
       `
-        background-color: black;
-        border: 1px solid black;
+        background-color: ${samsungLightBlue};
         border-radius: none;
         > div {
           color: white;
@@ -64,19 +97,19 @@ interface TeamDataRow extends TeamData {
 }
 
 interface AdminTeamManageProps {
-  projectId: number;
+  project: Project;
 }
 
-export default function AdminTeamManage({ projectId }: AdminTeamManageProps) {
+export default function AdminTeamManage({ project }: AdminTeamManageProps) {
+  const [showExportModal, setShowExportModal] = useState(false);
   const [selectedRegion, setSelectedRegion] = useState(0);
   const [teamData, setTeamData] = useState<TeamDataRow[]>([]);
 
   useEffect(() => {
     getTeamTableData({
-      projectId,
+      projectId: project.id,
       regionCode: selectedRegion,
     }).then(({ data: { data } }: { data: { data: TeamData[] } }) => {
-
       setTeamData(
         data.map((row) => {
           const leaderIdx = row.members
@@ -101,12 +134,59 @@ export default function AdminTeamManage({ projectId }: AdminTeamManageProps) {
         }),
       );
     });
-  }, [projectId, selectedRegion]);
+  }, [project, selectedRegion]);
+
+  const dispatch = useAppDispatch();
+
+  const base64ToArrayBuffer = (base64: string) => {
+    const binaryString = window.atob(base64);
+    const binaryLen = binaryString.length;
+    const bytes = new Uint8Array(binaryLen);
+    for (let i = 0; i < binaryLen; i++) {
+      const ascii = binaryString.charCodeAt(i);
+      bytes[i] = ascii;
+    }
+    return bytes;
+  };
+
+  const donwloadTeamExport = () => {
+    dispatch(setLoading({ isLoading: true }));
+    exportTeamData({
+      project_code: project.project.code,
+      stage_code: project.stage.code,
+    })
+      .then(({ data: { data } }) => {
+        const arrayBuffer = base64ToArrayBuffer(data);
+        const a = window.document.createElement('a');
+
+        a.href = window.URL.createObjectURL(
+          new Blob([arrayBuffer], { type: 'application/vnd.ms-excel' }),
+        );
+        a.download = 'export.xlsx';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      })
+      .finally(() => {
+        setShowExportModal(false);
+        dispatch(setLoading({ isLoading: false }));
+      });
+  };
 
   return (
     <Wrapper>
       <div className="manage-header">
-        <Text text="팀 목록" fontSetting="n26b" />
+        <div>
+          <Text text="팀 목록" fontSetting="n26b" />
+        </div>
+
+        <div className="manage-header-export">
+          <Button
+            title="Export"
+            func={() => setShowExportModal(true)}
+            width="auto"
+          />
+        </div>
       </div>
       <div className="region-btns">
         {REGIONS.map((r) => (
@@ -118,67 +198,129 @@ export default function AdminTeamManage({ projectId }: AdminTeamManageProps) {
           </RegionButtonWrapper>
         ))}
       </div>
-      <ReactTable data={teamData} columns={TEAM_TABLE_COLUMNS} />
+      <ReactTable
+        data={teamData}
+        columns={TEAM_TABLE_COLUMNS}
+        pagination={false}
+      />
+      {showExportModal && (
+        <AdminTeamExportModal
+          projectName={project.name ? project.name : '현재 프로젝트'}
+          handleClickClose={() => setShowExportModal(false)}
+          handleClickDownload={() => donwloadTeamExport()}
+        />
+      )}
     </Wrapper>
   );
 }
 
-
 const TEAM_TABLE_COLUMNS = [
+  {
+    Header: '#',
+    width: 30,
+    disableGroupBy: true,
+    disableSortBy: true,
+    disableFilters: true,
+    Cell: (content: any) => {
+      return (
+        <div style={{ textAlign: 'center' }}>
+          {content.row.id && !isNaN(parseInt(content.row.id))
+            ? parseInt(content.row.id) + 1
+            : ' '}
+        </div>
+      );
+    },
+  },
   {
     Header: '지역',
     accessor: 'region',
+    width: 70,
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
   },
   {
     Header: '팀 이름',
     accessor: 'teamName',
+    width: 300,
     disableGroupBy: true,
   },
   {
     Header: '트랙',
     accessor: 'track',
+    width: 120,
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
   },
   {
-    Header: '현재 인원',
+    Header: '인원 수',
     accessor: 'memberCnt',
+    width: 80,
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
   },
   {
     Header: '완료 여부',
     accessor: 'completeYn',
+    width: 100,
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
   },
   {
     Header: '팀장',
     accessor: 'member1',
     disableGroupBy: true,
+    width: 100,
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
   },
   {
     Header: '팀원1',
     accessor: 'member2',
     disableGroupBy: true,
+    width: 100,
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
   },
   {
     Header: '팀원2',
     accessor: 'member3',
     disableGroupBy: true,
+    width: 100,
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
   },
   {
     Header: '팀원3',
     accessor: 'member4',
     disableGroupBy: true,
+    width: 100,
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
   },
   {
     Header: '팀원4',
     accessor: 'member5',
     disableGroupBy: true,
+    width: 100,
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
   },
   {
     Header: '팀원5',
     accessor: 'member6',
     disableGroupBy: true,
-  },
-  {
-    Header: '팀원6',
-    accessor: 'member7',
-    disableGroupBy: true,
+    width: 100,
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
   },
 ];

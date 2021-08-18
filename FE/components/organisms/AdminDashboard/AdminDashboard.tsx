@@ -4,8 +4,12 @@ import CountUp from 'react-countup';
 
 import { Text } from '@atoms';
 import { ReactTable, DashboardBarChart } from '@molecules';
-import { getChartData, getTableData } from '@repository/adminRepository';
-import { ADMIN_DASHBOARD_TABLE_COLUMNS } from '@utils/constants';
+import {
+  getChartData,
+  getProjectUserTableData,
+} from '@repository/adminRepository';
+import { Project } from '@utils/type';
+import { setLoading, useAppDispatch } from '@store';
 
 const COLOR_MAP = {
   COMPLETE: '#32CD32',
@@ -69,7 +73,7 @@ const Wrapper = styled.div`
 
           .countup-ongoing {
             font-size: 52px;
-            color: gainsboro;
+            color: #d4d4d4;
             letter-spacing: -3px;
           }
 
@@ -80,8 +84,12 @@ const Wrapper = styled.div`
           .tooltiptext {
             visibility: hidden;
             width: 60px;
-            background-color: #3848a0;
-            color: #fff;
+            background-color: ${({
+              theme: {
+                colors: { samsungBlue },
+              },
+            }) => samsungBlue};
+            color: white;
             text-align: center;
             border-radius: 6px;
             padding: 5px;
@@ -118,12 +126,16 @@ const Wrapper = styled.div`
   }
 `;
 
+const TextAlignCenter = styled.div`
+  text-align: center;
+`;
+
 const TableWrapper = styled.div`
-  margin-top: 30px;  
+  margin-top: 30px;
 `;
 
 interface AdminDashboardProps {
-  projectId: number;
+  project: Project;
 }
 
 interface DashboardData {
@@ -137,15 +149,17 @@ interface DataItem {
 }
 
 export default function AdminDashboard({
-  projectId,
+  project,
 }: AdminDashboardProps): ReactElement {
+  const dispatch = useAppDispatch();
   const [regionTeamData, setRegionTeamData] = useState<any[]>();
   const [trackTeamData, setTrackTeamData] = useState<any[]>([]);
   const [teamStatusTableData, setTeamStatusTableData] = useState<any[]>([]);
+  const [loadingRegionTeamData, setLoadingRegionTeamData] = useState(false);
 
   useEffect(() => {
-    if (projectId) {
-      getChartData({ projectId }).then(({ data: { data } }) => {
+    if (project) {
+      getChartData({ projectId: project.id }).then(({ data: { data } }) => {
         const regionData = data.region
           .sort((a: DashboardData, b: DashboardData) =>
             a.title === '전국' ? -1 : 1,
@@ -168,15 +182,22 @@ export default function AdminDashboard({
         setTrackTeamData(trackData);
       });
 
-      getTableData({ projectId }).then(({ data: { data } }) => {
-        setTeamStatusTableData(data);
-      });
+      getProjectUserTableData({ projectId: project.id }).then(
+        ({ data: { data } }) => {
+          setTeamStatusTableData(data);
+        },
+      );
     }
-  }, [projectId]);
+  }, [project]);
 
-  const tableColumns = useMemo(() => {
-    return ADMIN_DASHBOARD_TABLE_COLUMNS;
-  }, []);
+  useEffect(() => {
+    dispatch(setLoading({ isLoading: true }));
+    setLoadingRegionTeamData(true);
+    setTimeout(() => {
+      setLoadingRegionTeamData(false);
+      dispatch(setLoading({ isLoading: false }));
+    }, 500);
+  }, [regionTeamData]);
 
   return (
     <Wrapper>
@@ -185,76 +206,182 @@ export default function AdminDashboard({
           <Text text="팀 구성 현황" fontSetting="n26b" />
         </div>
         <div className="chart-container">
-          {regionTeamData && regionTeamData.length > 0 && (
-            <>
-              <div className="entire-chart">
-                <DashboardBarChart
-                  data={regionTeamData.slice(0, 1)}
-                  width={300}
-                  height={500}
-                  color={{
-                    미소속: COLOR_MAP.NONE,
-                    진행중: COLOR_MAP.ONGOING,
-                    완료: COLOR_MAP.COMPLETE,
-                  }}
-                  legend={false}
-                />
-              </div>
+          {!loadingRegionTeamData &&
+            regionTeamData &&
+            regionTeamData.length > 0 && (
+              <>
+                <div className="entire-chart">
+                  <DashboardBarChart
+                    data={regionTeamData.slice(0, 1)}
+                    width={300}
+                    height={500}
+                    color={{
+                      미소속: COLOR_MAP.NONE,
+                      진행중: COLOR_MAP.ONGOING,
+                      완료: COLOR_MAP.COMPLETE,
+                    }}
+                    legend={false}
+                  />
+                </div>
 
-              <div className="region-chart">
-                <DashboardBarChart
-                  data={regionTeamData.slice(1)}
-                  width={800}
-                  height={300}
-                  color={{
-                    미소속: COLOR_MAP.NONE,
-                    진행중: COLOR_MAP.ONGOING,
-                    완료: COLOR_MAP.COMPLETE,
-                  }}
-                />
-              </div>
-            </>
-          )}
+                <div className="region-chart">
+                  <DashboardBarChart
+                    data={regionTeamData.slice(1)}
+                    width={800}
+                    height={300}
+                    color={{
+                      미소속: COLOR_MAP.NONE,
+                      진행중: COLOR_MAP.ONGOING,
+                      완료: COLOR_MAP.COMPLETE,
+                    }}
+                  />
+                </div>
+              </>
+            )}
 
           <div className="count-up-container">
-            {trackTeamData && trackTeamData.length > 0 && (
-              <>
-                {trackTeamData.map((each: any, idx: number) => (
-                  <div key={idx} className="count-up">
-                    <CountUp
-                      end={
-                        each.data.find(({ name }: DataItem) => name === '완료')
-                          .value
-                      }
-                      duration={4}
-                      useEasing
-                      className="countup-complete"
-                    />
-                    <span className="countup-ongoing">
-                      {' + '}
+            {!loadingRegionTeamData &&
+              trackTeamData &&
+              trackTeamData.length > 0 && (
+                <>
+                  {trackTeamData.map((each: any, idx: number) => (
+                    <div key={idx} className="count-up">
                       <CountUp
                         end={
                           each.data.find(
-                            ({ name }: DataItem) => name === '진행중',
+                            ({ name }: DataItem) => name === '완료',
                           ).value
                         }
                         duration={4}
                         useEasing
+                        className="countup-complete"
                       />
-                    </span>
+                      <span className="countup-ongoing">
+                        {' + '}
+                        <CountUp
+                          end={
+                            each.data.find(
+                              ({ name }: DataItem) => name === '진행중',
+                            ).value
+                          }
+                          duration={4}
+                          useEasing
+                        />
+                      </span>
 
-                    <Text text={each.title} fontSetting="n16m" />
-                    <span className="tooltiptext">진행중</span>
-                  </div>
-                ))}
-              </>
-            )}
+                      <Text text={each.title} fontSetting="n16m" />
+                      <span className="tooltiptext">진행중</span>
+                    </div>
+                  ))}
+                </>
+              )}
           </div>
         </div>
         <TableWrapper>
-          <ReactTable data={teamStatusTableData} columns={tableColumns} />
+          <ReactTable
+            data={teamStatusTableData}
+            columns={ADMIN_USER_TABLE_COLUMNS}
+          />
         </TableWrapper>
       </div>
     </Wrapper>
   );
 }
+
+const ADMIN_USER_TABLE_COLUMNS = [
+  {
+    Header: '#',
+    width: 30,
+    disableGroupBy: true,
+    disableSortBy: true,
+    disableFilters: true,
+    Cell: (content: any) => {
+      return (
+        <div style={{ textAlign: 'center' }}>
+          {content.row.id && !isNaN(parseInt(content.row.id))
+            ? parseInt(content.row.id) + 1
+            : ' '}
+        </div>
+      );
+    },
+  },
+  {
+    Header: '학번',
+    accessor: 'studentNumber',
+    disableGroupBy: true,
+    width: 80,
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
+  },
+  {
+    Header: '이름',
+    accessor: 'name',
+    disableGroupBy: true,
+    width: 100,
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
+  },
+  {
+    Header: '이메일',
+    accessor: 'email',
+    disableGroupBy: true,
+  },
+  {
+    Header: '지역',
+    accessor: 'region',
+    width: 70,
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
+  },
+  {
+    Header: '반',
+    accessor: 'studentClass',
+    width: 110,
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
+  },
+  {
+    Header: '팀 유무',
+    accessor: 'teamYn',
+    width: 80,
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
+  },
+  {
+    Header: '팀 번호',
+    accessor: 'teamId',
+    width: 120,
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
+  },
+  {
+    Header: '리더 여부',
+    accessor: 'leaderYn',
+    width: 120,
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
+  },
+  {
+    Header: '전공 여부',
+    accessor: 'major',
+    width: 120,
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
+  },
+  {
+    Header: '희망 포지션',
+    accessor: 'position',
+    width: 180,
+    Cell: (content: any) => (
+      <div style={{ textAlign: 'center' }}>{content.value}</div>
+    ),
+  },
+];

@@ -1,17 +1,19 @@
 import { useRef, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import CreatableSelect from 'react-select/creatable';
-import Select, { OptionTypeBase, ActionMeta, OptionsType } from 'react-select';
+import Select, { OptionTypeBase, ActionMeta } from 'react-select';
 
 import { Text, Icon, Input } from '@atoms';
 import { Button, Label } from '@molecules';
 import { ModalWrapper } from '@organisms';
-import { Code } from '@utils/type';
 import {
   createAdminClassOption,
   getAdminClassOption,
   deleteAdminClassOption,
 } from '@repository/adminRepository';
+import { displayModal, useAppDispatch } from '@store';
+import { MODALS } from '@utils/constants';
+import { Code } from '@utils/type';
 
 const Wrapper = styled.div`
   input {
@@ -183,6 +185,7 @@ const customStyles = {
   menuList: (base: any) => ({
     ...base,
     paddingTop: 0,
+    paddingBottom: 0,
     maxHeight: '120px',
   }),
   menu: (base: any) => ({
@@ -203,6 +206,8 @@ const ACTIVATE_OPTIONS = [
 const ROLE_OPTIONS = [
   { value: '교육생', label: '교육생' },
   { value: '퇴소생', label: '퇴소생' },
+  { value: '부관리자', label: '부관리자' },
+  { value: '관리자', label: '관리자' },
 ];
 
 const MAJOR_OPTIONS = [
@@ -210,15 +215,8 @@ const MAJOR_OPTIONS = [
   { value: '비전공', label: '비전공' },
 ];
 
-const CLASS_OPTIONS = [
-  { value: 1, label: '서울 1반' },
-  { value: 2, label: '서울 2반' },
-  { value: 3, label: '서울 3반' },
-  { value: 4, label: '서울 4반' },
-  { value: 5, label: '서울 5반' },
-];
-
 interface UserDataRow {
+  userId: number;
   completeYn: string | null;
   major: string;
   name: string;
@@ -229,28 +227,32 @@ interface UserDataRow {
   studentNumber: string;
   teamId: number | null;
   teamName: string | null;
+  email: string;
 }
 
 interface AdminUserCreateModalProps {
   handleClickClose: () => void;
+  handleUpdateUser?: (param: any) => void;
+  handleCreateUser?: (param: any) => void;
   defaultValue?: UserDataRow;
-  projectId: number;
+  projectId: number | undefined;
 }
 
 export default function AdminUserManageModal({
   handleClickClose,
   defaultValue,
   projectId,
+  handleUpdateUser,
+  handleCreateUser,
 }: AdminUserCreateModalProps) {
+  const dispatch = useAppDispatch();
   const [studentClassOptions, setStudentClassOptions] = useState<
     OptionTypeBase[]
   >([]);
 
   useEffect(() => {
-    // TODO: 서버에서 반 목록 가져오기
     fetchStudentClass();
-    setStudentClassOptions(CLASS_OPTIONS);
-  }, []);
+  }, [projectId]);
 
   const [userMajor, setUserMajor] = useState<string | undefined>(
     defaultValue ? defaultValue.major : undefined,
@@ -258,10 +260,10 @@ export default function AdminUserManageModal({
   const [studentClass, setStudentClass] = useState(
     defaultValue ? defaultValue.studentClass : null,
   );
-  const [userRole, setUserRole] = useState<string | undefined>(
+  const [userRole, setUserRole] = useState(
     defaultValue ? defaultValue.role : undefined,
   );
-  const [userRegist, setUserRegist] = useState<string | undefined>(
+  const [isActivate, setIsActivate] = useState(
     defaultValue ? defaultValue.regist : undefined,
   );
 
@@ -272,85 +274,98 @@ export default function AdminUserManageModal({
   const userNameInputRef = useRef<HTMLInputElement>(null);
   const userStudentNumberInputRef = useRef<HTMLInputElement>(null);
 
-  const handleCreateUser = () => {
-    if (!userEmailInputRef.current || userEmailInputRef.current.value === '') {
-      console.log('이메일 없음');
-      return;
-    }
-    if (!userNameInputRef.current || userNameInputRef.current.value === '') {
-      console.log('이름 없음');
-      return;
-    }
-    if (
-      !userStudentNumberInputRef.current ||
-      userStudentNumberInputRef.current.value === ''
-    ) {
-      console.log('학번 없음');
-      return;
-    }
-    if (!userMajor) {
-      console.log('전공/비전공 없음');
-      return;
-    }
-
-    const param = {
-      name: userNameInputRef.current.value,
-      email: userEmailInputRef.current.value,
-      studnetNumber: userStudentNumberInputRef.current.value,
-      major: userMajor,
-    };
-
-    console.log('CREATE USER');
-    console.log(param);
-    // TODO: 유저 생성 API 호출
+  const myAlert = (content: string) => {
+    dispatch(
+      displayModal({
+        modalName: MODALS.ALERT_MODAL,
+        content: content,
+      }),
+    );
   };
 
-  const handleUpdateUser = () => {
+  const onClickCreate = () => {
+    if (!handleCreateUser) {
+      return;
+    }
+
     if (!userEmailInputRef.current || userEmailInputRef.current.value === '') {
-      console.log('이메일 없음');
+      myAlert('이메일을 입력해주세요');
       return;
     }
     if (!userNameInputRef.current || userNameInputRef.current.value === '') {
-      console.log('이름 없음');
+      myAlert('이름을 입력해주세요');
       return;
     }
     if (
       !userStudentNumberInputRef.current ||
       userStudentNumberInputRef.current.value === ''
     ) {
-      console.log('학번 없음');
+      myAlert('학번을 입력해주세요');
       return;
     }
     if (!userMajor) {
-      console.log('전공/비전공 없음');
-      return;
-    }
-    if (!studentClass) {
-      console.log('반 없음');
+      myAlert('전공여부을 입력해주세요');
       return;
     }
     if (!userRole) {
-      console.log('교육생/퇴소생 없음');
-      return;
-    }
-    if (!userRegist) {
-      console.log('활성/비활성 없음');
+      myAlert('역할을 입력해주세요');
       return;
     }
 
     const param = {
       name: userNameInputRef.current.value,
       email: userEmailInputRef.current.value,
-      studnetNumber: userStudentNumberInputRef.current.value,
+      studentNumber: userStudentNumberInputRef.current.value,
       major: userMajor,
-      studentClass,
       role: userRole,
-      regist: userRegist,
     };
 
-    console.log('UPDATE USER');
-    console.log(param);
-    // TODO: 유저 수정 API 호출
+    handleCreateUser(param);
+  };
+
+  const onClickUpdate = () => {
+    if (!defaultValue || !handleUpdateUser) {
+      return;
+    }
+
+    if (!userEmailInputRef.current || userEmailInputRef.current.value === '') {
+      myAlert('이메일을 입력해주세요');
+      return;
+    }
+    if (!userNameInputRef.current || userNameInputRef.current.value === '') {
+      myAlert('이름을 입력해주세요');
+      return;
+    }
+    if (
+      !userStudentNumberInputRef.current ||
+      userStudentNumberInputRef.current.value === ''
+    ) {
+      console.log('학번 없음');
+      myAlert('학번을 입력해주세요');
+      return;
+    }
+    if (!userMajor) {
+      myAlert('전공여부을 입력해주세요');
+      return;
+    }
+    if (!userRole) {
+      myAlert('역할을 입력해주세요');
+      return;
+    }
+    if (!isActivate) {
+      myAlert('프로젝트 활성/비활성을 입력해주세요');
+      return;
+    }
+
+    const param = {
+      userId: defaultValue.userId,
+      projectId,
+      major: userMajor,
+      classId: studentClassOptions.find((c) => c.label === studentClass)?.value,
+      role: userRole,
+    };
+
+    handleUpdateUser(param);
   };
 
   const findDefaultStudentClass = () => {
@@ -363,10 +378,10 @@ export default function AdminUserManageModal({
     getAdminClassOption({
       projectId,
       regionCode: 0,
-    }).then(({ data : { data }}) => {
+    }).then(({ data: { data } }) => {
       setStudentClassOptions(codesToOption(data));
     });
-  }
+  };
 
   const handleCreateStudentClassOption = (inputValue: string) => {
     setIsLoadingStudentClass(true);
@@ -374,11 +389,12 @@ export default function AdminUserManageModal({
     createAdminClassOption({
       className: inputValue,
       projectId,
-    }).then(({ data : { data }}) => {
+    }).then(({ data: { data } }) => {
       console.log(data);
-      // TODO: 생성 결과 필요
-      // setStudentClassOptions(리턴 결과)
-      // setStudentClass(리턴결과 중 내가 추가했던거)
+      setStudentClassOptions(codesToOption(data));
+      setStudentClass(
+        data.find((c: Code) => c.codeName === inputValue).codeName,
+      );
       setIsLoadingStudentClass(false);
     });
   };
@@ -395,17 +411,13 @@ export default function AdminUserManageModal({
   };
 
   const handleOptionDelete = (deletedValue: OptionTypeBase) => {
-    
     deleteAdminClassOption({
-      classId: deletedValue.code
-    }).then(({ data : { data }}) => {
+      classId: deletedValue.code,
+    }).then(({ data: { data } }) => {
       console.log(data);
-      // TODO: 삭제 결과 필요
-      // setCategoryOptions(codesToOption(리턴 결과));
-      // TODO: 반 삭제 시 선택했던거 초기화
-      // setCategory(null);
-    })
-    
+      setStudentClassOptions(codesToOption(data));
+      setStudentClass(null);
+    });
   };
 
   const onChangeMajor = (
@@ -419,7 +431,18 @@ export default function AdminUserManageModal({
     }
   };
 
-  const onChangeExitYn = (
+  const onChangeProjectActivate = (
+    selectedValue: OptionTypeBase | null,
+    action: ActionMeta<OptionTypeBase>,
+  ) => {
+    if (selectedValue) {
+      setIsActivate(selectedValue.value);
+    } else {
+      setIsActivate(undefined);
+    }
+  };
+
+  const onChangeRole = (
     selectedValue: OptionTypeBase | null,
     action: ActionMeta<OptionTypeBase>,
   ) => {
@@ -430,23 +453,12 @@ export default function AdminUserManageModal({
     }
   };
 
-  const onChangeProjectActivate = (
-    selectedValue: OptionTypeBase | null,
-    action: ActionMeta<OptionTypeBase>,
-  ) => {
-    if (selectedValue) {
-      setUserRegist(selectedValue.value);
-    } else {
-      setUserRegist(undefined);
-    }
-  };
-
   return (
     <ModalWrapper modalName="createUserModal" zIndex={101}>
       <Wrapper>
         <div className="modal-header">
           <Text
-            text={defaultValue ? '교육생 정보 수정' : '교육생 추가'}
+            text={defaultValue ? '사용자 정보 수정' : '사용자 회원가입'}
             fontSetting="n26b"
           />
           <div className="close-btn">
@@ -454,6 +466,18 @@ export default function AdminUserManageModal({
           </div>
         </div>
         <div className="modal-content">
+          {!defaultValue && (
+            <div style={{ margin: '20px 0' }}>
+              <Text
+                text="교육생 정보를 팀구 서비스에 추가합니다."
+                isLineBreak
+              />
+              <Text
+                text="[학번, 이름, 이메일, 전공여부, 역할]을 입력해주세요."
+                isLineBreak
+              />
+            </div>
+          )}
           <div className="input-container">
             <Label text="학번">
               <Input
@@ -471,6 +495,7 @@ export default function AdminUserManageModal({
               />
             </Label>
           </div>
+
           <div className="input-container">
             <Label text="이름">
               <Input
@@ -487,7 +512,7 @@ export default function AdminUserManageModal({
             </Label>
           </div>
 
-          {/* <div className="input-container">
+          <div className="input-container">
             <Label text="이메일">
               <Input
                 type="email"
@@ -498,12 +523,15 @@ export default function AdminUserManageModal({
                   defaultValue && defaultValue.email ? defaultValue.email : ''
                 }
                 placeHolder="예) example@ssafy.com"
+                readOnly={!!defaultValue}
               />
             </Label>
-          </div> */}
+          </div>
+
           <div className="select-container">
-            <Label text="전공/비전공">
+            <Label text="전공여부">
               <Select
+                isSearchable={false}
                 cacheOptions
                 defaultOptions
                 value={stringToOption(userMajor) || null}
@@ -517,70 +545,68 @@ export default function AdminUserManageModal({
             </Label>
           </div>
 
+          <div className="select-container">
+            <Label text="역할">
+              <Select
+                isSearchable={false}
+                cacheOptions
+                defaultOptions
+                value={stringToOption(userRole) || null}
+                options={ROLE_OPTIONS}
+                onChange={onChangeRole}
+                styles={customStyles}
+                defaultValue={
+                  defaultValue ? stringToOption(defaultValue.role) : null
+                }
+              />
+            </Label>
+          </div>
+
           {defaultValue && (
             <>
               <div className="select-container">
-                {studentClassOptions.length > 0 && (
-                  <>
-                    <Label text="반">
-                      <CreatableSelect
-                        isClearable
-                        value={stringToOption(studentClass) || null}
-                        isDisabled={isLoadingStudentClass}
-                        isLoading={isLoadingStudentClass}
-                        cacheOptions
-                        defaultOptions
-                        options={studentClassOptions}
-                        onChange={onChangeStudentClassOption}
-                        defaultValue={findDefaultStudentClass()}
-                        styles={customStyles}
-                        onCreateOption={handleCreateStudentClassOption}
-                        placeholder="예) 서울 0반"
-                      />
-                    </Label>
-                    <div className="studnet-number-message">
-                      <span>
-                        "<Underline>[지역] [N]반</Underline>"의 규칙으로
-                        입력해주세요. (예. 서울 1반)
-                      </span>
-                    </div>
-                    <div
-                      className="setting-icon"
-                      onClick={() => setShowEditOptionsModal(true)}
-                    >
-                      <Icon iconName="settings" />
-                    </div>
-                  </>
-                )}
-              </div>
-
-              <div className="select-container">
-                <Label text="교육생/퇴소생">
-                  <Select
+                <Label text="반">
+                  <CreatableSelect
+                    isClearable
+                    value={stringToOption(studentClass) || null}
+                    isDisabled={isLoadingStudentClass}
+                    isLoading={isLoadingStudentClass}
                     cacheOptions
                     defaultOptions
-                    value={stringToOption(userRole) || null}
-                    options={ROLE_OPTIONS}
-                    onChange={onChangeProjectActivate}
+                    options={studentClassOptions}
+                    onChange={onChangeStudentClassOption}
+                    defaultValue={findDefaultStudentClass()}
                     styles={customStyles}
-                    defaultValue={
-                      defaultValue ? stringToOption(defaultValue.role) : null
-                    }
+                    onCreateOption={handleCreateStudentClassOption}
+                    placeholder="예) 서울 0반"
                   />
                 </Label>
+                <div className="studnet-number-message">
+                  <span>
+                    "<Underline>[지역] [N]반</Underline>"의 규칙으로
+                    입력해주세요. (예. 서울 1반)
+                  </span>
+                </div>
+                <div
+                  className="setting-icon"
+                  onClick={() => setShowEditOptionsModal(true)}
+                >
+                  <Icon iconName="settings" />
+                </div>
               </div>
 
               <div className="select-container">
                 <Label text="프로젝트 활성/비활성">
                   <Select
+                    isSearchable={false}
                     cacheOptions
                     defaultOptions
-                    value={stringToOption(userRegist) || null}
+                    value={stringToOption(isActivate) || null}
                     options={ACTIVATE_OPTIONS}
-                    onChange={onChangeExitYn}
+                    onChange={onChangeProjectActivate}
                     styles={customStyles}
                     defaultValue={
-                      defaultValue ? stringToOption(userRegist) || null : null
+                      defaultValue ? stringToOption(isActivate) || null : null
                     }
                   />
                 </Label>
@@ -591,7 +617,7 @@ export default function AdminUserManageModal({
         <div className="modal-footer">
           <Button
             title={defaultValue ? '저장' : '추가'}
-            func={defaultValue ? handleUpdateUser : handleCreateUser}
+            func={defaultValue ? onClickUpdate : onClickCreate}
           />
         </div>
 

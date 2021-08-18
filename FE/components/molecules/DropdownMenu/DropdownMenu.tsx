@@ -1,5 +1,6 @@
 import { ReactElement, useState } from 'react';
 import styled from 'styled-components';
+import { useRouter } from 'next/router';
 
 import { Title } from '@molecules';
 import { Icon, Text } from '@atoms';
@@ -87,6 +88,7 @@ export default function DropdownMenu({
   items,
   roomUserList,
 }: DropdownMenuProps): ReactElement {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -114,7 +116,10 @@ export default function DropdownMenu({
           <Title title="참가자" fontSetting="n14b">
             {roomUserList?.map(({ user_id, name, email }: RoomUserList) => (
               <li className="item" key={user_id}>
-                <div className="each">
+                <div
+                  className="each"
+                  onClick={() => router.push(`/userdetail/${user_id}`)}
+                >
                   <Text
                     className="item"
                     text={`${name}(${email})`}
