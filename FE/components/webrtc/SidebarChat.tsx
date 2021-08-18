@@ -47,7 +47,7 @@ const SidebarContent = styled.div`
 
   > div {
     height: calc(100vh - 180px);
-    padding-bottom: 20px;
+    padding-bottom: 10px;
   }
 `;
 
