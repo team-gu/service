@@ -142,7 +142,7 @@ export const DUMMY_TABLE_COLUMNS = [
     accessor: 'teamYn',
   },
   {
-    Header: '팀 식별자',
+    Header: '팀 번호',
     accessor: 'teamId',
   },
   {
@@ -150,7 +150,7 @@ export const DUMMY_TABLE_COLUMNS = [
     accessor: 'leaderYn',
   },
   {
-    Header: '전공/비전공',
+    Header: '전공여부',
     accessor: 'major',
   },
   {

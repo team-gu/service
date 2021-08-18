@@ -21,6 +21,7 @@ import SimpleSelect from './SimpleSelect';
 import UserSelectAutoComplete from './UserSelectAutoComplete';
 import UserSelectTeamAutoComplete from './UserSelectTeamAutoComplete';
 import UserSelectChatAutoComplete from './UserSelectChatAutoComplete';
+import UserSelectProjectAutoComplete from './UserSelectProjectAutoComplete';
 import SkillSelectAutoComplete from './SkillSelectAutoComplete';
 import ProjectCard from './ProjectCard';
 import DonutChart from './DonutChart';
@@ -51,8 +52,9 @@ export {
   SimpleSelect,
   UserSelectAutoComplete,
   UserSelectChatAutoComplete,
-  SkillSelectAutoComplete,
+  UserSelectProjectAutoComplete,
   UserSelectTeamAutoComplete,
+  SkillSelectAutoComplete,
   ProjectCard,
   DonutChart,
   BigDonutChart,

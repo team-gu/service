@@ -5,12 +5,13 @@ import {
   AdminMenuSidebarLeft,
   AdminTeamManage,
   AdminUserManage,
+  AdminDashboard,
+  AdminProjectManage,
+  AdminProjectUserManage,
 } from '@organisms';
 import { Text } from '@atoms';
 import { Project } from '@utils/type';
 import { ADMIN_MENU_CONTENT } from '@utils/constants';
-import { AdminProjectManage } from '@organisms';
-import { AdminDashboard } from '@organisms';
 import { getAdminProject } from '@repository/adminRepository';
 import { DateTime } from 'luxon';
 
@@ -19,7 +20,6 @@ const Wrapper = styled.div`
   min-height: 100vh;
 
   .sidebar {
-    
     flex: 0 0 200px;
   }
 
@@ -29,9 +29,12 @@ const Wrapper = styled.div`
   }
 `;
 
+const DEFAULT_SELECTED_MENU =
+  ADMIN_MENU_CONTENT.find(({ title }) => title === '대시보드')?.id || 0;
+
 export default function AdminLayout(): ReactElement {
-  const [selectedMenu, setSelectedMenu] = useState(0);
-  const [selectedProject, setSelectedProject] = useState<number>();
+  const [selectedMenu, setSelectedMenu] = useState(DEFAULT_SELECTED_MENU);
+  const [selectedProject, setSelectedProject] = useState<Project>();
   const [projects, setProjects] = useState<Project[]>([]);
 
   useEffect(() => {
@@ -42,14 +45,13 @@ export default function AdminLayout(): ReactElement {
     setSelectedMenu(menuIndex);
   };
 
-  const handleChangeProject = (projectId: number) => {
-    setSelectedProject(projectId);
+  const handleChangeProject = (project: Project) => {
+    setSelectedProject(project);
   };
 
   const fetchProjects = () => {
     getAdminProject().then(({ data: { data } }) => {
-      setProjects(
-        data.map((p: any) => ({
+      const tmpProjects = data.map((p: any) => ({
           ...p,
           activeDate: p.activeDate
             ? DateTime.fromISO(p.activeDate).toFormat('yyyy-MM-dd')
@@ -61,9 +63,9 @@ export default function AdminLayout(): ReactElement {
             ? DateTime.fromISO(p.endDate).toFormat('yyyy-MM-dd')
             : null,
           name: `${p.stage.codeName} ${p.project.codeName} 프로젝트`,
-        })),
-      );
-      setSelectedProject(data[data.length - 1].id);
+        }));
+      setProjects(tmpProjects);
+      setSelectedProject(tmpProjects[tmpProjects.length - 1]);
     });
   };
 
@@ -76,28 +78,32 @@ export default function AdminLayout(): ReactElement {
               onChangeMenu={handleChangeMenu}
               onChangeProject={handleChangeProject}
               projects={projects}
+              defaultSelectedMenu={DEFAULT_SELECTED_MENU}
             />
           </div>
           <div className="content">
             {
               {
-                [ADMIN_MENU_CONTENT[0]]: (
+                [ADMIN_MENU_CONTENT[0].id]: selectedProject && (
+                  <AdminUserManage project={selectedProject} />
+                ),
+                [ADMIN_MENU_CONTENT[1].id]: (
                   <AdminProjectManage
                     projects={projects}
                     fetchProjects={fetchProjects}
                   />
                 ),
-                [ADMIN_MENU_CONTENT[1]]: selectedProject && (
-                  <AdminDashboard projectId={selectedProject} />
+                [ADMIN_MENU_CONTENT[2].id]: selectedProject && (
+                  <AdminDashboard project={selectedProject} />
                 ),
-                [ADMIN_MENU_CONTENT[2]]: selectedProject && (
-                  <AdminUserManage projectId={selectedProject} />
+                [ADMIN_MENU_CONTENT[3].id]: selectedProject && (
+                  <AdminProjectUserManage project={selectedProject} />
                 ),
-                [ADMIN_MENU_CONTENT[3]]: selectedProject && (
-                  <AdminTeamManage projectId={selectedProject} />
+                [ADMIN_MENU_CONTENT[4].id]: selectedProject && (
+                  <AdminTeamManage project={selectedProject} />
                 ),
-                [ADMIN_MENU_CONTENT[4]]: <div>공지사항 관리</div>,
-              }[ADMIN_MENU_CONTENT[selectedMenu]]
+                [ADMIN_MENU_CONTENT[5].id]: <div>공지사항 관리</div>,
+              }[ADMIN_MENU_CONTENT[selectedMenu].id]
             }
           </div>
         </>

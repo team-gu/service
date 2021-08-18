@@ -1,11 +1,11 @@
 import { ReactElement, useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { OptionTypeBase } from 'react-select';
 
 import { Text } from '@atoms';
 import { SimpleSelect } from '@molecules';
 import { Project } from '@utils/type';
 import { ADMIN_MENU_CONTENT } from '@utils/constants';
-import { OptionTypeBase } from 'react-select';
 
 const Wrapper = styled.div`
   position: fixed;
@@ -18,23 +18,45 @@ const Wrapper = styled.div`
   box-shadow: 3px 0px 5px rgba(55, 53, 47, 0.4);
 
   .sidebar-header {
-    flex: 0 0 100px;
+    flex: 0 0 auto;
 
     display: flex;
-    align-items: center;
+    flex-direction: column;
 
-    border: solid 2px #3848a0;
+    border: ${({
+      theme: {
+        colors: { samsungBlue },
+      },
+    }) => `solid 2px ${samsungBlue}`};
     background-color: #e8eaf6;
 
     .selected-project-info {
       flex: 1;
       text-align: center;
+      margin: 20px 0;
 
       .current-project-text {
         cursor: pointer;
         text-decoration: underline;
         text-decoration-thickness: 1px;
         text-underline-offset: 3px;
+      }
+    }
+
+    .sidebar-header-menu {
+      flex: 1 0 auto;
+      padding: 30px 0;
+
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+
+      background-color: white;
+      border-bottom: solid 2px #3848a0;
+
+      > div {
+        margin-left: 20px;
+        cursor: pointer;
       }
     }
   }
@@ -45,9 +67,13 @@ const Wrapper = styled.div`
     flex-direction: column;
     gap: 40px;
 
-    background-color: #3848a0;
+    background-color: ${({
+      theme: {
+        colors: { samsungBlue },
+      },
+    }) => samsungBlue};
     color: white;
-    padding: 60px 0;
+    padding: 30px 0;
 
     > div {
       margin-left: 20px;
@@ -58,24 +84,22 @@ const Wrapper = styled.div`
 
 interface AdminMenuSidebarLeftProps {
   onChangeMenu: (selectedMenu: number) => void;
-  onChangeProject: (selectedProjectId: number) => void;
+  onChangeProject: (selectedProject: Project) => void;
   projects: Project[];
+  defaultSelectedMenu: number;
 }
 
 export default function AdminMenuSidebarLeft({
   onChangeMenu,
   onChangeProject,
   projects,
+  defaultSelectedMenu,
 }: AdminMenuSidebarLeftProps): ReactElement {
-  const menuOptions = ADMIN_MENU_CONTENT.map((v, i) => {
-    return { id: i, title: v, label: v, value: i };
+  const projectOptions = projects.map((project) => {
+    return { ...project, value: project.id, label: project.name };
   });
 
-  const projectOptions = projects.map(({ id, name }) => {
-    return { id, name, value: id, label: name };
-  });
-
-  const [selectedMenu, setSelectedMenu] = useState(0);
+  const [selectedMenu, setSelectedMenu] = useState(defaultSelectedMenu);
   const [selectedProject, setSelectedProject] = useState<OptionTypeBase>();
   const [clickSelectProject, setClickSelectProject] = useState(false);
 
@@ -106,7 +130,7 @@ export default function AdminMenuSidebarLeft({
         label: project.name,
         value: project.id,
       });
-      onChangeProject(project.id);
+      onChangeProject(project);
     }
   };
 
@@ -142,6 +166,18 @@ export default function AdminMenuSidebarLeft({
   return (
     <Wrapper>
       <div className="sidebar-header">
+        <div className="sidebar-header-menu">
+          {ADMIN_MENU_CONTENT.slice(0, 2).map(({ id, title }) => (
+            <div key={id} onClick={() => handleChangeMenu(id)}>
+              <Text
+                text={title}
+                fontSetting={id === selectedMenu ? 'n22b' : 'n16m'}
+                color={id === selectedMenu ? 'black' : 'gray'}
+                isLineBreak
+              />
+            </div>
+          ))}
+        </div>
         <div className="selected-project-info">
           <Text text="현재 선택된 프로젝트" color="gray" fontSetting="n16m" />
           {clickSelectProject ? (
@@ -164,11 +200,11 @@ export default function AdminMenuSidebarLeft({
         </div>
       </div>
       <div className="sidebar-content">
-        {menuOptions.map(({ id, title }) => (
+        {ADMIN_MENU_CONTENT.slice(2).map(({ id, title }) => (
           <div key={id} onClick={() => handleChangeMenu(id)}>
             <Text
               text={title}
-              fontSetting={id === selectedMenu ? 'n26b' : 'n16m'}
+              fontSetting={id === selectedMenu ? 'n22b' : 'n16m'}
               color={id === selectedMenu ? 'white' : '#eeeeee'}
               isLineBreak
             />

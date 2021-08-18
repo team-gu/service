@@ -1,172 +1,176 @@
 import api from '@context/serverContext';
 
-export const getAdminProject = async () => {
-  console.log('getAdminProject');
+/////////////// 프로젝트 관리
 
-  return await api({
+export const getAdminProject = async () =>
+  await api({
     url: `/api/admin/project`,
     type: 'get',
   });
-};
 
-export const createAdminProject = async (param: any) => {
-  console.log('createAdminProject');
-  console.log(param);
-
-  return await api({
+export const createAdminProject = async (param: any) =>
+  await api({
     url: `/api/admin/project`,
     type: 'post',
     param,
   });
-};
 
-export const updateAdminProject = async (param: any) => {
-  console.log('updateAdminProject');
-  console.log(param);
-
-  return await api({
+export const updateAdminProject = async (param: any) =>
+  await api({
     url: `/api/admin/project/${param.projectId}`,
     type: 'put',
     param: param.project,
   });
-};
 
-export const deleteAdminProject = async (param: any) => {
-  console.log('deleteAdminProject');
-  console.log(param);
-
-  return await api({
+export const deleteAdminProject = async (param: any) =>
+  await api({
     url: `/api/admin/project/${param.projectId}`,
     type: 'delete',
   });
-};
 
-export const getAdminProjectCode = async (param: any) => {
-  console.log('getAdminProjectCode');
-  console.log(param);
-
-  return await api({
+export const getAdminProjectCode = async (param: any) =>
+  await api({
     url: `/api/admin/project/code`,
     type: 'post',
     param,
   });
-};
 
-export const createAdminProjectOption = async (param: any) => {
-  console.log('createAdminProjectOption');
-  console.log(param);
-
-  return await api({
+export const createAdminProjectOption = async (param: any) =>
+  await api({
     url: `/api/admin/project/code/insert`,
     type: 'post',
     param,
   });
-};
 
-export const deleteAdminProjectOption = async (param: any) => {
-  console.log('createAdminProjectOption');
-  console.log(param);
-
-  return await api({
+export const deleteAdminProjectOption = async (param: any) =>
+  await api({
     url: `/api/admin/project/code/delete`,
     type: 'post',
     param,
   });
-};
 
-export const getChartData = async (param: any) => {
-  console.log('getChartData');
-  console.log(param);
+/////////////// 프로젝트 관리
 
-  return await api({
+/////////////// 대시보드
+
+export const getChartData = async (param: any) =>
+  await api({
     url: `/api/admin/dashboard/${param.projectId}`,
     type: 'get',
   });
-};
 
-export const getTableData = async (param: any) => {
-  console.log('getTableData');
-  console.log(param);
-
-  return await api({
-    url: `/api/admin/dashboardtable/${param.projectId}`,
+export const getProjectUserTableData = async (param: any) =>
+  await api({
+    url: `/api/admin/project/${param.projectId}`,
     type: 'get',
   });
-};
 
-export const getTeamTableData = async (param: any) => {
-  console.log('getTeamTableData');
-  console.log(param);
+/////////////// 대시보드
 
-  return await api({
+/////////////// 팀 관리
+
+export const getTeamTableData = async (param: any) =>
+  await api({
     url: `/api/admin/team`,
     type: 'post',
     param,
-  })
-}
+  });
 
-export const getUserTableData = async (param: any) => {
-  console.log('getUserTableData');
-  console.log(param);
+export const exportTeamData = async (param: any) =>
+  await api({
+    url: `/api/excel/team/export`,
+    type: 'post',
+    param,
+  });
 
-  return await api({
+/////////////// 팀 관리
+
+/////////////// 교육생 관리
+
+export const addStudentToProject = async (param: any) =>
+  await api({
+    url: `/api/admin/project/add`,
+    type: 'post',
+    param,
+  });
+
+export const excludeStudentFromProject = async (param: any) =>
+  await api({
+    url: '/api/admin/project/exclude',
+    type: 'post',
+    param,
+  });
+
+export const exportUserData = async (param: any) =>
+  await api({
+    url: `/api/excel/user/export`,
+    type: 'post',
+    param,
+  });
+
+export const importUserData = async (param: any) =>
+  await api({
+    url: `/api/excel/userproject/insert`,
+    type: 'post',
+    param,
+  });
+
+export const getProjectUsersContainsName = async (param: any) =>
+  await api({
+    url: `/api/admin/project/search`,
+    type: 'post',
+    param,
+  });
+
+/////////////// 교육생 관리
+
+/////////////// 전체 교육생 관리
+
+export const getUserTableData = async (param: any) =>
+  await api({
     url: `/api/admin/user`,
     type: 'post',
     param,
   });
-};
 
-export const uploadExcelFile = async (param: any) => {
-  console.log('uploadExcelFile');
-  console.log(param);
-
-  return await api({
-    url: `/api/excel/read`,
+export const createUser = async (param: any) =>
+  await api({
+    url: `/api/admin/user/add`,
     type: 'post',
     param,
   });
-};
 
-export const getAdminClassOption = async (param: any) => {
-  console.log('getAdminClassOption');
-  console.log(param);
+export const updateUser = async (param: any) =>
+  await api({
+    url: `/api/admin/user/${param.userId}`,
+    type: 'put',
+    param,
+  });
 
-  return await api({
+export const getAdminClassOption = async (param: any) =>
+  await api({
     url: `/api/admin/user/class`,
     type: 'post',
     param,
   });
-};
 
-export const registUsers = async (param: any) => {
-  console.log('registUsers');
-  console.log(param);
-
-  return await api({
-    url: `/api/auth/regist/users`,
-    type: 'post',
-    param,
-  });
-};
-
-export const createAdminClassOption = async (param: any) => {
-  console.log('createAdminClassOption');
-  console.log(param);
-
-  return await api({
+export const createAdminClassOption = async (param: any) =>
+  await api({
     url: `/api/admin/user/class/add`,
     type: 'post',
     param,
   });
-};
 
-export const deleteAdminClassOption = async (param: any) => {
-  console.log('deleteAdminClassOption');
-  console.log(param);
-
-  return await api({
+export const deleteAdminClassOption = async (param: any) =>
+  await api({
     url: `/api/admin/user/class/${param.classId}`,
+    type: 'delete',
+    param,
+  });
+
+export const signupUsersByExcel = async (param: any) =>
+  await api({
+    url: `/api/excel/user/insert`,
     type: 'post',
     param,
   });
-};
