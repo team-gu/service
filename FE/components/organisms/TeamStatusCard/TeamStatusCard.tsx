@@ -2,7 +2,7 @@ import { ReactElement } from 'react';
 import styled from 'styled-components';
 import { Text, Icon } from '@atoms';
 import { Tag, ProfileImage } from '@molecules';
-import { useAuthState } from '@store';
+import { useAuthState, setChatOpen, useAppDispatch } from '@store';
 import { Team } from '@utils/type';
 import { getImageURL } from '@utils/constants';
 
@@ -110,6 +110,7 @@ export default function TeamStatusCard({
   team,
   onClickTeamManage,
 }: TeamStatusCard): ReactElement {
+  const dispatch = useAppDispatch();
   const { user } = useAuthState();
   const currentUserIsInThisTeam = team.teamMembers.find(
     (m) => m.id === user.id,
@@ -171,9 +172,23 @@ export default function TeamStatusCard({
       </div>
 
       <div className="completed-team-overlay"></div>
-      {currentUserIsInThisTeam && (
+      {currentUserIsInThisTeam ? (
         <div className="team-manage-button">
           <Icon iconName="settings" func={() => onClickTeamManage(team)} />
+        </div>
+      ) : (
+        <div className="team-manage-button">
+          <Icon
+            iconName="message"
+            func={() =>
+              dispatch(
+                setChatOpen({
+                  isChatOpen: true,
+                  passedOpponentId: team.leaderId,
+                }),
+              )
+            }
+          />
         </div>
       )}
     </Wrapper>
