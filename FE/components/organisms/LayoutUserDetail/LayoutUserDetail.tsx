@@ -147,10 +147,16 @@ const Wrapper = styled.div<{ isProject?: boolean }>`
       }
       p {
         grid-column: span 3;
-        font-size: 20px;
+        font-size: 15px;
         font-weight: 600;
         line-height: 1.4;
         width: 80%;
+
+        ${({
+          theme: {
+            font: { ellipse },
+          },
+        }) => ellipse()}
       }
 
       .project {
@@ -164,15 +170,24 @@ const Wrapper = styled.div<{ isProject?: boolean }>`
         flex: 1.1;
         transition: box-shadow 0.2s;
         overflow: hidden;
-        box-shadow: 2px 4px 12px rgb(0 0 0 / 8%);
         transition: all 0.3s cubic-bezier(0, 0, 0.5, 1);
         :hover {
           transform: scale(1.02);
+          height: inherit;
         }
         .top {
+          height: 25px;
           display: flex;
           font-size: 10px;
-          margin-bottom: 16px;
+        }
+        .middle {
+          margin-bottom: 8px;
+          font-size: 10px;
+          ${({
+            theme: {
+              font: { ellipse },
+            },
+          }) => ellipse()}
         }
         .introduce {
           position: absolute;
@@ -195,10 +210,16 @@ const Wrapper = styled.div<{ isProject?: boolean }>`
 
       p {
         grid-column: span 3;
-        font-size: 20px;
+        font-size: 15px;
         font-weight: 600;
         line-height: 1.4;
         width: 80%;
+
+        ${({
+          theme: {
+            font: { ellipse },
+          },
+        }) => ellipse()}
       }
 
       .award {
@@ -212,20 +233,24 @@ const Wrapper = styled.div<{ isProject?: boolean }>`
         flex: 1.1;
         transition: box-shadow 0.2s;
         overflow: hidden;
-        box-shadow: 2px 4px 12px rgb(0 0 0 / 8%);
         transition: all 0.3s cubic-bezier(0, 0, 0.5, 1);
         :hover {
           transform: scale(1.02);
+          height: inherit;
         }
-
         .top {
+          height: 25px;
           display: flex;
           font-size: 10px;
-          margin-bottom: 15px;
         }
         .middle {
           margin-bottom: 8px;
-          font-size: 8px;
+          font-size: 10px;
+          ${({
+            theme: {
+              font: { ellipse },
+            },
+          }) => ellipse()}
         }
       }
     }

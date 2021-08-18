@@ -328,7 +328,6 @@ export default function MyDetailEdit({
                     <div className="project cards" key={id}>
                       <div className="top">
                         <p>{name}</p>
-                        <p>{position}</p>
                         <div className="icons">
                           <Icon
                             iconName="edit"
@@ -353,7 +352,10 @@ export default function MyDetailEdit({
                           />
                         </div>
                       </div>
-                      <div>{introduce}</div>
+                      <div className="middle">{position}</div>
+                      <Textarea className="text-area" disabled>
+                        {introduce}
+                      </Textarea>
                     </div>
                   ),
                 )}
@@ -384,7 +386,6 @@ export default function MyDetailEdit({
                   ({ id, agency, date, name, introduce }: any) => (
                     <div className="award cards" key={id}>
                       <div className="top">
-                        <p>{agency}</p>
                         <p>{name}</p>
                         <div className="icons">
                           <Icon
@@ -410,8 +411,12 @@ export default function MyDetailEdit({
                           />
                         </div>
                       </div>
-                      <div className="middle">{getDate(date)}</div>
-                      <div>{introduce}</div>
+                      <div className="middle">
+                        {getDate(date)} | {agency}
+                      </div>
+                      <Textarea className="text-area" disabled>
+                        {introduce}
+                      </Textarea>
                     </div>
                   ),
                 )}

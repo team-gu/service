@@ -104,9 +104,11 @@ export default function MyDetail({
                         <div className="project" key={id}>
                           <div className="top">
                             <p>{name}</p>
-                            <p>{position}</p>
                           </div>
-                          <div className="introduce">{introduce}</div>
+                          <div className="middle">{position}</div>
+                          <Textarea className="text-area" disabled>
+                            {introduce}
+                          </Textarea>
                         </div>
                       </a>
                     ),
@@ -123,11 +125,14 @@ export default function MyDetail({
                     ({ id, agency, date, name, introduce }: any) => (
                       <div className="award" key={id}>
                         <div className="top">
-                          <p>{agency}</p>
                           <p>{name}</p>
                         </div>
-                        <div className="middle">{getDate(date)}</div>
-                        <div>{introduce}</div>
+                        <div className="middle">
+                          {getDate(date)} | {agency}
+                        </div>
+                        <Textarea className="text-area" disabled>
+                          {introduce}
+                        </Textarea>
                       </div>
                     ),
                   )
