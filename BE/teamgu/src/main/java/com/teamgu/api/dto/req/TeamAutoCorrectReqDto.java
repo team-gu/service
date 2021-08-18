@@ -16,4 +16,7 @@ public class TeamAutoCorrectReqDto {
 	@ApiModelProperty(name = "학번", example = "0540001")
 	String studentNumber;
 	
+	@ApiModelProperty(name = "프로젝트 코드", example = "101")
+	int projectCode;
+	
 }
