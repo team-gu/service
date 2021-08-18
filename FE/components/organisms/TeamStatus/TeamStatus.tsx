@@ -160,6 +160,8 @@ export default function TeamStatus(): ReactElement {
           data: { dataList, totPageCnt },
         },
       }) => {
+        console.log(payloadTemp);
+        console.log(dataList);
         setTeams(dataList);
         setPageCount(totPageCnt);
 
@@ -186,7 +188,7 @@ export default function TeamStatus(): ReactElement {
   };
 
   const handleFilter = (title: string, code: string) => {
-    const payloadTemp: any = { ...payload, pageNum: 1 };
+    const payloadTemp: any = { ...payload, pageNum: 0 };
     const convertTitle: any = FILTER_TITLE[title];
 
     if (!payloadTemp.hasOwnProperty(convertTitle)) {
@@ -348,7 +350,7 @@ export default function TeamStatus(): ReactElement {
             <hr />
           </>
         )}
-        {teams && teams?.length === 0 ? (
+        {teams && teams.length === 0 ? (
           <div>
             현재 등록된 팀이 없거나, 필터링 조건에 일치하는 팀이 없습니다.
           </div>
