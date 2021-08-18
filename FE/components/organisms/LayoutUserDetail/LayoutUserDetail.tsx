@@ -15,6 +15,15 @@ const Wrapper = styled.div<{ isProject?: boolean }>`
     ${({ theme: { flexCol } }) => flexCol('space-between')}
     height: 150px;
     margin: 30px 0px;
+    position: relative;
+
+    .photo-edit-icon {
+      position: absolute;
+      top: 75px;
+      right: calc(50% - 55px);
+
+      cursor: pointer;
+    }
   }
 
   .button-container {
@@ -114,6 +123,10 @@ const Wrapper = styled.div<{ isProject?: boolean }>`
       }
     }
 
+    .button-right {
+      text-align: end;
+    }
+
     .projects {
       display: grid;
       grid-gap: 20px;
@@ -148,10 +161,10 @@ const Wrapper = styled.div<{ isProject?: boolean }>`
         flex: 1.1;
         transition: box-shadow 0.2s;
         overflow: hidden;
-        transition: 0.5s;
-        &:hover {
-          box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.1);
-          height: 80%;
+        box-shadow: 2px 4px 12px rgb(0 0 0 / 8%);
+        transition: all 0.3s cubic-bezier(0, 0, 0.5, 1);
+        :hover {
+          transform: scale(1.02);
         }
         .top {
           display: flex;
@@ -196,10 +209,10 @@ const Wrapper = styled.div<{ isProject?: boolean }>`
         flex: 1.1;
         transition: box-shadow 0.2s;
         overflow: hidden;
-        transition: 0.5s;
-        &:hover {
-          box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.1);
-          height: 80%;
+        box-shadow: 2px 4px 12px rgb(0 0 0 / 8%);
+        transition: all 0.3s cubic-bezier(0, 0, 0.5, 1);
+        :hover {
+          transform: scale(1.02);
         }
 
         .top {
@@ -224,6 +237,12 @@ const Wrapper = styled.div<{ isProject?: boolean }>`
   .text-area {
     border: none;
     background-color: transparent;
+    resize: none;
+    width: 100%;
+    min-height: 200px;
+  }
+
+  .text-area-edit {
     resize: none;
     width: 100%;
     min-height: 200px;
