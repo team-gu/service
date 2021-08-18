@@ -75,6 +75,9 @@ public interface UserService {
     //토큰 기반으로 spa에서 초기화된 상태정보 재요청
     LoginResDto reqInfo(String token);
 
+    //토큰 기반으로 로그아웃 요청한 사용자의 정보 분석
+    String getInfoOfJwt(String auth);
+
     /**
      * N명의 유저를 한 번에 가입 시킨다
      * 이 기능은 관리자만 수행 가능하다
