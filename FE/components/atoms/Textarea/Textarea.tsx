@@ -15,6 +15,8 @@ interface TextareaProps {
   maxLength?: number;
   onChange?: (() => ChangeEvent<HTMLInputElement>) | any;
   onBlur?: FocusEventHandler;
+  className?: string;
+  disabled?: boolean;
 }
 
 const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
