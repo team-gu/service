@@ -16,7 +16,6 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
 
   useEffect(() => {
     const accessToken = loadItem('accessToken');
-
     if (accessToken && !user.name) {
       (async () => {
         try {
@@ -38,7 +37,7 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
       setFlag(true);
       router.push('/');
     }
-  }, []);
+  }, [router.pathname]);
 
   useEffect(() => {
     const start = () => {

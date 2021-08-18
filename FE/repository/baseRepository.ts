@@ -7,6 +7,12 @@ export const postLoginApi = async (param: object) =>
     param,
   });
 
+export const getLogout = async () =>
+  await api({
+    url: '/api/auth/logout',
+    type: 'get',
+  });
+
 export const getUserInfo = async () =>
   await api({
     url: `/api/v1/users/me`,

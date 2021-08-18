@@ -44,4 +44,7 @@ public class ChatMessageResDto {
 	
 	@ApiModelProperty(name="안읽은 사람의 수")
 	int unread_user_count;
+	
+	@ApiModelProperty(name="사용자의 프로필 url")
+	String profile_image;
 }

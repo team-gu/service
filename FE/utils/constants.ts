@@ -165,9 +165,10 @@ export const TEAM_TABLE_COLUMNS = [
 
 export const ROUTE_TO_KOREAN = {
   humanpool: '인력풀',
-  team: '팀빌딩',
+  team: '팀풀',
   mypage: '마이페이지',
   userdetail: '유저정보',
+  notice: '공지사항',
 };
 
 export const skillColor = new Map([

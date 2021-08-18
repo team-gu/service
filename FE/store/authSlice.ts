@@ -1,5 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { postLoginApi, getUserInfo } from '@repository/baseRepository';
+import {
+  postLoginApi,
+  getUserInfo,
+  getLogout,
+} from '@repository/baseRepository';
 import { AppDispatch } from '@store';
 import { NextRouter } from 'next/router';
 import { saveItem, removeItem } from '@utils/storage';
@@ -96,7 +100,6 @@ export const setLogin =
           ? router.push('/userdetail')
           : router.push('/humanpool');
       }
-      
     } catch (error) {
       console.error(error);
       return error.response;
@@ -120,11 +123,12 @@ export const setUserInfo = () => async (dispatch: AppDispatch) => {
   }
 };
 
-export const setLogout = (router: NextRouter) => (dispatch: AppDispatch) => {
-  dispatch(setUser(initialState));
-  removeItem('accessToken');
-  removeItem('refreshToken');
+export const setLogout =
+  (router: NextRouter) => async (dispatch: AppDispatch) => {
+    dispatch(setUser(initialState));
 
-  router.push('/');
-  location.reload();
-};
+    await getLogout();
+    removeItem('accessToken');
+
+    router.push('/');
+  };

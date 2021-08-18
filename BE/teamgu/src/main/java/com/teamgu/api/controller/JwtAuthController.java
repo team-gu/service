@@ -86,12 +86,13 @@ public class JwtAuthController {
 
         String email = loginReq.getEmail();
         String password = loginReq.getPassword();
+
         logger.info("email: " + email + " password: " + password);
 
-        Optional<User> opuser = userService.getUserByEmail(email);
-        if (opuser.isPresent()) {
+        Optional<User> oUser = userService.getUserByEmail(email);
 
-            User user = opuser.get();
+        if (oUser.isPresent()) {
+            User user = oUser.get();
 
             if (passwordEncoder.matches(password, user.getPassword())) { //기존 비밀번호로 로그인한 경우
                 return ResponseEntity.ok(userService.login(loginReq, user));
@@ -100,6 +101,7 @@ public class JwtAuthController {
                 return ResponseEntity.ok(userService.login(loginReq, user));
             }
         }
+
         return ResponseEntity.status(404).body(new LoginResDto(404, "Invalid account", null, null));
     }
 
@@ -130,8 +132,16 @@ public class JwtAuthController {
 
     @GetMapping("/reissue")
     @ApiOperation(value = "토큰 재발급", notes = "token을 재발급 받는다.")
-    public ResponseEntity<TokenResDto> reissue(@RequestBody @ApiParam(value = "토큰 재발급 요청", required = true) TokenReqDto tokenReq) {
-        return ResponseEntity.ok(userService.reissue(tokenReq));
+    public ResponseEntity<? extends BasicResponse> reissue(@RequestBody @ApiParam(value = "토큰 재발급 요청", required = true) TokenReqDto tokenReq) {
+
+        Optional<TokenResDto> oTokenResDto = userService.reissue(tokenReq);
+
+        if(oTokenResDto.isPresent()) {
+            return ResponseEntity.ok(new CommonResponse<TokenResDto>(oTokenResDto.get()));
+        }
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse("토큰 에러"));
     }
 
     /**
