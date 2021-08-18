@@ -81,9 +81,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/swagger-ui/**",
                         "/webjars/**",
                         "/swagger/**",
-                        "/api/chat/**",//sockjs jwt allowed
-                        "/receive/chat/**",
-                        "/stomp/**",
+                        "/stomp/chat/",
+                        "/send/**s",
+                        "/receive/**",
                         "/api/file/**",
                         "/api/excel/**",
                         "/api/user/password/init"
