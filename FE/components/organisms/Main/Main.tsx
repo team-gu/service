@@ -33,7 +33,6 @@ const Wrapper = styled.div`
     }
 
     .login-area {
-      height: 450px;
       width: 350px;
       padding: 40px 50px;
       box-shadow: 0 20px 25px 0 rgb(0 0 0 / 7%);
