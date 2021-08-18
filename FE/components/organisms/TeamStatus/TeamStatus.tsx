@@ -95,7 +95,7 @@ export default function TeamStatus(): ReactElement {
       project:
         projectCodes?.length > 0 ? projectCodes[projectCodes.length - 1] : 101,
       studentNumber,
-      pageNum: 1,
+      pageNum: 0,
       pageSize: 10,
     });
 
@@ -160,8 +160,6 @@ export default function TeamStatus(): ReactElement {
           data: { dataList, totPageCnt },
         },
       }) => {
-        console.log(payloadTemp);
-        console.log(dataList);
         setTeams(dataList);
         setPageCount(totPageCnt);
 
@@ -171,6 +169,7 @@ export default function TeamStatus(): ReactElement {
         setTrackList(data['트랙']);
       },
     );
+
     getUserHasTeam({
       userId,
       project: { code: projectCode },
