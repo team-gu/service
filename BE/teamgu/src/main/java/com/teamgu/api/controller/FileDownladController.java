@@ -27,7 +27,7 @@ public class FileDownladController {
     @GetMapping()
     @ApiOperation(value = "")
     public ResponseEntity<Resource> downloadFile(
-            @RequestParam @ApiParam(value = "자동완성 이름", required = true) String url
+            @RequestParam @ApiParam(value = "파일 다운로드 Api", required = true) String url
     ) {
         try {
             String filePath = new File("").getAbsolutePath() + File.separator + File.separator + url;
@@ -40,7 +40,7 @@ public class FileDownladController {
                     .body(rs);	//파일 넘기기
         } catch (Exception e ) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 }

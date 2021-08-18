@@ -57,7 +57,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new ErrorResponse("일치하는 유저가 없습니다."));
         } else if(result == -1) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            return ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT)
                     .body(new ErrorResponse("임시 비밀번호 발급에 실패하였습니다."));
         }
 
