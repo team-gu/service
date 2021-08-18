@@ -4,6 +4,26 @@ import { getUserListByNameContains } from '@repository/teamRepository';
 import { MemberOption } from '@utils/type';
 import { useAuthState } from '@store';
 
+const customStyles = {
+  control: (base: any) => ({
+    ...base,
+  }),
+  singleValue: (base: any) => ({
+    ...base,
+    lineHeight: '24px',
+  }),
+  menuList: (base: any) => ({
+    ...base,
+    paddingTop: 0,
+    paddingBottom: 0,
+  }),
+  menu: (base: any) => ({
+    ...base,
+    zIndex: 101,
+    marginTop: 0,
+  }),
+};
+
 interface UserSelectTeamAutoCompleteProps {
   projectCode: number;
   handleChangeUserSelect: (newValue: MemberOption | null) => void;
@@ -23,28 +43,6 @@ export default function UserSelectTeamAutoComplete({
   const handleSelectChange = (newValue: MemberOption | null) => {
     setSelectedMember(newValue);
     handleChangeUserSelect(newValue);
-  };
-
-  const customStyles = {
-    control: (base: any) => ({
-      ...base,
-      height: '45px',
-    }),
-    singleValue: (base: any) => ({
-      ...base,
-      height: '35px',
-      lineHeight: '35px',
-    }),
-    menuList: (base: any) => ({
-      ...base,
-      paddingTop: 0,
-      paddingBottom: 0,
-    }),
-    menu: (base: any) => ({
-      ...base,
-      zIndex: 101,
-      marginTop: 0,
-    }),
   };
 
   const promiseOptions = (inputValue: string) =>

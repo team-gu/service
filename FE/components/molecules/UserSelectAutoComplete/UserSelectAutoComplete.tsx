@@ -7,12 +7,10 @@ import { useEffect } from 'react';
 const customStyles = {
   control: (base: any) => ({
     ...base,
-    height: '45px',
   }),
   singleValue: (base: any) => ({
     ...base,
-    height: '35px',
-    lineHeight: '35px',
+    lineHeight: '24px',
   }),
   menuList: (base: any) => ({
     ...base,
