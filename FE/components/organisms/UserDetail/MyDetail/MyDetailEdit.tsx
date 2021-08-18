@@ -36,11 +36,13 @@ const getDate = (date: Date) => {
 
 const USER_INFO = 0;
 const USER_PROJECT = 1;
-export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
+export default function MyDetailEdit({
+  changeEditMode,
+  route,
+  setRoute,
+}: any): ReactElement {
   const { user } = useAuthState();
   const dispatch = useAppDispatch();
-
-  const [route, setRoute] = useState(USER_INFO);
 
   const [image, setImage] = useState(
     user.img === 'null.null' || user.img === ''

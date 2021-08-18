@@ -25,8 +25,11 @@ const getDate = (date: Date) => {
 const USER_INFO = 0;
 const USER_PROJECT = 1;
 // TODO any에 대한 타입 수정이 필요합니다.
-export default function MyDetail({ changeEditMode }: any): ReactElement {
-  const [route, setRoute] = useState(USER_INFO);
+export default function MyDetail({
+  changeEditMode,
+  route,
+  setRoute,
+}: any): ReactElement {
   const { user } = useAuthState();
 
   return (
