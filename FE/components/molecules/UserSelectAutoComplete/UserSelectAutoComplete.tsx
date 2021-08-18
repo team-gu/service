@@ -101,7 +101,6 @@ export default function UserSelectAutoComplete({
         skills,
         isMajor,
       }).then(({ data: { data } }) => {
-        console.log(data, '???');
         resolve(
           data?.reduce(
             (acc, cur) => [
