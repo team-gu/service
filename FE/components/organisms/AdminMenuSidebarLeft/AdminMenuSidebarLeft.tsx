@@ -1,11 +1,13 @@
 import { ReactElement, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { OptionTypeBase } from 'react-select';
+import Image from 'next/image';
 
 import { Text } from '@atoms';
 import { SimpleSelect } from '@molecules';
 import { Project } from '@utils/type';
 import { ADMIN_MENU_CONTENT } from '@utils/constants';
+import { useRouter } from 'next/dist/client/router';
 
 const Wrapper = styled.div`
   position: fixed;
@@ -80,6 +82,25 @@ const Wrapper = styled.div`
       cursor: pointer;
     }
   }
+
+  .sidebar-footer {
+    background-color: ${({
+      theme: {
+        colors: { samsungBlue },
+      },
+    }) => samsungBlue};
+    ${({ theme: { flexRow } }) => flexRow()};
+
+    .logo {
+      cursor: pointer;
+      position: relative;
+      background-color: white;
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      margin-bottom: 20px;
+    }
+  }
 `;
 
 interface AdminMenuSidebarLeftProps {
@@ -95,6 +116,7 @@ export default function AdminMenuSidebarLeft({
   projects,
   defaultSelectedMenu,
 }: AdminMenuSidebarLeftProps): ReactElement {
+  const router = useRouter();
   const projectOptions = projects.map((project) => {
     return { ...project, value: project.id, label: project.name };
   });
@@ -163,6 +185,10 @@ export default function AdminMenuSidebarLeft({
     }),
   };
 
+  const goHome = () => {
+    router.push('/');
+  }
+
   return (
     <Wrapper>
       <div className="sidebar-header">
@@ -210,6 +236,16 @@ export default function AdminMenuSidebarLeft({
             />
           </div>
         ))}
+      </div>
+      <div className="sidebar-footer">
+        <div className="logo" onClick={goHome}>
+          <Image
+            alt="팀구"
+            src="/favicon.png"
+            layout="fill"
+            objectPosition="0 5px"
+          />
+        </div>
       </div>
     </Wrapper>
   );

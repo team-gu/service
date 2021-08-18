@@ -92,7 +92,7 @@ export const setLogin =
       ) {
         router.push('/admin');
       } else {
-        data.userInfo.introduce === ''
+        !data.userInfo.introduce || data.userInfo.introduce === ''
           ? router.push('/userdetail')
           : router.push('/humanpool');
       }

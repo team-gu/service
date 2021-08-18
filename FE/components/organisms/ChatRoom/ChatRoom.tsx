@@ -65,7 +65,7 @@ export default function ChatRoom({
   const [unreadPosition, setUnreadPosition]: any = useState<HTMLInputElement>();
 
   const handleScrollToEnd = () => {
-    chatBoxRef.current.scrollTo({
+    chatBoxRef.current?.scrollTo({
       top: chatBoxRef.current.scrollHeight - chatBoxRef.current.clientHeight,
     });
   };
@@ -77,8 +77,11 @@ export default function ChatRoom({
   };
 
   const handleUnmount = async () => {
-    setMessageList([]);
-    setRoomId(0);
+    if (!isRtc) {
+      setMessageList([]);
+      setRoomId(0);
+    }
+    
     try {
       await postExitRoom({ room_id: roomId, user_id: id });
     } catch (error) {
@@ -97,6 +100,10 @@ export default function ChatRoom({
   }, [roomId]);
 
   useEffect(() => {
+    if(isRtc) {
+      handleScrollToEnd();
+    }
+
     const interval = setInterval(() => {
       setMessageList([...messageList]);
     }, 60000);
@@ -107,7 +114,7 @@ export default function ChatRoom({
   useEffect(() => {
     if (isRtc) {
       const mySession = session;
-      mySession.on('signal:chat', handleScrollToEnd);
+      mySession?.on('signal:chat', handleScrollToEnd);
     }
   }, [session]);
 

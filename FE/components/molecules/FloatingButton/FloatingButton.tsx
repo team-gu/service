@@ -90,7 +90,7 @@ export default function FloatingButton({
 
   const handleGetNotificationNumber = async () => {
     try {
-      if (id !== 0) {
+      if (id !== 0 && !isRtc) {
         const {
           data: {
             data: { unreadcount },

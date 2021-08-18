@@ -3,7 +3,7 @@ import AsyncSelect from 'react-select/async';
 import { getProjectUsersContainsName } from '@repository/adminRepository';
 import { MemberOption } from '@utils/type';
 
-interface UserSelectTeamAutoCompleteProps {
+interface UserSelectProjectAutoCompleteProps {
   projectId: number;
   handleChangeUserSelect: (newValue: MemberOption | null) => void;
   clear?: boolean;
@@ -13,7 +13,7 @@ export default function UserSelectProjectAutoComplete({
   projectId,
   handleChangeUserSelect,
   clear,
-}: UserSelectTeamAutoCompleteProps): ReactElement {
+}: UserSelectProjectAutoCompleteProps): ReactElement {
   const [selcetedMember, setSelectedMember] = useState<MemberOption | null>();
   const handleSelectChange = (newValue: MemberOption | null) => {
     setSelectedMember(newValue);

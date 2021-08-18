@@ -89,7 +89,8 @@ export default function VideoChatToolbar({
           </span>
         )}
 
-        <span onClick={handleClickScreenShare}>
+        {/* TODO: 미구현 */}
+        {/* <span onClick={handleClickScreenShare}>
           <Icon iconName="screen_share" />
         </span>
 
@@ -99,7 +100,7 @@ export default function VideoChatToolbar({
 
         <span onClick={handleClickGroupAdd}>
           <Icon iconName="group_add" />
-        </span>
+        </span> */}
 
         <span onClick={handleClickExit}>
           <Icon iconName="logout" />

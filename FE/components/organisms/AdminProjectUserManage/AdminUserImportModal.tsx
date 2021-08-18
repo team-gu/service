@@ -83,7 +83,11 @@ export default function AdminUserImportModal({
         </div>
         <div className="modal-description">
           <Text
-            text="엑셀 파일(.xlsx, .xls)을 업로드하여 한 번에 교육생 정보를 추가할 수 있습니다. 해당 엑셀 파일은 [이메일]에 대한 데이터를 담고 있어야합니다. "
+            text="엑셀 파일(.xlsx, .xls)을 업로드하여 한 번에 교육생 정보를 추가할 수 있습니다."
+            isLineBreak
+          />
+          <Text
+            text="이미 사용자로 등록된 계정의 [이메일]을 가지고 있어야합니다. 해당 이메일을 가진 계정이 프로젝트에 추가됩니다."
             isLineBreak
           />
         </div>

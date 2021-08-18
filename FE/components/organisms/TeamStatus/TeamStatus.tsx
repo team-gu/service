@@ -15,7 +15,7 @@ import { Title } from '@molecules';
 import { TeamStatusCard, TeamManageModal, LookupLayout } from '@organisms';
 import { FILTER_TITLE } from '@utils/constants';
 import { MemberOption, Team } from '@utils/type';
-import { useAuthState } from '@store';
+import { setLoading, useAppDispatch, useAuthState } from '@store';
 import {
   getEachFiltersCodeList,
   getEachFiltersCodeListTracks,
@@ -51,9 +51,11 @@ interface Payload {
   skills?: number[];
   studentNumber?: string;
   track?: number[];
+  pageNum?: number;
 }
 
 export default function TeamStatus(): ReactElement {
+  const dispatch = useAppDispatch();
   const {
     user: { id: userId, projectCodes, studentNumber },
   } = useAuthState();
@@ -68,9 +70,11 @@ export default function TeamStatus(): ReactElement {
   const [containsUserId, setContainsUserId] = useState<number>();
   const [userHasTeam, setUserHasTeam] = useState<boolean>();
   const [userTeam, setUserTeam] = useState<Team>();
-  const [searchWhat, setSearchWhat] = useState();
+  const [searchWhat, setSearchWhat] = useState<boolean>();
   const [pageCount, setPageCount] = useState(0);
   const [trackList, setTrackList] = useState([]);
+
+  const [loadUserList, setLoadUserList] = useState(false);
 
   const SERACH_BY_FILTER = true;
   const SEARCH_BY_USERID = false;
@@ -111,6 +115,13 @@ export default function TeamStatus(): ReactElement {
     }).then(({ data: { data } }) => {
       setUserHasTeam(data.hasTeam);
       setUserTeam(data.team);
+
+      dispatch(setLoading({ isLoading: true }));
+      setLoadUserList(false);
+      setTimeout(() => {
+        setLoadUserList(true);
+        dispatch(setLoading({ isLoading: false }));
+      }, 100);
     });
   }, [projectCode]);
 
@@ -296,10 +307,14 @@ export default function TeamStatus(): ReactElement {
       </div>
       <div className="team-status-list-container">
         <div className="team-status-header">
-          <UserSelectTeamAutoComplete
-            handleChangeUserSelect={handleChangeUserSelect}
-            clear={searchWhat === SERACH_BY_FILTER}
-          />
+          {loadUserList && payload.project && (
+            <UserSelectTeamAutoComplete
+              projectCode={payload.project}
+              handleChangeUserSelect={handleChangeUserSelect}
+              clear={searchWhat === SERACH_BY_FILTER}
+            />
+          )}
+
           <div className="sort-container">
             <div className="sort-select">
               <SimpleSelect
