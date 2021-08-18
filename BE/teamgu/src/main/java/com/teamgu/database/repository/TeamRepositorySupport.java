@@ -14,6 +14,7 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.querydsl.core.types.EntityPath;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -413,7 +414,6 @@ public class TeamRepositorySupport {
 					"(select id from mapping where project_code = " + projectCode + " and stage_code = " + stageCode + trackFilter.toString() + ")\r\n" + 
 					skillFilter.toString() + 
 					"order by team.complete_yn, " + orderBy;
-			System.out.println(jqpl);
 		}
 		else { // 검색 인 경우
 			
@@ -436,15 +436,37 @@ public class TeamRepositorySupport {
 	public List<TeamAutoCorrectResDto> getUserAutoCorrect(TeamAutoCorrectReqDto teamAutoCorrectReqDto){
 		
 		String search = teamAutoCorrectReqDto.getSearch();
-		String stage = teamAutoCorrectReqDto.getStudentNumber().substring(0, 2) + "%";
+		int stageCode = Integer.parseInt(teamAutoCorrectReqDto.getStudentNumber().substring(0, 2)) + 100;
+		int projectCode = teamAutoCorrectReqDto.getProjectCode();
+		
+		EntityManager em = emf.createEntityManager();
+		List<TeamAutoCorrectResDto> list = new ArrayList<>();
+		
+		try {
+			String jpql = "select u.id, u.name, u.email\r\n" + 
+					"from (select user.id, user.name, user.email, user.student_number from user where user.id in \r\n" + 
+					"		(select user_team.user_id from user_team where user_team.team_id in \r\n" + 
+					"			(select team.id from team where mapping_id in \r\n" + 
+					"				(select mapping.id from mapping where project_code = :projectCode and stage_code = :stageCode)\r\n" + 
+					"			)\r\n" + 
+					"		)\r\n" + 
+					"	) u \r\n" + 
+					"where u.name like :search or u.email like :search or u.student_number like :search \r\n" + 
+					"order by u.id";
+			
+			list = em.createNativeQuery(jpql)
+					.setParameter("search", "%" + search + "%")
+					.setParameter("projectCode", projectCode)
+					.setParameter("stageCode", stageCode)
+					.getResultList();
+			
+		}catch(Exception e) {
+			e.printStackTrace();
+		}finally {
+			em.close();
+		}
 
-		return jpaQueryFactory
-				.select(Projections.constructor(TeamAutoCorrectResDto.class, qUser.id, qUser.name, qUser.email))
-				.from(qUser)
-				.where((qUser.email.contains(search)
-						.or(qUser.name.contains(search)))
-						.and(qUser.studentNumber.like(stage)))
-				.fetch();
+		return list;
 	}
 	
 	// Check Team Leader

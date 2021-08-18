@@ -555,7 +555,7 @@ public class AdminRepositorySupport {
 					"			and mapping.stage_code = (select project_detail.stage_code from project_detail where project_detail.id = :projectId ))) t\r\n" + 
 					"	on t.id = user_team.team_id) ut\r\n" + 
 					"on u.id = ut.user_id\r\n" + sb.toString() + 
-					"order by u.role desc, u.id";
+					"\r\n order by u.role desc, u.id";
 
 			List<Object[]> datas = em.createNativeQuery(jpql)
 					.setParameter("projectId", projectId)
@@ -590,7 +590,7 @@ public class AdminRepositorySupport {
 								.regist(data[8].toString()) // 프로젝트 참여 / 제외 (활성 / 비활성)
 								.completeYn(data[9].toString()) // 팀 완성 여부
 								.teamId(data[10].toString()) // 팀 고유 번호
-								.name(data[11].toString()) // 팀 이름
+								.teamName(data[11].toString()) // 팀 이름
 								.trackName(data[12].toString()) // 팀 트랙
 								.build());
 					}
