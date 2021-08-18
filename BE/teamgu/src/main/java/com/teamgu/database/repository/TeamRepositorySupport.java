@@ -454,11 +454,19 @@ public class TeamRepositorySupport {
 					"where u.name like :search or u.email like :search or u.student_number like :search \r\n" + 
 					"order by u.id";
 			
-			list = em.createNativeQuery(jpql)
+			List<Object[]> datas = em.createNativeQuery(jpql)
 					.setParameter("search", "%" + search + "%")
 					.setParameter("projectCode", projectCode)
 					.setParameter("stageCode", stageCode)
 					.getResultList();
+			
+			for (Object[] data : datas) {
+				list.add(TeamAutoCorrectResDto.builder()
+						.id(Long.parseLong(data[0].toString()))
+						.name(data[1].toString())
+						.email(data[2].toString())
+						.build());
+			}
 			
 		}catch(Exception e) {
 			e.printStackTrace();
