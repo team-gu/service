@@ -107,7 +107,11 @@ export default function NoticeEdit(): ReactElement {
       });
       await postNotice(formData);
       alert('등록되었습니다.');
-      router.push('/notice');
+      if (user.role === 3 || user.role === 4) {
+        router.push('/admin');
+      } else {
+        router.push('/notice');
+      }
     } catch (error) {
       console.error(error);
     }
