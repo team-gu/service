@@ -98,6 +98,7 @@ interface UserStatusCardProps {
     trackList: string[];
     skillList: string[];
     id: number;
+    profileUrl: string;
   };
   filterContents: any;
   id: number;
@@ -111,7 +112,7 @@ interface UserStatusCardProps {
 }
 
 export default function UserStatusCard({
-  user: { name, introduce, trackList, skillList, id: opponentId },
+  user: { name, introduce, trackList, skillList, id: opponentId, profileUrl },
   filterContents,
   id,
   onClickInviteIcon,
@@ -125,7 +126,7 @@ export default function UserStatusCard({
         <div className="profiles-container">
           <div className="profiles">
             <div className="profile">
-              <ProfileImage size={80} />
+              <ProfileImage size={80} src={profileUrl} />
               <Text text={name} />
               <div className="icon-container">
                 <Icon

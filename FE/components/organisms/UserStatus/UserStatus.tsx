@@ -183,9 +183,6 @@ export default function UserStatus(): ReactElement {
           status,
         }) {
           setUsers([]);
-          // if (errorMessage === '일치하는 유저가 없습니다') {
-          //   setUsers([]);
-          // }
         }
       })();
     }
