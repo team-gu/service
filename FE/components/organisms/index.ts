@@ -3,6 +3,7 @@ import ChatRoom from './ChatRoom';
 import ChatRoute from './ChatRoute';
 import Modal from './Modal';
 import Navbar from './Navbar';
+import { Notice, NoticeDetail, NoticeEdit, NoticeUpdate } from './Notice';
 import Footer from './Footer';
 import Layout from './Layout';
 import LookupLayout from './LookupLayout';
@@ -34,6 +35,10 @@ export {
   ChatRoute,
   Modal,
   Navbar,
+  Notice,
+  NoticeDetail,
+  NoticeEdit,
+  NoticeUpdate,
   Footer,
   Layout,
   LookupLayout,

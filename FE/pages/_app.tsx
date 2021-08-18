@@ -9,6 +9,8 @@ import { MODALS } from '@utils/constants';
 import GlobalStyle from '@styles/globalStyles';
 import store from '@store';
 import theme from '@styles/theme';
+import 'react-quill/dist/quill.snow.css';
+import 'react-quill/dist/quill.bubble.css';
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();

@@ -8,10 +8,13 @@ import com.teamgu.api.dto.res.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import com.teamgu.api.dto.UserRegistDto;
@@ -38,6 +41,9 @@ public class JwtAuthController {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private StringRedisTemplate redisTemplate;
 
     Logger logger = LoggerFactory.getLogger(JwtAuthController.class);
 
@@ -97,12 +103,44 @@ public class JwtAuthController {
         return ResponseEntity.status(404).body(new LoginResDto(404, "Invalid account", null, null));
     }
 
+    /**
+     * 로그아웃을 요청시에 Header의 토큰을 이용해
+     * Redis의 token에 value로 로그아웃 토큰 등록
+     *
+     * @param auth
+     * @return
+     */
+    @GetMapping("/logout")
+    @ApiOperation(value = "로그아웃", notes = "사용자의 토큰을 로그아웃 처리한다")
+    public ResponseEntity<? extends BasicResponse> logout(
+        @RequestHeader("Authorization") @ApiParam(value = "로그아웃 요청할 사용자의 토큰", required = true) String auth
+    ) {
+        String token = userService.getInfoOfJwt(auth);
+
+        if(StringUtils.isEmpty(token)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ErrorResponse("토큰이 없습니다"));
+        }
+
+        ValueOperations<String, String> logoutValueOperaions = redisTemplate.opsForValue();
+        logoutValueOperaions.set(token, token);
+
+        return ResponseEntity.ok(new CommonResponse<String>("로그아웃 되었습니다"));
+    }
+
     @GetMapping("/reissue")
     @ApiOperation(value = "토큰 재발급", notes = "token을 재발급 받는다.")
     public ResponseEntity<TokenResDto> reissue(@RequestBody @ApiParam(value = "토큰 재발급 요청", required = true) TokenReqDto tokenReq) {
         return ResponseEntity.ok(userService.reissue(tokenReq));
     }
 
+    /**
+     * spa에서의 새로고침 후 상태 초기화시에
+     * 토큰 기반 유저 상태 정보를 다시 가져오기 위한 end point
+     *
+     * @param auth
+     * @return
+     */
     @GetMapping("/reqInfo")
     @ApiOperation(value = "상태 초기화시 토큰 기반 정보 재요청", notes = "유저의 정보를 재공급 한다.")
     public ResponseEntity<? extends BasicResponse> reqInfo(
