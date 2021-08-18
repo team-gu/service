@@ -68,6 +68,17 @@ const Wrapper = styled.div<{ isProject?: boolean }>`
     .icons {
       ${({ theme: { flexRow } }) => flexRow('flex-end')}
 
+      .icon-text {
+        cursor: pointer;
+        ${({
+          theme: {
+            font: { n12m },
+          },
+        }) => n12m}
+        :hover {
+          opacity: 0.5;
+        }
+      }
       i {
         padding-left: 10px;
         cursor: pointer;

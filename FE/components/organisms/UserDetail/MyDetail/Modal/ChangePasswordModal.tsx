@@ -11,12 +11,14 @@ const Wrapper = styled.div`
 `;
 
 const ChangePW = styled.div`
-  div {
+  > div {
     margin-bottom: 15px;
-
+  }
+  .button-container {
+    text-align: end;
     button {
       width: 5vw;
-      height: 20px;
+      height: 30px;
       margin-left: 5px;
     }
   }
@@ -145,8 +147,8 @@ export default function ChangePasswordModal(): ReactElement {
             />
           </div>
           {error && <Error>{errorMessage}</Error>}
-          <div>
-            <Button title="생성" type="submit" />
+          <div className="button-container">
+            <Button title="변경" type="submit" />
             <Button
               title="닫기"
               func={() =>
