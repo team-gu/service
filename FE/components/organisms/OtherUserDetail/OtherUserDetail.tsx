@@ -75,7 +75,7 @@ export default function OtherUserDetail(): ReactElement {
           project: { code: user.projectCodes[user.projectCodes.length - 1] },
         }).then(({ data: { data } }) => {
           if (data.hasTeam) {
-            if (data.team.leaderId === id) {
+            if (data.team.leaderId === user.id) {
               setTeamId(data.team.id);
               setIsLeader(true);
             }
