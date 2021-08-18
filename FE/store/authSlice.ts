@@ -129,8 +129,6 @@ export const setLogout =
 
     await getLogout();
     removeItem('accessToken');
-    removeItem('refreshToken');
 
     router.push('/');
-    router.reload();
   };
