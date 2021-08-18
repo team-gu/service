@@ -91,6 +91,8 @@ export default function TeamStatus(): ReactElement {
       project:
         projectCodes?.length > 0 ? projectCodes[projectCodes.length - 1] : 101,
       studentNumber,
+      pageNum: 1,
+      pageSize: 10,
     });
 
     getUserHasTeam({
@@ -123,7 +125,7 @@ export default function TeamStatus(): ReactElement {
   }, [containsUserId]);
 
   const renderTeams = (by?: boolean) => {
-    let payloadTemp = {
+    const payloadTemp = {
       project: payload.project,
       filteredSkills:
         by === SEARCH_BY_USERID
@@ -137,8 +139,8 @@ export default function TeamStatus(): ReactElement {
       sortAsc,
       userId: by === SERACH_BY_FILTER ? 0 : containsUserId || 0,
       studentNumber,
-      pageNum: payload?.pageNum || 0,
-      pageSize: 3,
+      pageNum: payload?.pageNum,
+      pageSize: 10,
     };
 
     getTeamsFiltered(payloadTemp).then(
@@ -168,12 +170,12 @@ export default function TeamStatus(): ReactElement {
   const handleProjectChange = ({ value }: { value: number }) => {
     if (projectCodes?.includes(value)) {
       setProjectCode(value);
-      setPayload({ ...payload, project: value });
+      setPayload({ ...payload, project: value, pageNum: 0 });
     }
   };
 
   const handleFilter = (title: string, code: string) => {
-    const payloadTemp: any = { ...payload };
+    const payloadTemp: any = { ...payload, pageNum: 1 };
     const convertTitle: any = FILTER_TITLE[title];
 
     if (!payloadTemp.hasOwnProperty(convertTitle)) {
@@ -193,7 +195,7 @@ export default function TeamStatus(): ReactElement {
   };
 
   const handleFilterArray = (title: string, arr: any) => {
-    const payloadTemp: any = { ...payload };
+    const payloadTemp: any = { ...payload, pageNum: 0 };
     const convertTitle: any = FILTER_TITLE[title];
 
     if (arr.length === 0) {
@@ -225,7 +227,9 @@ export default function TeamStatus(): ReactElement {
     }
   };
 
-  const handleSortByChange = (newValue: any) => {
+  const handleSortByChange = async (newValue: any) => {
+    await setPayload((prev) => ({ ...prev, pageNum: 0 }));
+
     setSortBy(newValue.value);
   };
 
@@ -237,8 +241,6 @@ export default function TeamStatus(): ReactElement {
   const handleClickSort = () => {
     setSortAsc(!sortAsc);
   };
-
-  console.log(payload);
 
   return (
     <LookupLayout showTeamCreateBtn={!userHasTeam}>
