@@ -235,12 +235,16 @@ export default function MyDetailEdit({
                       onChange={(track) => {
                         setTrack({ codeName: track.value, code: track.code });
                       }}
-                      value={[
-                        {
-                          name: user.wishTrack[0].codeName,
-                          label: user.wishTrack[0].codeName,
-                        },
-                      ]}
+                      value={
+                        user.wishTrack.length > 0
+                          ? [
+                              {
+                                name: user.wishTrack[0].codeName,
+                                label: user.wishTrack[0].codeName,
+                              },
+                            ]
+                          : []
+                      }
                     />
                   </Label>
                 </div>
@@ -251,12 +255,16 @@ export default function MyDetailEdit({
                       onChange={(position) => {
                         setPosition(position.value);
                       }}
-                      value={[
-                        {
-                          name: user.wishPositionCode,
-                          label: user.wishPositionCode,
-                        },
-                      ]}
+                      value={
+                        user.wishPositionCode
+                          ? [
+                              {
+                                name: user.wishPositionCode,
+                                label: user.wishPositionCode,
+                              },
+                            ]
+                          : []
+                      }
                     />
                   </Label>
                 </div>
@@ -297,7 +305,7 @@ export default function MyDetailEdit({
                           maxLength={300}
                         />
                         <Text
-                          text={introduce.length + ' / 300'}
+                          text={(introduce ? introduce.length : 0) + ' / 300'}
                           fontSetting="n12m"
                           color="gray"
                         />
