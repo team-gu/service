@@ -172,7 +172,7 @@ export default function Navbar(): ReactElement {
             </li>
             <li>
               <Link href="/team">
-                <a>팀구성현황</a>
+                <a>팀풀</a>
               </Link>
             </li>
           </ul>
