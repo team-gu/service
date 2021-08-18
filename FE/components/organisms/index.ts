@@ -6,6 +6,7 @@ import Navbar from './Navbar';
 import { Notice, NoticeDetail, NoticeEdit, NoticeUpdate } from './Notice';
 import Footer from './Footer';
 import Layout from './Layout';
+import LayoutUserDetail from './LayoutUserDetail';
 import LookupLayout from './LookupLayout';
 import UserDetail from './UserDetail';
 import OtherUserDetail from './OtherUserDetail';
@@ -41,6 +42,7 @@ export {
   NoticeUpdate,
   Footer,
   Layout,
+  LayoutUserDetail,
   LookupLayout,
   UserDetail,
   OtherUserDetail,

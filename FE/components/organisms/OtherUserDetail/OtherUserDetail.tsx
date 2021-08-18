@@ -1,10 +1,13 @@
 import { ReactElement, useState, useEffect } from 'react';
-import styled from 'styled-components';
-import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { Icon } from '@atoms';
-import { SkillSelectAutoComplete } from '@molecules';
-import { useAuthState, useAppDispatch, setLoading } from '@store';
+
+import { LayoutUserDetail } from '@organisms';
+import { SkillSelectAutoComplete, Label, ProfileImage } from '@molecules';
+import { Icon, Text, Textarea } from '@atoms';
+import { useAuthState, useAppDispatch, setLoading, setChatOpen } from '@store';
+import useSockStomp from '@hooks/useSockStomp';
+import { getUserHasTeam } from '@repository/teamRepository';
+
 import { getUserDetail } from '@repository/userprofile';
 import { getImageURL } from '@utils/constants';
 
@@ -26,186 +29,6 @@ interface AuthState {
   wishTrack: string[];
 }
 
-interface Project {
-  name: string;
-  position: string;
-  url: string;
-  introduce: string;
-}
-
-interface Award {
-  agency: string;
-  date: Date;
-  name: string;
-  introduce: string;
-}
-
-const Wrapper = styled.div`
-  border: 1px solid rgba(0, 0, 0, 0.2);
-  width: 60vw;
-  margin: 0 auto 20px auto;
-  border-radius: 3px;
-  box-shadow: 2px 2px 8px black;
-
-  .name {
-    font-size: 20px;
-    font-weight: 600;
-    line-height: 1.4;
-    margin: 50px;
-  }
-`;
-
-const Icons = styled.div`
-  margin: 30px;
-  display: flex;
-  justify-content: flex-end;
-
-  i {
-    padding-left: 10px;
-    cursor: pointer;
-  }
-`;
-
-const Introduction = styled.div`
-  margin: auto;
-  display: grid;
-  grid-template-columns: 1fr 0.5fr;
-  grid-template-areas: 'manifesto profileImage';
-  gap: 40px;
-  @media only all and (max-width: 768px) {
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      'profileImage'
-      'manifesto';
-  }
-`;
-
-const Manifesto = styled.div`
-  p {
-    font-size: 20px;
-    font-weight: 600;
-    line-height: 1.4;
-    margin: 50px;
-    width: 80%;
-    & + * {
-      margin-top: 1em;
-    }
-    .track {
-      width: 30%;
-    }
-  }
-`;
-
-const Portrait = styled.div`
-  width: 100% auto;
-  margin-top: 20vh;
-  margin-right: 15px;
-  img {
-    border-radius: 50%;
-  }
-`;
-
-const Projects = styled.div`
-  display: grid;
-  grid-gap: 20px;
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-template-areas: 'project project project';
-  margin: 50px;
-
-  @media only all and (max-width: 768px) {
-    grid-template-columns: 1fr 1fr;
-    grid-template-areas: 'project project';
-  }
-
-  a {
-    text-decoration: none;
-    color: black;
-  }
-  p {
-    grid-column: span 3;
-    font-size: 20px;
-    font-weight: 600;
-    line-height: 1.4;
-    width: 80%;
-  }
-`;
-
-const Awards = styled.div`
-  grid-column: span 3;
-  display: grid;
-  grid-gap: 20px;
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-template-areas: 'award award award';
-  margin: 50px;
-
-  @media only all and (max-width: 768px) {
-    grid-template-columns: 1fr 1fr;
-    grid-template-areas: 'award award';
-  }
-
-  p {
-    grid-column: span 3;
-    font-size: 20px;
-    font-weight: 600;
-    line-height: 1.4;
-    width: 80%;
-  }
-`;
-
-const Project = styled.div`
-  border: 1px solid #eaeaea;
-  padding: 24px;
-  border-radius: 5px;
-  text-align: left;
-  height: 80px;
-  cursor: pointer;
-  flex: 1.1;
-  transition: box-shadow 0.2s;
-  overflow: hidden;
-  transition: 0.5s;
-  &:hover {
-    box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.1);
-    height: 80%;
-  }
-  .top {
-    display: flex;
-    font-size: 10px;
-    margin-bottom: 16px;
-  }
-`;
-
-const Award = styled.div`
-  border: 1px solid #eaeaea;
-  padding: 24px;
-  border-radius: 5px;
-  text-align: left;
-  height: 80px;
-  cursor: pointer;
-  flex: 1.1;
-  transition: box-shadow 0.2s;
-  overflow: hidden;
-  transition: 0.5s;
-  &:hover {
-    box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.1);
-    height: 80%;
-  }
-
-  .top {
-    display: flex;
-    font-size: 10px;
-    margin-bottom: 15px;
-  }
-  .middle {
-    margin-bottom: 8px;
-    font-size: 8px;
-  }
-`;
-
-const SkillSet = styled.div`
-  margin: 50px;
-  width: 50%;
-`;
-
 const getStudentClass = (ID: string) => {
   if (ID[0] !== '0') return ID.slice(0, 2);
   return ID[1];
@@ -222,10 +45,19 @@ const getDate = (date: Date) => {
     : '????-??-??';
 };
 
+const USER_INFO = 0;
+const USER_PROJECT = 1;
 export default function OtherUserDetail(): ReactElement {
+  const { handleSendInvitation, handleSendRtcLink } = useSockStomp({
+    room_id: 0,
+  });
   const router = useRouter();
   const { user } = useAuthState();
   const dispatch = useAppDispatch();
+
+  const [route, setRoute] = useState(USER_INFO);
+  const [isLeader, setIsLeader] = useState(false);
+  const [teamId, setTeamId] = useState(0);
 
   const [otherUser, setOtherUser] = useState<AuthState>(Object);
   const { id } = router.query;
@@ -234,88 +66,164 @@ export default function OtherUserDetail(): ReactElement {
   useEffect(() => {
     dispatch(setLoading({ isLoading: true }));
     (async () => {
-      try {
-        const { data } = await getUserDetail(id);
-        setOtherUser(data);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        dispatch(setLoading({ isLoading: false }));
+      if (id) {
+        try {
+          const { data } = await getUserDetail(id);
+          setOtherUser(data);
+
+          getUserHasTeam({
+            userId: user.id,
+            project: { code: user.projectCodes[user.projectCodes.length - 1] },
+          }).then(({ data: { data } }) => {
+            if (data.hasTeam) {
+              if (data.team.leaderId === user.id) {
+                setTeamId(data.team.id);
+                setIsLeader(true);
+              }
+            }
+          });
+        } catch (error) {
+          console.error(error);
+        } finally {
+          dispatch(setLoading({ isLoading: false }));
+        }
       }
     })();
-  }, []);
+  }, [id]);
 
   if (!otherUser.name) return <div>존재하지 않는 사용자입니다.</div>;
   return (
-    <Wrapper>
-      <Icons>
-        <Icon iconName="person_add_alt" color="black" />
-        <Icon iconName="chat" color="black" />
-        <Icon iconName="call" color="black" />
-      </Icons>
-      <Introduction>
-        <Manifesto>
-          <p>{`${getStudentRegion(otherUser.studentNumber)} ${getStudentClass(
+    <LayoutUserDetail isProject={route === USER_PROJECT}>
+      <div className="profile-container">
+        <ProfileImage src={getImageURL(otherUser.img)} size={100} />
+        <Text
+          text={`${getStudentRegion(otherUser.studentNumber)} ${getStudentClass(
             otherUser.studentNumber,
-          )}기 ${otherUser.name}`}</p>
-          <div>
-            <p className="track">
-              {otherUser.wishTrack.map((track) => track.codeName).join(', ')}
-            </p>
-            <p>{otherUser.wishPositionCode}</p>
-          </div>
-          <SkillSet>
-            <SkillSelectAutoComplete value={otherUser.skills} disabled={true} />
-          </SkillSet>
-          <p>{otherUser.introduce}</p>
-        </Manifesto>
-        <Portrait>
-          <Image
-            className="default-image"
-            alt="프로필이미지"
-            src={getImageURL(otherUser.img)}
-            width={500}
-            height={500}
+          )}기 ${otherUser.name}`}
+          fontSetting="n18m"
+        />
+      </div>
+      <div className="button-container">
+        <button type="button" onClick={() => setRoute(USER_INFO)}>
+          유저 정보
+        </button>
+        <button type="button" onClick={() => setRoute(USER_PROJECT)}>
+          프로젝트
+        </button>
+      </div>
+      <div className="typography">
+        <div className="icons">
+          {isLeader && (
+            <Icon
+              iconName="person_add_alt"
+              color="black"
+              func={() => handleSendInvitation(teamId, user.id, id)}
+            />
+          )}
+          <Icon
+            iconName="chat"
+            color="black"
+            func={() =>
+              dispatch(setChatOpen({ isChatOpen: true, passedOpponentId: id }))
+            }
           />
-        </Portrait>
-      </Introduction>
-      <div className="name">프로젝트</div>
-      <Projects>
-        {otherUser.projects.length ? (
-          otherUser.projects.map(
-            ({ id, name, position, url, introduce }: any) => (
-              <a href={url}>
-                <Project key={id}>
-                  <div className="top">
-                    <p>{name}</p>
-                    <p>{position}</p>
-                  </div>
-                  <div>{introduce}</div>
-                </Project>
-              </a>
-            ),
-          )
-        ) : (
-          <div>프로젝트가 없습니다.</div>
-        )}
-      </Projects>
-      <div className="name">수상경력</div>
-      <Awards>
-        {otherUser.awards.length ? (
-          otherUser.awards.map(({ id, agency, date, name, introduce }: any) => (
-            <Award key={id}>
-              <div className="top">
-                <p>{agency}</p>
-                <p>{name}</p>
+          <Icon
+            iconName="call"
+            color="black"
+            func={() => handleSendRtcLink(user.id, id)}
+          />
+        </div>
+        {route === USER_INFO ? (
+          <div className="introduction">
+            <div className="portrait">
+              <div className="track">
+                <Label text="트랙" fontSetting="n18b">
+                  <p className="track">
+                    {otherUser.wishTrack
+                      .map((track) => track.codeName)
+                      .join(', ')}
+                  </p>
+                </Label>
               </div>
-              <div className="middle">{getDate(date)}</div>
-              <div>{introduce}</div>
-            </Award>
-          ))
+              <div className="position">
+                <Label text="포지션" fontSetting="n18b">
+                  <p>{otherUser.wishPositionCode}</p>
+                </Label>
+              </div>
+
+              <div className="skills">
+                <Label text="사용 기술" fontSetting="n18b">
+                  <SkillSelectAutoComplete
+                    value={otherUser.skills}
+                    disabled={true}
+                  />
+                </Label>
+              </div>
+            </div>
+
+            <div className="manifesto">
+              <div className="introduce">
+                <Label text="자기 소개" fontSetting="n18b">
+                  <Textarea className="text-area" disabled>
+                    {otherUser.introduce}
+                  </Textarea>
+                </Label>
+              </div>
+            </div>
+          </div>
         ) : (
-          <div>수상경력이 없습니다.</div>
+          <>
+            <Label text="프로젝트" fontSetting="n18b">
+              <div className="projects">
+                {otherUser.projects.length ? (
+                  otherUser.projects.map(
+                    ({ id, name, position, url, introduce }: any) => (
+                      <a
+                        href={
+                          url.includes('https') || url.includes('http')
+                            ? url
+                            : 'http://' + url
+                        }
+                        target="_blank"
+                      >
+                        <div className="project" key={id}>
+                          <div className="top">
+                            <p>{name}</p>
+                            <p>{position}</p>
+                          </div>
+                          <div>{introduce}</div>
+                        </div>
+                      </a>
+                    ),
+                  )
+                ) : (
+                  <div>프로젝트가 없습니다.</div>
+                )}
+              </div>
+            </Label>
+            <Label text="수상경력" fontSetting="n18b">
+              <div className="awards">
+                {otherUser.awards.length ? (
+                  otherUser.awards.map(
+                    ({ id, agency, date, name, introduce }: any) => (
+                      <div className="award" key={id}>
+                        <div className="top">
+                          <p>{agency}</p>
+                          <p>{name}</p>
+                        </div>
+                        <div className="middle">{getDate(date)}</div>
+                        <div>{introduce}</div>
+                      </div>
+                    ),
+                  )
+                ) : (
+                  <div>수상경력이 없습니다.</div>
+                )}
+              </div>
+            </Label>
+          </>
         )}
-      </Awards>
-    </Wrapper>
+      </div>
+    </LayoutUserDetail>
   );
 }

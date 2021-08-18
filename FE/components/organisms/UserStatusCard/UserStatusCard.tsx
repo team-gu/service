@@ -47,6 +47,10 @@ const Wrapper = styled.div`
               padding-right: 5px;
             }
 
+            i:hover {
+              opacity: 0.5;
+            }
+
             border: 3px solid
               ${({
                 theme: {

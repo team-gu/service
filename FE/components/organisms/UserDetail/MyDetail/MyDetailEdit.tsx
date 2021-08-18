@@ -1,14 +1,14 @@
 import { ReactElement, SyntheticEvent, useState, useEffect } from 'react';
-import styled from 'styled-components';
-import Image from 'next/image';
-import { Icon, Textarea, Text } from '@atoms';
+
+import { ModalWrapper, LayoutUserDetail } from '@organisms';
 import {
   Button,
   SimpleSelect,
   SkillSelectAutoComplete,
   Label,
+  ProfileImage,
 } from '@molecules';
-import { ModalWrapper } from '@organisms';
+import { Icon, Textarea, Text } from '@atoms';
 import {
   useAuthState,
   useAppDispatch,
@@ -28,264 +28,19 @@ import { Skill } from '@utils/type';
 import { urltoFile } from '@utils/dataURLtoFile';
 import SetImageModal from '../MyDetail/Modal/SetImageModal';
 
-const Wrapper = styled.div`
-  border: 1px solid rgba(0, 0, 0, 0.2);
-  width: 60vw;
-  margin: 0 auto 20px auto;
-  border-radius: 3px;
-  box-shadow: 2px 2px 8px black;
-
-  .buttonRight {
-    float: right;
-    margin-right: 10vw;
-  }
-
-  .name {
-    font-size: 20px;
-    font-weight: 600;
-    line-height: 1.4;
-    margin: 50px;
-  }
-`;
-
-const Icons = styled.div`
-  margin: 30px;
-  display: flex;
-  justify-content: flex-end;
-
-  i {
-    padding-left: 10px;
-    cursor: pointer;
-  }
-`;
-
-const Introduction = styled.div`
-  margin: auto;
-  display: grid;
-  grid-template-columns: 1fr 0.5fr;
-  grid-template-areas: 'manifesto profileImage';
-  gap: 40px;
-  @media only all and (max-width: 768px) {
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      'profileImage'
-      'manifesto';
-  }
-`;
-
-const Manifesto = styled.div`
-  Input,
-  textarea {
-    font-size: 20px;
-    font-weight: 600;
-    line-height: 1.4;
-  }
-
-  input::placeholder {
-    color: red;
-  }
-  textarea::placeholder {
-    color: red;
-  }
-
-  input::-webkit-input-placeholder {
-    color: red;
-  }
-  input:-ms-input-placeholder {
-    color: red;
-  }
-  textarea::-webkit-input-placeholder {
-    color: red;
-  }
-  textarea:-ms-input-placeholder {
-    color: red;
-  }
-
-  .basic-information {
-    display: flex;
-    margin: 50px;
-
-    gap: 20px;
-  }
-
-  .track {
-    margin: 50px;
-    width: 20vw;
-  }
-
-  .position {
-    margin: 50px;
-    width: 20vw;
-  }
-
-  .introduce {
-    margin: 50px;
-  }
-
-  .useableSkills {
-    margin: 50px;
-    width: 20vw;
-  }
-`;
-
-const StyledTextarea = styled(Textarea)`
-  width: 70%;
-`;
-
-const Portrait = styled.div`
-  width: 100% auto;
-  margin-top: 20vh;
-  margin-right: 15px;
-
-  img {
-    border-radius: 50%;
-  }
-`;
-
-const Projects = styled.div`
-  grid-column: span 3;
-  display: grid;
-  grid-gap: 20px;
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-template-areas: 'project project project';
-  margin: 50px;
-
-  @media only all and (max-width: 768px) {
-    grid-template-columns: 1fr 1fr;
-    grid-template-areas: 'project project';
-  }
-
-  p {
-    grid-column: span 3;
-    font-size: 20px;
-    font-weight: 600;
-    line-height: 1.4;
-    width: 80%;
-  }
-  .last-card:last-child {
-    cursor: pointer;
-    i {
-      position: absolute;
-      top: 40%;
-      left: 45%;
-    }
-  }
-`;
-
-const Awards = styled.div`
-  grid-column: span 3;
-  display: grid;
-  grid-gap: 20px;
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-template-areas: 'award award award';
-  margin: 50px;
-
-  @media only all and (max-width: 768px) {
-    grid-template-columns: 1fr 1fr;
-    grid-template-areas: 'award award';
-  }
-
-  p {
-    grid-column: span 3;
-    font-size: 20px;
-    font-weight: 600;
-    line-height: 1.4;
-    width: 80%;
-  }
-
-  .last-card:last-child {
-    cursor: pointer;
-    i {
-      position: absolute;
-      top: 40%;
-      left: 45%;
-    }
-  }
-`;
-
-const Project = styled.div`
-  position: relative;
-  border: 1px solid #eaeaea;
-  padding: 24px;
-  border-radius: 5px;
-  text-align: left;
-  height: 80px;
-  flex: 1.1;
-  transition: box-shadow 0.2s;
-  overflow: hidden;
-
-  &:hover {
-    box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.1);
-  }
-
-  &.cards:hover {
-    height: 80%;
-  }
-
-  .top {
-    display: flex;
-    font-size: 10px;
-    margin-bottom: 16px;
-  }
-
-  .icons {
-    position: absolute;
-    top: 0;
-    right: 0;
-    i {
-      cursor: pointer;
-      font-size: 15px;
-    }
-  }
-`;
-
-const Award = styled.div`
-  position: relative;
-  border: 1px solid #eaeaea;
-  padding: 24px;
-  border-radius: 5px;
-  text-align: left;
-  height: 80px;
-  flex: 1.1;
-  transition: box-shadow 0.2s;
-  overflow: hidden;
-
-  &:hover {
-    box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.1);
-  }
-
-  &.cards:hover {
-    height: 80%;
-  }
-
-  .top {
-    display: flex;
-    font-size: 10px;
-    margin-bottom: 15px;
-  }
-  .middle {
-    margin-bottom: 8px;
-    font-size: 8px;
-  }
-
-  .icons {
-    position: absolute;
-    top: 0;
-    right: 0;
-    i {
-      cursor: pointer;
-      font-size: 15px;
-    }
-  }
-`;
-
 const getDate = (date: Date) => {
   return date
     ? JSON.stringify(date).split('').slice(1, 11).join('')
     : '????-??-??';
 };
 
-export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
+const USER_INFO = 0;
+const USER_PROJECT = 1;
+export default function MyDetailEdit({
+  changeEditMode,
+  route,
+  setRoute,
+}: any): ReactElement {
   const { user } = useAuthState();
   const dispatch = useAppDispatch();
 
@@ -428,7 +183,7 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
   };
 
   return (
-    <Wrapper>
+    <LayoutUserDetail isProject={route === USER_PROJECT}>
       {showCroppedArea && (
         <ModalWrapper modalName="setImage">
           <SetImageModal
@@ -440,215 +195,242 @@ export default function MyDetailEdit({ changeEditMode }: any): ReactElement {
         </ModalWrapper>
       )}
 
-      <Icons>
-        <Icon
-          iconName="password"
-          color="black"
-          func={() =>
-            dispatch(
-              displayModal({
-                modalName: MODALS.CHANGEPASSWORD_MODAL,
-              }),
-            )
-          }
-        />
-        <Icon iconName="clear" color="black" func={changeEditMode} />
-      </Icons>
-      <form onSubmit={onSubmit} encType="multipart/form-data">
-        <Introduction>
-          <Manifesto>
-            <div className="track">
-              <Label text="트랙">
-                <SimpleSelect
-                  options={getOptions(trackOptions)}
-                  onChange={(track) => {
-                    setTrack({ codeName: track.value, code: track.code });
-                  }}
-                  value={[
-                    {
-                      name: user.wishTrack[0].codeName,
-                      label: user.wishTrack[0].codeName,
-                    },
-                  ]}
-                />
-              </Label>
-            </div>
-            <div className="position">
-              <Label text="포지션">
-                <SimpleSelect
-                  options={getOptions(positionOptions)}
-                  onChange={(position) => {
-                    setPosition(position.value);
-                  }}
-                  value={[
-                    {
-                      name: user.wishPositionCode,
-                      label: user.wishPositionCode,
-                    },
-                  ]}
-                />
-              </Label>
-            </div>
-            <div className="useableSkills">
-              <Label text="사용 기술">
-                <SkillSelectAutoComplete
-                  onChangeSkills={changeUseableSkills}
-                  value={user.skills}
-                />
-              </Label>
-            </div>
-            <div className="introduce">
-              <Label text="자기 소개">
-                {user.introduce ? (
-                  <>
-                    <StyledTextarea
-                      onChange={handleIntroduce}
-                      rows={7}
-                      maxLength={300}
-                      value={introduce}
-                    />
-                    <Text
-                      text={introduce.length + ' / 300'}
-                      fontSetting="n12m"
-                      color="gray"
-                    />
-                  </>
-                ) : (
-                  <>
-                    <StyledTextarea
-                      onChange={handleIntroduce}
-                      rows={7}
-                      placeholder="자기소개를 작성해주세요"
-                      maxLength={300}
-                    />
-                    <Text
-                      text={introduce.length + ' / 300'}
-                      fontSetting="n12m"
-                      color="gray"
-                    />
-                  </>
-                )}
-              </Label>
-            </div>
-          </Manifesto>
-          <Portrait>
-            <Image
-              className="default-image"
-              alt="프로필이미지"
-              width={500}
-              height={500}
-              src={image}
-            />
-            <Icon iconName="photo_camera" func={changeImageMode} />
-          </Portrait>
-        </Introduction>
-        <div className="buttonRight">
-          <Button title="수정" type="submit" width="5vw" />
+      <div className="profile-container">
+        <ProfileImage size={100} src={image} />
+        <div className="photo-edit-icon">
+          <Icon iconName="photo_camera" func={changeImageMode} />
         </div>
-      </form>
-      <div className="name">프로젝트</div>
-      <Projects>
-        {user.projects.map(({ id, name, position, url, introduce }: any) => (
-          <Project className="cards" key={id}>
-            <div className="top">
-              <p>{name}</p>
-              <p>{position}</p>
-              <div className="icons">
-                <Icon
-                  iconName="edit"
-                  func={() =>
+      </div>
+      <div className="button-container">
+        <button type="button" onClick={() => setRoute(USER_INFO)}>
+          유저 정보
+        </button>
+        <button type="button" onClick={() => setRoute(USER_PROJECT)}>
+          프로젝트
+        </button>
+      </div>
+      <div className="typography">
+        <div className="icons">
+          <Icon
+            iconName="password"
+            color="black"
+            func={() =>
+              dispatch(
+                displayModal({
+                  modalName: MODALS.CHANGEPASSWORD_MODAL,
+                }),
+              )
+            }
+          />
+          <Icon iconName="clear" color="black" func={changeEditMode} />
+        </div>
+        {route === USER_INFO ? (
+          <form onSubmit={onSubmit} encType="multipart/form-data">
+            <div className="introduction">
+              <div className="portrait">
+                <div className="track">
+                  <Label text="트랙" fontSetting="n18b">
+                    <SimpleSelect
+                      options={getOptions(trackOptions)}
+                      onChange={(track) => {
+                        setTrack({ codeName: track.value, code: track.code });
+                      }}
+                      value={[
+                        {
+                          name: user.wishTrack[0].codeName,
+                          label: user.wishTrack[0].codeName,
+                        },
+                      ]}
+                    />
+                  </Label>
+                </div>
+                <div className="position">
+                  <Label text="포지션" fontSetting="n18b">
+                    <SimpleSelect
+                      options={getOptions(positionOptions)}
+                      onChange={(position) => {
+                        setPosition(position.value);
+                      }}
+                      value={[
+                        {
+                          name: user.wishPositionCode,
+                          label: user.wishPositionCode,
+                        },
+                      ]}
+                    />
+                  </Label>
+                </div>
+                <div className="skills">
+                  <Label text="사용 기술" fontSetting="n18b">
+                    <SkillSelectAutoComplete
+                      onChangeSkills={changeUseableSkills}
+                      value={user.skills}
+                    />
+                  </Label>
+                </div>
+              </div>
+              <div className="manifesto">
+                <div className="introduce">
+                  <Label text="자기 소개" fontSetting="n18b">
+                    {user.introduce ? (
+                      <>
+                        <Textarea
+                          className="text-area-edit"
+                          onChange={handleIntroduce}
+                          rows={7}
+                          maxLength={300}
+                          value={introduce}
+                        />
+                        <Text
+                          text={introduce.length + ' / 300'}
+                          fontSetting="n12m"
+                          color="gray"
+                        />
+                      </>
+                    ) : (
+                      <>
+                        <Textarea
+                          className="text-area-edit"
+                          onChange={handleIntroduce}
+                          rows={7}
+                          placeholder="자기소개를 작성해주세요"
+                          maxLength={300}
+                        />
+                        <Text
+                          text={introduce.length + ' / 300'}
+                          fontSetting="n12m"
+                          color="gray"
+                        />
+                      </>
+                    )}
+                  </Label>
+                </div>
+              </div>
+            </div>
+            <div className="button-right">
+              <Button title="수정" type="submit" width="5vw" />
+            </div>
+          </form>
+        ) : (
+          <>
+            <Label text="프로젝트" fontSetting="n18b">
+              <div className="projects">
+                {user.projects.map(
+                  ({ id, name, position, url, introduce }: any) => (
+                    <div className="project cards" key={id}>
+                      <div className="top">
+                        <p>{name}</p>
+                        <p>{position}</p>
+                        <div className="icons">
+                          <Icon
+                            iconName="edit"
+                            func={() =>
+                              dispatch(
+                                displayModal({
+                                  modalName: MODALS.PROJECT_MODAL,
+                                  content: {
+                                    id,
+                                    name,
+                                    position,
+                                    url,
+                                    introduce,
+                                  },
+                                }),
+                              )
+                            }
+                          />
+                          <Icon
+                            iconName="clear"
+                            func={() => deleteProjectCard(id)}
+                          />
+                        </div>
+                      </div>
+                      <div>{introduce}</div>
+                    </div>
+                  ),
+                )}
+                <div
+                  className="project last-card"
+                  onClick={() =>
                     dispatch(
                       displayModal({
                         modalName: MODALS.PROJECT_MODAL,
                         content: {
-                          id,
-                          name,
-                          position,
-                          url,
-                          introduce,
+                          id: null,
+                          name: '프로젝트 이름',
+                          position: '수행 포지션',
+                          url: '프로젝트 url',
+                          introduce: '소개',
                         },
                       }),
                     )
                   }
-                />
-                <Icon iconName="clear" func={() => deleteProjectCard(id)} />
+                >
+                  <Icon iconName="add_circle" />
+                </div>
               </div>
-            </div>
-            <div>{introduce}</div>
-          </Project>
-        ))}
-        <Project
-          className="last-card"
-          onClick={() =>
-            dispatch(
-              displayModal({
-                modalName: MODALS.PROJECT_MODAL,
-                content: {
-                  id: null,
-                  name: '프로젝트 이름',
-                  position: '수행 포지션',
-                  url: '프로젝트 url',
-                  introduce: '소개',
-                },
-              }),
-            )
-          }
-        >
-          <Icon iconName="add_circle" />
-        </Project>
-      </Projects>
-      <div className="name">수상경력</div>
-      <Awards>
-        {user.awards.map(({ id, agency, date, name, introduce }: any) => (
-          <Award className="cards" key={id}>
-            <div className="top">
-              <p>{agency}</p>
-              <p>{name}</p>
-              <div className="icons">
-                <Icon
-                  iconName="edit"
-                  func={() =>
+            </Label>
+            <Label text="수상경력" fontSetting="n18b">
+              <div className="awards">
+                {user.awards.map(
+                  ({ id, agency, date, name, introduce }: any) => (
+                    <div className="award cards" key={id}>
+                      <div className="top">
+                        <p>{agency}</p>
+                        <p>{name}</p>
+                        <div className="icons">
+                          <Icon
+                            iconName="edit"
+                            func={() =>
+                              dispatch(
+                                displayModal({
+                                  modalName: MODALS.AWARD_MODAL,
+                                  content: {
+                                    id,
+                                    agency,
+                                    date,
+                                    name,
+                                    introduce,
+                                  },
+                                }),
+                              )
+                            }
+                          />
+                          <Icon
+                            iconName="clear"
+                            func={() => deleteAwardCard(id)}
+                          />
+                        </div>
+                      </div>
+                      <div className="middle">{getDate(date)}</div>
+                      <div>{introduce}</div>
+                    </div>
+                  ),
+                )}
+                <div
+                  className="award last-card"
+                  onClick={() =>
                     dispatch(
                       displayModal({
                         modalName: MODALS.AWARD_MODAL,
                         content: {
-                          id,
-                          agency,
-                          date,
-                          name,
-                          introduce,
+                          id: null,
+                          agency: '발행 기관',
+                          date: '날짜',
+                          name: '수상명',
+                          introduce: '소개',
                         },
                       }),
                     )
                   }
-                />
-                <Icon iconName="clear" func={() => deleteAwardCard(id)} />
+                >
+                  <Icon iconName="add_circle" />
+                </div>
               </div>
-            </div>
-            <div className="middle">{getDate(date)}</div>
-            <div>{introduce}</div>
-          </Award>
-        ))}
-        <Award
-          className="last-card"
-          onClick={() =>
-            dispatch(
-              displayModal({
-                modalName: MODALS.AWARD_MODAL,
-                content: {
-                  id: null,
-                  agency: '발행 기관',
-                  date: '날짜',
-                  name: '수상명',
-                  introduce: '소개',
-                },
-              }),
-            )
-          }
-        >
-          <Icon iconName="add_circle" />
-        </Award>
-      </Awards>
-    </Wrapper>
+            </Label>
+          </>
+        )}
+      </div>
+    </LayoutUserDetail>
   );
 }

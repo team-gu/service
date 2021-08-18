@@ -330,14 +330,13 @@ export default function TeamStatus(): ReactElement {
                 onClickTeamManage={handleTeamManageModal}
               />
             </Title>
-
             <hr />
           </>
         )}
         {teams && teams?.length === 0 ? (
-          <WrapFilter>
+          <div>
             현재 등록된 팀이 없거나, 필터링 조건에 일치하는 팀이 없습니다.
-          </WrapFilter>
+          </div>
         ) : (
           <>
             {teams?.map((item, index) => (

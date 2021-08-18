@@ -392,7 +392,7 @@ export default function UserStatus(): ReactElement {
         </div>
 
         {users && users?.length === 0 ? (
-          <WrapFilter>일치하는 유저가 없습니다.</WrapFilter>
+          <div>일치하는 유저가 없습니다.</div>
         ) : (
           <>
             {users?.map((each: Users) => (

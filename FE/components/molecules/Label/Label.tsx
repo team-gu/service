@@ -5,6 +5,7 @@ import { Text } from '@atoms';
 interface LabelProps {
   text: string;
   children: ReactElement;
+  fontSetting?: string;
 }
 
 const Wrapper = styled.div`
@@ -16,10 +17,14 @@ const Wrapper = styled.div`
   }
 `;
 
-export default function Label({ text, children }: LabelProps): ReactElement {
+export default function Label({
+  text,
+  children,
+  fontSetting = 'n14b',
+}: LabelProps): ReactElement {
   return (
     <Wrapper>
-      <Text text={text} fontSetting="n14b" />
+      <Text text={text} fontSetting={fontSetting} />
       {children}
     </Wrapper>
   );
