@@ -2,6 +2,7 @@ import { useEffect, useState, ReactElement } from 'react';
 import { getNotice, deleteNotice } from '@repository/noticeRepository';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import { useAuthState } from '@store';
 import { makeStyles } from '@material-ui/core/styles';
 import Pagination from '@material-ui/lab/Pagination';
 import {
@@ -52,13 +53,13 @@ const PaginationStyles = makeStyles((theme) => ({
 }));
 
 export default function Notice(): ReactElement {
+  const { user } = useAuthState();
   const router = useRouter();
   const classes = useStyles();
   const paginationClasses = PaginationStyles();
   const [page, setPage] = useState(0);
   const [rows, setRows] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
-  const [flag, setFlag] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -72,15 +73,27 @@ export default function Notice(): ReactElement {
       );
       setTotalPages(data.totalPages);
     })();
-  }, [page, flag]);
+  }, [page]);
 
   const handleChangePage = (event: any, newPage: any) => {
     setPage(newPage);
   };
 
+  const handleDelete = async (id: number) => {
+    deleteNotice(id);
+    alert('삭제되었습니다');
+    router.reload(window.location.pathname);
+  };
+
   return (
     <>
-      <Button title="공지사항 생성" func={() => router.push('/notice/edit')} />
+      {(user.role === 3 || user.role === 4) && (
+        <Button
+          title="공지사항 생성"
+          width="8vw"
+          func={() => router.push('/notice/edit')}
+        />
+      )}
       <Paper className={classes.root}>
         <TableContainer className={classes.container}>
           <Table stickyHeader aria-label="sticky table">
@@ -100,7 +113,13 @@ export default function Notice(): ReactElement {
             <TableBody>
               {rows.map((row: any) => {
                 return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
+                  <TableRow
+                    style={{ cursor: 'pointer' }}
+                    hover
+                    role="checkbox"
+                    tabIndex={-1}
+                    key={row.id}
+                  >
                     {columns.map((column) => {
                       const value = row[column.id];
                       return (
@@ -118,17 +137,20 @@ export default function Notice(): ReactElement {
                         </>
                       );
                     })}
-                    <Button
-                      title="수정"
-                      func={() => router.push(`/notice/edit/${row.id}`)}
-                    />
-                    <Button
-                      title="삭제"
-                      func={() => {
-                        deleteNotice(row.id);
-                        setFlag(!flag);
-                      }}
-                    />
+                    {(user.role === 3 || user.role === 4) && (
+                      <>
+                        <Button
+                          width="3vw"
+                          title="수정"
+                          func={() => router.push(`/notice/edit/${row.id}`)}
+                        />
+                        <Button
+                          width="3vw"
+                          title="삭제"
+                          func={() => handleDelete(row.id)}
+                        />
+                      </>
+                    )}
                   </TableRow>
                 );
               })}
