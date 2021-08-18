@@ -27,7 +27,7 @@ public interface UserService {
 
     LoginResDto login(LoginReqDto loginReq, User user);
 
-    TokenResDto reissue(TokenReqDto tokenReq);
+    Optional<TokenResDto> reissue(TokenReqDto tokenReq);
 
     //비밀번호 변경
     boolean changePassword(PasswordReqDto passwordReq);
