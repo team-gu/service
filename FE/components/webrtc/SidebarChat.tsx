@@ -56,21 +56,19 @@ export default function SidebarChat({
   session,
   children,
 }: SidebarChatProps): ReactElement {
-  const { user: { name } } = useAuthState();
+  const { user: { name, img } } = useAuthState();
   const [messageList, setMessageList] = useState<Chat[]>([]);
 
   useEffect(() => {
     if (!session) return;
 
-    let mySession = session;
+    const mySession = session;
 
     mySession.on('signal:chat', (event: SignalEvent) => {
       if (!event.data) return;
 
-      console.log(mySession);
-      console.log(event);
-
       const data = JSON.parse(event.data);
+      console.log(data);
       messageList.push({
         nickname: data.nickname,
         message: data.message,
@@ -88,9 +86,9 @@ export default function SidebarChat({
     return new Promise<void>((resolve, reject) => {
       const mySession = session;
       const payload = {
-        isMe: true,
         message: msg,
         nickname: name ? name : 'unknown',
+        profileSrc: img,
       };
 
       mySession.signal({

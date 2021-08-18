@@ -20,7 +20,7 @@ import {
 } from '../webrtc';
 import { useAuthState } from '@store';
 
-var OpenViduBrowser: typeof import('node_modules/openvidu-browser/lib/index');
+var OpenViduBrowser: typeof import('openvidu-browser/lib/index');
 
 const Wrapper = styled.div`
   margin: 30px 10px;
@@ -61,7 +61,7 @@ const SessionContainer = styled.div<{ number: number }>`
     } else {
       return `
         .flexItem {
-          flex: 0 1 600px;
+          flex: 0 1 640px;
         }
       `;
     }
@@ -101,7 +101,6 @@ export default function VideoChat(): ReactElement {
   const mySessionId = router.query.id;
   const sessionTitle = `세션에 입장합니다...`;
 
-  // React Lifecycle Hook
   useEffect(() => {
     // Dynamic module import
     importOpenVidu().then((ob) => {
@@ -109,9 +108,9 @@ export default function VideoChat(): ReactElement {
       setOV(new OpenViduBrowser.OpenVidu());
     });
 
-    // componentWillUnmount
     return () => {
       leaveSession();
+      clear();
     };
   }, []);
 
@@ -137,15 +136,15 @@ export default function VideoChat(): ReactElement {
 
     // 어떤 스트림이 없어지면
     mySession.on('streamDestroyed', (event: any) => {
-      console.log('streamDestroyed');
       deleteSubscriber(event.stream.streamManager);
     });
 
     // 예외가 발생하면
     mySession.on('exception', (exception: any) => {
-      console.warn(exception);
-      if (exception.name === "ICE_CONNECTION_DISCONNECTED") {
+      if (exception.name === 'ICE_CONNECTION_DISCONNECTED') {
         deleteSubscriber(exception.origin.streamManager);
+      } else {
+        console.warn(exception);
       }
     });
 
@@ -256,7 +255,6 @@ export default function VideoChat(): ReactElement {
     if (mySession) {
       mySession.disconnect();
     }
-    clear();
   };
 
   const getToken = () => {
@@ -341,10 +339,9 @@ export default function VideoChat(): ReactElement {
 
   const allTrackOff = (sm: StreamManager | undefined) => {
     if (sm) {
-      sm.stream
-        .getMediaStream()
-        .getTracks()
-        .map((m) => {
+      const mediaTrack = sm.stream.getMediaStream();
+      if (mediaTrack)
+        mediaTrack.getTracks().map((m) => {
           m.enabled = false;
           m.stop();
         });
@@ -377,7 +374,9 @@ export default function VideoChat(): ReactElement {
 
   const handleClickExit = () => {
     videoTrackOff(publisher);
-    router.push('/');
+    leaveSession();
+    clear();
+    router.push('/humanpool');
   };
 
   const handleClickScreenShare = () => {
