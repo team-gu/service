@@ -117,9 +117,10 @@ export default function AdminProjectUserAddModal({
         <div className="modal-content">
           <div style={{ margin: '20px 0' }}>
             <Text text="프로젝트에 추가할 교육생을 입력해주세요." />
+            <Text text="이름, 학번, 이메일로 검색 가능합니다." />
           </div>
           <div className="input-container">
-            <Label text="이름">
+            <Label text="교육생">
               <UserSelectProjectAutoComplete
                 projectId={projectId}
                 handleChangeUserSelect={handleChangeUserSelect}
