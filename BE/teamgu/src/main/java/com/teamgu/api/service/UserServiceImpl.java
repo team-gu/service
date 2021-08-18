@@ -601,6 +601,37 @@ public class UserServiceImpl implements UserService {
         userRepositorySupport.deleteUserInfoAward(id);
     }
 
+    /**
+     * 로그아웃을 요청하는 유저의 토큰을 받아 정보 추출
+     *
+     * @param auth
+     * @return
+     */
+    @Override
+    public String getInfoOfJwt(String auth) {
+        log.info(auth);
+
+        if(StringUtils.isEmpty(auth)) {
+            log.error("Token이 존재하지 않습니다");
+
+            return null;
+        }
+
+        String token = auth.substring(7);
+        Authentication authentication = jwtTokenUtil.getAuthentication(token);
+
+        log.info("로그아웃 유저 아이디 : '{}'", authentication.getName());
+
+        return token;
+    }
+
+    /**
+     * 토큰 기반 사용자 정보 조회
+     * 및 반환 처리
+     *
+     * @param auth
+     * @return
+     */
     @Override
     public LoginResDto reqInfo(String auth) {
 
