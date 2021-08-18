@@ -4,7 +4,10 @@ import { useRouter } from 'next/router';
 import { LayoutUserDetail } from '@organisms';
 import { SkillSelectAutoComplete, Label, ProfileImage } from '@molecules';
 import { Icon, Text, Textarea } from '@atoms';
-import { useAuthState, useAppDispatch, setLoading } from '@store';
+import { useAuthState, useAppDispatch, setLoading, setChatOpen } from '@store';
+import useSockStomp from '@hooks/useSockStomp';
+import { getUserHasTeam } from '@repository/teamRepository';
+
 import { getUserDetail } from '@repository/userprofile';
 import { getImageURL } from '@utils/constants';
 
@@ -45,11 +48,17 @@ const getDate = (date: Date) => {
 const USER_INFO = 0;
 const USER_PROJECT = 1;
 export default function OtherUserDetail(): ReactElement {
+  const { handleSendInvitation, handleSendRtcLink } = useSockStomp({
+    room_id: 0,
+  });
   const router = useRouter();
   const { user } = useAuthState();
   const dispatch = useAppDispatch();
 
   const [route, setRoute] = useState(USER_INFO);
+  const [isLeader, setIsLeader] = useState(false);
+  const [teamId, setTeamId] = useState(0);
+
   const [otherUser, setOtherUser] = useState<AuthState>(Object);
   const { id } = router.query;
   if (Number(id) === user.id) router.push('/userdetail');
@@ -60,6 +69,18 @@ export default function OtherUserDetail(): ReactElement {
       try {
         const { data } = await getUserDetail(id);
         setOtherUser(data);
+
+        getUserHasTeam({
+          userId: user.id,
+          project: { code: user.projectCodes[user.projectCodes.length - 1] },
+        }).then(({ data: { data } }) => {
+          if (data.hasTeam) {
+            if (data.team.leaderId === id) {
+              setTeamId(data.team.id);
+              setIsLeader(true);
+            }
+          }
+        });
       } catch (error) {
         console.error(error);
       } finally {
@@ -90,9 +111,25 @@ export default function OtherUserDetail(): ReactElement {
       </div>
       <div className="typography">
         <div className="icons">
-          <Icon iconName="person_add_alt" color="black" />
-          <Icon iconName="chat" color="black" />
-          <Icon iconName="call" color="black" />
+          {isLeader && (
+            <Icon
+              iconName="person_add_alt"
+              color="black"
+              func={() => handleSendInvitation(teamId, user.id, id)}
+            />
+          )}
+          <Icon
+            iconName="chat"
+            color="black"
+            func={() =>
+              dispatch(setChatOpen({ isChatOpen: true, passedOpponentId: id }))
+            }
+          />
+          <Icon
+            iconName="call"
+            color="black"
+            func={() => handleSendRtcLink(user.id, id)}
+          />
         </div>
         {route === USER_INFO ? (
           <div className="introduction">
