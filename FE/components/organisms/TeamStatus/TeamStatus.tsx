@@ -51,6 +51,7 @@ interface Payload {
   skills?: number[];
   studentNumber?: string;
   track?: number[];
+  pageNum?: number;
 }
 
 export default function TeamStatus(): ReactElement {
@@ -68,7 +69,7 @@ export default function TeamStatus(): ReactElement {
   const [containsUserId, setContainsUserId] = useState<number>();
   const [userHasTeam, setUserHasTeam] = useState<boolean>();
   const [userTeam, setUserTeam] = useState<Team>();
-  const [searchWhat, setSearchWhat] = useState();
+  const [searchWhat, setSearchWhat] = useState<boolean>();
   const [pageCount, setPageCount] = useState(0);
   const [trackList, setTrackList] = useState([]);
 
@@ -294,10 +295,14 @@ export default function TeamStatus(): ReactElement {
       </div>
       <div className="team-status-list-container">
         <div className="team-status-header">
-          <UserSelectTeamAutoComplete
-            handleChangeUserSelect={handleChangeUserSelect}
-            clear={searchWhat === SERACH_BY_FILTER}
-          />
+          {payload.project && (
+            <UserSelectTeamAutoComplete
+              projectCode={payload.project}
+              handleChangeUserSelect={handleChangeUserSelect}
+              clear={searchWhat === SERACH_BY_FILTER}
+            />
+          )}
+
           <div className="sort-container">
             <div className="sort-select">
               <SimpleSelect

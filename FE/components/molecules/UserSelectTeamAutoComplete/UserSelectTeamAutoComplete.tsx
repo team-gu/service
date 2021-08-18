@@ -5,11 +5,13 @@ import { MemberOption } from '@utils/type';
 import { useAuthState } from '@store';
 
 interface UserSelectTeamAutoCompleteProps {
+  projectCode: number;
   handleChangeUserSelect: (newValue: MemberOption | null) => void;
   clear?: boolean;
 }
 
 export default function UserSelectTeamAutoComplete({
+  projectCode,
   handleChangeUserSelect,
   clear,
 }: UserSelectTeamAutoCompleteProps): ReactElement {
@@ -49,6 +51,7 @@ export default function UserSelectTeamAutoComplete({
     new Promise<MemberOption[]>((resolve, reject) => {
       // TODO: 너무 잦은 요청!
       getUserListByNameContains({
+        projectCode,
         search: inputValue,
         studentNumber,
       })
