@@ -140,7 +140,7 @@ public class UserPoolRepositoryImpl implements UserPoolRepositoryCustom {
             sb.append(" ").append("and u.email = '" + email + "'");
 
         if(!flag) { //인력풀 자동완성에서 동작하는 where문
-            sb.append(" ").append("and (u.email like '%" + target + "%' or u.email like '%" + target + "%')");
+            sb.append(" ").append("and (u.name like '%" + target + "%' or u.email like '%" + target + "%')");
         }
 
         return sb.toString();
