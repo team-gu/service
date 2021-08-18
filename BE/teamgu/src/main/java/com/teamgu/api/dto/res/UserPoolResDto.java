@@ -21,7 +21,7 @@ public class UserPoolResDto {
     private String introduce;
 
     @ApiModelProperty(name = "프로필 url")
-    private String profileUIr;
+    private String profileUrl;
 
     @ApiModelProperty(name = "원하는 트랙 리스트")
     private List<String> trackList;

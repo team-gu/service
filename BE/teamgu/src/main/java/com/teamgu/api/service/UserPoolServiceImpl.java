@@ -53,7 +53,7 @@ public class UserPoolServiceImpl implements UserPoolService {
             }
 
             if (ObjectUtils.isNotEmpty(elem[3]) && ObjectUtils.isNotEmpty(elem[4])) { //프로필 url 세팅
-                userPoolResDto.setProfileUIr(serverUrl + elem[3].toString() + "." + elem[4].toString());
+                userPoolResDto.setProfileUrl(serverUrl + elem[3].toString() + "." + elem[4].toString());
             }
 
             if (elem[5] != null) { //wish Track
