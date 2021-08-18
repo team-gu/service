@@ -18,3 +18,16 @@ export const urltoFile = async (url: string, studentNumber: string) => {
   const metadata = { type: `image/${ext}` };
   return new File([data], filename!, metadata);
 };
+
+export const urltoUpdateFile = async (
+  url: string,
+  name: string,
+  extension: string,
+) => {
+  const response = await fetch(url);
+  const data = await response.blob();
+  const ext = url.split('.').pop(); // url 구조에 맞게 수정할 것
+  const filename = `${name}.${extension}`; // url 구조에 맞게 수정할 것
+  const metadata = { type: `image/${extension}` };
+  return new File([data], filename!, metadata);
+};

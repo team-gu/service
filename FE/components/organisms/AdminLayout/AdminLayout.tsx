@@ -8,6 +8,7 @@ import {
   AdminDashboard,
   AdminProjectManage,
   AdminProjectUserManage,
+  Notice,
 } from '@organisms';
 import { Text } from '@atoms';
 import { Project } from '@utils/type';
@@ -52,18 +53,18 @@ export default function AdminLayout(): ReactElement {
   const fetchProjects = () => {
     getAdminProject().then(({ data: { data } }) => {
       const tmpProjects = data.map((p: any) => ({
-          ...p,
-          activeDate: p.activeDate
-            ? DateTime.fromISO(p.activeDate).toFormat('yyyy-MM-dd')
-            : null,
-          startDate: p.startDate
-            ? DateTime.fromISO(p.startDate).toFormat('yyyy-MM-dd')
-            : null,
-          endDate: p.endDate
-            ? DateTime.fromISO(p.endDate).toFormat('yyyy-MM-dd')
-            : null,
-          name: `${p.stage.codeName} ${p.project.codeName} 프로젝트`,
-        }));
+        ...p,
+        activeDate: p.activeDate
+          ? DateTime.fromISO(p.activeDate).toFormat('yyyy-MM-dd')
+          : null,
+        startDate: p.startDate
+          ? DateTime.fromISO(p.startDate).toFormat('yyyy-MM-dd')
+          : null,
+        endDate: p.endDate
+          ? DateTime.fromISO(p.endDate).toFormat('yyyy-MM-dd')
+          : null,
+        name: `${p.stage.codeName} ${p.project.codeName} 프로젝트`,
+      }));
       setProjects(tmpProjects);
       setSelectedProject(tmpProjects[tmpProjects.length - 1]);
     });
@@ -102,7 +103,7 @@ export default function AdminLayout(): ReactElement {
                 [ADMIN_MENU_CONTENT[4].id]: selectedProject && (
                   <AdminTeamManage project={selectedProject} />
                 ),
-                [ADMIN_MENU_CONTENT[5].id]: <div>공지사항 관리</div>,
+                [ADMIN_MENU_CONTENT[5].id]: <Notice />,
               }[ADMIN_MENU_CONTENT[selectedMenu].id]
             }
           </div>
