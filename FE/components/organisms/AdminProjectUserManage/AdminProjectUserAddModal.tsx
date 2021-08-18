@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import styled from 'styled-components';
 
-import { Text, Icon, Input } from '@atoms';
+import { Text, Icon } from '@atoms';
 import { Button, Label, UserSelectProjectAutoComplete } from '@molecules';
 import { ModalWrapper } from '@organisms';
 import { MemberOption } from '@utils/type';
-import { projectCard } from 'components/molecules/ProjectCard/ProjectCard.stories';
 
 const Wrapper = styled.div<{ containsUserId: number | undefined }>`
   input {

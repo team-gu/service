@@ -18,7 +18,7 @@ import {
   SimpleSelect,
   Checkbox,
 } from '@molecules';
-import { MODALS, SSAFY_TRACK } from '@utils/constants';
+import { MODALS } from '@utils/constants';
 import { displayModal, useAppDispatch, useAuthState } from '@store';
 import {
   createTeam,
@@ -248,6 +248,14 @@ const Wrapper = styled.div`
     }
   }
 `;
+
+const selectCustomStyles = {
+  valueContainer: (base: any) => ({
+    ...base,
+    fontSize: '14px',
+    lineHeight: '20px',
+  }),
+};
 
 interface TeamManageModalProps {
   defaultValue?: Team;
@@ -566,6 +574,7 @@ export default function TeamManageModal({
                     : teamMembersOptions[0]
                 }
                 isDisabled={!defaultValue}
+                customStyles={selectCustomStyles}
               />
             </Label>
           </div>

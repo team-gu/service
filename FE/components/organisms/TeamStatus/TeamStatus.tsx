@@ -95,7 +95,7 @@ export default function TeamStatus(): ReactElement {
       project:
         projectCodes?.length > 0 ? projectCodes[projectCodes.length - 1] : 101,
       studentNumber,
-      pageNum: 1,
+      pageNum: 0,
       pageSize: 10,
     });
 
@@ -169,6 +169,7 @@ export default function TeamStatus(): ReactElement {
         setTrackList(data['트랙']);
       },
     );
+
     getUserHasTeam({
       userId,
       project: { code: projectCode },
@@ -186,7 +187,7 @@ export default function TeamStatus(): ReactElement {
   };
 
   const handleFilter = (title: string, code: string) => {
-    const payloadTemp: any = { ...payload, pageNum: 1 };
+    const payloadTemp: any = { ...payload, pageNum: 0 };
     const convertTitle: any = FILTER_TITLE[title];
 
     if (!payloadTemp.hasOwnProperty(convertTitle)) {
@@ -348,7 +349,7 @@ export default function TeamStatus(): ReactElement {
             <hr />
           </>
         )}
-        {teams && teams?.length === 0 ? (
+        {teams && teams.length === 0 ? (
           <div>
             현재 등록된 팀이 없거나, 필터링 조건에 일치하는 팀이 없습니다.
           </div>

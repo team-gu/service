@@ -67,6 +67,7 @@ const Wrapper = styled.div`
         position: relative;
 
         .count-up {
+          position: relative;
           > div {
             text-align: center;
           }
@@ -95,11 +96,12 @@ const Wrapper = styled.div`
             padding: 5px;
 
             font-size: 12px;
+            letter-spacing: 1px;
 
             position: absolute;
             z-index: 1;
-            bottom: 70%;
-            margin-left: 75px;
+            bottom: 80%;
+            right: -10%;
 
             opacity: 0;
             transition: opacity 1s;
@@ -112,7 +114,11 @@ const Wrapper = styled.div`
               margin-left: -5px;
               border-width: 5px;
               border-style: solid;
-              border-color: black transparent transparent transparent;
+              border-color: ${({
+                theme: {
+                  colors: { samsungBlue },
+                },
+              }) => `${samsungBlue} transparent transparent transparent`};
             }
           }
 
@@ -267,10 +273,10 @@ export default function AdminDashboard({
                           duration={4}
                           useEasing
                         />
+                        <span className="tooltiptext">진행중</span>
                       </span>
 
                       <Text text={each.title} fontSetting="n16m" />
-                      <span className="tooltiptext">진행중</span>
                     </div>
                   ))}
                 </>

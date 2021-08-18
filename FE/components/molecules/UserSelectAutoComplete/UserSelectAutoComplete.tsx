@@ -7,12 +7,10 @@ import { useEffect } from 'react';
 const customStyles = {
   control: (base: any) => ({
     ...base,
-    height: '45px',
   }),
   singleValue: (base: any) => ({
     ...base,
-    height: '35px',
-    lineHeight: '35px',
+    lineHeight: '24px',
   }),
   menuList: (base: any) => ({
     ...base,
@@ -101,7 +99,6 @@ export default function UserSelectAutoComplete({
         skills,
         isMajor,
       }).then(({ data: { data } }) => {
-        console.log(data, '???');
         resolve(
           data?.reduce(
             (acc, cur) => [
