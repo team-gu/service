@@ -385,7 +385,7 @@ export default function ReactTable({
                     </div>
                     <div>
                       여러번 클릭하여 오름차순, 내림차순을 변경할 수 있습니다.
-                      또한 여러 칼럼을 선택하여 <Bold>다중 중렬</Bold>을 할 수
+                      또한 여러 칼럼을 선택하여 <Bold>다중 정렬</Bold>을 할 수
                       있습니다.
                     </div>
                     {grouping && (
