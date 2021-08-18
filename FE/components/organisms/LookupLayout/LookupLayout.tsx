@@ -13,8 +13,8 @@ const Wrapper = styled.div<{ showTeamCreateBtn: boolean }>`
   gap: 20px;
 
   .filter-container {
-    position: sticky
-    top: 0px;
+    position: sticky;
+    top: 130px;
     height: fit-content;
     border-radius: 14px;
     background-color: white;
