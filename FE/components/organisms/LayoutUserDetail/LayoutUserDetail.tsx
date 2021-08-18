@@ -71,6 +71,9 @@ const Wrapper = styled.div<{ isProject?: boolean }>`
       i {
         padding-left: 10px;
         cursor: pointer;
+        :hover {
+          opacity: 0.5;
+        }
       }
     }
 
