@@ -81,7 +81,7 @@ public class NoticeController {
 
     /**
      * 공지사항 등록 Api
-     * 생성 오류시 500오류와 문구 리턴
+     * 생성 오류시 408오류와 문구 리턴
      * 성공일 경우 빈 Content 리턴
      *
      * @param noticeReqDto
@@ -94,7 +94,7 @@ public class NoticeController {
     ) {
 
         if (!noticeService.createNotice(noticeReqDto)) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            return ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT)
                     .body(new ErrorResponse("공지사항 등록에 실패하였습니다."));
         }
 
@@ -103,7 +103,7 @@ public class NoticeController {
 
     /**
      * 공지사항 수정 Api
-     * 수정 오류시 500오류와 문구 리턴
+     * 수정 오류시 408오류와 문구 리턴
      * 성공일 경우 빈 Content 리턴
      *
      * @param id
@@ -117,7 +117,7 @@ public class NoticeController {
             @ApiParam(value = "공지사항 VO", required = true) NoticeReqDto noticeReqDto
     ) {
         if (!noticeService.updateNotice(id, noticeReqDto)) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            return ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT)
                     .body(new ErrorResponse("공지사항 수정에 실패하였습니다."));
         }
 

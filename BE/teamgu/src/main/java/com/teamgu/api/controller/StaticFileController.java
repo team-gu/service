@@ -83,7 +83,7 @@ public class StaticFileController {
                     .body(rs);	//파일 넘기기
         } catch (Exception e ) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 
