@@ -5,6 +5,7 @@ import Modal from './Modal';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import Layout from './Layout';
+import LayoutUserDetail from './LayoutUserDetail';
 import LookupLayout from './LookupLayout';
 import UserDetail from './UserDetail';
 import OtherUserDetail from './OtherUserDetail';
@@ -37,6 +38,7 @@ export {
   Navbar,
   Footer,
   Layout,
+  LayoutUserDetail,
   LookupLayout,
   UserDetail,
   OtherUserDetail,
