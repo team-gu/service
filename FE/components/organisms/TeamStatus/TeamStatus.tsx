@@ -15,7 +15,7 @@ import { Title } from '@molecules';
 import { TeamStatusCard, TeamManageModal, LookupLayout } from '@organisms';
 import { FILTER_TITLE } from '@utils/constants';
 import { MemberOption, Team } from '@utils/type';
-import { useAuthState } from '@store';
+import { setLoading, useAppDispatch, useAuthState } from '@store';
 import {
   getEachFiltersCodeList,
   getEachFiltersCodeListTracks,
@@ -55,6 +55,7 @@ interface Payload {
 }
 
 export default function TeamStatus(): ReactElement {
+  const dispatch = useAppDispatch();
   const {
     user: { id: userId, projectCodes, studentNumber },
   } = useAuthState();
@@ -72,6 +73,8 @@ export default function TeamStatus(): ReactElement {
   const [searchWhat, setSearchWhat] = useState<boolean>();
   const [pageCount, setPageCount] = useState(0);
   const [trackList, setTrackList] = useState([]);
+
+  const [loadUserList, setLoadUserList] = useState(false);
 
   const SERACH_BY_FILTER = true;
   const SEARCH_BY_USERID = false;
@@ -112,6 +115,13 @@ export default function TeamStatus(): ReactElement {
     }).then(({ data: { data } }) => {
       setUserHasTeam(data.hasTeam);
       setUserTeam(data.team);
+
+      dispatch(setLoading({ isLoading: true }));
+      setLoadUserList(false);
+      setTimeout(() => {
+        setLoadUserList(true);
+        dispatch(setLoading({ isLoading: false }));
+      }, 100);
     });
   }, [projectCode]);
 
@@ -297,7 +307,7 @@ export default function TeamStatus(): ReactElement {
       </div>
       <div className="team-status-list-container">
         <div className="team-status-header">
-          {payload.project && (
+          {loadUserList && payload.project && (
             <UserSelectTeamAutoComplete
               projectCode={payload.project}
               handleChangeUserSelect={handleChangeUserSelect}
