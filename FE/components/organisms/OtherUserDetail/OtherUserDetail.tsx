@@ -1,6 +1,5 @@
 import { ReactElement, useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import Link from 'next/link';
 
 import { LayoutUserDetail } from '@organisms';
 import { SkillSelectAutoComplete, Label, ProfileImage } from '@molecules';

@@ -1,5 +1,6 @@
 import { ReactElement, SyntheticEvent, useState, useRef } from 'react';
 import styled from 'styled-components';
+
 import { Input, Text, Textarea } from '@atoms';
 import { Button } from '@molecules';
 import { postAward, updateAward } from '@repository/userprofile';
@@ -131,7 +132,7 @@ export default function AwardModal(): ReactElement {
                 width="30vw"
                 height="50px"
                 ref={dateRef}
-                refValue={content.date}
+                refValue={content.date.split('T')[0]}
               />
             </div>
             <div>
