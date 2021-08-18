@@ -4,10 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -269,8 +266,12 @@ public class ExcelController {
 		// get userid by email
 		for(int i = 0;i<emails.size();i++) {			
 			log.info("email존재 userService 체크 : "+emails.get(i));
-			User user = userService.getUserByEmail(emails.get(i)).get();
-			userids.add(user.getId());
+
+			Optional<User> oUser = userService.getUserByEmail(emails.get(i));
+
+			if(oUser.isPresent()) {
+				userids.add(oUser.get().getId());
+			}
 		}
 		
 		List<String> errorEmails = new ArrayList<String>();//에러 발생한 이메일

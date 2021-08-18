@@ -9,6 +9,7 @@ import com.teamgu.common.util.RandomPwdUtil;
 import com.teamgu.handler.ProfileImageHandler;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.log4j.Log4j2;
+import org.checkerframework.checker.nullness.Opt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -117,20 +118,9 @@ public class UserServiceImpl implements UserService {
     // email을 통한 User Entity 조회
     @Override
     public Optional<User> getUserByEmail(String email) {
-        logger.info(email);
-        Optional<User> user = null;
-        try {
-            user = userRepository.findByEmail(email);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        Optional<User> oUser = userRepository.findByEmail(email);
 
-        if (user.isPresent()) {// Optional의 null 체크(값ㅇ ㅣ있는 경우)
-            logger.info(user.get().getEmail());
-        } else {// 없는 경우
-            throw new RuntimeException("일치하는 유저가 없습니다.");
-        }
-        return user;
+        return oUser;
     }
 
     // id를 통한 User Entity 조회
@@ -189,11 +179,13 @@ public class UserServiceImpl implements UserService {
      * 토큰 재생성 함수
      */
     @Override
-    public TokenResDto reissue(TokenReqDto tokenReq) {
+    public Optional<TokenResDto> reissue(TokenReqDto tokenReq) {
+        Optional<TokenResDto> oTokenReqDto = Optional.empty();
 
         // 1) refresh toekn 검증
         if (!jwtTokenUtil.validateToken(tokenReq.getRefreshToken())) {
-            throw new RuntimeException("Refresh Token이 만료되었습니다.");
+//            throw new RuntimeException("Refresh Token이 만료되었습니다.");
+            return oTokenReqDto;
         }
 
         // 2) 권한(member id)가져오기
@@ -202,12 +194,15 @@ public class UserServiceImpl implements UserService {
         // 3.Member ID 로 Refresh Token 값 가져오기
         User user = userRepository.findByEmail(authentication.getName()).get();
         String refreshToken = user.getRefreshToken();
-        if (refreshToken == null)
-            new RuntimeException("로그아웃 된 사용자입니다.");
+        if (refreshToken == null) {
+//            new RuntimeException("로그아웃 된 사용자입니다.");
+            return oTokenReqDto;
+        }
 
         // 4. Refresh Token 일치하는지 검사
         if (!refreshToken.equals(tokenReq.getRefreshToken())) {
-            throw new RuntimeException("토큰의 유저 정보가 일치하지 않습니다.");
+//            throw new RuntimeException("토큰의 유저 정보가 일치하지 않습니다.");
+            return oTokenReqDto;
         }
         // 5. 새로운 토큰 생성
         TokenResDto tokenDto = new TokenResDto();
@@ -217,8 +212,10 @@ public class UserServiceImpl implements UserService {
         // 6. 저장소 정보 업데이트
         setRefreshToken(newRefreshToken, user);
 
+        oTokenReqDto = Optional.ofNullable(tokenDto);
+
         // 토큰 발급
-        return tokenDto;
+        return oTokenReqDto;
     }
 
     /**
@@ -335,14 +332,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean changePassword(PasswordReqDto passwordReq) {
 
+        Optional<User> oUser = getUserByEmail(passwordReq.getEmail());
         User user = null;
 
-        try {
-            user = getUserByEmail(passwordReq.getEmail()).get();
-        } catch (Exception e) {
-            log.error("일치하는 유저가 존재하지 않습니다.");
-
+        if(!oUser.isPresent()) {
             return false;
+        } else {
+          user = oUser.get();
         }
 
         if(passwordEncoder.matches(passwordReq.getOriPassword(), user.getPassword())) {
@@ -360,15 +356,15 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public short initPassword(String email) {
+        Optional<User> oUser = getUserByEmail(email);
         User user = null;
         String tmpPwd = "";
 
-        try {
-            user = getUserByEmail(email).get();
-        } catch (Exception e) {
-            log.info("일치하는 유저가 존재하지 않습니다.");
 
+        if(!oUser.isPresent()) {
             return 0;
+        } else {
+            user = oUser.get();
         }
 
         //10자리 임시 비밀번호 생성
@@ -638,14 +634,16 @@ public class UserServiceImpl implements UserService {
         log.info(auth);
 
         if (StringUtils.isEmpty(auth)) {
-            throw new RuntimeException("Access Token이 존재하지 않습니다");
+            return null;
+//            throw new RuntimeException("Access Token이 존재하지 않습니다");
         }
 
         String token = auth.substring(7);
 
-        // 1) access toekn 검증
+        // 1) access token 검증
         if (!jwtTokenUtil.validateToken(token)) {
-            throw new RuntimeException("Access Token이 만료되었습니다.");
+            return null;
+//            throw new RuntimeException("Access Token이 만료되었습니다.");
         }
 
         // 2) Auth 가져온다
