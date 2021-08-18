@@ -124,6 +124,7 @@ public class ChatServiceImpl implements ChatService{
 													.team_id(team_id)
 													.create_date_time(chat.getSendDateTime())
 													.unread_user_count(0)//읽지 않은 유저를 관리해야한다
+													.profile_image("https://i5a202.p.ssafy.io:8080/api/file/display?url=profile/"+chat.getUser().getProfileServerName()+"."+chat.getUser().getProfileExtension())
 													.build();
 			chatMessageResDtoList.add(chatMessageResDto);
 		}
