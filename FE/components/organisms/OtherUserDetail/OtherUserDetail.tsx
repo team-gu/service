@@ -1,5 +1,6 @@
 import { ReactElement, useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 
 import { LayoutUserDetail } from '@organisms';
 import { SkillSelectAutoComplete, Label, ProfileImage } from '@molecules';
@@ -66,28 +67,30 @@ export default function OtherUserDetail(): ReactElement {
   useEffect(() => {
     dispatch(setLoading({ isLoading: true }));
     (async () => {
-      try {
-        const { data } = await getUserDetail(id);
-        setOtherUser(data);
+      if (id) {
+        try {
+          const { data } = await getUserDetail(id);
+          setOtherUser(data);
 
-        getUserHasTeam({
-          userId: user.id,
-          project: { code: user.projectCodes[user.projectCodes.length - 1] },
-        }).then(({ data: { data } }) => {
-          if (data.hasTeam) {
-            if (data.team.leaderId === user.id) {
-              setTeamId(data.team.id);
-              setIsLeader(true);
+          getUserHasTeam({
+            userId: user.id,
+            project: { code: user.projectCodes[user.projectCodes.length - 1] },
+          }).then(({ data: { data } }) => {
+            if (data.hasTeam) {
+              if (data.team.leaderId === user.id) {
+                setTeamId(data.team.id);
+                setIsLeader(true);
+              }
             }
-          }
-        });
-      } catch (error) {
-        console.error(error);
-      } finally {
-        dispatch(setLoading({ isLoading: false }));
+          });
+        } catch (error) {
+          console.error(error);
+        } finally {
+          dispatch(setLoading({ isLoading: false }));
+        }
       }
     })();
-  }, []);
+  }, [id]);
 
   if (!otherUser.name) return <div>존재하지 않는 사용자입니다.</div>;
   return (
@@ -176,7 +179,14 @@ export default function OtherUserDetail(): ReactElement {
                 {otherUser.projects.length ? (
                   otherUser.projects.map(
                     ({ id, name, position, url, introduce }: any) => (
-                      <a href={url}>
+                      <a
+                        href={
+                          url.includes('https') || url.includes('http')
+                            ? url
+                            : 'http://' + url
+                        }
+                        target="_blank"
+                      >
                         <div className="project" key={id}>
                           <div className="top">
                             <p>{name}</p>

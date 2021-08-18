@@ -1,4 +1,4 @@
-import { ReactElement, useState } from 'react';
+import { ReactElement } from 'react';
 
 import { LayoutUserDetail } from '@organisms';
 import { SkillSelectAutoComplete, Label, ProfileImage } from '@molecules';
@@ -93,7 +93,14 @@ export default function MyDetail({
                 {user.projects.length ? (
                   user.projects.map(
                     ({ id, name, position, url, introduce }: any) => (
-                      <a href={url}>
+                      <a
+                        href={
+                          url.includes('https') || url.includes('http')
+                            ? url
+                            : 'http://' + url
+                        }
+                        target="_blank"
+                      >
                         <div className="project" key={id}>
                           <div className="top">
                             <p>{name}</p>
