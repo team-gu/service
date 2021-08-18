@@ -20,7 +20,7 @@ import {
 } from '../webrtc';
 import { useAuthState } from '@store';
 
-var OpenViduBrowser: typeof import('/Users/minho/Workspace/fe/FE/node_modules/openvidu-browser/lib/index');
+var OpenViduBrowser: typeof import('node_modules/openvidu-browser/lib/index');
 
 const Wrapper = styled.div`
   margin: 30px 10px;
@@ -137,12 +137,16 @@ export default function VideoChat(): ReactElement {
 
     // 어떤 스트림이 없어지면
     mySession.on('streamDestroyed', (event: any) => {
+      console.log('streamDestroyed');
       deleteSubscriber(event.stream.streamManager);
     });
 
     // 예외가 발생하면
     mySession.on('exception', (exception: any) => {
       console.warn(exception);
+      if (exception.name === "ICE_CONNECTION_DISCONNECTED") {
+        deleteSubscriber(exception.origin.streamManager);
+      }
     });
 
     // 스트림 속성이 변경되면
@@ -373,7 +377,6 @@ export default function VideoChat(): ReactElement {
 
   const handleClickExit = () => {
     videoTrackOff(publisher);
-    leaveSession();
     router.push('/');
   };
 
