@@ -2,7 +2,7 @@ import { ReactElement, useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 
 import { LayoutUserDetail } from '@organisms';
-import { SkillSelectAutoComplete, Label, ProfileImage } from '@molecules';
+import { Label, ProfileImage, Tag } from '@molecules';
 import { Icon, Text, Textarea } from '@atoms';
 import { useAuthState, useAppDispatch, setLoading, setChatOpen } from '@store';
 import useSockStomp from '@hooks/useSockStomp';
@@ -153,10 +153,18 @@ export default function OtherUserDetail(): ReactElement {
 
               <div className="skills">
                 <Label text="사용 기술" fontSetting="n18b">
-                  <SkillSelectAutoComplete
+                  {/* <SkillSelectAutoComplete
                     value={otherUser.skills}
                     disabled={true}
-                  />
+                  /> */}
+                  <div className="skill-tags">
+                    {otherUser.skills?.map((each) => (
+                      <Tag
+                        text={each.codeName}
+                        key={`skill-${each.codeName}`}
+                      />
+                    ))}
+                  </div>
                 </Label>
               </div>
             </div>

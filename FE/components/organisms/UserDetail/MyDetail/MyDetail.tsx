@@ -1,10 +1,11 @@
 import { ReactElement } from 'react';
 
 import { LayoutUserDetail } from '@organisms';
-import { SkillSelectAutoComplete, Label, ProfileImage } from '@molecules';
+import { Tag, Label, ProfileImage } from '@molecules';
 import { Icon, Text, Textarea } from '@atoms';
 import { useAuthState } from '@store';
 import { getImageURL } from '@utils/constants';
+import UserStatusCard from 'components/organisms/UserStatusCard';
 
 const getStudentClass = (ID: string) => {
   if (ID[0] !== '0') return ID.slice(0, 2);
@@ -72,7 +73,14 @@ export default function MyDetail({
               </div>
               <div className="skills">
                 <Label text="사용 기술" fontSetting="n18b">
-                  <SkillSelectAutoComplete value={user.skills} disabled />
+                  <div className="skill-tags">
+                    {user.skills?.map((each) => (
+                      <Tag
+                        text={each.codeName}
+                        key={`skill-${each.codeName}`}
+                      />
+                    ))}
+                  </div>
                 </Label>
               </div>
             </div>

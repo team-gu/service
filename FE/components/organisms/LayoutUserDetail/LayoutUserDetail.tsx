@@ -119,6 +119,13 @@ const Wrapper = styled.div<{ isProject?: boolean }>`
         .skills {
           margin-bottom: 20px;
           width: 100%;
+          .skill-tags {
+            margin-top: 5px;
+            > div {
+              display: inline-block;
+              margin: 0 5px 5px 0px;
+            }
+          }
         }
         .introduce {
           margin-bottom: 20px;
