@@ -142,8 +142,8 @@ export default function Home(): ReactElement {
           router,
         ),
       );
-      if (res.status) {
-        if (res.status === 404 || res.status === 401) {
+      if (res) {
+        if (res.statusCode === 404 || res.statusCode === 401) {
           setError(true);
           setErrorMessage('아이디 혹은 비밀번호가 틀립니다.');
         }

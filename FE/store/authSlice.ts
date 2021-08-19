@@ -86,10 +86,7 @@ export const setLogin =
     try {
       const { data } = await postLoginApi(param);
       saveItem('accessToken', data.accessToken);
-      // TODO: 리프레시 토큰 사용이 후순위로 밀려서 후에 이 부분에 대한 수정과 사용이 필요합니다.
-      // saveItem('refreshToken', data.refreshToken);
       dispatch(setUser(data.userInfo));
-
       if (
         data.userInfo.role === ROLE_SUB_ADMIN_CODE ||
         data.userInfo.role === ROLE_ADMIN_CODE
@@ -100,9 +97,10 @@ export const setLogin =
           ? router.push('/userdetail')
           : router.push('/humanpool');
       }
+      return null;
     } catch (error) {
       console.error(error);
-      return error.response;
+      return error.response.data;
     } finally {
       dispatch(setLoading({ isLoading: false }));
     }
