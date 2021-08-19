@@ -4,7 +4,17 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { getNoticeDetail } from '@repository/noticeRepository';
 import { Icon } from '@atoms';
-import { QuillEditor } from '@molecules';
+import { Button, QuillEditor } from '@molecules';
+
+interface NoticeDetailProps {
+  detailValue: string | number;
+  setDetailValue: any;
+}
+
+const Wrapper = styled.div`
+  min-height: 70vh;
+  margin-bottom: 100px;
+`;
 
 const Title = styled.div`
   font-size: xx-large;
@@ -35,7 +45,14 @@ const DownloadFile = styled.div`
   }
 `;
 
-export default function NoticeDetail(): ReactElement {
+const ButtonArea = styled.div`
+  float: right;
+`;
+
+export default function NoticeDetail({
+  detailValue,
+  setDetailValue,
+}: NoticeDetailProps): ReactElement {
   const router = useRouter();
   const { id } = router.query;
   const [notice, setNotice] = useState(Object);
@@ -45,17 +62,17 @@ export default function NoticeDetail(): ReactElement {
       try {
         const {
           data: { data },
-        } = await getNoticeDetail(id);
+        } = id ? await getNoticeDetail(id) : await getNoticeDetail(detailValue);
         setNotice(data);
+        console.log(data);
       } catch (error) {
         console.error(error);
       }
     })();
   }, []);
 
-  if (!id) return <div></div>;
   return (
-    <>
+    <Wrapper>
       <Title>{notice.title}</Title>
       <CreatedDate>{notice.createDate}</CreatedDate>
       <hr />
@@ -78,6 +95,13 @@ export default function NoticeDetail(): ReactElement {
             </DownloadFile>
           ))}
       </div>
-    </>
+      <ButtonArea>
+        <Button
+          title="목록"
+          width="5vw"
+          func={() => (id ? router.back() : setDetailValue(-1))}
+        />
+      </ButtonArea>
+    </Wrapper>
   );
 }

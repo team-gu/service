@@ -90,7 +90,6 @@ export default function RenderCropper({
     setSubmitImage('');
   };
 
-  // To upload the edited image
   const onUpload = async () => {
     if (image === '/profile.png') {
       changeImageMode();
@@ -103,7 +102,6 @@ export default function RenderCropper({
       canvasDataUrl,
       `${user.studentNumber}_profile.jpeg`,
     );
-    // 실제 제출하는 파일은 아래 파일이 될 것이다.
     setSubmitImage(convertedUrlToFile);
     changeImageMode();
   };
@@ -154,11 +152,11 @@ export default function RenderCropper({
           />
         </div>
 
-        <Button title="Clear" func={onClear} width="80px" />
+        <Button title="초기화" func={onClear} width="80px" />
 
-        <Button title="Choose" func={triggerFileSelectPopup} width="80px" />
+        <Button title="선택" func={triggerFileSelectPopup} width="80px" />
 
-        <Button title="Upload" func={onUpload} width="80px" />
+        <Button title="등록" func={onUpload} width="80px" />
       </div>
     </Wrapper>
   );
