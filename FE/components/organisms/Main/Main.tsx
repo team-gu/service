@@ -2,6 +2,8 @@ import { ReactElement, SyntheticEvent, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 import { Input, Text } from '@atoms';
+import { respondTo } from '@styles/respondTo';
+
 import { useAppDispatch, setLogin, displayModal } from '@store';
 import { MODALS } from '@utils/constants';
 import { Label, Button } from '@molecules';
@@ -27,9 +29,9 @@ const Wrapper = styled.div`
     .fixed-title {
       margin-right: 100px;
       margin-bottom: 100px;
-      @media only all and (max-width: 768px) {
+      ${respondTo.mobile`
         display: none;
-      }
+      `}
     }
 
     .login-area {
@@ -44,14 +46,14 @@ const Wrapper = styled.div`
         ${({ theme: { flexRow } }) => flexRow()};
       }
 
-      @media only all and (max-width: 768px) {
+      ${respondTo.mobile`
         margin-top: 40%;
         position: absolute;
         top: 0;
         left: 0;
         width: 90%;
         box-shadow: none;
-      }
+      `}
     }
 
     .form-inner {
@@ -88,9 +90,9 @@ const Wrapper = styled.div`
     Button {
       ${({ theme: { flexRow } }) => flexRow()};
       margin-left: 12px;
-      @media only all and (max-width: 768px) {
+      ${respondTo.mobile`
         width: 85%;
-      }
+      `}
     }
   }
 `;

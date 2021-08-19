@@ -12,7 +12,7 @@ const breakPoints: {
 // TODO: 타입 정의 해야함
 export const respondTo = Object.keys(breakPoints).reduce((acc, label) => {
   acc[label] = (...args) => css`
-    @media (max-width: ${breakPoints[label]}) {
+    @media only all and (max-width: ${breakPoints[label]}) {
       ${css(...args)};
     }
   `;

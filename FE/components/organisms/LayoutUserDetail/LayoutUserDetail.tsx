@@ -1,5 +1,6 @@
 import { ReactElement } from 'react';
 import styled from 'styled-components';
+import { respondTo } from '@styles/respondTo';
 
 interface LayoutUserDetailProps {
   children: ReactElement;
@@ -84,12 +85,12 @@ const Wrapper = styled.div<{ isProject?: boolean }>`
       grid-template-columns: 0.8fr 1.2fr;
       grid-template-areas: 'manifesto profileImage';
       gap: 40px;
-      @media only all and (max-width: 768px) {
+      ${respondTo.mobile`
         grid-template-columns: 1fr;
         grid-template-areas:
           'profileImage'
           'manifesto';
-      }
+      `}
 
       .portrait {
         width: 100% auto;
@@ -144,10 +145,10 @@ const Wrapper = styled.div<{ isProject?: boolean }>`
       grid-template-columns: 1fr 1fr 1fr;
       grid-template-areas: 'project project project';
 
-      @media only all and (max-width: 768px) {
+      ${respondTo.mobile`
         grid-template-columns: 1fr 1fr;
         grid-template-areas: 'project project';
-      }
+      `}
 
       a {
         text-decoration: none;
@@ -211,10 +212,10 @@ const Wrapper = styled.div<{ isProject?: boolean }>`
       grid-template-columns: 1fr 1fr 1fr;
       grid-template-areas: 'award award award';
 
-      @media only all and (max-width: 768px) {
+      ${respondTo.mobile`
         grid-template-columns: 1fr 1fr;
         grid-template-areas: 'award award';
-      }
+      `}
 
       p {
         grid-column: span 3;
