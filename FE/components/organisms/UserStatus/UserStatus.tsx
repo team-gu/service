@@ -107,6 +107,8 @@ export default function UserStatus(): ReactElement {
   const [teamId, setTeamId] = useState(0);
   const [pageCount, setPageCount] = useState(0);
   const [trackList, setTrackList] = useState([]);
+
+  const [isProjectChange, setIsProjectChange] = useState();
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -262,7 +264,9 @@ export default function UserStatus(): ReactElement {
         project: value,
         pageNum: 0,
         sort: 'asc',
+        track: undefined,
       }));
+      setIsProjectChange(true);
     }
   };
 
@@ -357,7 +361,13 @@ export default function UserStatus(): ReactElement {
                 />
               )),
           )}
-        <Filter title={'트랙'} contents={trackList} func={handleFilterArray} />
+        <Filter
+          title={'트랙'}
+          contents={trackList}
+          func={handleFilterArray}
+          isChange={isProjectChange}
+          setIsChange={setIsProjectChange}
+        />
       </div>
       <div className="team-status-list-container">
         <div className="team-status-header">
