@@ -22,7 +22,10 @@ import {
   deleteAward,
   updateDetailInformation,
 } from '@repository/userprofile';
-import { getEachFiltersCodeList } from '@repository/filterRepository';
+import {
+  getEachFiltersCodeList,
+  getEachFiltersCodeListTracks,
+} from '@repository/filterRepository';
 import { MODALS, getImageURL } from '@utils/constants';
 import { Skill } from '@utils/type';
 import { urltoFile } from '@utils/dataURLtoFile';
@@ -65,7 +68,17 @@ export default function MyDetailEdit({
       const {
         data: { data },
       } = await getEachFiltersCodeList(user.studentNumber);
-      setTrackOptions(data.트랙);
+
+      const {
+        data: {
+          data: { 트랙 },
+        },
+      } = await getEachFiltersCodeListTracks(
+        user.studentNumber,
+        user.projectCodes[user.projectCodes.length - 1],
+      );
+
+      setTrackOptions(트랙);
       setPositionOptions(data.역할);
     })();
   }, []);
@@ -233,6 +246,7 @@ export default function MyDetailEdit({
                   <div className="track">
                     <Label text="트랙" fontSetting="n18b">
                       <SimpleSelect
+                        // isMulti
                         options={getOptions(trackOptions)}
                         onChange={(track) => {
                           setTrack({ codeName: track.value, code: track.code });

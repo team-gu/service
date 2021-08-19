@@ -15,6 +15,7 @@ interface SimpleSelectProps {
   customStyles?: Partial<Styles<any, false, GroupTypeBase<any>>> | undefined;
   autofocus?: boolean | undefined;
   isDisabled?: boolean | undefined;
+  isMulti?: boolean;
 }
 
 export default function SimpleSelect({
@@ -26,6 +27,7 @@ export default function SimpleSelect({
   customStyles,
   autofocus,
   isDisabled,
+  isMulti,
 }: SimpleSelectProps): ReactElement {
   const styles = {
     menuList: (base: any) => ({
@@ -52,6 +54,7 @@ export default function SimpleSelect({
       autoFocus={autofocus}
       styles={styles}
       isDisabled={isDisabled}
+      isMulti={isMulti}
     />
   );
 }
