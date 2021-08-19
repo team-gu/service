@@ -1,9 +1,14 @@
-import { ReactElement, useEffect, useState, useMemo } from 'react';
+import { ReactElement, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import CountUp from 'react-countup';
 
 import { Text } from '@atoms';
-import { ReactTable, DashboardBarChart } from '@molecules';
+import {
+  ReactTable,
+  DashboardBarChart,
+  BigDonutChart,
+  DonutChart,
+} from '@molecules';
 import {
   getChartData,
   getProjectUserTableData,
@@ -166,15 +171,42 @@ export default function AdminDashboard({
   useEffect(() => {
     if (project) {
       getChartData({ projectId: project.id }).then(({ data: { data } }) => {
+        // 막대차트를 한다면...
+        // const regionData = data.region
+        //   .sort((a: DashboardData, b: DashboardData) =>
+        //     a.title === '전국' ? -1 : 1,
+        //   )
+        //   .map(({ title, data }: DashboardData) => ({
+        //     name: title,
+        //     미소속: data.before,
+        //     진행중: data.doing,
+        //     완료: data.after,
+        //   }));
+
+        // 파이차트를 한다면...
         const regionData = data.region
           .sort((a: DashboardData, b: DashboardData) =>
             a.title === '전국' ? -1 : 1,
           )
           .map(({ title, data }: DashboardData) => ({
-            name: title,
-            미소속: data.before,
-            진행중: data.doing,
-            완료: data.after,
+            title,
+            data: [
+              {
+                name: '완료',
+                value: data.after,
+                color: COLOR_MAP.COMPLETE,
+              },
+              {
+                name: '진행중',
+                value: data.doing,
+                color: COLOR_MAP.ONGOING,
+              },
+              {
+                name: '미소속',
+                value: data.before,
+                color: COLOR_MAP.NONE,
+              },
+            ],
           }));
         const trackData = data.track.map(({ title, data }: DashboardData) => ({
           title,
@@ -217,7 +249,8 @@ export default function AdminDashboard({
             regionTeamData.length > 0 && (
               <>
                 <div className="entire-chart">
-                  <DashboardBarChart
+                  {/* 막대차트를 한다면... */}
+                  {/* <DashboardBarChart
                     data={regionTeamData.slice(0, 1)}
                     width={300}
                     height={500}
@@ -227,11 +260,17 @@ export default function AdminDashboard({
                       완료: COLOR_MAP.COMPLETE,
                     }}
                     legend={false}
+                  /> */}
+                  {/* 파이차트를 한다면 */}
+                  <BigDonutChart
+                    data={regionTeamData.slice(0, 1)[0].data}
+                    title={regionTeamData.slice(0, 1)[0].title}
                   />
                 </div>
 
                 <div className="region-chart">
-                  <DashboardBarChart
+                  {/* 막대차트를 한다면... */}
+                  {/* <DashboardBarChart
                     data={regionTeamData.slice(1)}
                     width={800}
                     height={300}
@@ -240,7 +279,11 @@ export default function AdminDashboard({
                       진행중: COLOR_MAP.ONGOING,
                       완료: COLOR_MAP.COMPLETE,
                     }}
-                  />
+                  /> */}
+                  {/* 파이차트를 한다면 */}
+                  {regionTeamData.slice(1).map((d, idx) => (
+                    <DonutChart key={idx} data={d.data} title={d.title} />
+                  ))}
                 </div>
               </>
             )}
