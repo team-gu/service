@@ -317,7 +317,7 @@ export default function MyDetailEdit({
               </div>
             </div>
             <div className="button-right">
-              <Button title="수정" type="submit" width="5vw" />
+              <Button title="수정" type="submit" width="70px" />
             </div>
           </form>
         ) : (

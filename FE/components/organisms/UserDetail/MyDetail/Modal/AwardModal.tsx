@@ -16,6 +16,10 @@ import { AwardModalType } from '@utils/type';
 
 const Wrapper = styled.div`
   margin: 30px;
+  input {
+    width: 100%;
+    height: 30px;
+  }
 `;
 
 const UpdateAward = styled.div`
@@ -24,10 +28,10 @@ const UpdateAward = styled.div`
   }
 
   .button-container {
-    text-align: end;
+    text-align: center;
 
     button {
-      width: 5vw;
+      width: 70px;
       height: 30px;
       margin-left: 5px;
     }
@@ -40,10 +44,10 @@ const CreateAward = styled.div`
   }
 
   .button-container {
-    text-align: end;
+    text-align: center;
 
     button {
-      width: 5vw;
+      width: 70px;
       height: 30px;
       margin-left: 5px;
     }
@@ -118,7 +122,7 @@ export default function AwardModal(): ReactElement {
           <UpdateAward>
             <div>
               <Input
-                width="30vw"
+                width="100%"
                 height="50px"
                 ref={agencynRef}
                 refValue={content.agency}
@@ -127,7 +131,7 @@ export default function AwardModal(): ReactElement {
             </div>
             <div>
               <Input
-                width="30vw"
+                width="100%"
                 height="50px"
                 ref={nameRef}
                 refValue={content.name}
@@ -137,7 +141,7 @@ export default function AwardModal(): ReactElement {
             <div>
               <Input
                 type="date"
-                width="30vw"
+                width="100%"
                 height="50px"
                 ref={dateRef}
                 refValue={content.date.split('T')[0]}
@@ -171,7 +175,7 @@ export default function AwardModal(): ReactElement {
             <div>
               <Input
                 placeHolder={content.agency}
-                width="30vw"
+                width="100%"
                 height="50px"
                 ref={agencynRef}
                 maxLength={15}
@@ -180,14 +184,14 @@ export default function AwardModal(): ReactElement {
             <div>
               <Input
                 placeHolder={content.name}
-                width="30vw"
+                width="100%"
                 height="50px"
                 ref={nameRef}
                 maxLength={15}
               />
             </div>
             <div>
-              <Input type="date" width="30vw" height="50px" ref={dateRef} />
+              <Input type="date" width="100%" height="50px" ref={dateRef} />
             </div>
             <div>
               <StyledTextarea

@@ -97,7 +97,7 @@ export default function NoticeDetail({
       <ButtonArea>
         <Button
           title="목록"
-          width="5vw"
+          width="70px"
           func={() => (id ? router.back() : setDetailValue(-1))}
         />
       </ButtonArea>

@@ -16,6 +16,10 @@ import { ProjectModalType } from '@utils/type';
 
 const Wrapper = styled.div`
   margin: 30px;
+  input {
+    width: 100%;
+    height: 30px;
+  }
 `;
 
 const UpdateProject = styled.div`
@@ -24,10 +28,10 @@ const UpdateProject = styled.div`
   }
 
   .button-container {
-    text-align: end;
+    text-align: center;
 
     button {
-      width: 5vw;
+      width: 70px;
       height: 30px;
       margin-left: 5px;
     }
@@ -40,10 +44,10 @@ const CreateProject = styled.div`
   }
 
   .button-container {
-    text-align: end;
+    text-align: center;
 
     button {
-      width: 5vw;
+      width: 70px;
       height: 30px;
       margin-left: 5px;
     }
@@ -131,7 +135,7 @@ export default function ProjectModal(): ReactElement {
           <UpdateProject>
             <div>
               <Input
-                width="30vw"
+                width="100%"
                 height="50px"
                 ref={nameRef}
                 refValue={content.name}
@@ -154,7 +158,7 @@ export default function ProjectModal(): ReactElement {
             </div>
             <div>
               <Input
-                width="30vw"
+                width="100%"
                 height="50px"
                 ref={urlRef}
                 refValue={content.url}
@@ -189,7 +193,7 @@ export default function ProjectModal(): ReactElement {
             <div>
               <Input
                 placeHolder={content.name}
-                width="30vw"
+                width="100%"
                 height="50px"
                 maxLength={15}
                 ref={nameRef}
@@ -207,7 +211,7 @@ export default function ProjectModal(): ReactElement {
             <div>
               <Input
                 placeHolder={content.url}
-                width="30vw"
+                width="100%"
                 height="50px"
                 maxLength={50}
                 ref={urlRef}

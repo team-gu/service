@@ -8,16 +8,22 @@ import { MODALS } from '@utils/constants';
 
 const Wrapper = styled.div`
   margin: 30px;
+  input {
+    width: 100%;
+    height: 30px;
+  }
 `;
 
 const ChangePW = styled.div`
+  width: 350px;
+
   > div {
     margin-bottom: 15px;
   }
   .button-container {
-    text-align: end;
+    text-align: center;
     button {
-      width: 5vw;
+      width: 70px;
       height: 30px;
       margin-left: 5px;
     }
@@ -106,8 +112,8 @@ export default function ChangePasswordModal(): ReactElement {
             </div>
             <Input
               placeHolder={'이메일을 입력해주세요.'}
-              width="30vw"
-              height="50px"
+              width="100%"
+              height="40px"
               ref={emailRef}
               maxLength={30}
               autoComplete="off"
@@ -117,8 +123,8 @@ export default function ChangePasswordModal(): ReactElement {
             <Input
               placeHolder={'기존 비밀번호를 입력해주세요.'}
               type="password"
-              width="30vw"
-              height="50px"
+              width="100%"
+              height="40px"
               ref={passwordRef}
               maxLength={16}
               autoComplete="off"
@@ -128,8 +134,8 @@ export default function ChangePasswordModal(): ReactElement {
             <Input
               placeHolder={'새로운 비밀번호를 입력해주세요.'}
               type="password"
-              width="30vw"
-              height="50px"
+              width="100%"
+              height="40px"
               ref={newPasswordRef}
               maxLength={16}
               autoComplete="off"
@@ -139,8 +145,8 @@ export default function ChangePasswordModal(): ReactElement {
             <Input
               placeHolder={'새로운 비밀번호를 다시 한 번 입력해주세요.'}
               type="password"
-              width="30vw"
-              height="50px"
+              width="100%"
+              height="40px"
               ref={confirmNewPasswordRef}
               maxLength={16}
               autoComplete="off"
