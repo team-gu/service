@@ -22,8 +22,6 @@ export const myAlert = (dispatch: any, content: string) => {
 };
 
 export const errorAlert = (dispatch: any, err: AxiosError) => {
-  console.error(
-    'ERROR' + (err.response?.data ? JSON.stringify(err.response.data) : err),
-  );
+  console.error("Response:", err.response);
   myAlert(dispatch, '에러가 발생했습니다. 다시 시도해주세요.');
 };
