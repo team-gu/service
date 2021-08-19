@@ -185,6 +185,8 @@ export default function TeamStatus(): ReactElement {
     });
   };
 
+  console.log(teams);
+
   const handleProjectChange = ({ value }: { value: number }) => {
     if (projectCodes?.includes(value)) {
       setProjectCode(value);
@@ -358,19 +360,21 @@ export default function TeamStatus(): ReactElement {
             <hr />
           </>
         )}
-        {teams && teams.length === 0 ? (
+        {!teams || (teams && teams.length === 0) ? (
           <div>
             현재 등록된 팀이 없거나, 필터링 조건에 일치하는 팀이 없습니다.
           </div>
         ) : (
           <>
-            {teams?.map((item, index) => (
-              <TeamStatusCard
-                key={index}
-                team={item}
-                onClickTeamManage={handleTeamManageModal}
-              />
-            ))}
+            {teams
+              .filter(({ id }) => id !== userTeam?.id)
+              .map((item, index) => (
+                <TeamStatusCard
+                  key={index}
+                  team={item}
+                  onClickTeamManage={handleTeamManageModal}
+                />
+              ))}
             {pageCount >= 1 && (
               <Pagination
                 pageCount={pageCount}
