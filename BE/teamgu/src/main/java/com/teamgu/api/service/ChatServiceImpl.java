@@ -63,7 +63,8 @@ public class ChatServiceImpl implements ChatService{
 		List<UserChatRoom> userChatRoomList = userChatRoomRepository.findByUserId(userid); //JPAQueryFactory 이용
 		log.debug("userChatRoomList 갯수 : "+userChatRoomList.size());
 		List<ChatRoomResDto> chatRoomResDtoList = new ArrayList<ChatRoomResDto>();
-		for(UserChatRoom userChatRoom:userChatRoomList) {			
+		for(UserChatRoom userChatRoom:userChatRoomList) {	
+			if(userChatRoom.getVisible()==0)continue;//나간 방은 반환하지 않는다
 			long chatroomid = userChatRoom.getChatRoom().getId();
 			
 			Chat lastchat = chatRoomRepositorySupport.getLastMessage(chatroomid);
