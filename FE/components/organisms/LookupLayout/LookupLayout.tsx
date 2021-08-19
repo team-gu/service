@@ -1,5 +1,6 @@
 import { ReactElement, JSXElementConstructor } from 'react';
 import styled from 'styled-components';
+import { respondTo } from '@styles/respondTo';
 
 interface LookupLayoutProps {
   children: ReactElement<any, string | JSXElementConstructor<any>> | any;
@@ -12,6 +13,10 @@ const Wrapper = styled.div<{ showTeamCreateBtn: boolean }>`
   grid-template-rows: auto;
   gap: 20px;
 
+  ${respondTo.mobile`
+    ${({ theme: { flexCol } }) => flexCol()}
+  `}
+
   .filter-container {
     position: sticky;
     top: 130px;
@@ -19,6 +24,9 @@ const Wrapper = styled.div<{ showTeamCreateBtn: boolean }>`
     border-radius: 14px;
     background-color: white;
     box-shadow: 2px 4px 12px rgb(0 0 0 / 8%);
+    ${respondTo.mobile`
+      display: none;
+    `}
   }
 
   .sort-container {
