@@ -208,6 +208,18 @@ export default function MyDetailEdit({
         <button type="button" onClick={() => setRoute(USER_PROJECT)}>
           프로젝트
         </button>
+        <button
+          type="button"
+          onClick={() =>
+            dispatch(
+              displayModal({
+                modalName: MODALS.CHANGEPASSWORD_MODAL,
+              }),
+            )
+          }
+        >
+          비밀번호 변경
+        </button>
       </div>
       <div className="typography">
         <div className="icons">

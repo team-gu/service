@@ -29,11 +29,12 @@ const Wrapper = styled.div<{ isProject?: boolean }>`
   .button-container {
     ${({ theme: { flexRow } }) => flexRow()}
     button {
-      width: 50%;
+      width: 100%;
       height: 50px;
       border: none;
       font-size: 14px;
       font-weight: bold;
+      background-color: white;
       :first-child {
         ${({
           isProject,
@@ -43,9 +44,9 @@ const Wrapper = styled.div<{ isProject?: boolean }>`
         }) =>
           !isProject
             ? `background-color: ${samsungLightBlue};color: white;`
-            : `background-color: white`}
+            : `background-color: lightgray`}
       }
-      :last-child {
+      :nth-child(2) {
         ${({
           isProject,
           theme: {
@@ -54,7 +55,7 @@ const Wrapper = styled.div<{ isProject?: boolean }>`
         }) =>
           isProject
             ? `background-color: ${samsungLightBlue};color: white;`
-            : `background-color: white`}
+            : `background-color: lightgray`}
       }
     }
 
@@ -68,17 +69,6 @@ const Wrapper = styled.div<{ isProject?: boolean }>`
     .icons {
       ${({ theme: { flexRow } }) => flexRow('flex-end')}
 
-      .icon-text {
-        cursor: pointer;
-        ${({
-          theme: {
-            font: { n12m },
-          },
-        }) => n12m}
-        :hover {
-          opacity: 0.5;
-        }
-      }
       i {
         padding-left: 10px;
         cursor: pointer;
