@@ -309,21 +309,24 @@ export default function UserStatus(): ReactElement {
             <Title title="프로젝트">
               <SimpleSelect
                 options={filterContents['프로젝트']
-                  .slice(0, projectCodes?.length)
+                  .filter(({ code }: { code: number }) =>
+                    projectCodes.includes(code),
+                  )
                   .reduce(
-                    (acc, { codeName, code }) => [
-                      ...acc,
-                      { label: codeName, value: code },
-                    ],
+                    (
+                      acc: number[],
+                      { codeName, code }: { codeName: string; code: number },
+                    ) => [...acc, { label: codeName, value: code }],
                     [],
                   )}
                 onChange={handleProjectChange}
                 value={{
-                  label:
-                    filterContents['프로젝트'][projectCodes?.length - 1]
-                      ?.codeName,
-                  value:
-                    filterContents['프로젝트'][projectCodes?.length - 1]?.code,
+                  label: filterContents['프로젝트'].filter(
+                    ({ code }: { code: number }) => projectCodes.includes(code),
+                  )[projectCodes?.length - 1]?.codeName,
+                  value: filterContents['프로젝트'].filter(
+                    ({ code }: { code: number }) => projectCodes.includes(code),
+                  )[projectCodes?.length - 1]?.code,
                 }}
               />
             </Title>
