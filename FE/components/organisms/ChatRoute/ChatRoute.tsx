@@ -9,6 +9,7 @@ import {
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { OptionsType } from 'react-select';
+import { respondTo } from '@styles/respondTo';
 
 import {
   useAuthState,
@@ -45,6 +46,12 @@ const Wrapper = styled(motion.div)`
   width: 400px;
   height: 600px;
   max-height: 70%;
+  ${respondTo.mobile`
+    width: 100%;
+    height: 100%;
+    bottom: 10px;
+    right: 0px;
+  `}
 
   border-radius: 10px;
   box-shadow: 0 12px 20px 0 rgba(0, 0, 0, 0.15);
