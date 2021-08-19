@@ -109,6 +109,7 @@ export default function Filter({
             )
           ) : (
             <Select
+              menuPlacement="auto"
               isMulti
               options={contents.reduce(
                 (acc, cur): any => [
