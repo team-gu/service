@@ -223,18 +223,6 @@ export default function MyDetailEdit({
       </div>
       <div className="typography">
         <div className="icons">
-          <div
-            className="icon-text"
-            onClick={() =>
-              dispatch(
-                displayModal({
-                  modalName: MODALS.CHANGEPASSWORD_MODAL,
-                }),
-              )
-            }
-          >
-            비밀번호 변경
-          </div>
           <Icon iconName="clear" color="black" func={changeEditMode} />
         </div>
         {route === USER_INFO ? (
