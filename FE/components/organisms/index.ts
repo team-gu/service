@@ -3,7 +3,7 @@ import ChatRoom from './ChatRoom';
 import ChatRoute from './ChatRoute';
 import Modal from './Modal';
 import Navbar from './Navbar';
-import { Notice, NoticeDetail, NoticeEdit, NoticeUpdate } from './Notice';
+import { Notice, NoticeDetail, NoticeEdit } from './Notice';
 import Footer from './Footer';
 import Layout from './Layout';
 import LayoutUserDetail from './LayoutUserDetail';
@@ -39,7 +39,6 @@ export {
   Notice,
   NoticeDetail,
   NoticeEdit,
-  NoticeUpdate,
   Footer,
   Layout,
   LayoutUserDetail,
