@@ -1,30 +1,53 @@
-import { useState, useRef, SyntheticEvent, ReactElement } from 'react';
+import { useState, useEffect, SyntheticEvent, ReactElement } from 'react';
 import styled from 'styled-components';
 import { useRouter } from 'next/router';
 import { useAuthState } from '@store';
-import { postNotice } from '@repository/noticeRepository';
+import {
+  postNotice,
+  getNoticeDetail,
+  updateNotice,
+} from '@repository/noticeRepository';
 import { Input } from '@atoms';
 import { Button, QuillEditor } from '@molecules';
+import { urltoUpdateFile } from '@utils/dataURLtoFile';
+
+interface NoticeEditProps {
+  edit: Boolean;
+  setEditNotice: any;
+  editValue: any;
+}
 
 const InputWrapper = styled.div`
   ${({ theme: { flexRow } }) => flexRow()};
-  margin-bottom: 50px;
-
+  margin: 0 25px 12px 0;
   input[type='text'] {
+    padding-left: 16px;
     background-color: #f5f5f7;
-    border: 0.5px solid grey;
+    border: 0.5px solid #cccccc;
   }
 `;
 
 const ButtonArea = styled.div`
   float: right;
+
+  > button {
+    margin: 0 4px;
+  }
 `;
 
 const Files = styled.div`
-  border: 1px solid grey;
+  border: 1px solid #cccccc;
+  border-radius: 2px;
   min-height: 8vh;
   margin-top: 50px;
   display: flex;
+  padding: 5px;
+
+  > p {
+    padding: 12px;
+    font-size: 14px;
+    color: #ccc;
+  }
 `;
 
 const File = styled.div`
@@ -63,24 +86,57 @@ const StyledInput = styled.input`
 `;
 
 const StyledLabel = styled.label`
-  padding: 4px;
+  padding: 8px;
   border: 0.5px solid grey;
   cursor: pointer;
+  border-radius: 8px;
+  color: #000;
 `;
 
 const Bottom = styled.div`
   margin-top: 3vh;
 `;
 
-export default function NoticeEdit(): ReactElement {
+export default function NoticeEdit({
+  edit,
+  setEditNotice,
+  editValue,
+}: NoticeEditProps): ReactElement {
   const router = useRouter();
-
   const { user } = useAuthState();
 
+  const [notice, setNotice] = useState(Object);
+  const [title, setTitle] = useState('');
   const [value, setValue] = useState('');
   const [files, setFiles] = useState<any>([]);
 
-  const titleRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (editValue >= 0) {
+      (async () => {
+        try {
+          const {
+            data: { data },
+          } = await getNoticeDetail(editValue);
+          setNotice(data);
+          setTitle(data.title);
+          const ordinaryFiles = await Promise.all(
+            data.noticeFiles.map((file: any) => {
+              return urltoUpdateFile(
+                `https://i5a202.p.ssafy.io:8080/api/file/download?nfile=${file.name}`,
+                file.originalName,
+                file.extension,
+              );
+            }),
+          );
+          setFiles(ordinaryFiles);
+          setValue(data.content);
+        } catch (error) {
+          console.error(error);
+        }
+      })();
+    }
+  }, []);
+
   const handleValue = (e: string) => {
     setValue(e);
   };
@@ -100,31 +156,32 @@ export default function NoticeEdit(): ReactElement {
     try {
       const formData = new FormData();
       formData.append('userId', user.id);
-      formData.append('title', titleRef?.current?.value);
+      formData.append('title', title);
       formData.append('content', value);
       files.forEach((el: any, idx: number) => {
         formData.append(`noticeFiles[${idx}]`, files[idx]);
       });
-      await postNotice(formData);
-      alert('등록되었습니다.');
-      if (user.role === 3 || user.role === 4) {
-        router.push('/admin');
-      } else {
-        router.push('/notice');
+      {
+        editValue >= 0
+          ? (await updateNotice(editValue, formData), alert('수정되었습니다.'))
+          : (await postNotice(formData), alert('등록되었습니다.'));
       }
+      router.reload();
     } catch (error) {
       console.error(error);
     }
   };
 
+  if (!editValue) return <div></div>;
   return (
     <form onSubmit={onSubmit} encType="multipart/form-data">
       <InputWrapper>
         <Input
-          ref={titleRef}
-          width="90%"
+          value={title}
+          width="100%"
           height="5vh"
           placeHolder="제목을 입력해주세요"
+          func={(e: any) => setTitle(e.target.value)}
         />
       </InputWrapper>
       <QuillEditor
@@ -134,7 +191,7 @@ export default function NoticeEdit(): ReactElement {
         placeHolder="내용을 입력해주세요"
       />
       <Files>
-        {files &&
+        {files.length ? (
           files.map((file: any, idx: number) => (
             <div key={idx}>
               <File>
@@ -144,11 +201,19 @@ export default function NoticeEdit(): ReactElement {
                 </DeleteFile>
               </File>
             </div>
-          ))}
+          ))
+        ) : (
+          <p>첨부파일이 없습니다.</p>
+        )}
       </Files>
       <Bottom>
         <ButtonArea>
-          <Button title="확인" type="submit" width="3vw" />
+          <Button
+            title={editValue >= 0 ? '수정' : '확인'}
+            type="submit"
+            width="3vw"
+          />
+          <Button title="취소" width="3vw" func={() => setEditNotice(!edit)} />
         </ButtonArea>
         <StyledInput type="file" id="file" onChange={handleFiles} multiple />
         <StyledLabel htmlFor="file">첨부파일 추가</StyledLabel>
