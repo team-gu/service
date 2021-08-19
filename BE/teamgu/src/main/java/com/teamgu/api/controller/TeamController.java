@@ -100,7 +100,7 @@ public class TeamController {
 			return ResponseEntity.ok(new CommonResponse<String>("팀 추가 완료"));
 		}
 
-		return ResponseEntity.badRequest().build();
+		return ResponseEntity.badRequest().body(new ErrorResponse("팀이 이미 구성되어 있습니다"));
 	}
 
 	@ApiOperation(value = "팀 정보 수정하기")
