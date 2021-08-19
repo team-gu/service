@@ -9,6 +9,8 @@ import {
 } from 'react';
 import router from 'next/router';
 import styled from 'styled-components';
+import { respondTo } from '@styles/respondTo';
+
 import { ModalWrapper } from '@organisms';
 import { Icon, Input, Text, Textarea } from '@atoms';
 import {
@@ -40,6 +42,10 @@ const Wrapper = styled.div`
   padding: 0 50px;
   max-height: 80vh;
   overflow: auto;
+
+  ${respondTo.mobile`
+    width: fit-content;
+  `}
 
   ::-webkit-scrollbar-thumb {
     background-color: #2f3542;
@@ -536,7 +542,7 @@ export default function TeamManageModal({
         <div className="team-name-container">
           <Label text="팀 이름">
             <Input
-              width="100%"
+              width="calc(100% - 10px)"
               height="40px"
               func={handleChangeTeamName}
               refValue={defaultValue ? defaultValue.name : undefined}
