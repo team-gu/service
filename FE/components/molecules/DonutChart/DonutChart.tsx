@@ -1,5 +1,9 @@
-import { useState, ReactElement, useCallback } from 'react';
+import { useState, ReactElement } from 'react';
 import { PieChart, Pie, Sector } from 'recharts';
+
+import theme from '@styles/theme';
+
+const COMPLETE_COLOR = '#b50b0b';
 
 const renderActiveShape = (props: any, title?: string) => {
   const {
@@ -12,6 +16,7 @@ const renderActiveShape = (props: any, title?: string) => {
     percent,
     payload,
   } = props;
+
   return (
     <g>
       <Sector
@@ -21,16 +26,18 @@ const renderActiveShape = (props: any, title?: string) => {
         outerRadius={outerRadius + 10}
         startAngle={startAngle}
         endAngle={endAngle}
-        fill="#fff"
+        fill={`${theme.colors.backgroundGray}`}
       />
       <text
         x={cx}
         y={cy}
         textAnchor="middle"
-        fill={payload.color}
-        fontSize={22}
+        fill={payload.name === '완료' && percent === 1 ? COMPLETE_COLOR : payload.color}
+        fontSize={payload.name === '완료' && percent === 1 ? 18 : 14}
       >
-        {`${(percent * 100).toFixed(2)}%`}
+        {payload.name === '완료' && percent === 1
+          ? `COMPLETE`
+          : `${(percent * 100).toFixed(2)}% (${payload.value}명)`}
       </text>
       <text
         x={cx}
