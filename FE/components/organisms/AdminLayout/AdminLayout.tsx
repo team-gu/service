@@ -9,6 +9,8 @@ import {
   AdminProjectManage,
   AdminProjectUserManage,
   Notice,
+  NoticeEdit,
+  NoticeDetail,
 } from '@organisms';
 import { Text } from '@atoms';
 import { Project } from '@utils/type';
@@ -37,6 +39,10 @@ export default function AdminLayout(): ReactElement {
   const [selectedMenu, setSelectedMenu] = useState(DEFAULT_SELECTED_MENU);
   const [selectedProject, setSelectedProject] = useState<Project>();
   const [projects, setProjects] = useState<Project[]>([]);
+
+  const [editNotice, setEditNotice] = useState(false);
+  const [editValue, setEditValue] = useState(-1);
+  const [detailValue, setDetailValue] = useState(-1);
 
   useEffect(() => {
     fetchProjects();
@@ -68,6 +74,32 @@ export default function AdminLayout(): ReactElement {
       setProjects(tmpProjects);
       setSelectedProject(tmpProjects[tmpProjects.length - 1]);
     });
+  };
+
+  const getNoticePage = () => {
+    if (editNotice)
+      return (
+        <NoticeEdit
+          edit={editNotice}
+          setEditNotice={setEditNotice}
+          editValue={editValue}
+        />
+      );
+    if (detailValue >= 0)
+      return (
+        <NoticeDetail
+          detailValue={detailValue}
+          setDetailValue={setDetailValue}
+        />
+      );
+    return (
+      <Notice
+        edit={editNotice}
+        setEditNotice={setEditNotice}
+        setEditValue={setEditValue}
+        setDetailValue={setDetailValue}
+      />
+    );
   };
 
   return (
@@ -103,7 +135,7 @@ export default function AdminLayout(): ReactElement {
                 [ADMIN_MENU_CONTENT[4].id]: selectedProject && (
                   <AdminTeamManage project={selectedProject} />
                 ),
-                [ADMIN_MENU_CONTENT[5].id]: <Notice />,
+                [ADMIN_MENU_CONTENT[5].id]: getNoticePage(),
               }[ADMIN_MENU_CONTENT[selectedMenu].id]
             }
           </div>
