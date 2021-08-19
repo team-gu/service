@@ -52,6 +52,7 @@ interface Payload {
   studentNumber?: string;
   track?: number[];
   pageNum?: number;
+  pageSize?: number;
 }
 
 export default function TeamStatus(): ReactElement {
@@ -373,7 +374,7 @@ export default function TeamStatus(): ReactElement {
                 onPageChange={({ selected }: { selected: number }) =>
                   setPayload((prev) => ({ ...prev, pageNum: selected }))
                 }
-                forcePage={payload?.pageNum}
+                forcePage={payload.pageNum ? payload.pageNum : 0}
               />
             )}
           </>
@@ -383,6 +384,7 @@ export default function TeamStatus(): ReactElement {
         <TeamManageModal
           handleClickClose={handleCloseManageTeamModal}
           fetchTeams={renderTeams}
+          projectCode={projectCode}
         />
       )}
       {showTeamManageModal && selectedTeamInfo && (
@@ -390,6 +392,7 @@ export default function TeamStatus(): ReactElement {
           handleClickClose={handleCloseManageTeamModal}
           defaultValue={selectedTeamInfo}
           fetchTeams={renderTeams}
+          projectCode={projectCode}
         />
       )}
     </LookupLayout>

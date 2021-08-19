@@ -51,6 +51,21 @@ export default function SkillSelectAutoComplete({
     }),
   };
 
+  
+  const styles = {
+    menuList: (base: any) => ({
+      ...base,
+      paddingTop: 0,
+      paddingBottom: 0,
+      maxHeight: '200px',
+    }),
+    menu: (base: any) => ({
+      ...base,
+      marginTop: 0,
+    }),
+    ...colourStyles,
+  };
+
   useEffect(() => {
     if (!options) {
       getEachFiltersCodeList(studentNumber).then(({ data }) => {
@@ -73,7 +88,7 @@ export default function SkillSelectAutoComplete({
       options={options || skillOptions}
       onChange={onChangeSkills}
       defaultValue={defaultSkillOptions}
-      styles={colourStyles}
+      styles={styles}
       isDisabled={disabled}
     />
   );

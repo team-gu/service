@@ -27,6 +27,7 @@ import {
   updateTeam,
 } from '@repository/teamRepository';
 import { getEachFiltersCodeList } from '@repository/filterRepository';
+import { getEachFiltersCodeListTracks } from '@repository/filterRepository';
 import { OptionTypeBase, OptionsType } from 'react-select';
 import { Team, SkillOption, Member, Skill } from '@utils/type';
 
@@ -261,12 +262,14 @@ interface TeamManageModalProps {
   defaultValue?: Team;
   handleClickClose: MouseEventHandler;
   fetchTeams: () => void;
+  projectCode: number;
 }
 
 export default function TeamManageModal({
   defaultValue,
   handleClickClose,
   fetchTeams,
+  projectCode,
 }: TeamManageModalProps): ReactElement {
   const dispatch = useAppDispatch();
   const { user } = useAuthState();
@@ -316,9 +319,9 @@ export default function TeamManageModal({
       teamDescriptionRef.current.value = teamDescription;
     }
 
-    getEachFiltersCodeList(user.studentNumber).then(({ data }) => {
+    getEachFiltersCodeList(user.studentNumber).then(({ data: { data } }) => {
       setSkillOptions(
-        data.data['스킬'].reduce(
+        data['스킬'].reduce(
           (acc: Skill[], cur: any) => [
             ...acc,
             { ...cur, value: cur.code, label: cur.codeName },
@@ -326,17 +329,21 @@ export default function TeamManageModal({
           [],
         ),
       );
-
-      setTrackOptions(
-        data.data['트랙'].reduce(
-          (acc: { code: number; codeName: string }[], cur: any) => [
-            ...acc,
-            { ...cur, value: cur.code, label: cur.codeName },
-          ],
-          [],
-        ),
-      );
     });
+
+    getEachFiltersCodeListTracks(user.studentNumber, projectCode).then(
+      ({ data: { data } }) => {
+        setTrackOptions(
+          data['트랙'].reduce(
+            (acc: { code: number; codeName: string }[], cur: any) => [
+              ...acc,
+              { ...cur, value: cur.code, label: cur.codeName },
+            ],
+            [],
+          ),
+        );
+      },
+    );
   }, []);
 
   const handleChangeTeamName = ({ target }: ChangeEvent<HTMLInputElement>) => {
