@@ -30,7 +30,10 @@ export const imageUpload = async (param: object) => {
   });
 };
 
-export const updateNotice = async (id: number, param: object) => {
+export const updateNotice = async (
+  id: number | string | string[] | undefined,
+  param: object,
+) => {
   await api({
     url: `/api/notice/${id}`,
     type: 'patch',
