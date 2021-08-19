@@ -187,7 +187,7 @@ export default function AdminMenuSidebarLeft({
 
   const goHome = () => {
     router.push('/');
-  }
+  };
 
   return (
     <Wrapper>

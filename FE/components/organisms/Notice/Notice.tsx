@@ -1,7 +1,6 @@
 import { useEffect, useState, ReactElement } from 'react';
 import styled from 'styled-components';
 import { useRouter } from 'next/router';
-import Link from 'next/link';
 import { useAuthState } from '@store';
 import { makeStyles } from '@material-ui/core/styles';
 import Pagination from '@material-ui/lab/Pagination';
@@ -17,6 +16,7 @@ import {
 import { getNotice, deleteNotice } from '@repository/noticeRepository';
 import { Text } from '@atoms';
 import { Button } from '@molecules';
+import { saveItem } from '@utils/storage';
 
 interface NoticeType {
   id: number;
@@ -147,7 +147,10 @@ export default function Notice({
             <Button
               title="공지사항 생성"
               width="8vw"
-              func={() => setEditNotice(!editNotice)}
+              func={() => {
+                setEditValue(-1);
+                setEditNotice(!editNotice);
+              }}
             />
           </div>
         </Header>
@@ -167,11 +170,7 @@ export default function Notice({
                   </TableCell>
                 ))}
                 {(user.role === 3 || user.role === 4) && (
-                  <TableCell
-                    key={columns.length}
-                    align="center"
-                    style={{ minWidth: '200' }}
-                  >
+                  <TableCell key="4" align="center" style={{ minWidth: '200' }}>
                     수정/삭제
                   </TableCell>
                 )}
@@ -204,10 +203,7 @@ export default function Notice({
                           </TableCell>
                           {idx === columns.length - 1 &&
                             (user.role === 3 || user.role === 4) && (
-                              <StyledTableCell
-                                key={columns.length}
-                                align="center"
-                              >
+                              <StyledTableCell key="4" align="center">
                                 <Button
                                   width="3vw"
                                   title="수정"
@@ -219,7 +215,10 @@ export default function Notice({
                                 <Button
                                   width="3vw"
                                   title="삭제"
-                                  func={() => handleDelete(row.id)}
+                                  func={() => {
+                                    saveItem('adminPageTab', 5);
+                                    handleDelete(row.id);
+                                  }}
                                 />
                               </StyledTableCell>
                             )}

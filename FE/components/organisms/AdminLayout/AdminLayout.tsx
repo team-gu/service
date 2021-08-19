@@ -1,5 +1,6 @@
 import { ReactElement, useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { saveItem, loadItem, removeItem } from '@utils/storage';
 
 import {
   AdminMenuSidebarLeft,
@@ -32,10 +33,12 @@ const Wrapper = styled.div`
   }
 `;
 
-const DEFAULT_SELECTED_MENU =
-  ADMIN_MENU_CONTENT.find(({ title }) => title === '대시보드')?.id || 0;
-
 export default function AdminLayout(): ReactElement {
+  const tabNum = loadItem('adminPageTab');
+  const DEFAULT_SELECTED_MENU = tabNum
+    ? Number(tabNum)
+    : ADMIN_MENU_CONTENT.find(({ title }) => title === '대시보드')?.id || 0;
+
   const [selectedMenu, setSelectedMenu] = useState(DEFAULT_SELECTED_MENU);
   const [selectedProject, setSelectedProject] = useState<Project>();
   const [projects, setProjects] = useState<Project[]>([]);
@@ -46,6 +49,9 @@ export default function AdminLayout(): ReactElement {
 
   useEffect(() => {
     fetchProjects();
+    if (tabNum) {
+      removeItem('adminPageTab');
+    }
   }, []);
 
   const handleChangeMenu = (menuIndex: number) => {
@@ -77,7 +83,8 @@ export default function AdminLayout(): ReactElement {
   };
 
   const getNoticePage = () => {
-    if (editNotice)
+    if (editNotice) {
+      saveItem('adminPageTab', 5);
       return (
         <NoticeEdit
           edit={editNotice}
@@ -85,13 +92,16 @@ export default function AdminLayout(): ReactElement {
           editValue={editValue}
         />
       );
-    if (detailValue >= 0)
+    }
+    if (detailValue >= 0) {
+      saveItem('adminPageTab', 5);
       return (
         <NoticeDetail
           detailValue={detailValue}
           setDetailValue={setDetailValue}
         />
       );
+    }
     return (
       <Notice
         edit={editNotice}
@@ -111,7 +121,7 @@ export default function AdminLayout(): ReactElement {
               onChangeMenu={handleChangeMenu}
               onChangeProject={handleChangeProject}
               projects={projects}
-              defaultSelectedMenu={DEFAULT_SELECTED_MENU}
+              defaultSelectedMenu={selectedMenu}
             />
           </div>
           <div className="content">
