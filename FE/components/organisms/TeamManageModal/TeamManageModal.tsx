@@ -478,6 +478,7 @@ export default function TeamManageModal({
       teamMembers,
       leaderId: teamLeader,
       completeYn: teamComplete,
+      projectCode,
     })
       .then(() => {
         handleClickClose(event);
