@@ -8,6 +8,10 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 
+import com.teamgu.database.entity.QStdClass;
+import com.teamgu.database.entity.QUserClass;;
+import com.teamgu.database.entity.QUser;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
@@ -17,9 +21,14 @@ import java.util.List;
 public class UserPoolRepositoryImpl implements UserPoolRepositoryCustom {
 
     private static short majorCode;
-    private static int prjCode;
+    private static int prjCode, regionCode;
+    private static long classId;
     private static String email, sort, stage, studentNum, target;
     private static List<Integer> regList, posList, trkList, skList;
+
+    QUser qUser = QUser.user;
+    QUserClass qUserClass = QUserClass.userClass;
+    QStdClass qStdClass = QStdClass.stdClass;
 
     @Autowired
     JPAQueryFactory jpaQueryFactory;
@@ -37,9 +46,14 @@ public class UserPoolRepositoryImpl implements UserPoolRepositoryCustom {
         try {
             studentNum = userPoolPageReqDto.getStudentNumber(); //무조건 들어와야하는 값
             prjCode = userPoolPageReqDto.getProject(); //무조건 들어와야하는 값
-            stage = userPoolPageReqDto.getStudentNumber().substring(0, 2); //무조건 들어와야하는 값
+            regionCode = Integer.parseInt(userPoolPageReqDto.getStudentNumber().substring(2, 3)) + 100; //공통 프로젝트의 경우 반 필터링을 위해 지역 코드 뽑아옴
+            stage = userPoolPageReqDto.getStudentNumber().substring(0, 2); //무조건 들어와야하는 값 (기수)
         } catch (Exception e) {
             log.error("substring 에러");
+        }
+
+        if(prjCode == 101) {
+            classId = getUserClassId();
         }
 
         regList = userPoolPageReqDto.getRegion();
@@ -56,6 +70,19 @@ public class UserPoolRepositoryImpl implements UserPoolRepositoryCustom {
         String havingStmt = makeFilterHaving();
 
         return getFilteredList(whereStmt, orderStmt, havingStmt);
+    }
+
+    @Override
+    public long getUserClassId() {
+        return jpaQueryFactory.select(qStdClass.id)
+                .from(qUserClass)
+                .innerJoin(qUser)
+                    .on(qUserClass.user.eq(qUser))
+                .innerJoin(qStdClass)
+                    .on(qUserClass.stdClass.eq(qStdClass))
+                .where(qUser.studentNumber.eq(studentNum)
+                        .and(qStdClass.projectCode.eq(prjCode)))
+                .fetchOne();
     }
 
     @Override
@@ -143,6 +170,10 @@ public class UserPoolRepositoryImpl implements UserPoolRepositoryCustom {
             sb.append(" ").append("and (u.name like '%" + target + "%' or u.email like '%" + target + "%')");
         }
 
+        if(prjCode == 101) { //공통 프로젝트의 경우에는 동일한 반 사람들만
+            sb.append(" ").append("and uc.class_id = " + classId);
+        }
+
         return sb.toString();
     }
 
@@ -182,6 +213,9 @@ public class UserPoolRepositoryImpl implements UserPoolRepositoryCustom {
         jpql.append("left outer join mapping m on wt.mapping_id = m.id").append(" ");
         jpql.append("left outer join (select s.user_id, group_concat(s.skill_code) as gs from skill s group by s.user_id) as b on u.id = b.user_id").append(" ");
         jpql.append("left outer join user_team ut on u.id = ut.user_id").append(" ");
+        if(prjCode == 101) {
+            jpql.append("inner join user_class uc on u.id = uc.user_id").append(" ");
+        }
         jpql.append(whereStmt).append(" ");
         jpql.append("group by u.id, u.name").append(" ");
         jpql.append(havingStmt);
@@ -206,10 +240,15 @@ public class UserPoolRepositoryImpl implements UserPoolRepositoryCustom {
         jpql.append("left outer join mapping m on wt.mapping_id = m.id").append(" ");
         jpql.append("left outer join (select s.user_id, group_concat(s.skill_code) as gs from skill s group by s.user_id) as b on u.id = b.user_id").append(" ");
         jpql.append("left outer join user_team ut on u.id = ut.user_id").append(" ");
+        if(prjCode == 101) {
+            jpql.append("inner join user_class uc on u.id = uc.user_id").append(" ");
+        }
         jpql.append(whereStmt).append(" ");
         jpql.append("group by u.id, u.name").append(" ");
         jpql.append(havingStmt).append(" ");
         jpql.append(orderStmt);
+
+        log.info(jpql.toString());
 
         res = em.createNativeQuery(jpql.toString()).getResultList();
 
