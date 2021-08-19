@@ -1,4 +1,10 @@
-import { useEffect, useState, ReactElement } from 'react';
+import {
+  useEffect,
+  useState,
+  useRef,
+  ReactElement,
+  SyntheticEvent,
+} from 'react';
 import styled from 'styled-components';
 import { useRouter } from 'next/router';
 import { useAuthState } from '@store';
@@ -14,7 +20,7 @@ import {
   Paper,
 } from '@material-ui/core';
 import { getNotice, deleteNotice } from '@repository/noticeRepository';
-import { Text } from '@atoms';
+import { Text, Input } from '@atoms';
 import { Button } from '@molecules';
 import { saveItem } from '@utils/storage';
 
@@ -62,6 +68,18 @@ const StyledTableCell = styled(TableCell)`
   }
 `;
 
+const StyledForm = styled.form`
+  display: flex;
+  position: absolute;
+  right: 16vw;
+
+  > button {
+    margin-top: -2px;
+    margin-left: 12px;
+    height: 28px;
+  }
+`;
+
 const columns = [
   { id: 'id', label: '번호', minWidth: 100 },
   { id: 'title', label: '제목', minWidth: 300 },
@@ -106,12 +124,13 @@ export default function Notice({
   const [page, setPage] = useState(0);
   const [rows, setRows] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
+  const searchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     (async () => {
       const {
         data: { data },
-      } = await getNotice(page, 10);
+      } = await getNotice(page, 10, '');
       setRows(
         data.content.map((notice: NoticeType) => {
           return createData(notice.id, notice.title, notice.date);
@@ -133,6 +152,19 @@ export default function Notice({
 
   const handleDetail = (id: number) => {
     setDetailValue(id);
+  };
+
+  const handleSearch = async (e: SyntheticEvent) => {
+    e.preventDefault();
+    const {
+      data: { data },
+    } = await getNotice(page, 10, searchRef?.current?.value);
+    setRows(
+      data.content.map((notice: NoticeType) => {
+        return createData(notice.id, notice.title, notice.date);
+      }),
+    );
+    setTotalPages(data.totalPages);
   };
 
   return (
@@ -232,12 +264,22 @@ export default function Notice({
           </Table>
         </TableContainer>
         <div className={paginationClasses.root}>
+          <div></div>
           <Pagination
             count={totalPages}
             color="primary"
             onChange={(e) => setPage(Number(e.target.innerText) - 1)}
             shape="rounded"
           />
+          <StyledForm onSubmit={handleSearch}>
+            <Input
+              ref={searchRef}
+              type="text"
+              placeHolder="제목을 입력해주세요"
+              width="10vw"
+            />
+            <Button title="검색" type="submit" width="3vw" />
+          </StyledForm>
         </div>
       </Paper>
     </>

@@ -1,8 +1,12 @@
 import api from '@context/serverContext';
 
-export const getNotice = async (page: number, size: number) => {
+export const getNotice = async (
+  page: number,
+  size: number,
+  title: string | undefined,
+) => {
   return await api({
-    url: `/api/notice?page=${page}&size=${size}&sort=createDate,DESC`,
+    url: `/api/notice?page=${page}&size=${size}&sort=createDate,DESC&title=${title}`,
     type: 'get',
   });
 };
