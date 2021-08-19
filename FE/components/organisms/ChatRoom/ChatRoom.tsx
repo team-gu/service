@@ -153,6 +153,7 @@ export default function ChatRoom({
                   message,
                   sender_id,
                   sender_name,
+                  profile_image,
                   type,
                   chat_id,
                   team_id,
@@ -162,7 +163,7 @@ export default function ChatRoom({
                 <ChatBubble
                   key={index}
                   userName={sender_name}
-                  profileSrc="/profile.png"
+                  profileSrc={profile_image}
                   time={
                     DateTime.now()
                       .diff(DateTime.fromISO(create_date_time))

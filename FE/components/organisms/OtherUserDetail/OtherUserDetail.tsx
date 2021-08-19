@@ -2,7 +2,7 @@ import { ReactElement, useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 
 import { LayoutUserDetail } from '@organisms';
-import { SkillSelectAutoComplete, Label, ProfileImage } from '@molecules';
+import { Label, ProfileImage, Tag } from '@molecules';
 import { Icon, Text, Textarea } from '@atoms';
 import { useAuthState, useAppDispatch, setLoading, setChatOpen } from '@store';
 import useSockStomp from '@hooks/useSockStomp';
@@ -153,10 +153,18 @@ export default function OtherUserDetail(): ReactElement {
 
               <div className="skills">
                 <Label text="사용 기술" fontSetting="n18b">
-                  <SkillSelectAutoComplete
+                  {/* <SkillSelectAutoComplete
                     value={otherUser.skills}
                     disabled={true}
-                  />
+                  /> */}
+                  <div className="skill-tags">
+                    {otherUser.skills?.map((each) => (
+                      <Tag
+                        text={each.codeName}
+                        key={`skill-${each.codeName}`}
+                      />
+                    ))}
+                  </div>
                 </Label>
               </div>
             </div>
@@ -189,9 +197,11 @@ export default function OtherUserDetail(): ReactElement {
                         <div className="project" key={id}>
                           <div className="top">
                             <p>{name}</p>
-                            <p>{position}</p>
                           </div>
-                          <div>{introduce}</div>
+                          <div className="middle">{position}</div>
+                          <Textarea className="text-area" disabled>
+                            {introduce}
+                          </Textarea>
                         </div>
                       </a>
                     ),
@@ -208,11 +218,14 @@ export default function OtherUserDetail(): ReactElement {
                     ({ id, agency, date, name, introduce }: any) => (
                       <div className="award" key={id}>
                         <div className="top">
-                          <p>{agency}</p>
                           <p>{name}</p>
                         </div>
-                        <div className="middle">{getDate(date)}</div>
-                        <div>{introduce}</div>
+                        <div className="middle">
+                          {getDate(date)} | {agency}
+                        </div>
+                        <Textarea className="text-area" disabled>
+                          {introduce}
+                        </Textarea>
                       </div>
                     ),
                   )

@@ -19,24 +19,32 @@ const Wrapper = styled.div`
 `;
 
 const UpdateAward = styled.div`
-  div {
+  > div {
     margin-bottom: 15px;
+  }
+
+  .button-container {
+    text-align: end;
 
     button {
       width: 5vw;
-      height: 20px;
+      height: 30px;
       margin-left: 5px;
     }
   }
 `;
 
 const CreateAward = styled.div`
-  div {
+  > div {
     margin-bottom: 15px;
+  }
+
+  .button-container {
+    text-align: end;
 
     button {
       width: 5vw;
-      height: 20px;
+      height: 30px;
       margin-left: 5px;
     }
   }
@@ -148,7 +156,7 @@ export default function AwardModal(): ReactElement {
               />
             </div>
             {error && <Error>{errorMessage}</Error>}
-            <div>
+            <div className="button-container">
               <Button title="수정" type="submit" />
               <Button
                 title="닫기"
@@ -194,7 +202,7 @@ export default function AwardModal(): ReactElement {
               />
             </div>
             {error && <Error>{errorMessage}</Error>}
-            <div>
+            <div className="button-container">
               <Button title="생성" type="submit" />
               <Button
                 title="닫기"
