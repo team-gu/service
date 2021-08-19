@@ -1,5 +1,6 @@
 import { ReactElement, useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { saveItem, loadItem, removeItem } from '@utils/storage';
 
 import {
   AdminMenuSidebarLeft,
@@ -9,6 +10,8 @@ import {
   AdminProjectManage,
   AdminProjectUserManage,
   Notice,
+  NoticeEdit,
+  NoticeDetail,
 } from '@organisms';
 import { Text } from '@atoms';
 import { Project } from '@utils/type';
@@ -30,16 +33,25 @@ const Wrapper = styled.div`
   }
 `;
 
-const DEFAULT_SELECTED_MENU =
-  ADMIN_MENU_CONTENT.find(({ title }) => title === '대시보드')?.id || 0;
-
 export default function AdminLayout(): ReactElement {
+  const tabNum = loadItem('adminPageTab');
+  const DEFAULT_SELECTED_MENU = tabNum
+    ? Number(tabNum)
+    : ADMIN_MENU_CONTENT.find(({ title }) => title === '대시보드')?.id || 0;
+
   const [selectedMenu, setSelectedMenu] = useState(DEFAULT_SELECTED_MENU);
   const [selectedProject, setSelectedProject] = useState<Project>();
   const [projects, setProjects] = useState<Project[]>([]);
 
+  const [editNotice, setEditNotice] = useState(false);
+  const [editValue, setEditValue] = useState(-1);
+  const [detailValue, setDetailValue] = useState(-1);
+
   useEffect(() => {
     fetchProjects();
+    if (tabNum) {
+      removeItem('adminPageTab');
+    }
   }, []);
 
   const handleChangeMenu = (menuIndex: number) => {
@@ -70,6 +82,36 @@ export default function AdminLayout(): ReactElement {
     });
   };
 
+  const getNoticePage = () => {
+    if (editNotice) {
+      saveItem('adminPageTab', 5);
+      return (
+        <NoticeEdit
+          edit={editNotice}
+          setEditNotice={setEditNotice}
+          editValue={editValue}
+        />
+      );
+    }
+    if (detailValue >= 0) {
+      saveItem('adminPageTab', 5);
+      return (
+        <NoticeDetail
+          detailValue={detailValue}
+          setDetailValue={setDetailValue}
+        />
+      );
+    }
+    return (
+      <Notice
+        edit={editNotice}
+        setEditNotice={setEditNotice}
+        setEditValue={setEditValue}
+        setDetailValue={setDetailValue}
+      />
+    );
+  };
+
   return (
     <Wrapper>
       {projects ? (
@@ -79,7 +121,7 @@ export default function AdminLayout(): ReactElement {
               onChangeMenu={handleChangeMenu}
               onChangeProject={handleChangeProject}
               projects={projects}
-              defaultSelectedMenu={DEFAULT_SELECTED_MENU}
+              defaultSelectedMenu={selectedMenu}
             />
           </div>
           <div className="content">
@@ -103,7 +145,7 @@ export default function AdminLayout(): ReactElement {
                 [ADMIN_MENU_CONTENT[4].id]: selectedProject && (
                   <AdminTeamManage project={selectedProject} />
                 ),
-                [ADMIN_MENU_CONTENT[5].id]: <Notice />,
+                [ADMIN_MENU_CONTENT[5].id]: getNoticePage(),
               }[ADMIN_MENU_CONTENT[selectedMenu].id]
             }
           </div>
