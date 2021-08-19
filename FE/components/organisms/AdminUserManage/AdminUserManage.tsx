@@ -123,11 +123,14 @@ export default function AdminUserManage({ project }: AdminUserManageProps) {
   }, [project, selectedRegion]);
 
   const fetchUsers = () => {
+    dispatch(setLoading({ isLoading: true }));
     getUserTableData({
       projectId: project.id,
       regionCode: selectedRegion,
     }).then(({ data: { data } }) => {
       setTeamStatusTableData(data);
+    }).finally(() => {
+      dispatch(setLoading({ isLoading: false }));
     });
   };
 

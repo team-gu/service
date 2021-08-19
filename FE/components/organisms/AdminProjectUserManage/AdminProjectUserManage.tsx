@@ -92,10 +92,13 @@ export default function AdminProjectUserManage({
   }, [project]);
 
   const fetchProjectUserTableData = () => {
+    dispatch(setLoading({ isLoading: true }));
     getProjectUserTableData({
       projectId: project.id,
     }).then(({ data: { data } }) => {
       setUserTableData(data);
+    }).finally(() => {
+      dispatch(setLoading({ isLoading: false }));
     });
   };
 
