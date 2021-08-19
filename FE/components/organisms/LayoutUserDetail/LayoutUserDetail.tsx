@@ -189,7 +189,7 @@ const Wrapper = styled.div<{ isProject?: boolean }>`
           height: inherit;
         }
         .top {
-          height: 25px;
+          min-height: 25px;
           display: flex;
           font-size: 10px;
         }
@@ -252,7 +252,7 @@ const Wrapper = styled.div<{ isProject?: boolean }>`
           height: inherit;
         }
         .top {
-          height: 25px;
+          min-height: 25px;
           display: flex;
           font-size: 10px;
         }

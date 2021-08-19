@@ -196,7 +196,7 @@ export default function OtherUserDetail(): ReactElement {
                       >
                         <div className="project" key={id}>
                           <div className="top">
-                            <p>{name}</p>
+                            <Text text={name} isLineBreak fontSetting="n14b" />
                           </div>
                           <div className="middle">{position}</div>
                           <Textarea className="text-area" disabled>
@@ -218,7 +218,7 @@ export default function OtherUserDetail(): ReactElement {
                     ({ id, agency, date, name, introduce }: any) => (
                       <div className="award" key={id}>
                         <div className="top">
-                          <p>{name}</p>
+                          <Text text={name} isLineBreak fontSetting="n14b" />
                         </div>
                         <div className="middle">
                           {getDate(date)} | {agency}
