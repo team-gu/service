@@ -139,4 +139,12 @@ public interface ChatService {
 	 * 특정 채팅의 type을 변경한다
 	 */
 	boolean changeType(long chat_id,String type);	
+	
+	/**
+	 * 개인이 나갔던 채팅방에 다시 참여한다
+	 * @param room_id
+	 * @param user_id
+	 * @return
+	 */
+	boolean visibleRoom(long room_id,long user_id);
 }

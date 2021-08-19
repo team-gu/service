@@ -134,7 +134,7 @@ public class UserChatRoomRepositorySupport {
 				"FROM chat c\r\n" + 
 				"LEFT JOIN (SELECT chat_room_id , IFNULL(last_chat_id,0) last_chat_id\r\n" + 
 							"FROM user_chat_room\r\n" + 
-							"WHERE user_id=:user_id) ucr\r\n" + 
+							"WHERE user_id=:user_id AND visible=1) ucr\r\n" + 
 				"ON ucr.chat_room_id=c.receive_room_id\r\n" + 
 				"WHERE c.id > ucr.last_chat_id";
 		List<BigInteger> res = em.createNativeQuery(jpql)
@@ -169,5 +169,31 @@ public class UserChatRoomRepositorySupport {
 			longres.add(r.longValue());
 		}
 		return longres;
+	}	
+
+	
+	/**
+	 * 개인이 특정 채팅방을 나가거나 활성화 할 수 있다
+	 */
+	public boolean changeVisibleRoom(long room_id, long user_id,short option) {
+		EntityManager em = emf.createEntityManager();
+		EntityTransaction et = em.getTransaction();
+		try {
+			et.begin();
+			String jpql = "UPDATE user_chat_room SET visible=:option\r\n"
+						+ "WHERE chat_room_id=:room_id AND user_id=:user_id";
+			em.createNativeQuery(jpql).setParameter("option", option)
+										.setParameter("user_id", user_id)
+										.setParameter("room_id", room_id)
+										.executeUpdate();
+			et.commit();
+		}catch(Exception e) {
+			log.error("방 visible 변경에 실패했습니다");
+			et.rollback();
+			return false;
+		}finally {
+			em.close();
+		}
+		return true;		
 	}
 }

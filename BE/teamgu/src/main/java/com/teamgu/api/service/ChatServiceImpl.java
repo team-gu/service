@@ -63,7 +63,8 @@ public class ChatServiceImpl implements ChatService{
 		List<UserChatRoom> userChatRoomList = userChatRoomRepository.findByUserId(userid); //JPAQueryFactory 이용
 		log.debug("userChatRoomList 갯수 : "+userChatRoomList.size());
 		List<ChatRoomResDto> chatRoomResDtoList = new ArrayList<ChatRoomResDto>();
-		for(UserChatRoom userChatRoom:userChatRoomList) {			
+		for(UserChatRoom userChatRoom:userChatRoomList) {	
+			if(userChatRoom.getVisible()==0)continue;//나간 방은 반환하지 않는다
 			long chatroomid = userChatRoom.getChatRoom().getId();
 			
 			Chat lastchat = chatRoomRepositorySupport.getLastMessage(chatroomid);
@@ -85,6 +86,7 @@ public class ChatServiceImpl implements ChatService{
 												.send_date_time(lastchat.getSendDateTime())//해당 채팅방의 마지막 전송 시간을 가져온다.
 												.out_check_chat_id(last_chat_id)//마지막 채팅 id
 												.unread_message_count(unreadCount)//아직 읽지 않은 메세지도 기록
+												.visible(userChatRoom.getVisible())//방 활성화 상태
 												.build();
 			chatRoomResDtoList.add(crrd);
 		}
@@ -228,7 +230,7 @@ public class ChatServiceImpl implements ChatService{
 	
 	@Override
 	public boolean leaveRoom(long room_id, long user_id) {
-		return chatRoomRepositorySupport.leaveRoom(room_id, user_id);
+		return userChatRoomRepositorySupport.changeVisibleRoom(room_id, user_id,(short)0);
 	}
 	
 	@Override
@@ -245,5 +247,10 @@ public class ChatServiceImpl implements ChatService{
 	public boolean inviteUserPersonalRoom(long user_id, long room_id, String title) {
 		log.info(user_id+" 유저를 "+room_id+" 개인 톡방으로 초대합니다");	
 		return userChatRoomRepositorySupport.insertUser(user_id, room_id, title);
+	}
+
+	@Override
+	public boolean visibleRoom(long room_id, long user_id) {
+		return userChatRoomRepositorySupport.changeVisibleRoom(room_id, user_id,(short)1);
 	}
 }
