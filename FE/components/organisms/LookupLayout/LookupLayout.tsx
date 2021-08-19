@@ -78,6 +78,12 @@ const Wrapper = styled.div<{ showTeamCreateBtn: boolean }>`
       resize: none;
       width: 100%;
       min-height: 123px;
+      height: 100%;
+      ${({
+        theme: {
+          font: { n16m },
+        },
+      }) => n16m}
     }
   }
 `;
