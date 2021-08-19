@@ -108,7 +108,7 @@ export default function UserStatus(): ReactElement {
   const [pageCount, setPageCount] = useState(0);
   const [trackList, setTrackList] = useState([]);
 
-  const [isProjectChange, setIsProjectChange] = useState();
+  const [isProjectChange, setIsProjectChange] = useState(false);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
