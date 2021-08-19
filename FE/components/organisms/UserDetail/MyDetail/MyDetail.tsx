@@ -3,9 +3,8 @@ import { ReactElement } from 'react';
 import { LayoutUserDetail } from '@organisms';
 import { Tag, Label, ProfileImage } from '@molecules';
 import { Icon, Text, Textarea } from '@atoms';
-import { useAuthState } from '@store';
-import { getImageURL } from '@utils/constants';
-import UserStatusCard from 'components/organisms/UserStatusCard';
+import { useAuthState, useAppDispatch, displayModal } from '@store';
+import { MODALS, getImageURL } from '@utils/constants';
 
 const getStudentClass = (ID: string) => {
   if (ID[0] !== '0') return ID.slice(0, 2);
@@ -31,6 +30,7 @@ export default function MyDetail({
   route,
   setRoute,
 }: any): ReactElement {
+  const dispatch = useAppDispatch();
   const { user } = useAuthState();
 
   return (
@@ -50,6 +50,18 @@ export default function MyDetail({
         </button>
         <button type="button" onClick={() => setRoute(USER_PROJECT)}>
           프로젝트
+        </button>
+        <button
+          type="button"
+          onClick={() =>
+            dispatch(
+              displayModal({
+                modalName: MODALS.CHANGEPASSWORD_MODAL,
+              }),
+            )
+          }
+        >
+          비밀번호 변경
         </button>
       </div>
       <div className="typography">
