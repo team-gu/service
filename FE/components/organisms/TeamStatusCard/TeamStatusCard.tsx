@@ -1,10 +1,13 @@
 import { ReactElement } from 'react';
 import styled from 'styled-components';
+import { useRouter } from 'next/router';
+
 import { Text, Icon } from '@atoms';
 import { Tag, ProfileImage } from '@molecules';
 import { useAuthState, setChatOpen, useAppDispatch } from '@store';
 import { Team } from '@utils/type';
 import { getImageURL } from '@utils/constants';
+
 
 const Wrapper = styled.div<{ isComplete: boolean }>`
   position: relative;
@@ -74,6 +77,7 @@ const Wrapper = styled.div<{ isComplete: boolean }>`
           display: inline-block;
           margin: 10px;
           text-align: center;
+          cursor: pointer;
         }
       }
     }
@@ -110,6 +114,7 @@ export default function TeamStatusCard({
   team,
   onClickTeamManage,
 }: TeamStatusCard): ReactElement {
+  const router = useRouter();
   const dispatch = useAppDispatch();
   const { user } = useAuthState();
   const currentUserIsInThisTeam = team.teamMembers.find(
@@ -130,7 +135,17 @@ export default function TeamStatusCard({
             {team.teamMembers
               .sort((a, b) => (a.id === team.leaderId ? -1 : 1))
               .map((item) => (
-                <div className="profile" key={item.id}>
+                <div
+                  className="profile"
+                  key={item.id}
+                  onClick={() => {
+                    if (item.id === user.id) {
+                      router.push(`/userdetail`)
+                    } else {
+                      router.push(`/userdetail/${item.id}`)
+                    }
+                  }}
+                >
                   <ProfileImage
                     size={75}
                     src={item.img ? getImageURL(item.img) : undefined}
