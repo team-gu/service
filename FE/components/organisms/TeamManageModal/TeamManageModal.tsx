@@ -30,6 +30,8 @@ import { getEachFiltersCodeList } from '@repository/filterRepository';
 import { getEachFiltersCodeListTracks } from '@repository/filterRepository';
 import { OptionTypeBase, OptionsType } from 'react-select';
 import { Team, SkillOption, Member, Skill } from '@utils/type';
+import { AxiosError } from 'axios';
+import { errorAlert } from '@utils/snippet';
 
 const Wrapper = styled.div`
   display: grid;
@@ -319,20 +321,22 @@ export default function TeamManageModal({
       teamDescriptionRef.current.value = teamDescription;
     }
 
-    getEachFiltersCodeList(user.studentNumber).then(({ data: { data } }) => {
-      setSkillOptions(
-        data['스킬'].reduce(
-          (acc: Skill[], cur: any) => [
-            ...acc,
-            { ...cur, value: cur.code, label: cur.codeName },
-          ],
-          [],
-        ),
-      );
-    });
+    getEachFiltersCodeList(user.studentNumber)
+      .then(({ data: { data } }) => {
+        setSkillOptions(
+          data['스킬'].reduce(
+            (acc: Skill[], cur: any) => [
+              ...acc,
+              { ...cur, value: cur.code, label: cur.codeName },
+            ],
+            [],
+          ),
+        );
+      })
+      .catch((err) => errorAlert(err));
 
-    getEachFiltersCodeListTracks(user.studentNumber, projectCode).then(
-      ({ data: { data } }) => {
+    getEachFiltersCodeListTracks(user.studentNumber, projectCode)
+      .then(({ data: { data } }) => {
         setTrackOptions(
           data['트랙'].reduce(
             (acc: { code: number; codeName: string }[], cur: any) => [
@@ -342,8 +346,8 @@ export default function TeamManageModal({
             [],
           ),
         );
-      },
-    );
+      })
+      .catch((err) => errorAlert(err));
   }, []);
 
   const handleChangeTeamName = ({ target }: ChangeEvent<HTMLInputElement>) => {
@@ -430,10 +434,12 @@ export default function TeamManageModal({
 
   const handleDeleteConfirm: MouseEventHandler = (event) => {
     setShowDeleteConfirmModal(false);
-    deleteTeam({ id: defaultValue?.id }).then(() => {
-      handleClickClose(event);
-      fetchTeams();
-    });
+    deleteTeam({ id: defaultValue?.id })
+      .then(() => {
+        handleClickClose(event);
+        fetchTeams();
+      })
+      .catch((err) => errorAlert(err));
   };
 
   const handleExitTeam = () => {
@@ -446,10 +452,12 @@ export default function TeamManageModal({
 
   const handleExitTeamConfirm: MouseEventHandler = (event) => {
     setShowExitConfirmModal(false);
-    exitTeam({ userId: user.id, teamId: defaultValue?.id }).then(() => {
-      handleClickClose(event);
-      fetchTeams();
-    });
+    exitTeam({ userId: user.id, teamId: defaultValue?.id })
+      .then(() => {
+        handleClickClose(event);
+        fetchTeams();
+      })
+      .catch((err) => errorAlert(err));
   };
 
   const handleSubmitTeamConfirmCancel = () => {
@@ -470,10 +478,12 @@ export default function TeamManageModal({
       teamMembers,
       leaderId: teamLeader,
       completeYn: teamComplete,
-    }).then(() => {
-      handleClickClose(event);
-      fetchTeams();
-    });
+    })
+      .then(() => {
+        handleClickClose(event);
+        fetchTeams();
+      })
+      .catch((err) => errorAlert(err));
   };
 
   const handleUpdateTeamConfirm: MouseEventHandler = (event) => {
@@ -493,10 +503,12 @@ export default function TeamManageModal({
       teamMembers,
       leaderId: teamLeader,
       completeYn: teamComplete,
-    }).then(() => {
-      handleClickClose(event);
-      fetchTeams();
-    });
+    })
+      .then(() => {
+        handleClickClose(event);
+        fetchTeams();
+      })
+      .catch((err) => errorAlert(err));
   };
 
   const toOptionTypeBase = (value: string): OptionTypeBase => {

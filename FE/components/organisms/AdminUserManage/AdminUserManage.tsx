@@ -17,6 +17,7 @@ import AdminUserImportModal from './AdminUserImportModal';
 import AdminUserDeleteModal from './AdminUserDeleteModal';
 import { displayModal, setLoading, useAppDispatch } from '@store';
 import { AxiosError } from 'axios';
+import { errorAlert, myAlert } from '@utils/snippet';
 
 const Wrapper = styled.div`
   i {
@@ -157,22 +158,6 @@ export default function AdminUserManage({ project }: AdminUserManageProps) {
     myAlert("현재 사용자 삭제는 불가능합니다.");
     // fetchUsers();
     // handleDeleteConfirmCancel();
-  };
-
-  const myAlert = (content: string) => {
-    dispatch(
-      displayModal({
-        modalName: MODALS.ALERT_MODAL,
-        content: content,
-      }),
-    );
-  };
-
-  const errorAlert = (err: AxiosError) => {
-    myAlert(
-      'ERROR' +
-        (err.response?.data ? ': ' + JSON.stringify(err.response.data) : ''),
-    );
   };
 
   const handleUploadImport: ChangeEventHandler<HTMLInputElement> = (event: {
