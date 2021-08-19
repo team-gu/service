@@ -22,7 +22,8 @@ const Wrapper = styled.div<{
       font: { ellipse },
     },
     isLineBreak,
-  }) => isLineBreak ? 'word-break: break-word;': ellipse()};
+  }) =>
+    isLineBreak ? 'word-break: break-word; white-space: pre-wrap;' : ellipse()};
 `;
 
 export default function Text({
