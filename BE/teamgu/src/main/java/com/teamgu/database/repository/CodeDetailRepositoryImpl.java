@@ -8,6 +8,7 @@ import com.teamgu.database.entity.QMapping;
 import com.teamgu.database.entity.QProjectDetail;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Date;
 import java.util.List;
 
 public class CodeDetailRepositoryImpl implements CodeDetailRepositoryCustom {
@@ -30,13 +31,16 @@ public class CodeDetailRepositoryImpl implements CodeDetailRepositoryCustom {
 
     @Override
     public List<CodeDetailResDto> getPrjCodeDetail(String stage) { //프로젝트 코드 정보 반환
+        Date now = new Date(); //해당 프로젝트의 활성화 날짜가 오늘 이전인지 체크하기 위함
+
         return jpaQueryFactory
                 .select(Projections.constructor(CodeDetailResDto.class, qCodeDetail.Name, qCodeDetail.codeDetail))
                 .from(qProjectDetail)
                 .innerJoin(qCodeDetail)
                     .on(qProjectDetail.projectCode.eq(qCodeDetail.codeDetail))
                 .where(qProjectDetail.stageCode.like("%" + stage)
-                        .and(qCodeDetail.code.code.eq("PR")))
+                        .and(qCodeDetail.code.code.eq("PR")
+                                .and(qProjectDetail.activeDate.before(now))))
                 .fetch();
     }
 

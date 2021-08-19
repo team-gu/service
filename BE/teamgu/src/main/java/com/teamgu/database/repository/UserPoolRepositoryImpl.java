@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 
 import com.teamgu.database.entity.QStdClass;
-import com.teamgu.database.entity.QUserClass;;
+import com.teamgu.database.entity.QUserClass;
 import com.teamgu.database.entity.QUser;
 
 import javax.persistence.EntityManager;
