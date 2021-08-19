@@ -64,7 +64,6 @@ export default function NoticeDetail({
           data: { data },
         } = id ? await getNoticeDetail(id) : await getNoticeDetail(detailValue);
         setNotice(data);
-        console.log(data);
       } catch (error) {
         console.error(error);
       }
