@@ -259,7 +259,6 @@ export default function AdminUserManage({ project }: AdminUserManageProps) {
           },
         }}
         onSelectRow={handleSelectedRow}
-        pagination={false}
       />
       {showManageModal &&
         (editTarget ? (
