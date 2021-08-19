@@ -11,9 +11,9 @@ import {
   getAdminClassOption,
   deleteAdminClassOption,
 } from '@repository/adminRepository';
-import { displayModal, useAppDispatch } from '@store';
-import { MODALS } from '@utils/constants';
+import { useAppDispatch } from '@store';
 import { Code } from '@utils/type';
+import { myAlert } from '@utils/snippet';
 
 const Wrapper = styled.div`
   input {
@@ -274,41 +274,32 @@ export default function AdminUserManageModal({
   const userNameInputRef = useRef<HTMLInputElement>(null);
   const userStudentNumberInputRef = useRef<HTMLInputElement>(null);
 
-  const myAlert = (content: string) => {
-    dispatch(
-      displayModal({
-        modalName: MODALS.ALERT_MODAL,
-        content: content,
-      }),
-    );
-  };
-
   const onClickCreate = () => {
     if (!handleCreateUser) {
       return;
     }
 
     if (!userEmailInputRef.current || userEmailInputRef.current.value === '') {
-      myAlert('이메일을 입력해주세요');
+      myAlert(dispatch, '이메일을 입력해주세요');
       return;
     }
     if (!userNameInputRef.current || userNameInputRef.current.value === '') {
-      myAlert('이름을 입력해주세요');
+      myAlert(dispatch, '이름을 입력해주세요');
       return;
     }
     if (
       !userStudentNumberInputRef.current ||
       userStudentNumberInputRef.current.value === ''
     ) {
-      myAlert('학번을 입력해주세요');
+      myAlert(dispatch, '학번을 입력해주세요');
       return;
     }
     if (!userMajor) {
-      myAlert('전공여부을 입력해주세요');
+      myAlert(dispatch, '전공여부을 입력해주세요');
       return;
     }
     if (!userRole) {
-      myAlert('역할을 입력해주세요');
+      myAlert(dispatch, '역할을 입력해주세요');
       return;
     }
 
@@ -329,11 +320,11 @@ export default function AdminUserManageModal({
     }
 
     if (!userEmailInputRef.current || userEmailInputRef.current.value === '') {
-      myAlert('이메일을 입력해주세요');
+      myAlert(dispatch, '이메일을 입력해주세요');
       return;
     }
     if (!userNameInputRef.current || userNameInputRef.current.value === '') {
-      myAlert('이름을 입력해주세요');
+      myAlert(dispatch, '이름을 입력해주세요');
       return;
     }
     if (
@@ -341,19 +332,19 @@ export default function AdminUserManageModal({
       userStudentNumberInputRef.current.value === ''
     ) {
       console.log('학번 없음');
-      myAlert('학번을 입력해주세요');
+      myAlert(dispatch, '학번을 입력해주세요');
       return;
     }
     if (!userMajor) {
-      myAlert('전공여부을 입력해주세요');
+      myAlert(dispatch, '전공여부을 입력해주세요');
       return;
     }
     if (!userRole) {
-      myAlert('역할을 입력해주세요');
+      myAlert(dispatch, '역할을 입력해주세요');
       return;
     }
     if (!isActivate) {
-      myAlert('프로젝트 활성/비활성을 입력해주세요');
+      myAlert(dispatch, '프로젝트 활성/비활성을 입력해주세요');
       return;
     }
 
