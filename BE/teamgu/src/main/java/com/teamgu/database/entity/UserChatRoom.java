@@ -24,12 +24,10 @@ import lombok.Setter;
 @Getter
 @Setter
 @IdClass(UserChatRoomPK.class)
-@DynamicInsert
 public class UserChatRoom{	
 	String title;
 	
-	@Column(columnDefinition = "short default 1")// 방이 최초 생성된다면 default 값은 항상 1이다
-	@ColumnDefault("1")
+	@Column(columnDefinition = "tinyint default 1")// 방이 최초 생성된다면 default 값은 항상 1이다
 	short visible; //0숨김(방나가기) 1보임
 	
 	@Id
