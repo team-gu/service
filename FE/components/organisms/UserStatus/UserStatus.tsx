@@ -171,13 +171,15 @@ export default function UserStatus(): ReactElement {
           setUsers(dataList);
           setPageCount(totPageCnt);
 
-          const {
-            data: { data },
-          } = await getEachFiltersCodeListTracks(
-            studentNumber,
-            payload?.project,
-          );
-          setTrackList(data['트랙']);
+          if (payload?.project) {
+            const {
+              data: { data },
+            } = await getEachFiltersCodeListTracks(
+              studentNumber,
+              payload?.project,
+            );
+            setTrackList(data['트랙']);
+          }
         } catch ({
           response: {
             data: { errorMessage },
