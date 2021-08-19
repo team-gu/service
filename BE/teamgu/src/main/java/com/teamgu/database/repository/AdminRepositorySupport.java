@@ -163,6 +163,7 @@ public class AdminRepositorySupport {
 		.set(qProjectDetail.activeDate, projectInfoResDto.getActiveDate())
 		.set(qProjectDetail.startDate, projectInfoResDto.getStartDate())
 		.set(qProjectDetail.endDate, projectInfoResDto.getEndDate())
+		.where(qProjectDetail.id.eq(projectInfoResDto.getId()))
 		.execute();
 		
 	}
