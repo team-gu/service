@@ -47,10 +47,6 @@ const Wrapper = styled.div`
       }
 
       ${respondTo.mobile`
-        margin-top: 40%;
-        position: absolute;
-        top: 0;
-        left: 0;
         width: 90%;
         box-shadow: none;
       `}
@@ -75,21 +71,13 @@ const Wrapper = styled.div`
       }
     }
 
-    .errorMessage {
-      margin-top: 35px;
-      margin-left: 12px;
-    }
-
     Input {
       height: 30px;
       border: 1px solid #ddd;
-      padding: 5px 18px;
-      margin: 12px;
     }
 
     Button {
       ${({ theme: { flexRow } }) => flexRow()};
-      margin-left: 12px;
       ${respondTo.mobile`
         width: 85%;
       `}
@@ -184,7 +172,7 @@ export default function Home(): ReactElement {
                       ref={emailRef}
                       placeHolder="이메일 입력"
                       type="text"
-                      width={'80%'}
+                      width={'100%'}
                     />
                   </div>
                 </Label>
@@ -195,7 +183,7 @@ export default function Home(): ReactElement {
                     ref={passwordRef}
                     placeHolder="비밀번호 입력"
                     type="password"
-                    width={'80%'}
+                    width={'100%'}
                   />
                 </Label>
               </div>

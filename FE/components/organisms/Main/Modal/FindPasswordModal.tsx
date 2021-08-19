@@ -11,14 +11,14 @@ const Wrapper = styled.div`
 `;
 
 const FindPW = styled.div`
-  > div {
+  > div:first-child {
     margin-bottom: 15px;
   }
 
   .button-container {
-    text-align: end;
+    text-align: center;
     button {
-      width: 5vw;
+      width: 70px;
       height: 30px;
       margin-left: 5px;
     }
@@ -73,6 +73,8 @@ export default function FindPasswordModal(): ReactElement {
               ref={emailRef}
               maxLength={30}
               autoComplete="off"
+              width="100%"
+              height="30px"
             />
           </div>
           {error && <Error>{errorMessage}</Error>}
