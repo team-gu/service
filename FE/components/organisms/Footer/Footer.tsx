@@ -5,7 +5,7 @@ import { Text } from '@atoms';
 const Wrapper = styled.footer`
   margin-top: auto;
   width: 100%;
-  height: 50px;
+  height: 30px;
   display: flex;
   ${({ theme: { flexRow } }) => flexRow()};
   background: #262626;

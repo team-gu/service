@@ -13,7 +13,7 @@ interface LayoutProps {
 }
 
 const Wrapper = styled(motion.div)`
-  min-height: calc(100vh - 150px);
+  min-height: calc(100vh - 160px);
   margin-top: 130px;
 `;
 

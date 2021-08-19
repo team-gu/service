@@ -11,7 +11,7 @@ import { useAuthState } from '@store';
 
 const Wrapper = styled.div`
   width: 50vw;
-  height: calc(100vh - 150px);
+  height: calc(100vh - 160px);
   position: relative;
   background-color: rgba(0, 0, 0, 0.5);
 
