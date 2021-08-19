@@ -184,6 +184,7 @@ export default function UserStatus(): ReactElement {
           },
           status,
         }) {
+          console.error(errorMessage);
           setUsers([]);
         }
       })();
