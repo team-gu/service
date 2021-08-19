@@ -1,6 +1,5 @@
 import { ReactElement } from 'react';
 import styled from 'styled-components';
-
 import { useRouter } from 'next/router';
 
 import { Text, Icon } from '@atoms';
@@ -125,7 +124,17 @@ export default function UserStatusCard({
         <div className="profiles-container">
           <div className="profiles">
             <div className="profile">
-              <ProfileImage size={80} src={profileUrl} />
+              <div
+                onClick={async () =>
+                  await router.push({
+                    pathname: `/userdetail/[id]`,
+                    query: { id: opponentId },
+                  })
+                }
+                style={{ cursor: 'pointer' }}
+              >
+                <ProfileImage size={80} src={profileUrl} />{' '}
+              </div>
               <Text text={name} />
               <div className="icon-container">
                 <Icon
