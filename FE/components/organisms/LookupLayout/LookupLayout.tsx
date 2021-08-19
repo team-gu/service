@@ -15,6 +15,7 @@ const Wrapper = styled.div<{ showTeamCreateBtn: boolean }>`
 
   ${respondTo.mobile`
     ${({ theme: { flexCol } }) => flexCol()}
+    width: 100%;
   `}
 
   .filter-container {

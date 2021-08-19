@@ -12,6 +12,10 @@ const Wrapper = styled.div<{ isProject?: boolean }>`
   height: fit-content;
   margin: 0 auto 20px auto;
 
+  ${respondTo.mobile`
+    width: 100%;
+  `}
+
   .profile-container {
     ${({ theme: { flexCol } }) => flexCol('space-between')}
     height: 150px;

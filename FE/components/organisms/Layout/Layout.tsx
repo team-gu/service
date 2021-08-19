@@ -6,6 +6,7 @@ import { useUiState, useAppDispatch, setChatOpen, useAuthState } from '@store';
 import { ChatRoute } from '@organisms';
 import { FloatingButton } from '@molecules';
 import { VIDEO_CHAT_PATH_PREFIX, ADMIN_PATH_PREFIX } from '@utils/constants';
+import { respondTo } from '@styles/respondTo';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -19,6 +20,10 @@ const Wrapper = styled(motion.div)`
 const Narrow = styled.div`
   width: 70%;
   margin-left: 15%;
+  ${respondTo.mobile`
+    width: 90%;
+    margin-left: 5%;
+  `}
 `;
 export default function Layout({ children }: LayoutProps) {
   const router = useRouter();
