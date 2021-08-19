@@ -333,7 +333,7 @@ export default function TeamManageModal({
           ),
         );
       })
-      .catch((err) => errorAlert(err));
+      .catch((err) => errorAlert(dispatch, err));
 
     getEachFiltersCodeListTracks(user.studentNumber, projectCode)
       .then(({ data: { data } }) => {
@@ -347,7 +347,7 @@ export default function TeamManageModal({
           ),
         );
       })
-      .catch((err) => errorAlert(err));
+      .catch((err) => errorAlert(dispatch, err));
   }, []);
 
   const handleChangeTeamName = ({ target }: ChangeEvent<HTMLInputElement>) => {
@@ -439,7 +439,7 @@ export default function TeamManageModal({
         handleClickClose(event);
         fetchTeams();
       })
-      .catch((err) => errorAlert(err));
+      .catch((err) => errorAlert(dispatch, err));
   };
 
   const handleExitTeam = () => {
@@ -457,7 +457,7 @@ export default function TeamManageModal({
         handleClickClose(event);
         fetchTeams();
       })
-      .catch((err) => errorAlert(err));
+      .catch((err) => errorAlert(dispatch, err));
   };
 
   const handleSubmitTeamConfirmCancel = () => {
@@ -483,7 +483,7 @@ export default function TeamManageModal({
         handleClickClose(event);
         fetchTeams();
       })
-      .catch((err) => errorAlert(err));
+      .catch((err) => errorAlert(dispatch, err));
   };
 
   const handleUpdateTeamConfirm: MouseEventHandler = (event) => {
@@ -508,7 +508,7 @@ export default function TeamManageModal({
         handleClickClose(event);
         fetchTeams();
       })
-      .catch((err) => errorAlert(err));
+      .catch((err) => errorAlert(dispatch, err));
   };
 
   const toOptionTypeBase = (value: string): OptionTypeBase => {

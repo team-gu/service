@@ -9,14 +9,13 @@ import {
   updateUser,
   createUser,
 } from '@repository/adminRepository';
-import { MODALS, REGIONS } from '@utils/constants';
+import { REGIONS } from '@utils/constants';
 import { Project } from '@utils/type';
 
 import AdminUserManageModal from './AdminUserManageModal';
 import AdminUserImportModal from './AdminUserImportModal';
 import AdminUserDeleteModal from './AdminUserDeleteModal';
-import { displayModal, setLoading, useAppDispatch } from '@store';
-import { AxiosError } from 'axios';
+import { setLoading, useAppDispatch } from '@store';
 import { errorAlert, myAlert } from '@utils/snippet';
 
 const Wrapper = styled.div`
@@ -155,7 +154,7 @@ export default function AdminUserManage({ project }: AdminUserManageProps) {
   const handleDeleteConfirm = () => {
     // TODO: 사용자 삭제 API 호출
     console.log(editTarget);
-    myAlert("현재 사용자 삭제는 불가능합니다.");
+    myAlert(dispatch, '현재 사용자 삭제는 불가능합니다.');
     // fetchUsers();
     // handleDeleteConfirmCancel();
   };
@@ -174,7 +173,7 @@ export default function AdminUserManage({ project }: AdminUserManageProps) {
           fetchUsers();
         })
         .catch((err) => {
-          errorAlert(err);
+          errorAlert(dispatch, err);
         })
         .finally(() => {
           setShowImportModal(false);
@@ -190,7 +189,7 @@ export default function AdminUserManage({ project }: AdminUserManageProps) {
         fetchUsers();
       })
       .catch((err) => {
-        errorAlert(err);
+        errorAlert(dispatch, err);
       })
       .finally(() => {
         setShowManageModal(false);
@@ -205,7 +204,7 @@ export default function AdminUserManage({ project }: AdminUserManageProps) {
         fetchUsers();
       })
       .catch((err) => {
-        errorAlert(err);
+        errorAlert(dispatch, err);
       })
       .finally(() => {
         handleCloseEditModal();

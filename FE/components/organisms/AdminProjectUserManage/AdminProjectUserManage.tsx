@@ -18,6 +18,7 @@ import AdminUserImportModal from './AdminUserImportModal';
 import AdminUserExportModal from './AdminUserExportModal';
 import { displayModal, setLoading, useAppDispatch } from '@store';
 import { MODALS } from '@utils/constants';
+import { errorAlert, myAlert } from '@utils/snippet';
 
 const Wrapper = styled.div`
   i {
@@ -110,26 +111,6 @@ export default function AdminProjectUserManage({
     setEditTarget(undefined);
   };
 
-  const myAlert = (content: string) => {
-    dispatch(
-      displayModal({
-        modalName: MODALS.ALERT_MODAL,
-        content: content,
-      }),
-    );
-  };
-
-  const myAlertError = (err: AxiosError) => {
-    dispatch(
-      displayModal({
-        modalName: MODALS.ALERT_MODAL,
-        content:
-          'ERROR' +
-          (err.response?.data ? ': ' + JSON.stringify(err.response.data) : ''),
-      }),
-    );
-  };
-
   const deleteUser = () => {
     dispatch(setLoading({ isLoading: true }));
 
@@ -142,14 +123,14 @@ export default function AdminProjectUserManage({
           fetchProjectUserTableData();
         })
         .catch((err) => {
-          myAlertError(err);
+          errorAlert(dispatch, err);
         })
         .finally(() => {
           closeDeleteModal();
           dispatch(setLoading({ isLoading: false }));
         });
     } else {
-      myAlert('삭제할 행이 선택되지 않았습니다.');
+      myAlert(dispatch, '삭제할 행이 선택되지 않았습니다.');
     }
   };
 
@@ -198,7 +179,7 @@ export default function AdminProjectUserManage({
         document.body.removeChild(a);
       })
       .catch((err) => {
-        myAlertError(err);
+        errorAlert(dispatch, err);
       })
       .finally(() => {
         setShowExportModal(false);
@@ -224,7 +205,7 @@ export default function AdminProjectUserManage({
           fetchProjectUserTableData();
         })
         .catch((err) => {
-          myAlertError(err);
+          errorAlert(dispatch, err);
         })
         .finally(() => {
           setShowImportModal(false);
