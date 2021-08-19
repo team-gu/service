@@ -44,7 +44,7 @@ export const CODE_ID = {
 };
 
 export const getImageURL = (image: string) => {
-  if (image) return `${image}#` + new Date().getTime();
+  if (image) return image;
   return 'https://i5a202.p.ssafy.io:8080/api/file/display?url=profile/c21f969b5f03d33d43e04f8f136e7682.png';
 };
 
