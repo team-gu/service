@@ -68,7 +68,6 @@ export default function FindPasswordModal(): ReactElement {
           <div>
             <Input
               placeHolder={'이메일을 입력해주세요.'}
-              height="50px"
               ref={emailRef}
               maxLength={30}
               autoComplete="off"

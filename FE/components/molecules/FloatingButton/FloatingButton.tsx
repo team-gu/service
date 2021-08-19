@@ -96,7 +96,6 @@ export default function FloatingButton({
   const handleGetNotificationNumber = async () => {
     try {
       if (id !== 0 && !isRtc && !isChatOpenRef.current) {
-        console.log('in?');
         const {
           data: {
             data: { unreadcount },
