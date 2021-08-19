@@ -183,7 +183,7 @@ const ChatBubble = forwardRef<HTMLInputElement, ChatBubbleProps>(
                 ),
               }[type]
             ) : (
-              <Text text={message} fontSetting="n12m" isLineBreak />
+              <Text text={message} fontSetting="n16m" isLineBreak />
             )}
           </div>
         </div>
