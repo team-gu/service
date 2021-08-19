@@ -344,22 +344,24 @@ public class TeamRepositorySupport {
 		
 		EntityManager em = emf.createEntityManager();
 		List<Long> list = null;
-		String jqpl = null;
+		String jpql = null;
 		
 		// Serach User Id
 		Long userId = teamFilterReqDto.getUserId();
 		int stageCode = ((teamFilterReqDto.getStudentNumber().charAt(0) - '0') * 10 + teamFilterReqDto.getStudentNumber().charAt(1) - '0') + 100;
 		int projectCode = teamFilterReqDto.getProject();
+		int regionCode = teamFilterReqDto.getStudentNumber().charAt(2) - '0' + 100;
 		
 		if(userId == 0) { // filter 인경우
 			
 			StringBuilder skillFilter = new StringBuilder();
-			StringBuilder trackFilter = new StringBuilder();
-			
+			StringBuilder trackFilter = new StringBuilder();	
+			StringBuilder classJoinFilter = new StringBuilder();
+			StringBuilder classFilter = new StringBuilder();
 			String asc = (teamFilterReqDto.isSortAsc())? "asc" : "desc";
 			String sortType = teamFilterReqDto.getSortBy();
 			String sort = "id";
-			
+			String stdNumber = teamFilterReqDto.getStudentNumber();
 			if(sortType.equals("numberOfMembers")) {
 				sort = "now_member";
 			}
@@ -368,6 +370,24 @@ public class TeamRepositorySupport {
 			}
 			String orderBy = " team." + sort + " " + asc;
 			
+			if(projectCode == 101) {
+				
+				classJoinFilter.append("left outer join user_class uc\r\n");
+				classJoinFilter.append("on user.id =  uc.user_id\r\n");
+				
+				classFilter.append("and uc.class_id = (\r\n");
+				classFilter.append("	select user_class.class_id\r\n");
+				classFilter.append("    from user_class\r\n");
+				classFilter.append("    where user_class.user_id = (\r\n");
+				classFilter.append("        select user.id from user where user.student_number = "+ stdNumber + " )\r\n");
+				classFilter.append("    and user_class.class_id in (\r\n");
+				classFilter.append("		select id\r\n");
+				classFilter.append("		from std_class\r\n");
+				classFilter.append("			where project_code = " + projectCode + "\r\n");
+				classFilter.append("				and region_code = " + regionCode + "\r\n");
+				classFilter.append("				and stage_code = " + stageCode + "))\r\n");
+				
+			}
 
 			// skillsFilter
 			List<SkillResDto> skills = teamFilterReqDto.getFilteredSkills();
@@ -403,27 +423,28 @@ public class TeamRepositorySupport {
 				}
 			}
 			
-			jqpl = 
-					"select distinct team.id\r\n" + 
-					"from team \r\n" + 
-					"left outer join mapping\r\n" + 
-					"on team.mapping_id = mapping.id\r\n" + 
+			jpql =  "select distinct team.id\r\n" + 
+					"from team\r\n" + 
+					"left outer join user\r\n" + 
+					"on team.leader_id = user.id\r\n" + 
 					"left outer join team_skill\r\n" + 
-					"on team.id = team_skill.team_id\r\n" + 
-					"where mapping_id in\r\n" + 
-					"(select id from mapping where project_code = " + projectCode + " and stage_code = " + stageCode + trackFilter.toString() + ")\r\n" + 
+					"on team.id = team_skill.team_id\r\n" + classJoinFilter.toString() + 
+					"where mapping_id in ( select mapping.id from mapping where mapping.project_code = "+ projectCode + " and mapping.stage_code = " + stageCode +")\r\n" + 
+					"and (substr(user.student_number, 3, 1) + 100 ) = " + regionCode +"\r\n" + 
+					classFilter.toString() + 
 					skillFilter.toString() + 
-					"order by team.complete_yn, " + orderBy;
+					trackFilter.toString() +
+					"order by team.complete_yn,"+ orderBy;
 		}
 		else { // 검색 인 경우
 			
-			jqpl = 
+			jpql = 
 					"select team_id from user_team where team_id in \r\n" +
 					"(select id from team where team.mapping_id in \r\n" +
 					"(select mapping.id from mapping where mapping.project_code = " + projectCode + " and stage_code = " + stageCode +")) and user_id = " + userId;
 		}
 		try {
-			list = em.createNativeQuery(jqpl).getResultList();
+			list = em.createNativeQuery(jpql).getResultList();
 		}catch(Exception e) {
 			e.printStackTrace();
 		}finally {
