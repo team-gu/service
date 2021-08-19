@@ -42,4 +42,7 @@ public class ChatRoomResDto{
 	
 	@ApiModelProperty(name="마지막 채팅 메세지 보낸 시간")
 	LocalDateTime send_date_time;
+	
+	@ApiModelProperty(name="채팅방 활성화 상태")
+	short visible;
 }

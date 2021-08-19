@@ -146,7 +146,10 @@ public class ChatController {
 			log.info(room_id+"방이 생성되었습니다");
 			chatService.inviteUserPersonalRoom(users.getUser_id1(), room_id, name2+"님과 개인톡");//둘 다 초대, 개인톡방 이름 지정
 			chatService.inviteUserPersonalRoom(users.getUser_id2(), room_id, name1+"님과 개인톡");
-		}		
+		}else {//나갔다면 둘 다 활성화해준다
+			chatService.visibleRoom(room_id, users.getUser_id1());
+			chatService.visibleRoom(room_id, users.getUser_id2());
+		}
 		return ResponseEntity.ok(new CommonResponse<ChatRoomResDto>(chatService.getChatRoomInfo(room_id)));		
 	}
 	
@@ -189,7 +192,10 @@ public class ChatController {
 				}
 				log.info("단톡명 :"+title);
 				room_id = chatService.registNRoom(users, title);
-			}	
+			}else {//이미 있는 방이라면
+				//나갔던 방일 수 있기때문에 visible을 1로 변경한다
+				chatService.visibleRoom(room_id, users.get(0));
+			}
 		}catch(Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR) 
 					.body(new ErrorResponse("단톡 만들기에 실패했습니다."));

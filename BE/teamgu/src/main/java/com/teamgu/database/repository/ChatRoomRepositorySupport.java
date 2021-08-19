@@ -198,30 +198,6 @@ public class ChatRoomRepositorySupport {
 	}	
 	
 	/**
-	 * 개인이 특정 채팅방을 나가는 경우
-	 */
-	public boolean leaveRoom(long room_id, long user_id) {
-		EntityManager em = emf.createEntityManager();
-		EntityTransaction et = em.getTransaction();
-		try {
-			et.begin();
-			String jpql = "DELETE FROM user_chat_room\r\n"
-						+ "WHERE user_id = :user_id AND chat_room_id = :room_id";
-			em.createNativeQuery(jpql).setParameter("user_id", user_id)
-										.setParameter("room_id", room_id)
-										.executeUpdate();
-			et.commit();
-		}catch(Exception e) {
-			log.error("방 나가기에 실패했습니다");
-			et.rollback();
-			return false;
-		}finally {
-			em.close();
-		}
-		return true;		
-	}
-	
-	/**
 	 * 채팅방 내에서 (개인에게 보여지는) 방 이름을 변경하는 경우
 	 */
 	public boolean modifyPersonalRoomName(String title, long room_id, long user_id) {

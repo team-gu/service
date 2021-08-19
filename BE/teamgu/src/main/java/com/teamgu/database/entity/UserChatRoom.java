@@ -23,6 +23,8 @@ import lombok.Setter;
 public class UserChatRoom{	
 	String title;
 	
+	short visible; //0숨김(방나가기) 1보임
+	
 	@Id
 	@ManyToOne
 	@JoinColumn(name = "userId")
