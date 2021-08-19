@@ -9,7 +9,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.HashMap;
 
 public interface NoticeService {
-    Page<NoticeListResDto> getNoticeList(Pageable pageable);
+    Page<NoticeListResDto> getNoticeList(String title, Pageable pageable);
 
     NoticeDetailResDto getNoticeDetail(long id);
 
