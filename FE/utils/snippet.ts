@@ -1,6 +1,6 @@
-import { displayModal, useAppDispatch } from "@store";
-import { AxiosError } from "axios";
-import { MODALS } from "./constants";
+import { displayModal, useAppDispatch } from '@store';
+import { AxiosError } from 'axios';
+import { MODALS } from './constants';
 
 export const get = (key: string) => (obj: object) => obj[key];
 
@@ -23,8 +23,9 @@ export const myAlert = (content: string) => {
 };
 
 export const errorAlert = (err: AxiosError) => {
-  myAlert(
+  console.error(
     'ERROR' +
-      (err.response?.data ? ': ' + JSON.stringify(err.response.data) : ''),
+      (err.response?.data ? JSON.stringify(err.response.data) : err),
   );
+  myAlert('에러가 발생했습니다. 다시 시도해주세요.');
 };
