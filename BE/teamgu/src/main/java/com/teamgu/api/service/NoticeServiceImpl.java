@@ -47,9 +47,11 @@ public class NoticeServiceImpl implements NoticeService {
     NoticeFileHandler noticeFileHandler;
 
     @Override //클라로부터 입력받은 Pageable 정보로 page 리턴
-    public Page<NoticeListResDto> getNoticeList(Pageable pageable) {
+    public Page<NoticeListResDto> getNoticeList(String title, Pageable pageable) {
+
         //Mapper를 이용하여 Entity -> DTO 매핑
-        return noticeRepository.findAll(pageable).map(NoticeListMapper.INSTANCE::noticeToDto);
+        return noticeRepository.findByTitleContaining(title, pageable).map(NoticeListMapper.INSTANCE::noticeToDto);
+//        return noticeRepository.findAll(pageable);
     }
 
     @Override //클라로부터 입력받은 공지사항 id로 조회

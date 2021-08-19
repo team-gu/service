@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 @Api(value = "공지사항 API", tags = {"Notice."})
@@ -25,13 +26,18 @@ public class NoticeController {
     /**
      * 공지사항 목록 Api
      *
+     * @param title
      * @param pageable
      * @return ResponseEntity
      */
     @GetMapping
     @ApiOperation(value = "공지사항 목록 가져오기", notes = "공지사항 목록에 대한 pagination 정보를 반환")
-    public ResponseEntity<? extends BasicResponse> getNoticeList(Pageable pageable) {
-        return ResponseEntity.ok(new CommonResponse<Page<NoticeListResDto>>(noticeService.getNoticeList(pageable)));
+    public ResponseEntity<? extends BasicResponse> getNoticeList(
+            Pageable pageable,
+            @RequestParam @ApiParam(value = "검색할 공지사항의 제목", required = false) String title
+    ) {
+
+        return ResponseEntity.ok(new CommonResponse<Page<NoticeListResDto>>(noticeService.getNoticeList(title, pageable)));
     }
 
     /**
