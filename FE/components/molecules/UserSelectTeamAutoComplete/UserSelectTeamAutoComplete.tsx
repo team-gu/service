@@ -67,7 +67,7 @@ export default function UserSelectTeamAutoComplete({
           }
         })
         .catch((err) => {
-          console.log(err);
+          console.error(err);
           reject(err);
         });
     });

@@ -116,13 +116,12 @@ export default function ProjectModal(): ReactElement {
         url: urlRef.current && urlRef.current.value,
         introduce: introduce,
       };
-      console.log(data);
       const res = content.id
         ? await updateProject(data)
         : await postProject(data);
       dispatch(setProjects(res.data));
     } catch (e) {
-      console.log(e);
+      console.error(e);
     } finally {
       dispatch(removeModal({ modalName: MODALS.PROJECT_MODAL }));
     }

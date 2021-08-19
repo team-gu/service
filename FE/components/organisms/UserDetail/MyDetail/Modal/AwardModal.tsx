@@ -105,11 +105,10 @@ export default function AwardModal(): ReactElement {
         date: dateRef.current && dateRef.current.value,
         introduce: introduce,
       };
-      console.log(data);
       const res = content.id ? await updateAward(data) : await postAward(data);
       dispatch(setAwards(res.data));
     } catch (e) {
-      console.log(e);
+      console.error(e);
     } finally {
       dispatch(removeModal({ modalName: MODALS.AWARD_MODAL }));
     }

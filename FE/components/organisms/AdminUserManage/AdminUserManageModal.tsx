@@ -331,7 +331,6 @@ export default function AdminUserManageModal({
       !userStudentNumberInputRef.current ||
       userStudentNumberInputRef.current.value === ''
     ) {
-      console.log('학번 없음');
       myAlert(dispatch, '학번을 입력해주세요');
       return;
     }
@@ -381,7 +380,6 @@ export default function AdminUserManageModal({
       className: inputValue,
       projectId,
     }).then(({ data: { data } }) => {
-      console.log(data);
       setStudentClassOptions(codesToOption(data));
       setStudentClass(
         data.find((c: Code) => c.codeName === inputValue).codeName,
@@ -405,7 +403,6 @@ export default function AdminUserManageModal({
     deleteAdminClassOption({
       classId: deletedValue.code,
     }).then(({ data: { data } }) => {
-      console.log(data);
       setStudentClassOptions(codesToOption(data));
       setStudentClass(null);
     });

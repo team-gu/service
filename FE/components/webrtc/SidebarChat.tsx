@@ -56,7 +56,9 @@ export default function SidebarChat({
   session,
   children,
 }: SidebarChatProps): ReactElement {
-  const { user: { name, img } } = useAuthState();
+  const {
+    user: { name, img },
+  } = useAuthState();
   const [messageList, setMessageList] = useState<Chat[]>([]);
 
   useEffect(() => {
@@ -68,7 +70,6 @@ export default function SidebarChat({
       if (!event.data) return;
 
       const data = JSON.parse(event.data);
-      console.log(data);
       messageList.push({
         nickname: data.nickname,
         message: data.message,

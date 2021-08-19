@@ -127,11 +127,13 @@ export default function AdminUserManage({ project }: AdminUserManageProps) {
     getUserTableData({
       projectId: project.id,
       regionCode: selectedRegion,
-    }).then(({ data: { data } }) => {
-      setTeamStatusTableData(data);
-    }).finally(() => {
-      dispatch(setLoading({ isLoading: false }));
-    });
+    })
+      .then(({ data: { data } }) => {
+        setTeamStatusTableData(data);
+      })
+      .finally(() => {
+        dispatch(setLoading({ isLoading: false }));
+      });
   };
 
   const handleSelectedRow = (row: { type: string; data: UserDataRow }) => {
@@ -156,7 +158,6 @@ export default function AdminUserManage({ project }: AdminUserManageProps) {
 
   const handleDeleteConfirm = () => {
     // TODO: 사용자 삭제 API 호출
-    console.log(editTarget);
     myAlert(dispatch, '현재 사용자 삭제는 불가능합니다.');
     // fetchUsers();
     // handleDeleteConfirmCancel();

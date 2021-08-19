@@ -87,14 +87,9 @@ const GridContainer = styled.div`
 export default function TmiGameAddModal({
   handlerClose,
 }: TimeGameAddModalProps): ReactElement {
-  const handleClickSendTmi = () => {
-    console.log('SEND');
-  };
+  const handleClickSendTmi = () => {};
 
-  const handleClickAnswer = (num: number) => {
-    console.log('ANSWER');
-    console.log(num);
-  };
+  const handleClickAnswer = (num: number) => {};
 
   return (
     <ModalWrapper modalName="tmiGameModal">

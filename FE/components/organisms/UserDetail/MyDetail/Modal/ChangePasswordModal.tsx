@@ -95,7 +95,7 @@ export default function ChangePasswordModal(): ReactElement {
       alert('비밀번호가 정상적으로 변경되었습니다.');
       dispatch(removeModal({ modalName: MODALS.CHANGEPASSWORD_MODAL }));
     } catch (e) {
-      console.log(e);
+      console.error(e);
       setErrorMessage('비밀번호가 틀립니다.');
       setError(true);
     }

@@ -185,8 +185,6 @@ export default function TeamStatus(): ReactElement {
     });
   };
 
-  console.log(teams);
-
   const handleProjectChange = ({ value }: { value: number }) => {
     if (projectCodes?.includes(value)) {
       setProjectCode(value);

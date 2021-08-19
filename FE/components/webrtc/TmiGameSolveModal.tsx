@@ -62,14 +62,9 @@ const GridContainer = styled.div`
 export default function TmiGameSolveModal({
   handlerClose,
 }: TimeGameSolveModalProps): ReactElement {
-  const handleClickCheckAnswer = () => {
-    console.log('CHECK');
-  };
+  const handleClickCheckAnswer = () => {};
 
-  const handleClickAnswer = (num: number) => {
-    console.log('ANSWER');
-    console.log(num);
-  };
+  const handleClickAnswer = (num: number) => {};
 
   return (
     <ModalWrapper modalName="tmiGameModal">

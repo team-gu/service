@@ -65,7 +65,7 @@ export default function UserSelectProjectAutoComplete({
           }
         })
         .catch((err) => {
-          console.log(err);
+          console.error(err);
           reject(err);
         });
     });

@@ -50,12 +50,11 @@ export default function FindPasswordModal(): ReactElement {
       const data = {
         email: emailRef?.current?.value,
       };
-      console.log(data);
       await findPassword(data);
       alert('비밀번호가 초기화 되었습니다.');
       dispatch(removeModal({ modalName: MODALS.FINDPASSWORD_MODAL }));
     } catch (e) {
-      console.log(e);
+      console.error(e);
       setErrorMessage('올바르지 않은 이메일입니다.');
       setError(true);
     }

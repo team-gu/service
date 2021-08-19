@@ -155,11 +155,11 @@ export default function VideoChat(): ReactElement {
     });
 
     mySession.on('publisherStartSpeaking', (event: any) => {
-      console.log('User ' + event.connection.connectionId + ' start speaking');
+      // console.log('User ' + event.connection.connectionId + ' start speaking');
     });
 
     mySession.on('publisherStopSpeaking', (event: any) => {
-      console.log('User ' + event.connection.connectionId + ' stop speaking');
+      // console.log('User ' + event.connection.connectionId + ' stop speaking');
     });
 
     getToken()
@@ -183,7 +183,7 @@ export default function VideoChat(): ReactElement {
         });
       })
       .catch((error) => {
-        console.log(
+        console.error(
           'There was an error connecting to the session:',
           error.code,
           error.message,
@@ -198,7 +198,7 @@ export default function VideoChat(): ReactElement {
           resolve(ob);
         })
         .catch((error) => {
-          console.log('openvidu import error: ', error.code, error.message);
+          console.error('openvidu import error: ', error.code, error.message);
           reject();
         });
     });
@@ -226,7 +226,7 @@ export default function VideoChat(): ReactElement {
   const handlerConfigModalCloseBtn = () => {
     setPublisher(undefined);
     setIsConfigModalShow(false);
-    console.log('Device Config cancel. Redirect to home.');
+    // console.log('Device Config cancel. Redirect to home.');
     router.push('/humanpool');
   };
 
@@ -284,7 +284,7 @@ export default function VideoChat(): ReactElement {
       axios
         .post(`${OPENVIDU_SERVER_URL}/openvidu/api/sessions`, data, { headers })
         .then((response) => {
-          console.log('CREATE SESSION', response);
+          // console.log('CREATE SESSION', response);
           resolve(response.data.id);
         })
         .catch((response) => {
@@ -292,7 +292,7 @@ export default function VideoChat(): ReactElement {
           if (error?.response?.status === 409) {
             resolve(sessionId);
           } else {
-            console.log(error);
+            console.error(error);
             console.warn(
               `No connection to OpenVidu Server. This may be a certificate error at ${OPENVIDU_SERVER_URL}`,
             );
@@ -410,7 +410,7 @@ export default function VideoChat(): ReactElement {
           { headers },
         )
         .then((response) => {
-          console.log('TOKEN', response);
+          // console.log('TOKEN', response);
           resolve(response.data.token);
         })
         .catch((error) => reject(error));

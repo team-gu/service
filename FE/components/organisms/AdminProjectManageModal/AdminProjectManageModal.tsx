@@ -438,13 +438,11 @@ export default function ProjectManageModal({
   };
 
   const handleCreateStageOption = (inputValue: string) => {
-    console.log('handleCreateOption: ', inputValue);
     setIsLoadingStage(true);
     createAdminProjectOption({
       codeId: CODE_ID['기수'],
       codeName: inputValue,
     }).then(({ data: { data } }) => {
-      console.log('CREATE STAGE:', data);
       setStageOptions(codesToOption(data));
       setIsLoadingStage(false);
       setStage(data.find((c: Code) => c.codeName === inputValue));
@@ -472,7 +470,6 @@ export default function ProjectManageModal({
       codeId: CODE_ID['구분'],
       codeName: inputValue,
     }).then(({ data: { data } }) => {
-      console.log('CREATE CATEGORY:', data);
       setCategoryOptions(codesToOption(data));
       setIsLoadingCategory(false);
       setCategory(data.find((c: Code) => c.codeName === inputValue));
@@ -499,7 +496,6 @@ export default function ProjectManageModal({
       codeId: CODE_ID['트랙'],
       codeName: inputValue,
     }).then(({ data: { data } }) => {
-      console.log('CREATE TRACK:', data);
       setTrackOptions(codesToOption(data));
       setIsLoadingTrack(false);
       setTracks([...tracks, data.find((c: Code) => c.codeName === inputValue)]);

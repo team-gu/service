@@ -158,7 +158,7 @@ export default function MyDetailEdit({
       alert('수정되었습니다.');
       changeEditMode();
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
   };
 
@@ -169,7 +169,7 @@ export default function MyDetailEdit({
         setProjects(user.projects.filter((project) => project.id !== id)),
       );
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
   };
 
@@ -178,7 +178,7 @@ export default function MyDetailEdit({
       await deleteAward(id);
       await dispatch(setAwards(user.awards.filter((award) => award.id !== id)));
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
   };
 
