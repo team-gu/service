@@ -2,12 +2,11 @@ import { ReactElement } from 'react';
 import styled from 'styled-components';
 import { useRouter } from 'next/router';
 
-import { Text, Icon } from '@atoms';
+import { Text, Icon, Textarea } from '@atoms';
 import { Tag, ProfileImage } from '@molecules';
 import { useAuthState, setChatOpen, useAppDispatch } from '@store';
 import { Team } from '@utils/type';
 import { getImageURL } from '@utils/constants';
-
 
 const Wrapper = styled.div<{ isComplete: boolean }>`
   position: relative;
@@ -140,9 +139,9 @@ export default function TeamStatusCard({
                   key={item.id}
                   onClick={() => {
                     if (item.id === user.id) {
-                      router.push(`/userdetail`)
+                      router.push(`/userdetail`);
                     } else {
-                      router.push(`/userdetail/${item.id}`)
+                      router.push(`/userdetail/${item.id}`);
                     }
                   }}
                 >
@@ -181,7 +180,7 @@ export default function TeamStatusCard({
           </div>
           <div className="description">
             <Text text="소개" color="gray" />
-            <Text text={team.introduce} isLineBreak fontSetting="n18m" />
+            <Textarea className="text-area" value={team.introduce} disabled />
           </div>
         </div>
       </div>

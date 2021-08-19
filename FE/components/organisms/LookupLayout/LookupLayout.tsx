@@ -71,6 +71,14 @@ const Wrapper = styled.div<{ showTeamCreateBtn: boolean }>`
     > div {
       margin-bottom: 20px;
     }
+
+    .text-area {
+      border: none;
+      background-color: transparent;
+      resize: none;
+      width: 100%;
+      min-height: 123px;
+    }
   }
 `;
 
