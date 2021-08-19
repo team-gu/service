@@ -3,9 +3,10 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
+import { respondTo } from '@styles/respondTo';
 
 import { DropdownMenu } from '@molecules';
-import { Text } from '@atoms';
+import { Text, Icon } from '@atoms';
 import { useAuthState, useAppDispatch, setLogout } from '@store';
 import { useScrollPosition } from '@hooks/useWindow';
 import { getImageURL, ROUTE_TO_KOREAN } from '@utils/constants';
@@ -27,6 +28,10 @@ const Wrapper = styled.nav<{ isShowByScroll: Boolean }>`
   .container {
     ${({ theme: { flexRow } }) => flexRow('space-between')};
     width: 70%;
+    ${respondTo.mobile`
+      width: 90%;
+      margin-right: 15px;
+    `}
 
     .logo {
       ${({ theme: { flexRow } }) => flexRow()};
@@ -36,6 +41,23 @@ const Wrapper = styled.nav<{ isShowByScroll: Boolean }>`
         border-left: 1px solid grey;
         padding-left: 20px;
       }
+    }
+    .text-href {
+      ${respondTo.mobile`
+        display: none;
+      `}
+    }
+    .mobile-menu {
+      ${respondTo.mobile`
+        display: contents;
+      `}
+      display: none;
+    }
+    .dropdown-conatiner {
+      > div:first-child {
+        margin-right: 20px;
+      }
+      ${({ theme: { flexRow } }) => flexRow()}
     }
     ul {
       display: flex;
@@ -157,7 +179,7 @@ export default function Navbar(): ReactElement {
             color="gray"
           />
         </div>
-        <div>
+        <div className="text-href">
           <ul>
             <li>
               <Link href="/notice">
@@ -177,40 +199,67 @@ export default function Navbar(): ReactElement {
             </li>
           </ul>
         </div>
-        <div>
-          <DropdownMenu
-            items={[
-              {
-                id: 1,
-                title: '마이페이지',
-                func: () => router.push('/userdetail'),
-                iconName: 'account_circle',
-              },
-              {
-                id: 2,
-                title: '로그아웃',
-                func: () => {
-                  dispatch(setLogout(router));
+        <div className="dropdown-conatiner">
+          <div>
+            <DropdownMenu
+              items={[
+                {
+                  id: 1,
+                  title: '마이페이지',
+                  func: () => router.push('/userdetail'),
+                  iconName: 'account_circle',
                 },
-                iconName: 'logout',
-              },
-            ]}
-          >
-            <>
-              <Image
-                className="profileImage"
-                alt="프로필사진"
-                src={getImageURL(user.img)}
-                width={'40%'}
-                height={'40%'}
-              />
-              <p className="userName">
-                {user.studentNumber}
-                <br />
-                <span>{user.name}</span>님
-              </p>
-            </>
-          </DropdownMenu>
+                {
+                  id: 2,
+                  title: '로그아웃',
+                  func: () => {
+                    dispatch(setLogout(router));
+                  },
+                  iconName: 'logout',
+                },
+              ]}
+            >
+              <>
+                <Image
+                  className="profileImage"
+                  alt="프로필사진"
+                  src={getImageURL(user.img)}
+                  width={'40%'}
+                  height={'40%'}
+                />
+                <p className="userName">
+                  {user.studentNumber}
+                  <br />
+                  <span>{user.name}</span>님
+                </p>
+              </>
+            </DropdownMenu>
+          </div>
+          <div className="mobile-menu">
+            <DropdownMenu
+              items={[
+                {
+                  id: 1,
+                  title: '공지사항',
+                  func: () => router.push('/notice'),
+                },
+                {
+                  id: 2,
+                  title: '인력풀',
+                  func: () => router.push('/humanpool'),
+                },
+                {
+                  id: 3,
+                  title: '팀풀',
+                  func: () => router.push('/team'),
+                },
+              ]}
+            >
+              <>
+                <Icon iconName="menu" />
+              </>
+            </DropdownMenu>
+          </div>
         </div>
       </div>
     </Wrapper>
