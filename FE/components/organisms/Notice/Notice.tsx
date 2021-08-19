@@ -24,6 +24,13 @@ interface NoticeType {
   date: Date;
 }
 
+interface NoticeProps {
+  editNotice?: Boolean;
+  setEditNotice?: any;
+  setEditValue?: any;
+  setDetailValue?: any;
+}
+
 const Header = styled.div`
   display: flex;
   align-items: center;
@@ -86,7 +93,12 @@ const PaginationStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Notice(): ReactElement {
+export default function Notice({
+  editNotice,
+  setEditNotice,
+  setEditValue,
+  setDetailValue,
+}: NoticeProps): ReactElement {
   const { user } = useAuthState();
   const router = useRouter();
   const classes = useStyles();
@@ -119,6 +131,10 @@ export default function Notice(): ReactElement {
     router.reload(window.location.pathname);
   };
 
+  const handleDetail = (id: number) => {
+    setDetailValue(id);
+  };
+
   return (
     <>
       {(user.role === 3 || user.role === 4) && (
@@ -131,7 +147,7 @@ export default function Notice(): ReactElement {
             <Button
               title="공지사항 생성"
               width="8vw"
-              func={() => router.push('/notice/edit')}
+              func={() => setEditNotice(!editNotice)}
             />
           </div>
         </Header>
@@ -141,9 +157,9 @@ export default function Notice(): ReactElement {
           <Table stickyHeader aria-label="sticky table">
             <TableHead>
               <TableRow>
-                {columns.map((column) => (
+                {columns.map((column, idx) => (
                   <TableCell
-                    key={column.id}
+                    key={idx}
                     align="center"
                     style={{ minWidth: column.minWidth }}
                   >
@@ -151,7 +167,11 @@ export default function Notice(): ReactElement {
                   </TableCell>
                 ))}
                 {(user.role === 3 || user.role === 4) && (
-                  <TableCell key="4" align="center" style={{ minWidth: '200' }}>
+                  <TableCell
+                    key={columns.length}
+                    align="center"
+                    style={{ minWidth: '200' }}
+                  >
                     수정/삭제
                   </TableCell>
                 )}
@@ -171,25 +191,30 @@ export default function Notice(): ReactElement {
                       const value = row[column.id];
                       return (
                         <>
-                          <Link
-                            href={{
-                              pathname: '/notice/[id]',
-                              query: { id: row.id },
-                            }}
+                          <TableCell
+                            key={idx}
+                            align="center"
+                            onClick={() =>
+                              router.pathname === '/notice'
+                                ? router.push(`/notice/${row.id}`)
+                                : handleDetail(row.id)
+                            }
                           >
-                            <TableCell key={column.id} align="center">
-                              {value}
-                            </TableCell>
-                          </Link>
+                            {value}
+                          </TableCell>
                           {idx === columns.length - 1 &&
                             (user.role === 3 || user.role === 4) && (
-                              <StyledTableCell key="4" align="center">
+                              <StyledTableCell
+                                key={columns.length}
+                                align="center"
+                              >
                                 <Button
                                   width="3vw"
                                   title="수정"
-                                  func={() =>
-                                    router.push(`/notice/edit/${row.id}`)
-                                  }
+                                  func={() => {
+                                    setEditValue(row.id);
+                                    setEditNotice(!editNotice);
+                                  }}
                                 />
                                 <Button
                                   width="3vw"
