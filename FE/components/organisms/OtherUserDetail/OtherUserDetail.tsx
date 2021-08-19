@@ -172,9 +172,11 @@ export default function OtherUserDetail(): ReactElement {
             <div className="manifesto">
               <div className="introduce">
                 <Label text="자기 소개" fontSetting="n18b">
-                  <Textarea className="text-area" disabled>
-                    {otherUser.introduce}
-                  </Textarea>
+                  <Textarea
+                    className="text-area"
+                    value={otherUser.introduce}
+                    disabled
+                  />
                 </Label>
               </div>
             </div>
@@ -199,9 +201,11 @@ export default function OtherUserDetail(): ReactElement {
                             <Text text={name} isLineBreak fontSetting="n14b" />
                           </div>
                           <div className="middle">{position}</div>
-                          <Textarea className="text-area" disabled>
-                            {introduce}
-                          </Textarea>
+                          <Textarea
+                            className="text-area"
+                            value={introduce}
+                            disabled
+                          />
                         </div>
                       </a>
                     ),
@@ -223,9 +227,11 @@ export default function OtherUserDetail(): ReactElement {
                         <div className="middle">
                           {getDate(date)} | {agency}
                         </div>
-                        <Textarea className="text-area" disabled>
-                          {introduce}
-                        </Textarea>
+                        <Textarea
+                          className="text-area"
+                          value={introduce}
+                          disabled
+                        />
                       </div>
                     ),
                   )

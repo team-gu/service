@@ -570,7 +570,7 @@ export default function TeamManageModal({
             <Textarea
               onBlur={handleChangeDescription}
               ref={teamDescriptionRef}
-            ></Textarea>
+            />
           </Label>
         </div>
 
