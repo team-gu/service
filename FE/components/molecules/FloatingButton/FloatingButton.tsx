@@ -12,6 +12,7 @@ import styled from 'styled-components';
 import { Notification } from '@molecules';
 import { Icon } from '@atoms';
 import { getNotificationNumber } from '@repository/chatRepository';
+import { useUiState } from '@store';
 
 interface FloatingButtonProps {
   func?: MouseEventHandler<HTMLSpanElement>;
@@ -80,17 +81,22 @@ export default function FloatingButton({
   isRtc = false,
   id,
 }: FloatingButtonProps): ReactElement {
+  const { isChatOpen } = useUiState();
+
   const [unreadCount, setUnreadCount] = useState(0);
   const [shake, setShake] = useState(false);
   const unreadCountRef = useRef<number>(0);
+  const isChatOpenRef = useRef<boolean>(false);
 
   useEffect(() => {
     unreadCountRef.current = unreadCount;
+    isChatOpenRef.current = isChatOpen;
   });
 
   const handleGetNotificationNumber = async () => {
     try {
-      if (id !== 0 && !isRtc) {
+      if (id !== 0 && !isRtc && !isChatOpenRef.current) {
+        console.log('in?');
         const {
           data: {
             data: { unreadcount },
@@ -114,7 +120,7 @@ export default function FloatingButton({
     handleGetNotificationNumber();
     const interval = setInterval(() => {
       handleGetNotificationNumber();
-    }, 5000);
+    }, 1000);
 
     return () => clearInterval(interval);
   }, []);

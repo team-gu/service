@@ -47,7 +47,7 @@ export default function ChatList({
     handleGetChatLists();
     const interval = setInterval(() => {
       handleGetChatLists();
-    }, 5000);
+    }, 1000);
 
     return () => clearInterval(interval);
   }, []);
