@@ -150,7 +150,7 @@ public class UserPoolRepositoryImpl implements UserPoolRepositoryCustom {
             int idx = 0;
             for (int elem : skList) {
                 if (idx != 0) {
-                    sb.append(" or ");
+                    sb.append(" and ");
                 }
                 sb.append("b.gs like '%" + elem + "%'");
                 idx++;
