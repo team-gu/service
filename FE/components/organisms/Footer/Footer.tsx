@@ -9,7 +9,6 @@ const Wrapper = styled.footer`
   display: flex;
   ${({ theme: { flexRow } }) => flexRow()};
   background: #262626;
-  color: #666;
   font-size: 5em;
   text-transform: uppercase;
 `;
@@ -17,7 +16,7 @@ const Wrapper = styled.footer`
 export default function Footer() {
   return (
     <Wrapper>
-      <Text text="copyright 2020 SSAFY 5th" />
+      <Text text="copyright 2021 SSAFY 5th" color="#666" />
     </Wrapper>
   );
 }
