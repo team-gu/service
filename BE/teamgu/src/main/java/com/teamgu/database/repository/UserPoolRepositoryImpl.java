@@ -113,8 +113,10 @@ public class UserPoolRepositoryImpl implements UserPoolRepositoryCustom {
     }
 
     private String makeFilterWhere(boolean flag) {
-        StringBuilder sb = new StringBuilder("where pd.project_code = " + prjCode + " and ut.team_id is null");
+        StringBuilder sb = new StringBuilder("where pd.project_code = " + prjCode);
 
+        //같은 프로젝트 내에서 팀을 만들지 않은 사람들만 조회
+        sb.append(" and u.id not in (select ut.user_id from team inner join user_team ut on team.id = ut.team_id inner join mapping m2 on team.mapping_id = m2.id where m2.project_code = " + prjCode + ")");
         sb.append(" and (u.student_number like '" + stage + "%')");
         sb.append(" and (u.student_number != '" + studentNum + "')");
 
@@ -212,7 +214,6 @@ public class UserPoolRepositoryImpl implements UserPoolRepositoryCustom {
         jpql.append("left join wish_track wt on u.id = wt.user_id").append(" ");
         jpql.append("left outer join mapping m on wt.mapping_id = m.id").append(" ");
         jpql.append("left outer join (select s.user_id, group_concat(s.skill_code) as gs from skill s group by s.user_id) as b on u.id = b.user_id").append(" ");
-        jpql.append("left outer join user_team ut on u.id = ut.user_id").append(" ");
         if(prjCode == 101) {
             jpql.append("inner join user_class uc on u.id = uc.user_id").append(" ");
         }
@@ -239,7 +240,6 @@ public class UserPoolRepositoryImpl implements UserPoolRepositoryCustom {
         jpql.append("left join wish_track wt on u.id = wt.user_id").append(" ");
         jpql.append("left outer join mapping m on wt.mapping_id = m.id").append(" ");
         jpql.append("left outer join (select s.user_id, group_concat(s.skill_code) as gs from skill s group by s.user_id) as b on u.id = b.user_id").append(" ");
-        jpql.append("left outer join user_team ut on u.id = ut.user_id").append(" ");
         if(prjCode == 101) {
             jpql.append("inner join user_class uc on u.id = uc.user_id").append(" ");
         }
