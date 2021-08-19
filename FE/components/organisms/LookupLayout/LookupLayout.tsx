@@ -28,6 +28,7 @@ const Wrapper = styled.div<{ showTeamCreateBtn: boolean }>`
     ${respondTo.mobile`
       display: none;
     `}
+    margin-bottom: 30px;
   }
 
   .sort-container {
