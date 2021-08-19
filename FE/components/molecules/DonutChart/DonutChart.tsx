@@ -5,7 +5,7 @@ import theme from '@styles/theme';
 
 const COMPLETE_COLOR = '#b50b0b';
 
-const renderActiveShape = (props: any, title?: string) => {
+const renderActiveShape = (props: any, title: string) => {
   const {
     cx,
     cy,
@@ -32,7 +32,11 @@ const renderActiveShape = (props: any, title?: string) => {
         x={cx}
         y={cy}
         textAnchor="middle"
-        fill={payload.name === '완료' && percent === 1 ? COMPLETE_COLOR : payload.color}
+        fill={
+          payload.name === '완료' && percent === 1
+            ? COMPLETE_COLOR
+            : payload.color
+        }
         fontSize={payload.name === '완료' && percent === 1 ? 18 : 14}
       >
         {payload.name === '완료' && percent === 1
@@ -58,25 +62,23 @@ const renderActiveShape = (props: any, title?: string) => {
         endAngle={endAngle}
         fill={payload.color}
       />
-      {title && (
-        <text
-          x={cx}
-          y={cy}
-          dy={100}
-          textAnchor="middle"
-          fill="#000"
-          fontSize={18}
-        >
-          {title}
-        </text>
-      )}
+      <text
+        x={cx}
+        y={cy}
+        dy={100}
+        textAnchor="middle"
+        fill="#000"
+        fontSize={18}
+      >
+        {title}
+      </text>
     </g>
   );
 };
 
 interface DonutChart {
   data: any[];
-  title?: string;
+  title: string;
 }
 
 export default function DonutChart({ data, title }: DonutChart): ReactElement {
@@ -85,20 +87,41 @@ export default function DonutChart({ data, title }: DonutChart): ReactElement {
     setActiveIndex(index);
   };
 
+  const hasData = data.map(({ value }) => value !== 0).find((each) => each);
+
   return (
-    <PieChart width={200} height={200}>
-      <Pie
-        activeIndex={activeIndex}
-        activeShape={(props) => renderActiveShape(props, title)}
-        data={data}
-        cx={100}
-        cy={80}
-        innerRadius={55}
-        outerRadius={70}
-        fill="#dcdcdc"
-        dataKey="value"
-        onMouseEnter={onPieEnter}
-      />
-    </PieChart>
+    <>
+      {hasData ? (
+        <PieChart width={180} height={200}>
+          <Pie
+            activeIndex={activeIndex}
+            activeShape={(props) => renderActiveShape(props, title)}
+            data={data}
+            cx={100}
+            cy={80}
+            innerRadius={55}
+            outerRadius={70}
+            fill="#dcdcdc"
+            dataKey="value"
+            onMouseEnter={onPieEnter}
+          />
+        </PieChart>
+      ) : (
+        <div
+          style={{
+            width: 180,
+            height: 200,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexDirection: 'column',
+          }}
+        >
+          <p></p>
+          <p>No Data</p>
+          <p style={{ marginBottom: '17px'}}>{title}</p>
+        </div>
+      )}
+    </>
   );
 }

@@ -115,6 +115,13 @@ export const importUserData = async (param: any) =>
     param,
   });
 
+export const importUserClassSetting = async (param: any) =>
+  await api({
+    url: `/api/excel/userproject/class/update`,
+    type: 'post',
+    param,
+  });
+
 export const getProjectUsersContainsName = async (param: any) =>
   await api({
     url: `/api/admin/project/search`,

@@ -10,14 +10,15 @@ import {
   excludeStudentFromProject,
   exportUserData,
   importUserData,
+  importUserClassSetting,
 } from '@repository/adminRepository';
 import { Project } from '@utils/type';
 import AdminProjectUserDeleteModal from './AdminProjectUserDeleteModal';
 import AdminProjectUserAddModal from './AdminProjectUserAddModal';
+import AdminUserClassSettingModal from './AdminUserClassSettingModal';
 import AdminUserImportModal from './AdminUserImportModal';
 import AdminUserExportModal from './AdminUserExportModal';
-import { displayModal, setLoading, useAppDispatch } from '@store';
-import { MODALS } from '@utils/constants';
+import { setLoading, useAppDispatch } from '@store';
 import { errorAlert, myAlert } from '@utils/snippet';
 
 const Wrapper = styled.div`
@@ -83,6 +84,7 @@ export default function AdminProjectUserManage({
   const [showAddModal, setShowAddModal] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
+  const [showClassSettingModal, setShowClassSettingModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [editable, setEditable] = useState(false);
   const [editTarget, setEditTarget] = useState<UserDataRow>();
@@ -217,6 +219,33 @@ export default function AdminProjectUserManage({
     }
   };
 
+  const uploadUserClassSetting: ChangeEventHandler<HTMLInputElement> = (event: {
+    target: HTMLInputElement;
+  }) => {
+    if (event.target.files && event.target.files.length > 0 && project.id) {
+      dispatch(setLoading({ isLoading: true }));
+
+      const formData = new FormData();
+      formData.append('file', event.target.files[0]);
+      formData.append(
+        'project_id',
+        new Blob([project.id + ''], { type: 'application/json' }),
+      );
+
+      importUserClassSetting(formData)
+        .then(() => {
+          fetchProjectUserTableData();
+        })
+        .catch((err) => {
+          errorAlert(dispatch, err);
+        })
+        .finally(() => {
+          setShowClassSettingModal(false);
+          dispatch(setLoading({ isLoading: false }));
+        });
+    }
+  };
+
   return (
     <Wrapper>
       <div className="manage-header">
@@ -233,6 +262,11 @@ export default function AdminProjectUserManage({
         </div>
 
         <div className="manage-header-import">
+          <Button
+            title="반 설정"
+            func={() => setShowClassSettingModal(true)}
+            width="auto"
+          />
           <Button
             title="Import"
             func={() => setShowImportModal(true)}
@@ -255,6 +289,13 @@ export default function AdminProjectUserManage({
         onSelectRow={handleSelectedRow}
         pagination={false}
       />
+
+      {showClassSettingModal && (
+        <AdminUserClassSettingModal
+          handleClickClose={() => setShowClassSettingModal(false)}
+          handleImportExcel={uploadUserClassSetting}
+        />
+      )}
 
       {showImportModal && (
         <AdminUserImportModal
