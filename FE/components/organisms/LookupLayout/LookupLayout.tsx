@@ -71,6 +71,9 @@ const Wrapper = styled.div<{ showTeamCreateBtn: boolean }>`
   .team-status-list-container {
     > div {
       margin-bottom: 20px;
+    }
+
+    .no-list {
       text-align: center;
     }
 
