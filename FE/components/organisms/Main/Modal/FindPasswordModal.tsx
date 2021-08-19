@@ -11,12 +11,15 @@ const Wrapper = styled.div`
 `;
 
 const FindPW = styled.div`
-  div {
+  > div {
     margin-bottom: 15px;
+  }
 
+  .button-container {
+    text-align: end;
     button {
       width: 5vw;
-      height: 20px;
+      height: 30px;
       margin-left: 5px;
     }
   }
@@ -73,7 +76,7 @@ export default function FindPasswordModal(): ReactElement {
             />
           </div>
           {error && <Error>{errorMessage}</Error>}
-          <div>
+          <div className="button-container">
             <Button title="확인" type="submit" />
             <Button
               title="닫기"

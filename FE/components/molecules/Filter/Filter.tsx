@@ -16,6 +16,8 @@ interface FilterProps {
   func: any;
   isRadioButton?: boolean;
   clear?: boolean;
+  isChange?: boolean;
+  setIsChange: any;
 }
 
 const Wrapper = styled.div`
@@ -33,6 +35,8 @@ export default function Filter({
   func,
   isRadioButton,
   clear,
+  isChange,
+  setIsChange,
 }: FilterProps): ReactElement {
   const [selectedValues, setSelectedValues] =
     useState<OptionsType<OptionTypeBase>>();
@@ -42,6 +46,13 @@ export default function Filter({
     setSelectedValues(arr);
     func(title, arr);
   };
+
+  useEffect(() => {
+    if (isChange) {
+      onChangeMultiSelect([]);
+      setIsChange(false);
+    }
+  }, [isChange]);
 
   const onChangeCheckBox = (code: number) => {
     const idx = checkedBox.indexOf(code);

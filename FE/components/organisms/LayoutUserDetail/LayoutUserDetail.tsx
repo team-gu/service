@@ -29,11 +29,12 @@ const Wrapper = styled.div<{ isProject?: boolean }>`
   .button-container {
     ${({ theme: { flexRow } }) => flexRow()}
     button {
-      width: 50%;
+      width: 100%;
       height: 50px;
       border: none;
       font-size: 14px;
       font-weight: bold;
+      background-color: white;
       :first-child {
         ${({
           isProject,
@@ -43,9 +44,9 @@ const Wrapper = styled.div<{ isProject?: boolean }>`
         }) =>
           !isProject
             ? `background-color: ${samsungLightBlue};color: white;`
-            : `background-color: white`}
+            : `background-color: lightgray`}
       }
-      :last-child {
+      :nth-child(2) {
         ${({
           isProject,
           theme: {
@@ -54,7 +55,7 @@ const Wrapper = styled.div<{ isProject?: boolean }>`
         }) =>
           isProject
             ? `background-color: ${samsungLightBlue};color: white;`
-            : `background-color: white`}
+            : `background-color: lightgray`}
       }
     }
 
@@ -108,6 +109,13 @@ const Wrapper = styled.div<{ isProject?: boolean }>`
         .skills {
           margin-bottom: 20px;
           width: 100%;
+          .skill-tags {
+            margin-top: 5px;
+            > div {
+              display: inline-block;
+              margin: 0 5px 5px 0px;
+            }
+          }
         }
         .introduce {
           margin-bottom: 20px;
@@ -147,10 +155,16 @@ const Wrapper = styled.div<{ isProject?: boolean }>`
       }
       p {
         grid-column: span 3;
-        font-size: 20px;
+        font-size: 15px;
         font-weight: 600;
         line-height: 1.4;
         width: 80%;
+
+        ${({
+          theme: {
+            font: { ellipse },
+          },
+        }) => ellipse()}
       }
 
       .project {
@@ -164,15 +178,24 @@ const Wrapper = styled.div<{ isProject?: boolean }>`
         flex: 1.1;
         transition: box-shadow 0.2s;
         overflow: hidden;
-        box-shadow: 2px 4px 12px rgb(0 0 0 / 8%);
         transition: all 0.3s cubic-bezier(0, 0, 0.5, 1);
         :hover {
           transform: scale(1.02);
+          height: inherit;
         }
         .top {
+          height: 25px;
           display: flex;
           font-size: 10px;
-          margin-bottom: 16px;
+        }
+        .middle {
+          margin-bottom: 8px;
+          font-size: 10px;
+          ${({
+            theme: {
+              font: { ellipse },
+            },
+          }) => ellipse()}
         }
         .introduce {
           position: absolute;
@@ -195,10 +218,16 @@ const Wrapper = styled.div<{ isProject?: boolean }>`
 
       p {
         grid-column: span 3;
-        font-size: 20px;
+        font-size: 15px;
         font-weight: 600;
         line-height: 1.4;
         width: 80%;
+
+        ${({
+          theme: {
+            font: { ellipse },
+          },
+        }) => ellipse()}
       }
 
       .award {
@@ -212,20 +241,24 @@ const Wrapper = styled.div<{ isProject?: boolean }>`
         flex: 1.1;
         transition: box-shadow 0.2s;
         overflow: hidden;
-        box-shadow: 2px 4px 12px rgb(0 0 0 / 8%);
         transition: all 0.3s cubic-bezier(0, 0, 0.5, 1);
         :hover {
           transform: scale(1.02);
+          height: inherit;
         }
-
         .top {
+          height: 25px;
           display: flex;
           font-size: 10px;
-          margin-bottom: 15px;
         }
         .middle {
           margin-bottom: 8px;
-          font-size: 8px;
+          font-size: 10px;
+          ${({
+            theme: {
+              font: { ellipse },
+            },
+          }) => ellipse()}
         }
       }
     }

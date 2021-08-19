@@ -208,20 +208,21 @@ export default function MyDetailEdit({
         <button type="button" onClick={() => setRoute(USER_PROJECT)}>
           프로젝트
         </button>
+        <button
+          type="button"
+          onClick={() =>
+            dispatch(
+              displayModal({
+                modalName: MODALS.CHANGEPASSWORD_MODAL,
+              }),
+            )
+          }
+        >
+          비밀번호 변경
+        </button>
       </div>
       <div className="typography">
         <div className="icons">
-          <Icon
-            iconName="password"
-            color="black"
-            func={() =>
-              dispatch(
-                displayModal({
-                  modalName: MODALS.CHANGEPASSWORD_MODAL,
-                }),
-              )
-            }
-          />
           <Icon iconName="clear" color="black" func={changeEditMode} />
         </div>
         {route === USER_INFO ? (
@@ -328,7 +329,6 @@ export default function MyDetailEdit({
                     <div className="project cards" key={id}>
                       <div className="top">
                         <p>{name}</p>
-                        <p>{position}</p>
                         <div className="icons">
                           <Icon
                             iconName="edit"
@@ -353,7 +353,10 @@ export default function MyDetailEdit({
                           />
                         </div>
                       </div>
-                      <div>{introduce}</div>
+                      <div className="middle">{position}</div>
+                      <Textarea className="text-area" disabled>
+                        {introduce}
+                      </Textarea>
                     </div>
                   ),
                 )}
@@ -384,7 +387,6 @@ export default function MyDetailEdit({
                   ({ id, agency, date, name, introduce }: any) => (
                     <div className="award cards" key={id}>
                       <div className="top">
-                        <p>{agency}</p>
                         <p>{name}</p>
                         <div className="icons">
                           <Icon
@@ -410,8 +412,12 @@ export default function MyDetailEdit({
                           />
                         </div>
                       </div>
-                      <div className="middle">{getDate(date)}</div>
-                      <div>{introduce}</div>
+                      <div className="middle">
+                        {getDate(date)} | {agency}
+                      </div>
+                      <Textarea className="text-area" disabled>
+                        {introduce}
+                      </Textarea>
                     </div>
                   ),
                 )}
