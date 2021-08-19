@@ -1,3 +1,7 @@
+import { displayModal } from '@store';
+import { AxiosError } from 'axios';
+import { MODALS } from './constants';
+
 export const get = (key: string) => (obj: object) => obj[key];
 
 export function uuidv4() {
@@ -7,3 +11,17 @@ export function uuidv4() {
     return v.toString(16);
   });
 }
+
+export const myAlert = (dispatch: any, content: string) => {
+  dispatch(
+    displayModal({
+      modalName: MODALS.ALERT_MODAL,
+      content: content,
+    }),
+  );
+};
+
+export const errorAlert = (dispatch: any, err: AxiosError) => {
+  console.error("Response:", err.response);
+  myAlert(dispatch, '에러가 발생했습니다. 다시 시도해주세요.');
+};

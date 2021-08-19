@@ -106,6 +106,7 @@ export default function AdminTeamManage({ project }: AdminTeamManageProps) {
   const [teamData, setTeamData] = useState<TeamDataRow[]>([]);
 
   useEffect(() => {
+    dispatch(setLoading({ isLoading: true }));
     getTeamTableData({
       projectId: project.id,
       regionCode: selectedRegion,
@@ -133,6 +134,8 @@ export default function AdminTeamManage({ project }: AdminTeamManageProps) {
           };
         }),
       );
+    }).finally(() => {
+      dispatch(setLoading({ isLoading: false }));
     });
   }, [project, selectedRegion]);
 

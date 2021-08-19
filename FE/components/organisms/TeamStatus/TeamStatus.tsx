@@ -21,6 +21,7 @@ import {
   getEachFiltersCodeListTracks,
 } from '@repository/filterRepository';
 import { getTeamsFiltered, getUserHasTeam } from '@repository/teamRepository';
+import { errorAlert } from '@utils/snippet';
 
 const WrapFilter = styled.div`
   padding: 10px;
@@ -155,21 +156,25 @@ export default function TeamStatus(): ReactElement {
       pageSize: 10,
     };
 
-    getTeamsFiltered(payloadTemp).then(
-      async ({
-        data: {
-          data: { dataList, totPageCnt },
-        },
-      }) => {
-        setTeams(dataList);
-        setPageCount(totPageCnt);
+    getTeamsFiltered(payloadTemp)
+      .then(
+        async ({
+          data: {
+            data: { dataList, totPageCnt },
+          },
+        }) => {
+          setTeams(dataList);
+          setPageCount(totPageCnt);
 
-        const {
-          data: { data },
-        } = await getEachFiltersCodeListTracks(studentNumber, projectCode);
-        setTrackList(data['트랙']);
-      },
-    );
+          const {
+            data: { data },
+          } = await getEachFiltersCodeListTracks(studentNumber, projectCode);
+          setTrackList(data['트랙']);
+        },
+      )
+      .catch((err) => {
+        errorAlert(dispatch, err);
+      });
 
     getUserHasTeam({
       userId,
@@ -263,7 +268,9 @@ export default function TeamStatus(): ReactElement {
             <Title title="프로젝트">
               <SimpleSelect
                 options={filterContents['프로젝트']
-                  .slice(0, projectCodes?.length)
+                  .filter(({ code }: { code: number }) =>
+                    projectCodes.includes(code),
+                  )
                   .reduce(
                     (
                       acc: number[],
@@ -273,11 +280,12 @@ export default function TeamStatus(): ReactElement {
                   )}
                 onChange={handleProjectChange}
                 value={{
-                  label:
-                    filterContents['프로젝트'][projectCodes?.length - 1]
-                      ?.codeName,
-                  value:
-                    filterContents['프로젝트'][projectCodes?.length - 1]?.code,
+                  label: filterContents['프로젝트'].filter(
+                    ({ code }: { code: number }) => projectCodes.includes(code),
+                  )[projectCodes?.length - 1]?.codeName,
+                  value: filterContents['프로젝트'].filter(
+                    ({ code }: { code: number }) => projectCodes.includes(code),
+                  )[projectCodes?.length - 1]?.code,
                 }}
               />
             </Title>
