@@ -52,6 +52,10 @@ const Wrapper = styled.nav<{ isShowByScroll: Boolean }>`
         display: contents;
       `}
       display: none;
+
+      .list {
+        top: 25px;
+      }
     }
     .dropdown-conatiner {
       > div:first-child {
