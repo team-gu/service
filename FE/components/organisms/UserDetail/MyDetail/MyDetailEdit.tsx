@@ -184,267 +184,273 @@ export default function MyDetailEdit({
 
   return (
     <LayoutUserDetail isProject={route === USER_PROJECT}>
-      {showCroppedArea && (
-        <ModalWrapper modalName="setImage">
-          <SetImageModal
-            image={image}
-            setImage={handleImage}
-            setSubmitImage={handleSubmitImage}
-            changeImageMode={changeImageMode}
-          />
-        </ModalWrapper>
-      )}
-
-      <div className="profile-container">
-        <ProfileImage size={100} src={image} />
-        <div className="photo-edit-icon">
-          <Icon iconName="photo_camera" func={changeImageMode} />
-        </div>
-      </div>
-      <div className="button-container">
-        <button type="button" onClick={() => setRoute(USER_INFO)}>
-          유저 정보
-        </button>
-        <button type="button" onClick={() => setRoute(USER_PROJECT)}>
-          프로젝트
-        </button>
-        <button
-          type="button"
-          onClick={() =>
-            dispatch(
-              displayModal({
-                modalName: MODALS.CHANGEPASSWORD_MODAL,
-              }),
-            )
-          }
-        >
-          비밀번호 변경
-        </button>
-      </div>
-      <div className="typography">
-        <div className="icons">
-          <Icon iconName="clear" color="black" func={changeEditMode} />
-        </div>
-        {route === USER_INFO ? (
-          <form onSubmit={onSubmit} encType="multipart/form-data">
-            <div className="introduction">
-              <div className="portrait">
-                <div className="track">
-                  <Label text="트랙" fontSetting="n18b">
-                    <SimpleSelect
-                      options={getOptions(trackOptions)}
-                      onChange={(track) => {
-                        setTrack({ codeName: track.value, code: track.code });
-                      }}
-                      value={
-                        user.wishTrack.length > 0
-                          ? [
-                              {
-                                name: user.wishTrack[0].codeName,
-                                label: user.wishTrack[0].codeName,
-                              },
-                            ]
-                          : []
-                      }
-                    />
-                  </Label>
-                </div>
-                <div className="position">
-                  <Label text="포지션" fontSetting="n18b">
-                    <SimpleSelect
-                      options={getOptions(positionOptions)}
-                      onChange={(position) => {
-                        setPosition(position.value);
-                      }}
-                      value={
-                        user.wishPositionCode
-                          ? [
-                              {
-                                name: user.wishPositionCode,
-                                label: user.wishPositionCode,
-                              },
-                            ]
-                          : []
-                      }
-                    />
-                  </Label>
-                </div>
-                <div className="skills">
-                  <Label text="사용 기술" fontSetting="n18b">
-                    <SkillSelectAutoComplete
-                      onChangeSkills={changeUseableSkills}
-                      value={user.skills}
-                    />
-                  </Label>
-                </div>
-              </div>
-              <div className="manifesto">
-                <div className="introduce">
-                  <Label text="자기 소개" fontSetting="n18b">
-                    {user.introduce ? (
-                      <>
-                        <Textarea
-                          className="text-area-edit"
-                          onChange={handleIntroduce}
-                          rows={7}
-                          maxLength={300}
-                          value={introduce}
-                        />
-                        <Text
-                          text={introduce.length + ' / 300'}
-                          fontSetting="n12m"
-                          color="gray"
-                        />
-                      </>
-                    ) : (
-                      <>
-                        <Textarea
-                          className="text-area-edit"
-                          onChange={handleIntroduce}
-                          rows={7}
-                          placeholder="자기소개를 작성해주세요"
-                          maxLength={300}
-                        />
-                        <Text
-                          text={(introduce ? introduce.length : 0) + ' / 300'}
-                          fontSetting="n12m"
-                          color="gray"
-                        />
-                      </>
-                    )}
-                  </Label>
-                </div>
-              </div>
-            </div>
-            <div className="button-right">
-              <Button title="수정" type="submit" width="70px" />
-            </div>
-          </form>
-        ) : (
-          <>
-            <Label text="프로젝트" fontSetting="n18b">
-              <div className="projects">
-                {user.projects.map(
-                  ({ id, name, position, url, introduce }: any) => (
-                    <div className="project cards" key={id}>
-                      <div className="top">
-                        <p>{name}</p>
-                        <div className="icons">
-                          <Icon
-                            iconName="edit"
-                            func={() =>
-                              dispatch(
-                                displayModal({
-                                  modalName: MODALS.PROJECT_MODAL,
-                                  content: {
-                                    id,
-                                    name,
-                                    position,
-                                    url,
-                                    introduce,
-                                  },
-                                }),
-                              )
-                            }
-                          />
-                          <Icon
-                            iconName="clear"
-                            func={() => deleteProjectCard(id)}
-                          />
-                        </div>
-                      </div>
-                      <div className="middle">{position}</div>
-                      <Textarea className="text-area" disabled>
-                        {introduce}
-                      </Textarea>
-                    </div>
-                  ),
-                )}
-                <div
-                  className="project last-card"
-                  onClick={() =>
-                    dispatch(
-                      displayModal({
-                        modalName: MODALS.PROJECT_MODAL,
-                        content: {
-                          id: null,
-                          name: '프로젝트 이름',
-                          position: '수행 포지션',
-                          url: '프로젝트 url',
-                          introduce: '소개',
-                        },
-                      }),
-                    )
-                  }
-                >
-                  <Icon iconName="add_circle" />
-                </div>
-              </div>
-            </Label>
-            <Label text="수상경력" fontSetting="n18b">
-              <div className="awards">
-                {user.awards.map(
-                  ({ id, agency, date, name, introduce }: any) => (
-                    <div className="award cards" key={id}>
-                      <div className="top">
-                        <p>{name}</p>
-                        <div className="icons">
-                          <Icon
-                            iconName="edit"
-                            func={() =>
-                              dispatch(
-                                displayModal({
-                                  modalName: MODALS.AWARD_MODAL,
-                                  content: {
-                                    id,
-                                    agency,
-                                    date,
-                                    name,
-                                    introduce,
-                                  },
-                                }),
-                              )
-                            }
-                          />
-                          <Icon
-                            iconName="clear"
-                            func={() => deleteAwardCard(id)}
-                          />
-                        </div>
-                      </div>
-                      <div className="middle">
-                        {getDate(date)} | {agency}
-                      </div>
-                      <Textarea className="text-area" disabled>
-                        {introduce}
-                      </Textarea>
-                    </div>
-                  ),
-                )}
-                <div
-                  className="award last-card"
-                  onClick={() =>
-                    dispatch(
-                      displayModal({
-                        modalName: MODALS.AWARD_MODAL,
-                        content: {
-                          id: null,
-                          agency: '발행 기관',
-                          date: '날짜',
-                          name: '수상명',
-                          introduce: '소개',
-                        },
-                      }),
-                    )
-                  }
-                >
-                  <Icon iconName="add_circle" />
-                </div>
-              </div>
-            </Label>
-          </>
+      <>
+        {showCroppedArea && (
+          <ModalWrapper modalName="setImage">
+            <SetImageModal
+              image={image}
+              setImage={handleImage}
+              setSubmitImage={handleSubmitImage}
+              changeImageMode={changeImageMode}
+            />
+          </ModalWrapper>
         )}
-      </div>
+
+        <div className="profile-container">
+          <ProfileImage size={100} src={image} />
+          <div className="photo-edit-icon">
+            <Icon iconName="photo_camera" func={changeImageMode} />
+          </div>
+        </div>
+        <div className="button-container">
+          <button type="button" onClick={() => setRoute(USER_INFO)}>
+            유저 정보
+          </button>
+          <button type="button" onClick={() => setRoute(USER_PROJECT)}>
+            프로젝트
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              dispatch(
+                displayModal({
+                  modalName: MODALS.CHANGEPASSWORD_MODAL,
+                }),
+              )
+            }
+          >
+            비밀번호 변경
+          </button>
+        </div>
+        <div className="typography">
+          <div className="icons">
+            <Icon iconName="clear" color="black" func={changeEditMode} />
+          </div>
+          {route === USER_INFO ? (
+            <form onSubmit={onSubmit} encType="multipart/form-data">
+              <div className="introduction">
+                <div className="portrait">
+                  <div className="track">
+                    <Label text="트랙" fontSetting="n18b">
+                      <SimpleSelect
+                        options={getOptions(trackOptions)}
+                        onChange={(track) => {
+                          setTrack({ codeName: track.value, code: track.code });
+                        }}
+                        value={
+                          user.wishTrack.length > 0
+                            ? [
+                                {
+                                  name: user.wishTrack[0].codeName,
+                                  label: user.wishTrack[0].codeName,
+                                },
+                              ]
+                            : []
+                        }
+                      />
+                    </Label>
+                  </div>
+                  <div className="position">
+                    <Label text="포지션" fontSetting="n18b">
+                      <SimpleSelect
+                        options={getOptions(positionOptions)}
+                        onChange={(position) => {
+                          setPosition(position.value);
+                        }}
+                        value={
+                          user.wishPositionCode
+                            ? [
+                                {
+                                  name: user.wishPositionCode,
+                                  label: user.wishPositionCode,
+                                },
+                              ]
+                            : []
+                        }
+                      />
+                    </Label>
+                  </div>
+                  <div className="skills">
+                    <Label text="사용 기술" fontSetting="n18b">
+                      <SkillSelectAutoComplete
+                        onChangeSkills={changeUseableSkills}
+                        value={user.skills}
+                      />
+                    </Label>
+                  </div>
+                </div>
+                <div className="manifesto">
+                  <div className="introduce">
+                    <Label text="자기 소개" fontSetting="n18b">
+                      {user.introduce ? (
+                        <>
+                          <Textarea
+                            className="text-area-edit"
+                            onChange={handleIntroduce}
+                            rows={7}
+                            maxLength={300}
+                            value={introduce}
+                          />
+                          <Text
+                            text={introduce.length + ' / 300'}
+                            fontSetting="n12m"
+                            color="gray"
+                          />
+                        </>
+                      ) : (
+                        <>
+                          <Textarea
+                            className="text-area-edit"
+                            onChange={handleIntroduce}
+                            rows={7}
+                            placeholder="자기소개를 작성해주세요"
+                            maxLength={300}
+                          />
+                          <Text
+                            text={(introduce ? introduce.length : 0) + ' / 300'}
+                            fontSetting="n12m"
+                            color="gray"
+                          />
+                        </>
+                      )}
+                    </Label>
+                  </div>
+                </div>
+              </div>
+              <div className="button-right">
+                <Button title="수정" type="submit" width="70px" />
+              </div>
+            </form>
+          ) : (
+            <>
+              <Label text="프로젝트" fontSetting="n18b">
+                <div className="projects">
+                  {user.projects.map(
+                    ({ id, name, position, url, introduce }: any) => (
+                      <div className="project cards" key={id}>
+                        <div className="top">
+                          <p>{name}</p>
+                          <div className="icons">
+                            <Icon
+                              iconName="edit"
+                              func={() =>
+                                dispatch(
+                                  displayModal({
+                                    modalName: MODALS.PROJECT_MODAL,
+                                    content: {
+                                      id,
+                                      name,
+                                      position,
+                                      url,
+                                      introduce,
+                                    },
+                                  }),
+                                )
+                              }
+                            />
+                            <Icon
+                              iconName="clear"
+                              func={() => deleteProjectCard(id)}
+                            />
+                          </div>
+                        </div>
+                        <div className="middle">{position}</div>
+                        <Textarea
+                          value={introduce}
+                          className="text-area"
+                          disabled
+                        />
+                      </div>
+                    ),
+                  )}
+                  <div
+                    className="project last-card"
+                    onClick={() =>
+                      dispatch(
+                        displayModal({
+                          modalName: MODALS.PROJECT_MODAL,
+                          content: {
+                            id: null,
+                            name: '프로젝트 이름',
+                            position: '수행 포지션',
+                            url: '프로젝트 url',
+                            introduce: '소개',
+                          },
+                        }),
+                      )
+                    }
+                  >
+                    <Icon iconName="add_circle" />
+                  </div>
+                </div>
+              </Label>
+              <Label text="수상경력" fontSetting="n18b">
+                <div className="awards">
+                  {user.awards.map(
+                    ({ id, agency, date, name, introduce }: any) => (
+                      <div className="award cards" key={id}>
+                        <div className="top">
+                          <p>{name}</p>
+                          <div className="icons">
+                            <Icon
+                              iconName="edit"
+                              func={() =>
+                                dispatch(
+                                  displayModal({
+                                    modalName: MODALS.AWARD_MODAL,
+                                    content: {
+                                      id,
+                                      agency,
+                                      date,
+                                      name,
+                                      introduce,
+                                    },
+                                  }),
+                                )
+                              }
+                            />
+                            <Icon
+                              iconName="clear"
+                              func={() => deleteAwardCard(id)}
+                            />
+                          </div>
+                        </div>
+                        <div className="middle">
+                          {getDate(date)} | {agency}
+                        </div>
+                        <Textarea
+                          className="text-area"
+                          value={introduce}
+                          disabled
+                        />
+                      </div>
+                    ),
+                  )}
+                  <div
+                    className="award last-card"
+                    onClick={() =>
+                      dispatch(
+                        displayModal({
+                          modalName: MODALS.AWARD_MODAL,
+                          content: {
+                            id: null,
+                            agency: '발행 기관',
+                            date: '날짜',
+                            name: '수상명',
+                            introduce: '소개',
+                          },
+                        }),
+                      )
+                    }
+                  >
+                    <Icon iconName="add_circle" />
+                  </div>
+                </div>
+              </Label>
+            </>
+          )}
+        </div>
+      </>
     </LayoutUserDetail>
   );
 }
