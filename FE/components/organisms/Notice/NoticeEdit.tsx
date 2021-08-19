@@ -142,7 +142,6 @@ export default function NoticeEdit({
   };
 
   const handleFiles = (e: any) => {
-    console.log(e.target.files[0]);
     setFiles([e.target.files[0], ...files]);
   };
 
