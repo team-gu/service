@@ -93,6 +93,20 @@ const Wrapper = styled.div<{
           font: { n16m },
         },
       }) => n16m}
+      ::-webkit-scrollbar {
+        background-color: white;
+        width: 5px;
+      }
+      ::-webkit-scrollbar-track {
+        background-color: white;
+      }
+      ::-webkit-scrollbar-thumb {
+        background-color: ${({
+          theme: {
+            colors: { gray },
+          },
+        }) => gray};
+      }
     }
   }
 `;
