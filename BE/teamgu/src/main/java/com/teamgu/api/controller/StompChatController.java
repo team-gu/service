@@ -110,6 +110,7 @@ public class StompChatController {
 												.sender_name(name)
 												.type(chatres.getType())
 												.unread_user_count(0)
+												.profile_image("https://i5a202.p.ssafy.io:8080/api/file/display?url=profile/"+chatres.getUser().getProfileServerName()+"."+chatres.getUser().getProfileExtension())
 												.build();												
 		log.info("브로드캐스팅 방 번호 : "+roomid);
 		simpMessagingTemplate.getTemplate().convertAndSend("/receive/chat/room/"+roomid,chatMessageResDto);
@@ -165,6 +166,7 @@ public class StompChatController {
 				.type(chatres.getType())
 				.team_id(team_id)
 				.unread_user_count(0)
+				.profile_image("https://i5a202.p.ssafy.io:8080/api/file/display?url=profile/"+chatres.getUser().getProfileServerName()+"."+chatres.getUser().getProfileExtension())
 				.build();												
 		log.info("브로드캐스팅 방 번호 : "+chat_room_id);
 		simpMessagingTemplate.getTemplate().convertAndSend("/receive/chat/room/"+chat_room_id,chatMessageResDto);
