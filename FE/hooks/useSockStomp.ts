@@ -45,6 +45,7 @@ export default function useSockStomp({ room_id = 0 }: useSockStompProps) {
     isRoom?: boolean,
   ) => {
     clientRef.current = await Stomp.over(new SockJS(URL));
+    clientRef.current.debug = () => {};
 
     clientRef.current?.connect({}, async () => {
       if (!isRoom) {
@@ -80,6 +81,7 @@ export default function useSockStomp({ room_id = 0 }: useSockStompProps) {
     inviteeId: number,
   ) => {
     clientRef.current = await Stomp.over(new SockJS(URL));
+    clientRef.current.debug = () => {};
 
     clientRef.current?.connect({}, async () => {
       await clientRef.current?.send(
@@ -109,6 +111,7 @@ export default function useSockStomp({ room_id = 0 }: useSockStompProps) {
     if (room_id !== 0) {
       (async () => {
         clientRef.current = await Stomp.over(new SockJS(URL));
+        clientRef.current.debug = () => {};
 
         clientRef.current?.connect(
           {},
