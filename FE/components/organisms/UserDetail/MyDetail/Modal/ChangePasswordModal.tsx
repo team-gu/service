@@ -73,11 +73,6 @@ export default function ChangePasswordModal(): ReactElement {
       setError(true);
       return;
     }
-    if (newPasswordRef?.current?.value !== passwordRef?.current?.value) {
-      setErrorMessage('새로운 비밀번호를 입력해주세요.');
-      setError(true);
-      return;
-    }
     if (
       newPasswordRef?.current?.value !== confirmNewPasswordRef?.current?.value
     ) {
