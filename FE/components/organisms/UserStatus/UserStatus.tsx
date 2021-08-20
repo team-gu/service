@@ -137,10 +137,8 @@ export default function UserStatus(): ReactElement {
           project: { code: project },
         }).then(({ data: { data } }) => {
           if (data.hasTeam) {
-            if (data.team.leaderId === id) {
-              setTeamId(data.team.id);
-              setIsLeader(true);
-            }
+            setTeamId(data.team.id);
+            setIsLeader(data.team.leaderId === id);
           }
         });
       } else {
@@ -190,6 +188,25 @@ export default function UserStatus(): ReactElement {
           setUsers([]);
         }
       })();
+
+      if (payload.project) {
+        getUserHasTeam({
+          userId: id,
+          project: { code: payload.project },
+        }).then(({ data: { data } }) => {
+          if (data.hasTeam) {
+            setIsLeader(data.team.leaderId === id);
+            setTeamId(data.team.id);
+          }
+        });
+      } else {
+        dispatch(
+          displayModal({
+            modalName: MODALS.ALERT_MODAL,
+            content: '관리자에게 프로젝트 멤버 등록을 요청해주세요',
+          }),
+        );
+      }
     }
   }, [payload]);
 
