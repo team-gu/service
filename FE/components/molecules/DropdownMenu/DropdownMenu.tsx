@@ -38,7 +38,7 @@ const Wrapper = styled.div<{ isOpen: boolean; isRoomUserHover: boolean }>`
 		`}
 
   .list {
-    width: ${({ isRoomUserHover }) => (isRoomUserHover ? '210px' : '120px')};
+    width: ${({ isRoomUserHover }) => (isRoomUserHover ? '220px' : '120px')};
     padding: 10px 0;
     position: absolute;
     top: 25px;
@@ -55,7 +55,7 @@ const Wrapper = styled.div<{ isOpen: boolean; isRoomUserHover: boolean }>`
 
     .item {
       ${({ theme: { flexRow } }) => flexRow()};
-      width: ${({ isRoomUserHover }) => (isRoomUserHover ? '180px' : '90px')};
+      width: ${({ isRoomUserHover }) => (isRoomUserHover ? '190px' : '90px')};
       padding: 0 5px;
 
       .each {
