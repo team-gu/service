@@ -120,7 +120,6 @@ export default function useSockStomp({ room_id = 0 }: useSockStompProps) {
       data: { data },
     } = await getChatRoomMessages(room_id);
 
-    console.log(data);
     await setMessageList(data);
   };
 
