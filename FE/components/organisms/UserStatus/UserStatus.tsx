@@ -123,7 +123,7 @@ export default function UserStatus(): ReactElement {
     false,
     100,
   );
-  console.log(filterPosition, '??');
+  // console.log(filterPosition, '??');
 
   useEffect(() => {
     (async () => {
