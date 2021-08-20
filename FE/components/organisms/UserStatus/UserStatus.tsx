@@ -13,6 +13,7 @@ import {
 } from '@molecules';
 import { Icon, Text } from '@atoms';
 
+import { useScrollPosition } from '@hooks/useWindow';
 import useSockStomp from '@hooks/useSockStomp';
 
 import {
@@ -110,6 +111,19 @@ export default function UserStatus(): ReactElement {
 
   const [isProjectChange, setIsProjectChange] = useState(false);
   const dispatch = useAppDispatch();
+  const [filterPosition, setFilterPosition] = useState(true);
+
+  useScrollPosition(
+    ({ prevPos, currPos }) => {
+      const isShow = currPos.y > prevPos.y;
+      if (isShow !== filterPosition) setFilterPosition(isShow);
+    },
+    [filterPosition],
+    undefined,
+    false,
+    100,
+  );
+  console.log(filterPosition, '??');
 
   useEffect(() => {
     (async () => {
@@ -322,7 +336,7 @@ export default function UserStatus(): ReactElement {
   };
 
   return (
-    <LookupLayout showTeamCreateBtn={false}>
+    <LookupLayout showTeamCreateBtn={false} filterPosition={filterPosition}>
       <div className="filter-container">
         {filterContents && (
           <WrapFilter>
