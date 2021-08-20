@@ -91,7 +91,8 @@ export default function useSockStomp({ room_id = 0 }: useSockStompProps) {
           invitee_id: inviteeId,
         }),
       );
-      return setMessageList([...messageList]);
+
+      return handleGetChatRoomMessages();
     }
 
     clientRef.current = await Stomp.over(new SockJS(URL));
@@ -119,6 +120,7 @@ export default function useSockStomp({ room_id = 0 }: useSockStompProps) {
       data: { data },
     } = await getChatRoomMessages(room_id);
 
+    console.log(data);
     await setMessageList(data);
   };
 
