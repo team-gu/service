@@ -2,17 +2,20 @@ import { ReactElement, useState, useEffect } from 'react';
 import { OptionsType, OptionTypeBase } from 'react-select';
 import styled from 'styled-components';
 
-import { Icon } from '@atoms';
+import { useScrollPosition } from '@hooks/useWindow';
+
+import { TeamStatusCard, TeamManageModal, LookupLayout } from '@organisms';
 import {
   Filter,
   UserSelectTeamAutoComplete,
   Button,
   SimpleSelect,
   Pagination,
+  Title,
 } from '@molecules';
 
-import { Title } from '@molecules';
-import { TeamStatusCard, TeamManageModal, LookupLayout } from '@organisms';
+import { Icon } from '@atoms';
+
 import { FILTER_TITLE } from '@utils/constants';
 import { MemberOption, Team } from '@utils/type';
 import { setLoading, useAppDispatch, useAuthState } from '@store';
@@ -77,6 +80,19 @@ export default function TeamStatus(): ReactElement {
   const [trackList, setTrackList] = useState([]);
 
   const [loadUserList, setLoadUserList] = useState(false);
+
+  const [filterPosition, setFilterPosition] = useState(true);
+
+  useScrollPosition(
+    ({ prevPos, currPos }) => {
+      const isShow = currPos.y > prevPos.y;
+      if (isShow !== filterPosition) setFilterPosition(isShow);
+    },
+    [filterPosition],
+    undefined,
+    false,
+    100,
+  );
 
   const SERACH_BY_FILTER = true;
   const SEARCH_BY_USERID = false;
@@ -261,7 +277,10 @@ export default function TeamStatus(): ReactElement {
   };
 
   return (
-    <LookupLayout showTeamCreateBtn={!userHasTeam}>
+    <LookupLayout
+      showTeamCreateBtn={!userHasTeam}
+      filterPosition={filterPosition}
+    >
       <div className="filter-container">
         {filterContents && filterContents['프로젝트'] && (
           <WrapFilter>
