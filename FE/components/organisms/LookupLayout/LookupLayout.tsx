@@ -5,9 +5,13 @@ import { respondTo } from '@styles/respondTo';
 interface LookupLayoutProps {
   children: ReactElement<any, string | JSXElementConstructor<any>> | any;
   showTeamCreateBtn: boolean;
+  filterPosition?: boolean;
 }
 
-const Wrapper = styled.div<{ showTeamCreateBtn: boolean }>`
+const Wrapper = styled.div<{
+  showTeamCreateBtn: boolean;
+  filterPosition?: boolean;
+}>`
   display: grid;
   grid-template-columns: 250px auto;
   grid-template-rows: auto;
@@ -20,7 +24,7 @@ const Wrapper = styled.div<{ showTeamCreateBtn: boolean }>`
 
   .filter-container {
     position: sticky;
-    top: 130px;
+    top: ${({ filterPosition }) => (filterPosition ? '130px' : '30px')};
     height: fit-content;
     border-radius: 14px;
     background-color: white;
@@ -96,6 +100,14 @@ const Wrapper = styled.div<{ showTeamCreateBtn: boolean }>`
 export default function LookupLayout({
   children,
   showTeamCreateBtn,
+  filterPosition,
 }: LookupLayoutProps): ReactElement {
-  return <Wrapper showTeamCreateBtn={showTeamCreateBtn}>{children}</Wrapper>;
+  return (
+    <Wrapper
+      showTeamCreateBtn={showTeamCreateBtn}
+      filterPosition={filterPosition}
+    >
+      {children}
+    </Wrapper>
+  );
 }
