@@ -177,7 +177,11 @@ export default function AdminUserManage({ project }: AdminUserManageProps) {
           fetchUsers();
         })
         .catch((err) => {
-          errorAlert(dispatch, err);
+          if (err.response.data.errorMessage) {
+            myAlert(dispatch, `ERROR: ${err.response.data.errorMessage}`);
+          } else {
+            errorAlert(dispatch, err);
+          }
         })
         .finally(() => {
           setShowImportModal(false);
