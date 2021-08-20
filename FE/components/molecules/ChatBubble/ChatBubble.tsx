@@ -105,7 +105,7 @@ const ChatBubble = forwardRef<HTMLInputElement, ChatBubbleProps>(
     useEffect(() => {
       if (
         type === 'TEAM_INVITE_ACCEPTED' &&
-        DateTime.now().diff(time).toMillis() < 1000
+        DateTime.now().diff(time).toMillis() < 20000
       ) {
         popEmoji();
       }
