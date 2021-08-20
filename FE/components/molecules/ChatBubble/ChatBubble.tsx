@@ -4,6 +4,8 @@ import { DateTime } from 'luxon';
 import styled from 'styled-components';
 import { useRouter } from 'next/router';
 import useConfetti from '@hooks/useConfetti';
+import { MODALS } from '@utils/constants';
+import { useAppDispatch, displayModal } from '@store';
 import {
   postTeamInviteAccept,
   postTeamInviteReject,
@@ -99,6 +101,7 @@ const ChatBubble = forwardRef<HTMLInputElement, ChatBubbleProps>(
     }: ChatBubbleProps,
     ref,
   ): ReactElement => {
+    const dispatch = useAppDispatch();
     const router = useRouter();
     const { popEmoji } = useConfetti();
 
@@ -145,14 +148,25 @@ const ChatBubble = forwardRef<HTMLInputElement, ChatBubbleProps>(
                   <ChatBubbleSelect
                     text="팀원초대 요청"
                     funcAccept={async () => {
-                      await postTeamInviteAccept({
-                        invitee_id: id,
-                        leader_id: opponentId,
-                        message_id: chatId,
-                        team_id: teamId,
-                      });
-                      handleGetChatRoomMessages();
-                      popEmoji();
+                      try {
+                        await postTeamInviteAccept({
+                          invitee_id: id,
+                          leader_id: opponentId,
+                          message_id: chatId,
+                          team_id: teamId,
+                        });
+                        handleGetChatRoomMessages();
+                        popEmoji();
+                      } catch ({ response: { status } }) {
+                        if (status === 400) {
+                          dispatch(
+                            displayModal({
+                              modalName: MODALS.ALERT_MODAL,
+                              content: '거부된 초대메세지 입니다.',
+                            }),
+                          );
+                        }
+                      }
                     }}
                     funcDecline={async () => {
                       await postTeamInviteReject({
