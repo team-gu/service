@@ -119,7 +119,7 @@ export default function ProjectModal(): ReactElement {
       const res = content.id
         ? await updateProject(data)
         : await postProject(data);
-      console.log(res.data);
+      // console.log(res.data);
       dispatch(setProjects(res.data));
     } catch (e) {
       console.error(e);
