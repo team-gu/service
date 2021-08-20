@@ -429,11 +429,10 @@ public class TeamRepositorySupport {
 					"on team.leader_id = user.id\r\n" + 
 					"left outer join team_skill\r\n" + 
 					"on team.id = team_skill.team_id\r\n" + classJoinFilter.toString() + 
-					"where mapping_id in ( select mapping.id from mapping where mapping.project_code = "+ projectCode + " and mapping.stage_code = " + stageCode +")\r\n" + 
+					"where mapping_id in ( select mapping.id from mapping where mapping.project_code = "+ projectCode + " and mapping.stage_code = " + stageCode + trackFilter.toString() + ")\r\n" + 
 					"and (substr(user.student_number, 3, 1) + 100 ) = " + regionCode +"\r\n" + 
 					classFilter.toString() + 
 					skillFilter.toString() + 
-					trackFilter.toString() +
 					"order by team.complete_yn,"+ orderBy;
 		}
 		else { // 검색 인 경우
