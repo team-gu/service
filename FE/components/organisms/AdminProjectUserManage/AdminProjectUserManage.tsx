@@ -262,11 +262,12 @@ export default function AdminProjectUserManage({
         </div>
 
         <div className="manage-header-import">
-          <Button
+          {/* 기능 미구현 */}
+          {/* <Button
             title="반 설정"
             func={() => setShowClassSettingModal(true)}
             width="auto"
-          />
+          /> */}
           <Button
             title="Import"
             func={() => setShowImportModal(true)}
