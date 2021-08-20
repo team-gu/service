@@ -394,16 +394,10 @@ public class TeamRepositorySupport {
 			int skillsSize =skills.size();
 			
 			for(int i = 0; i<skillsSize; i++) {
-				if(i == 0) {
-					skillFilter.append(" and team_skill.skill_code in (");
-				}
+				skillFilter.append("and ts.sc like '%");
 				skillFilter.append(skills.get(i).getCode());
-				if(i == (skillsSize -1)) {
-					skillFilter.append(")\n");
-				}
-				else {
-					skillFilter.append(", ");
-				}
+				skillFilter.append("%'\n");
+		
 			}
 			
 			// trackFilter
@@ -427,8 +421,8 @@ public class TeamRepositorySupport {
 					"from team\r\n" + 
 					"left outer join user\r\n" + 
 					"on team.leader_id = user.id\r\n" + 
-					"left outer join team_skill\r\n" + 
-					"on team.id = team_skill.team_id\r\n" + classJoinFilter.toString() + 
+					"left outer join (select team_id, group_concat(skill_code)as sc from team_skill group by team_id) ts\r\n" + 
+					"on team.id = ts.team_id\r\n" + classJoinFilter.toString() + 
 					"where mapping_id in ( select mapping.id from mapping where mapping.project_code = "+ projectCode + " and mapping.stage_code = " + stageCode + trackFilter.toString() + ")\r\n" + 
 					"and (substr(user.student_number, 3, 1) + 100 ) = " + regionCode +"\r\n" + 
 					classFilter.toString() + 
