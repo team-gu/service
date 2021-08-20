@@ -119,7 +119,7 @@ const ChatBubble = forwardRef<HTMLInputElement, ChatBubbleProps>(
             {!isMe && <Text text={userName} fontSetting="n14b" />}
             <Text
               text={
-                DateTime.now().diff(time).toMillis() < 60000
+                DateTime.now().diff(DateTime.fromISO(time)).toMillis() < 60000
                   ? '지금 막'
                   : DateTime.fromISO(time).setLocale('ko').toRelative()
               }
