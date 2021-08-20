@@ -70,8 +70,10 @@ export default function useSockStomp({ room_id = 0 }: useSockStompProps) {
         }),
       );
 
-      router.push(`rtc/${target}`);
-      clientRef.current?.disconnect();
+      setTimeout(() => {
+        router.push(`rtc/${target}`);
+        clientRef.current?.disconnect();
+      }, 1000);
     });
   };
 
