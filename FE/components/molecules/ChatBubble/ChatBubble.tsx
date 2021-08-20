@@ -1,4 +1,6 @@
 import { ReactElement, forwardRef, useEffect } from 'react';
+import { DateTime } from 'luxon';
+
 import styled from 'styled-components';
 import { useRouter } from 'next/router';
 import useConfetti from '@hooks/useConfetti';
@@ -101,7 +103,10 @@ const ChatBubble = forwardRef<HTMLInputElement, ChatBubbleProps>(
     const { popEmoji } = useConfetti();
 
     useEffect(() => {
-      if (type === 'TEAM_INVITE_ACCEPTED') {
+      if (
+        type === 'TEAM_INVITE_ACCEPTED' &&
+        DateTime.now().diff(time).toMillis() < 1000
+      ) {
         popEmoji();
       }
     }, [type]);
@@ -112,7 +117,14 @@ const ChatBubble = forwardRef<HTMLInputElement, ChatBubbleProps>(
         <div className="chat">
           <div className="chat-info">
             {!isMe && <Text text={userName} fontSetting="n14b" />}
-            <Text text={time} fontSetting="n10m" />
+            <Text
+              text={
+                DateTime.now().diff(time).toMillis() < 60000
+                  ? '지금 막'
+                  : DateTime.fromISO(time).setLocale('ko').toRelative()
+              }
+              fontSetting="n10m"
+            />
           </div>
           <div className="chat-message">
             {type !== null && type !== 'NORMAL' ? (

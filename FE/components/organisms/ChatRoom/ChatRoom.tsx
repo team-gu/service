@@ -1,6 +1,5 @@
 import { ReactElement, useRef, useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { DateTime } from 'luxon';
 import { Session } from 'openvidu-browser';
 
 import { ChatInput, ChatBubble } from '@molecules';
@@ -81,7 +80,7 @@ export default function ChatRoom({
       setMessageList([]);
       setRoomId(0);
     }
-    
+
     try {
       await postExitRoom({ room_id: roomId, user_id: id });
     } catch (error) {
@@ -100,7 +99,7 @@ export default function ChatRoom({
   }, [roomId]);
 
   useEffect(() => {
-    if(isRtc) {
+    if (isRtc) {
       handleScrollToEnd();
     }
 
@@ -136,11 +135,7 @@ export default function ChatRoom({
                   key={index}
                   userName={nickname}
                   profileSrc={profileSrc ? profileSrc : '/profile.png'}
-                  time={
-                    DateTime.now().diff(createAt).toMillis() < 60000
-                      ? '지금 막'
-                      : createAt.setLocale('ko').toRelative()
-                  }
+                  time={createAt}
                   message={message}
                   isMe={connectionId === session.connection.connectionId}
                 />
@@ -164,15 +159,7 @@ export default function ChatRoom({
                   key={index}
                   userName={sender_name}
                   profileSrc={profile_image}
-                  time={
-                    DateTime.now()
-                      .diff(DateTime.fromISO(create_date_time))
-                      .toMillis() < 60000
-                      ? '지금 막'
-                      : DateTime.fromISO(create_date_time)
-                          .setLocale('ko')
-                          .toRelative()
-                  }
+                  time={create_date_time}
                   message={message}
                   handleGetChatRoomMessages={handleGetChatRoomMessages}
                   isMe={sender_id === id}
