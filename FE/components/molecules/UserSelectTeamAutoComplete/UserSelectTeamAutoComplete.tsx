@@ -64,6 +64,8 @@ export default function UserSelectTeamAutoComplete({
                 }),
               ),
             );
+          } else {
+            resolve([]);
           }
         })
         .catch((err) => {
