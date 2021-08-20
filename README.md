@@ -1,7 +1,9 @@
-# 🤼‍♂️ 팀(친)구: 팀구하기 [![Netlify Status](https://api.netlify.com/api/v1/badges/10fbd5a5-b7d9-486a-af29-1670e61ffbb5/deploy-status)](https://nifty-jepsen-f8bdc1.netlify.app/)
+# 🤼‍♂️ 팀(친)구: 팀구하기
 
 <div align=center>
-  <img src="FE/public/logo.png" width="320px">
+	<a href="https://teamgu.co.kr/">
+		<img src="FE/public/logo.png" width="320px">
+  	</a>
   <h3>효율적으로 팀구하자</h3>
 </div>
 <br/>
@@ -12,16 +14,22 @@
 	<a href="https://github.com/team-gu/service/pulls?q=is%3Apr+">
 		<img src="http://mne.tools/mne-bids/assets/GitHub.png" height="50px">
 	</a>
-		<a href="https://team-gu.github.io/service/develop/">
+	<a href="https://determined-stonebraker-d1dfc9.netlify.app/">
 		<img src="https://res.cloudinary.com/practicaldev/image/fetch/s--A-93deMc--/c_imagga_scale,f_auto,fl_progressive,h_420,q_auto,w_1000/https://dev-to-uploads.s3.amazonaws.com/uploads/articles/or34romslob844gmmv90.png" height="50px">
 	</a>
+	<a href="https://www.youtube.com/watch?v=J9ycKogF9Jo&feature=youtu.be">
+		<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Logo_of_YouTube_%282015-2017%29.svg/1004px-Logo_of_YouTube_%282015-2017%29.svg.png" height="50px">
+	</a>
+
+[![Netlify Status](https://api.netlify.com/api/v1/badges/10fbd5a5-b7d9-486a-af29-1670e61ffbb5/deploy-status)](https://nifty-jepsen-f8bdc1.netlify.app/)
+
 </div>
 
 ## 서비스설명/주요기능
 
 소개-소통-구성-관리까지 팀빌딩 모든 과정을 팀구에서 해결하자!
 
-교육생으로써 웹엑스, 매터모스트, 구글 시트를 오가며 팀 빌딩을 하는 과정에서 겪었던 불편함을 팀구 하나로 모두 개선하고, 관리자의 관제 시스템을 직관적으로, 문서화 작업을 반자동화 함으로써 사용자와 관리자 모두에게 편리함을 제공해주는 서비스입니다
+SSAFY 교육생으로써 WebEx, Mattermost, Google Sheet 를 오가며 팀 빌딩을 하는 과정에서 겪었던 불편함을 팀구 하나로 모두 개선하고, 관리자의 관제 시스템을 직관적으로, 문서화 작업을 반자동화 함으로써 사용자와 관리자 모두에게 편리함을 제공해주는 서비스입니다.
 
 ## 주요기술스택
 
