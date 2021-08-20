@@ -608,7 +608,7 @@ export default function TeamManageModal({
                       )
                     : teamMembersOptions[0]
                 }
-                isDisabled={!defaultValue}
+                isDisabled={!defaultValue || user.id !== defaultValue.leaderId}
                 customStyles={selectCustomStyles}
               />
             </Label>
