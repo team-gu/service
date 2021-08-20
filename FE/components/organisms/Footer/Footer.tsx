@@ -16,7 +16,10 @@ const Wrapper = styled.footer`
 export default function Footer() {
   return (
     <Wrapper>
-      <Text text="copyright 2021 SSAFY 5th" color="#666" />
+      <Text
+        text="copyright 2021 강승현, 안석현, 이동길, 장동균, 장민호, 이용재"
+        color="#666"
+      />
     </Wrapper>
   );
 }

@@ -447,7 +447,12 @@ export default function ChatRoute(): ReactElement {
                         func: () =>
                           roomUserList.length === 2
                             ? isLeader
-                              ? handleSendInvitation(teamId, id, opponentId)
+                              ? handleSendInvitation(
+                                  teamId,
+                                  id,
+                                  opponentId,
+                                  true,
+                                )
                               : dispatch(
                                   displayModal({
                                     modalName: MODALS.ALERT_MODAL,

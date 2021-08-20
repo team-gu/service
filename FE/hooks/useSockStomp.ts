@@ -79,7 +79,21 @@ export default function useSockStomp({ room_id = 0 }: useSockStompProps) {
     teamId: number,
     leaderId: number,
     inviteeId: number,
+    keepConnect?: boolean,
   ) => {
+    if (keepConnect) {
+      await clientRef.current?.send(
+        '/send/chat/inviteTeam',
+        {},
+        JSON.stringify({
+          team_id: teamId,
+          leader_id: leaderId,
+          invitee_id: inviteeId,
+        }),
+      );
+      return setMessageList([...messageList]);
+    }
+
     clientRef.current = await Stomp.over(new SockJS(URL));
     clientRef.current.debug = () => {};
 
@@ -93,6 +107,7 @@ export default function useSockStomp({ room_id = 0 }: useSockStompProps) {
           invitee_id: inviteeId,
         }),
       );
+
       dispatch(setChatOpen({ isChatOpen: true, passedOpponentId: inviteeId }));
 
       clientRef.current?.disconnect();
