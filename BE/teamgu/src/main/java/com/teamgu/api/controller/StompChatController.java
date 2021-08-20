@@ -101,6 +101,7 @@ public class StompChatController {
 											.type("RTC_INVITE")
 											.build();
 		Chat chatres = chatService.saveChat(chatReqDto);
+		User user = userService.getUserById(userReqDto.getUser_id()).get();
 		log.info("broadcasting RTC invite message");
 		//2. 메세지 구독룸으로 브로드캐스팅
 		ChatMessageResDto chatMessageResDto = ChatMessageResDto.builder()
@@ -110,7 +111,7 @@ public class StompChatController {
 												.sender_name(name)
 												.type(chatres.getType())
 												.unread_user_count(0)
-												.profile_image("https://i5a202.p.ssafy.io:8080/api/file/display?url=profile/"+chatres.getUser().getProfileServerName()+"."+chatres.getUser().getProfileExtension())
+												.profile_image("https://i5a202.p.ssafy.io:8080/api/file/display?url=profile/"+user.getProfileServerName()+"."+user.getProfileExtension())
 												.build();												
 		log.info("브로드캐스팅 방 번호 : "+roomid);
 		simpMessagingTemplate.getTemplate().convertAndSend("/receive/chat/room/"+roomid,chatMessageResDto);
@@ -156,7 +157,7 @@ public class StompChatController {
 				.build();
 		Chat chatres = chatService.saveChat(chatReqDto);
 		log.info("broadcasting RTC invite message");
-		
+		User user = userService.getUserById(leader_id).get();
 		//3. 메세지 구독룸으로 브로드캐스팅
 		ChatMessageResDto chatMessageResDto = ChatMessageResDto.builder()
 				.create_date_time(chatres.getSendDateTime())
@@ -166,7 +167,7 @@ public class StompChatController {
 				.type(chatres.getType())
 				.team_id(team_id)
 				.unread_user_count(0)
-				.profile_image("https://i5a202.p.ssafy.io:8080/api/file/display?url=profile/"+chatres.getUser().getProfileServerName()+"."+chatres.getUser().getProfileExtension())
+				.profile_image("https://i5a202.p.ssafy.io:8080/api/file/display?url=profile/"+user.getProfileServerName()+"."+user.getProfileExtension())
 				.build();												
 		log.info("브로드캐스팅 방 번호 : "+chat_room_id);
 		simpMessagingTemplate.getTemplate().convertAndSend("/receive/chat/room/"+chat_room_id,chatMessageResDto);
