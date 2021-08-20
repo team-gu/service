@@ -10,6 +10,7 @@ import {
 import router from 'next/router';
 import styled from 'styled-components';
 import { respondTo } from '@styles/respondTo';
+import useConfetti from '@hooks/useConfetti';
 
 import { ModalWrapper } from '@organisms';
 import { Icon, Input, Text, Textarea } from '@atoms';
@@ -281,6 +282,8 @@ export default function TeamManageModal({
 }: TeamManageModalProps): ReactElement {
   const dispatch = useAppDispatch();
   const { user } = useAuthState();
+  const { popEmoji } = useConfetti();
+
   const userToMember = () => {
     return {
       id: user.id,
@@ -489,6 +492,9 @@ export default function TeamManageModal({
       .then(() => {
         handleClickClose(event);
         fetchTeams();
+        if (teamComplete) {
+          popEmoji();
+        }
       })
       .catch((err) => errorAlert(dispatch, err));
   };
@@ -514,6 +520,9 @@ export default function TeamManageModal({
       .then(() => {
         handleClickClose(event);
         fetchTeams();
+        if (teamComplete) {
+          popEmoji();
+        }
       })
       .catch((err) => errorAlert(dispatch, err));
   };

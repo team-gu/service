@@ -1,7 +1,7 @@
-import { ReactElement, forwardRef } from 'react';
+import { ReactElement, forwardRef, useEffect } from 'react';
 import styled from 'styled-components';
 import { useRouter } from 'next/router';
-
+import useConfetti from '@hooks/useConfetti';
 import {
   postTeamInviteAccept,
   postTeamInviteReject,
@@ -98,6 +98,13 @@ const ChatBubble = forwardRef<HTMLInputElement, ChatBubbleProps>(
     ref,
   ): ReactElement => {
     const router = useRouter();
+    const { popEmoji } = useConfetti();
+
+    useEffect(() => {
+      if (type === 'TEAM_INVITE_ACCEPTED') {
+        popEmoji();
+      }
+    }, [type]);
 
     return (
       <Wrapper isMe={isMe} ref={ref}>
@@ -133,6 +140,7 @@ const ChatBubble = forwardRef<HTMLInputElement, ChatBubbleProps>(
                         team_id: teamId,
                       });
                       handleGetChatRoomMessages();
+                      popEmoji();
                     }}
                     funcDecline={async () => {
                       await postTeamInviteReject({
@@ -152,7 +160,7 @@ const ChatBubble = forwardRef<HTMLInputElement, ChatBubbleProps>(
                   <Text
                     text={
                       isMe
-                        ? '상대방이 팀원 초대를 수락했습니다.'
+                        ? '상대방이 팀원 초대를 수락했습니다!'
                         : '팀 초대를 수락했습니다'
                     }
                     fontSetting="n16m"
