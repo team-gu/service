@@ -4,6 +4,7 @@
 	<a href="https://teamgu.co.kr/">
 		<img src="FE/public/logo.png" width="320px">
   	</a>
+	<p> ↑ demo page </p>
   <h3>효율적으로 팀구하자</h3>
 </div>
 <br/>
