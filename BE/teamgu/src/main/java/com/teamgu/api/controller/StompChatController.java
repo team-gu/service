@@ -61,7 +61,7 @@ public class StompChatController {
 		User sender = userService.getUserById(message.getSender_id()).get();		
 		log.info(sender.getName()); // 사용자의 이름을 가져옴
 		log.info(chatres.getMessage());
-		log.info(chatres.getSendDateTime());
+		log.info(chatres.getSendDateTime());		
 		if (chatres!=null) {
 			ChatMessageResDto chatMessageResDto = ChatMessageResDto.builder()
 																	.chat_id(chatres.getId())
@@ -71,6 +71,7 @@ public class StompChatController {
 																	.message(chatres.getMessage())
 																	.create_date_time(chatres.getSendDateTime())
 																	.unread_user_count(0)
+																	.profile_image("https://i5a202.p.ssafy.io:8080/api/file/display?url=profile/"+sender.getProfileServerName()+"."+sender.getProfileExtension())
 																	.build();simpMessagingTemplate.getTemplate().convertAndSend("/receive/chat/room/"+message.getRoom_id(),chatMessageResDto);			
 			log.info("message db saved done");
 		}
