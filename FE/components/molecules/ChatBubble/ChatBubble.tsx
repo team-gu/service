@@ -5,12 +5,12 @@ import styled from 'styled-components';
 import { useRouter } from 'next/router';
 import useConfetti from '@hooks/useConfetti';
 import { MODALS } from '@utils/constants';
-import { useAppDispatch, displayModal } from '@store';
+import { useAppDispatch, displayModal, setChatOpen } from '@store';
 import {
   postTeamInviteAccept,
   postTeamInviteReject,
 } from '@repository/chatRepository';
-import { ProfileImage, ChatBubbleSelect, ChatLoading } from '@molecules';
+import { ProfileImage, ChatBubbleSelect } from '@molecules';
 import { Text } from '@atoms';
 
 interface ChatBubbleProps {
@@ -160,6 +160,8 @@ const ChatBubble = forwardRef<HTMLInputElement, ChatBubbleProps>(
                         });
                         handleGetChatRoomMessages();
                         popEmoji();
+                        router.push('/team')
+                        dispatch(setChatOpen({ isChatOpen: false }));
                       } catch ({ response: { status } }) {
                         if (status === 400) {
                           dispatch(
