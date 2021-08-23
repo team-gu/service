@@ -3,7 +3,7 @@ import SockJS from 'sockjs-client';
 import Stomp from 'stompjs';
 import { useRouter } from 'next/router';
 
-import { useAuthState, useAppDispatch, setChatOpen } from '@store';
+import { useAuthState, useAppDispatch, setChatOpen, setLoading } from '@store';
 import { getChatRoomMessages, postCheckRoom } from '@repository/chatRepository';
 import { ChatNormal } from '@types/chat-type';
 
@@ -70,10 +70,12 @@ export default function useSockStomp({ room_id = 0 }: useSockStompProps) {
         }),
       );
 
+      dispatch(setLoading({ isLoading: true }));
       setTimeout(() => {
         router.push(`rtc/${target}`);
         clientRef.current?.disconnect();
-      }, 1000);
+        setLoading({ isLoading: false });
+      }, 2000);
     });
   };
 
