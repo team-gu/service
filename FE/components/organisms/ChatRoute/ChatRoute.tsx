@@ -301,12 +301,17 @@ export default function ChatRoute(): ReactElement {
           return handleGetChatLists();
         }
 
-        return await postInviteRoom({
+        await postInviteRoom({
           room_id,
           userids: [
             ...selectedUser.reduce((acc, cur) => [...acc, cur.user_id], []),
           ],
         });
+
+        const {
+          data: { data },
+        } = await getRoomUserList(room_id);
+        return setRoomUserList(data);
       } catch (error) {
         return console.error(error);
       }
