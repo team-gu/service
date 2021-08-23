@@ -37,7 +37,15 @@ export default function Layout({ children }: LayoutProps) {
     <>
       {router.pathname.startsWith(VIDEO_CHAT_PATH_PREFIX) ||
       router.pathname.startsWith(ADMIN_PATH_PREFIX) ? (
-        <>{children}</>
+        <>{children}
+          {isChatOpen && id !== 0 && <ChatRoute />}
+            {id !== 0 && (
+              <FloatingButton
+                func={() => dispatch(setChatOpen({ isChatOpen: true }))}
+                id={id}
+              />
+            )}
+        </>
       ) : (
         <>
           <Navbar />
