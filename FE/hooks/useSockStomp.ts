@@ -148,6 +148,9 @@ export default function useSockStomp({ room_id = 0 }: useSockStompProps) {
                   sender_id,
                   sender_name,
                   type,
+                  profile_image,
+                  chat_id,
+                  team_id,
                 } = JSON.parse(body);
 
                 const chatData: ChatNormal = {
@@ -156,6 +159,9 @@ export default function useSockStomp({ room_id = 0 }: useSockStompProps) {
                   sender_id,
                   sender_name,
                   type,
+                  profile_image,
+                  chat_id,
+                  team_id,
                 };
 
                 setMessageList((prev: ChatNormal[]): ChatNormal[] => [

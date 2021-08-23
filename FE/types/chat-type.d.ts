@@ -16,4 +16,5 @@ export interface ChatNormal {
   type?: string;
   chat_id?: number;
   team_id?: number;
+  profile_image?: string;
 }
