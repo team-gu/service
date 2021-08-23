@@ -16,7 +16,7 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
 
   useEffect(() => {
     const accessToken = loadItem('accessToken');
-    if (accessToken && !user.name) {
+    if (accessToken && !user.name && router.pathname !== '/') {
       (async () => {
         try {
           const path = router.route;
