@@ -1,5 +1,7 @@
-import { ReactElement, JSXElementConstructor } from 'react';
+import { ReactElement, JSXElementConstructor, useState } from 'react';
 import styled from 'styled-components';
+import { useScrollPosition } from '@hooks/useWindow';
+
 import { respondTo } from '@styles/respondTo';
 
 interface LookupLayoutProps {
@@ -114,8 +116,20 @@ const Wrapper = styled.div<{
 export default function LookupLayout({
   children,
   showTeamCreateBtn,
-  filterPosition,
 }: LookupLayoutProps): ReactElement {
+  const [filterPosition, setFilterPosition] = useState(true);
+
+  useScrollPosition(
+    ({ prevPos, currPos }) => {
+      const isShow = currPos.y > prevPos.y;
+      if (isShow !== filterPosition) setFilterPosition(isShow);
+    },
+    [filterPosition],
+    undefined,
+    false,
+    100,
+  );
+
   return (
     <Wrapper
       showTeamCreateBtn={showTeamCreateBtn}
