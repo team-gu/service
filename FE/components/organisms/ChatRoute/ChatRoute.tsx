@@ -86,6 +86,10 @@ const Wrapper = styled(motion.div)`
       cursor: pointer;
     }
 
+    input::placeholder {
+      text-align: center;
+    }
+
     .header-title {
       ${({ theme: { flexRow } }) => flexRow()}
       cursor: pointer;
