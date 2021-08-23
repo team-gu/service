@@ -112,6 +112,9 @@ const ChatBubble = forwardRef<HTMLInputElement, ChatBubbleProps>(
       ) {
         popEmoji();
       }
+      if (type === "TEAM_INVITE_WAITING" || type === "TEAM_INVITE_REJECTED" || type === "TEAM_INVITE_EXPIRED") {
+        handleGetChatRoomMessages();
+      }
     }, [type]);
 
     return (
@@ -144,7 +147,7 @@ const ChatBubble = forwardRef<HTMLInputElement, ChatBubbleProps>(
                     fontSetting="n16m"
                     isLineBreak
                   />
-                ) : opponentId !== 0 && id !== 0 && chatId !== 0 ? (
+                ) : (
                   <ChatBubbleSelect
                     text="팀원초대 요청"
                     funcAccept={async () => {
@@ -179,8 +182,6 @@ const ChatBubble = forwardRef<HTMLInputElement, ChatBubbleProps>(
                     }}
                     isTeamInvite
                   />
-                ) : (
-                  <ChatLoading />
                 ),
                 TEAM_INVITE_ACCEPTED: (
                   <Text
