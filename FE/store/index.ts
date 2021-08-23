@@ -14,7 +14,7 @@ import authReducer, {
   setLogout,
   setUserDetail,
 } from './authSlice';
-import uiReducer, { setLoading, setChatOpen } from './uiSlice';
+import uiReducer, { setLoading, setChatOpen, setPayload } from './uiSlice';
 import stickyReducer, { setFixed, setOffset } from './stickySlice';
 
 const reducers = combineReducers({
@@ -40,6 +40,7 @@ export {
   setUserDetail,
   setLoading,
   setChatOpen,
+  setPayload,
   setFixed,
   setOffset,
 };
