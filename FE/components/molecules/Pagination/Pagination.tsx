@@ -17,23 +17,29 @@ const Wrapper = styled.div`
   ${({ theme: { flexRow } }) => flexRow()}
 
   width: 100%;
-  height: 50px;
+  height: 32px;
+  ${({theme: { font: { n10m }}}) => n10m}
+
   ul {
     display: inline-block;
     padding-left: 15px;
     padding-right: 15px;
-  }
 
-  li {
-    display: inline-block;
-    a {
-      color: black;
-      float: left;
-      padding: 8px 16px;
-      text-decoration: none;
-      cursor: pointer;
+    li {
+      display: inline-block;
+      a {
+        ${({theme: { flexRow }}) => flexRow()}
+        width: 32px;
+        height: 32px;
+  
+        color: black;
+        float: left;
+        text-decoration: none;
+        cursor: pointer;
+      }
     }
   }
+
 
   .selected {
     background-color: ${({
@@ -44,6 +50,8 @@ const Wrapper = styled.div`
     > a {
       color: white;
     }
+    
+    border-radius: 4px;
   }
 
   .disabled {

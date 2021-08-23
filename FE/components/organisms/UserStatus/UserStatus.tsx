@@ -441,8 +441,8 @@ export default function UserStatus(): ReactElement {
                 pageCount={pageCount}
                 previousLabel={'<'}
                 nextLabel={'>'}
-                marginPagesDisplayed={2}
-                pageRangeDisplayed={5}
+                marginPagesDisplayed={1}
+                pageRangeDisplayed={2}
                 breakLabel={'...'}
                 onPageChange={({ selected }: { selected: number }) =>
                   setPayload((prev) => ({ ...prev, pageNum: selected }))
