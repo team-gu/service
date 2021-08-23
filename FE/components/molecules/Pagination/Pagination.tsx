@@ -18,6 +18,9 @@ const Wrapper = styled.div`
 
   width: 100%;
   height: 32px;
+
+  margin: 5px;
+  
   ${({theme: { font: { n10m }}}) => n10m}
 
   ul {
