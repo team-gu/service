@@ -95,10 +95,13 @@ export default function AdminUserImportModal({
             isLineBreak
           /> */}
           <span>
-            엑셀 파일(.xlsx, .xls)을 업로드하여 한 번에 교육생을 가입시킬 수
-            있습니다. 해당 엑셀 파일은{' '}
-            <Bold>[학번, 이름, 이메일, 전공여부]</Bold>에 대한 데이터를 담고
-            있어야합니다.
+            엑셀 파일(.xlsx, .xls)을 업로드하여 <Bold>한 번</Bold>에 교육생을 가입시킬 수
+            있습니다.
+          </span>
+          <br />
+          <span>
+            해당 엑셀 파일은 <Bold>[이메일, 이름, 학번, 전공여부]</Bold>에 대한
+            데이터를 담고 있어야합니다.
           </span>
         </div>
 
