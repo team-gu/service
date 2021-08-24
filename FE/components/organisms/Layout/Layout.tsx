@@ -25,6 +25,7 @@ const Narrow = styled.div`
     margin-left: 5%;
   `}
 `;
+
 export default function Layout({ children }: LayoutProps) {
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -39,7 +40,7 @@ export default function Layout({ children }: LayoutProps) {
       router.pathname.startsWith(ADMIN_PATH_PREFIX) ? (
         <>{children}
           {isChatOpen && id !== 0 && <ChatRoute />}
-            {id !== 0 && (
+            {router.pathname.startsWith(ADMIN_PATH_PREFIX) && id !== 0 && (
               <FloatingButton
                 func={() => dispatch(setChatOpen({ isChatOpen: true }))}
                 id={id}

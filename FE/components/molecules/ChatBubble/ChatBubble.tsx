@@ -138,7 +138,10 @@ const ChatBubble = forwardRef<HTMLInputElement, ChatBubbleProps>(
                 RTC_INVITE: (
                   <ChatBubbleSelect
                     text="화상전화 요청"
-                    funcAccept={() => router.push(`rtc/${roomId}`)}
+                    funcAccept={() => {
+                      router.push(`rtc/${roomId}`);
+                      dispatch(setChatOpen({ isChatOpen: false }))
+                    }}
                   />
                 ),
                 TEAM_INVITE_WAITING: isMe ? (

@@ -79,7 +79,7 @@ const variants = {
 export default function FloatingButton({
   func = () => {},
   isRtc = false,
-  id,
+  id = 0,
 }: FloatingButtonProps): ReactElement {
   const { isChatOpen } = useUiState();
 
