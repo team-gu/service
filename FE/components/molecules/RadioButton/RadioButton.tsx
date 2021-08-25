@@ -5,6 +5,7 @@ interface RadioButtonProps {
   children: ReactElement;
   // TODO: 타입 정의
   func: any;
+  checked: boolean;
   defaultChecked?: boolean;
   name?: string;
 }
@@ -21,6 +22,7 @@ const Wrapper = styled.div`
 export default function RadioButton({
   children,
   func,
+  checked,
   defaultChecked = false,
   name,
 }: RadioButtonProps): ReactElement {
@@ -29,6 +31,7 @@ export default function RadioButton({
       <input
         type="radio"
         onClick={func}
+        checked={checked}
         defaultChecked={defaultChecked}
         name={name}
       />

@@ -38,7 +38,7 @@ export default function Filter({
 }: FilterProps): ReactElement {
   const [selectedValues, setSelectedValues] =
     useState<OptionsType<OptionTypeBase>>([]);
-  const [checkedBox, setCheckedBox] = useState<number[]>(value || []);
+  const [checkedBox, setCheckedBox] = useState<number[]>([]);
 
   const onChangeMultiSelect = (arr: OptionsType<OptionTypeBase>) => {
     setSelectedValues(arr);
@@ -47,7 +47,11 @@ export default function Filter({
 
 
   useEffect(() => {
-    if (selectedValues.length === 0) {
+    if (contents.length < 5) {
+      setCheckedBox(value || []); 
+    }
+
+    if (title !== '전공/비전공') {
       setSelectedValues(contents.reduce(
         (acc, cur): any => [
           ...acc,
@@ -59,14 +63,6 @@ export default function Filter({
   }, [contents, value]);
 
   const onChangeCheckBox = (code: number) => {
-    const idx = checkedBox.indexOf(code);
-    let checkedBoxTmp = [...checkedBox];
-    if (idx >= 0) {
-      checkedBoxTmp.splice(idx, 1);
-    } else {
-      checkedBoxTmp.push(code);
-    }
-    setCheckedBox(checkedBoxTmp);
     func(title, code);
   };
 
@@ -85,7 +81,8 @@ export default function Filter({
             <RadioButton
               func={() => func(title, '전체')}
               name={title}
-              defaultChecked={value ? false: true}
+              checked={value ? false : true}
+              defaultChecked
             >
               <Text text="전체" fontSetting={'n14m'} />
             </RadioButton>
@@ -98,14 +95,14 @@ export default function Filter({
                   func={() => func(title, code)}
                   name={title}
                   key={`radio-${code}`}
-                  defaultChecked={value === index + 1}
+                  checked={value === index + 1}
                 >
                   <Text text={codeName} fontSetting={'n14m'} />
                 </RadioButton>
               ) : (
                 <Checkbox
                   func={() => onChangeCheckBox(code)}
-                  checked={clear ? false : checkedBox.indexOf(code) > -1}
+                  checked={clear ? false : checkedBox.some((each) => each === code)}
                   key={`checbkox-${code}`}
                 >
                   <Text text={codeName} fontSetting={'n14m'} />
