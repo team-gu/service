@@ -20,7 +20,7 @@ import {
   getEachFiltersCodeListTracks,
   postByFilteredUsers,
 } from '@repository/filterRepository';
-import { useAppDispatch, useAuthState, displayModal, setLoading } from '@store';
+import { useAppDispatch, useAuthState, displayModal, setLoading, setPayload, useUiState } from '@store';
 import { FILTER_TITLE } from '@utils/constants';
 import { MemberOption } from '@utils/type';
 import { ModalWrapper } from '@organisms';
@@ -89,6 +89,8 @@ const InviteConfirmModal = styled.div`
 `;
 
 export default function UserStatus(): ReactElement {
+  const { payload } = useUiState();
+
   const {
     user: { id, projectCodes, studentNumber },
   } = useAuthState();
@@ -97,8 +99,7 @@ export default function UserStatus(): ReactElement {
     room_id: 0,
   });
   const [filterContents, setFilterContents] = useState<any>();
-  const [payload, setPayload] = useState({});
-
+  
   const [users, setUsers] = useState();
 
   const [showInviteModal, setShowInviteModal] = useState(false);
@@ -123,13 +124,15 @@ export default function UserStatus(): ReactElement {
 
       const project = projectCodes[projectCodes.length - 1];
 
-      setPayload({
-        project,
-        studentNumber,
-        sort: 'asc',
-        pageNum: 0,
-        pageSize: 10,
-      });
+      if (!payload.hasOwnProperty('studentNumber')) {
+        dispatch(setPayload({
+          project,
+          studentNumber,
+          sort: 'asc',
+          pageNum: 0,
+          pageSize: 10,
+        }));
+      }
 
       if (project) {
         getUserHasTeam({
@@ -214,11 +217,11 @@ export default function UserStatus(): ReactElement {
     if (code === '전체') {
       const payloadTemp: any = { ...payload, pageNum: 0, sort: 'asc' };
       delete payloadTemp[FILTER_TITLE[title]];
-      return setPayload(payloadTemp);
+      return dispatch(setPayload(payloadTemp));
     }
 
-    setPayload((prev) => ({
-      ...prev,
+    dispatch(setPayload({
+      ...payload,
       [FILTER_TITLE[title]]: code,
       pageNum: 0,
       sort: 'asc',
@@ -226,23 +229,15 @@ export default function UserStatus(): ReactElement {
   };
 
   const handleFilter = (title: string, code: string) => {
-    const payloadTemp: any = { ...payload, pageNum: 0, sort: 'asc' };
     const convertTitle: any = FILTER_TITLE[title];
 
-    if (!payloadTemp.hasOwnProperty(convertTitle)) {
-      payloadTemp[convertTitle] = [];
+    if (payload.hasOwnProperty(convertTitle)) {
+      if (payload[convertTitle].includes(code)) {
+        return dispatch(setPayload({ ...payload, pageNum: 0, sort: 'asc', [convertTitle]: payload[convertTitle].filter((each) => each !== code) }));
+      }
+      return dispatch(setPayload({ ...payload, pageNum: 0, sort: 'asc', [convertTitle]: [...payload[convertTitle], code] }));
     }
-
-    if (payloadTemp[convertTitle].includes(code)) {
-      payloadTemp[convertTitle].splice(
-        payloadTemp[convertTitle].indexOf(code),
-        1,
-      );
-    } else {
-      payloadTemp[convertTitle].push(code);
-    }
-
-    setPayload(payloadTemp);
+    return dispatch(setPayload({ ...payload, pageNum: 0, sort: 'asc', [convertTitle]: [code] }));
   };
 
   const handleFilterArray = (title: string, arr: any) => {
@@ -258,13 +253,13 @@ export default function UserStatus(): ReactElement {
       );
     }
 
-    setPayload(payloadTemp);
+    dispatch(setPayload(payloadTemp));
   };
 
   const handleChangeUserSelect = (selectedUser: MemberOption | null) => {
     if (selectedUser?.email) {
-      return setPayload((prev) => ({
-        ...prev,
+      return dispatch(setPayload({
+        ...payload,
         email: selectedUser?.email,
         pageNum: 0,
         sort: 'asc',
@@ -274,13 +269,13 @@ export default function UserStatus(): ReactElement {
     const payloadTemp: any = { ...payload, pageNum: 0, sort: 'asc' };
 
     delete payloadTemp.email;
-    setPayload(payloadTemp);
+    dispatch(setPayload(payloadTemp));
   };
 
   const handleProjectChange = ({ value }: { value: number }) => {
     if (projectCodes?.includes(value)) {
-      setPayload((prev) => ({
-        ...prev,
+      dispatch(setPayload({
+        ...payload,
         project: value,
         pageNum: 0,
         sort: 'asc',
@@ -291,7 +286,7 @@ export default function UserStatus(): ReactElement {
   };
 
   const handleClickSort = (sort: string) => {
-    setPayload((prev) => ({ ...prev, sort, pageNum: 0 }));
+    dispatch(setPayload({ ...payload, sort, pageNum: 0 }));
   };
 
   const handleCloseInviteModal = () => {
@@ -318,7 +313,7 @@ export default function UserStatus(): ReactElement {
     handleSendInvitation(teamId, id, invitedUser.id);
 
     setShowInviteModal(false);
-    setPayload((prev) => ({ ...prev }));
+    dispatch(setPayload({ ...payload }));
   };
 
   return (
@@ -445,7 +440,7 @@ export default function UserStatus(): ReactElement {
                 pageRangeDisplayed={2}
                 breakLabel={'...'}
                 onPageChange={({ selected }: { selected: number }) =>
-                  setPayload((prev) => ({ ...prev, pageNum: selected }))
+                  dispatch(setPayload({ ...payload, pageNum: selected }))
                 }
                 forcePage={payload?.pageNum}
               />
