@@ -27,7 +27,7 @@ export default function Checkbox({
       <input
         type="checkbox"
         onClick={func}
-        defaultChecked={checked}
+        checked={checked}
       />
       {children}
     </Wrapper>
