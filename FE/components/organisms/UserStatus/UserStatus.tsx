@@ -110,6 +110,7 @@ export default function UserStatus(): ReactElement {
   const [trackList, setTrackList] = useState([]);
 
   const dispatch = useAppDispatch();
+  const project = projectCodes[projectCodes.length - 1];
 
   useEffect(() => {
     (async () => {
@@ -120,8 +121,6 @@ export default function UserStatus(): ReactElement {
       } = await getEachFiltersCodeList(studentNumber);
 
       setFilterContents(data);
-
-      const project = projectCodes[projectCodes.length - 1];
 
       if (!payload.hasOwnProperty('studentNumber')) {
         dispatch(setPayload({
@@ -337,12 +336,12 @@ export default function UserStatus(): ReactElement {
                   label: filterContents['프로젝트'].filter(
                     ({ code }: { code: number }) => payload?.project === code,
                   )[0]?.codeName || filterContents['프로젝트'].filter(
-                    ({ code }: { code: number }) => projectCodes[projectCodes.length - 1] === code,
+                    ({ code }: { code: number }) => project === code,
                   )[0]?.codeName,
                   value: filterContents['프로젝트'].filter(
                     ({ code }: { code: number }) => payload?.project === code,
                   )[0]?.code || filterContents['프로젝트'].filter(
-                    ({ code }: { code: number }) => projectCodes[projectCodes.length - 1] === code,
+                    ({ code }: { code: number }) => project === code,
                   )[0]?.code,
                 }}
               />
