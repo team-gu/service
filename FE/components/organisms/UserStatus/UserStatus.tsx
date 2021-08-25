@@ -337,11 +337,11 @@ export default function UserStatus(): ReactElement {
                 onChange={handleProjectChange}
                 value={{
                   label: filterContents['프로젝트'].filter(
-                    ({ code }: { code: number }) => projectCodes.includes(code),
-                  )[projectCodes?.length - 1]?.codeName,
+                    ({ code }: { code: number }) => payload?.project === code,
+                  )[0]?.codeName,
                   value: filterContents['프로젝트'].filter(
-                    ({ code }: { code: number }) => projectCodes.includes(code),
-                  )[projectCodes?.length - 1]?.code,
+                    ({ code }: { code: number }) => payload?.project === code,
+                  )[0]?.code,
                 }}
               />
             </Title>
