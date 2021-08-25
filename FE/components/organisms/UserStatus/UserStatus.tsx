@@ -109,7 +109,6 @@ export default function UserStatus(): ReactElement {
   const [pageCount, setPageCount] = useState(0);
   const [trackList, setTrackList] = useState([]);
 
-  const [isProjectChange, setIsProjectChange] = useState(false);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -281,7 +280,6 @@ export default function UserStatus(): ReactElement {
         sort: 'asc',
         track: undefined,
       }));
-      setIsProjectChange(true);
     }
   };
 
@@ -338,9 +336,13 @@ export default function UserStatus(): ReactElement {
                 value={{
                   label: filterContents['프로젝트'].filter(
                     ({ code }: { code: number }) => payload?.project === code,
+                  )[0]?.codeName || filterContents['프로젝트'].filter(
+                    ({ code }: { code: number }) => projectCodes[projectCodes.length - 1] === code,
                   )[0]?.codeName,
                   value: filterContents['프로젝트'].filter(
                     ({ code }: { code: number }) => payload?.project === code,
+                  )[0]?.code || filterContents['프로젝트'].filter(
+                    ({ code }: { code: number }) => projectCodes[projectCodes.length - 1] === code,
                   )[0]?.code,
                 }}
               />
@@ -368,6 +370,7 @@ export default function UserStatus(): ReactElement {
                     contents={filterContents[each]}
                     func={handleFilterArray}
                     key={`filter-selectbox-${each}`}
+                    value={payload[FILTER_TITLE[each]]}
                   />
                 )
               ) : (
@@ -385,8 +388,7 @@ export default function UserStatus(): ReactElement {
           title={'트랙'}
           contents={trackList}
           func={handleFilterArray}
-          isChange={isProjectChange}
-          setIsChange={setIsProjectChange}
+          value={payload[FILTER_TITLE.트랙]}
         />
       </div>
       <div className="team-status-list-container">
