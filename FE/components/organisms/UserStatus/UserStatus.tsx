@@ -360,6 +360,7 @@ export default function UserStatus(): ReactElement {
                     contents={filterContents[each]}
                     func={handleFilter}
                     key={`filter-checkbox-${each}`}
+                    value={payload[FILTER_TITLE[each]]}
                   />
                 ) : (
                   <Filter

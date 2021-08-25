@@ -42,7 +42,7 @@ export default function Filter({
 }: FilterProps): ReactElement {
   const [selectedValues, setSelectedValues] =
     useState<OptionsType<OptionTypeBase>>();
-  const [checkedBox, setCheckedBox] = useState<number[]>([]);
+  const [checkedBox, setCheckedBox] = useState<number[]>(value || []);
 
   const onChangeMultiSelect = (arr: OptionsType<OptionTypeBase>) => {
     setSelectedValues(arr);
