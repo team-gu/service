@@ -25,6 +25,14 @@ const Wrapper = styled.div<{
   `}
 
   .filter-container {
+    .refresh {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      i {
+        cursor: pointer;
+      }
+    }
     position: sticky;
     top: ${({ filterPosition }) => (filterPosition ? '130px' : '30px')};
     height: fit-content;

@@ -316,6 +316,18 @@ export default function UserStatus(): ReactElement {
   return (
     <LookupLayout showTeamCreateBtn={false} >
       <div className="filter-container">
+        <div className="refresh">
+          <Icon 
+            iconName="refresh" 
+            func={() => dispatch(setPayload({
+              project,
+              studentNumber,
+              sort: 'asc',
+              pageNum: 0,
+              pageSize: 10, 
+            }))} 
+          />
+        </div>
         {filterContents && (
           <WrapFilter>
             <Title title="프로젝트">
