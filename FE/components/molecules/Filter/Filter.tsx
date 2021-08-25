@@ -18,6 +18,7 @@ interface FilterProps {
   clear?: boolean;
   isChange?: boolean;
   setIsChange: any;
+  value: any;
 }
 
 const Wrapper = styled.div`
@@ -37,6 +38,7 @@ export default function Filter({
   clear,
   isChange,
   setIsChange,
+  value,
 }: FilterProps): ReactElement {
   const [selectedValues, setSelectedValues] =
     useState<OptionsType<OptionTypeBase>>();
@@ -81,19 +83,20 @@ export default function Filter({
             <RadioButton
               func={() => func(title, '전체')}
               name={title}
-              defaultChecked
+              defaultChecked={value ? false: true}
             >
               <Text text="전체" fontSetting={'n14m'} />
             </RadioButton>
           )}
           {/* TODO: each의 타입 정의  */}
           {contents.length < 5 && title !== '트랙' ? (
-            contents?.map(({ codeName, code }) =>
+            contents?.map(({ codeName, code }, index) =>
               isRadioButton ? (
                 <RadioButton
                   func={() => func(title, code)}
                   name={title}
                   key={`radio-${code}`}
+                  defaultChecked={value === index + 1}
                 >
                   <Text text={codeName} fontSetting={'n14m'} />
                 </RadioButton>

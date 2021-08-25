@@ -376,6 +376,7 @@ export default function UserStatus(): ReactElement {
                   func={handleToggleFilter}
                   key={`filter-radiobutton-${each}`}
                   isRadioButton
+                  value={payload[FILTER_TITLE[each]]}
                 />
               )),
           )}
