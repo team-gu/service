@@ -167,20 +167,14 @@ export default function UserStatusCard({
               <div className="items-tags">
                 {filterContents &&
                   trackList?.map((each) => (
-                    <>
-                      <Tag
-                        text={
-                          filterContents['트랙'].find(
-                            ({ code }) => code == each,
-                          )?.codeName
-                        }
-                        key={`track-${
-                          filterContents['트랙'].find(
-                            ({ code }) => code == each,
-                          ).codeName
-                        }`}
-                      />
-                    </>
+                    <Tag
+                      text={
+                        filterContents['트랙'].find(
+                          ({ code }) => code == each,
+                        )?.codeName
+                      }
+                      key={`track-${each}`}
+                    />
                   ))}
               </div>
             </div>
@@ -194,10 +188,7 @@ export default function UserStatusCard({
                         filterContents['스킬'].find(({ code }) => code == each)
                           .codeName
                       }
-                      key={`skill-${
-                        filterContents['스킬'].find(({ code }) => code == each)
-                          .codeName
-                      }`}
+                      key={`skill-${each}`}
                     />
                   ))}
               </div>
