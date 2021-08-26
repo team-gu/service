@@ -31,8 +31,8 @@ export default function RadioButton({
       <input
         type="radio"
         onClick={func}
-        checked={checked}
-        defaultChecked={defaultChecked}
+        onChange={e => {}}
+        {...(defaultChecked ? { defaultChecked } : { checked })}
         name={name}
       />
       {children}

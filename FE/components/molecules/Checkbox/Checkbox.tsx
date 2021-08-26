@@ -28,6 +28,7 @@ export default function Checkbox({
         type="checkbox"
         onClick={func}
         checked={checked}
+        onChange={e => {}}
       />
       {children}
     </Wrapper>
