@@ -110,6 +110,14 @@ export default function Home(): ReactElement {
 
   const handleLogin = async (e: SyntheticEvent) => {
     e.preventDefault();
+
+    // TODO: 저녁에 heroku 배포 완료되면 삭제해야 할 부분
+    return dispatch(
+      displayModal({
+        modalName: MODALS.ALERT_MODAL,
+        content: '현재 서버 이전 중 입니다.'
+      }),
+    );
     if (emailRef.current.value === '') {
       setError(true);
       setErrorMessage('아이디가 입력되지 않았습니다.');
