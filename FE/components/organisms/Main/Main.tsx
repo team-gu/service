@@ -1,12 +1,14 @@
-import { ReactElement, SyntheticEvent, useRef, useState } from 'react';
+import { ReactElement, SyntheticEvent, useRef, useState, ChangeEvent } from 'react';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
-import { Input, Text } from '@atoms';
 import { respondTo } from '@styles/respondTo';
 
 import { useAppDispatch, setLogin, displayModal } from '@store';
-import { MODALS } from '@utils/constants';
-import { Label, Button } from '@molecules';
+import { MODALS, TEST_ACCOUNTS } from '@utils/constants';
+
+import { Label, Button, Checkbox } from '@molecules';
+import { Input, Text } from '@atoms';
+
 import styled from 'styled-components';
 
 const Wrapper = styled.div`
@@ -99,6 +101,7 @@ export default function Home(): ReactElement {
   const passwordRef: any = useRef<HTMLInputElement>(null);
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [toggleCheck, setToggleCheck] = useState(false);
 
   const findPassword = async () => {
     dispatch(
@@ -151,6 +154,21 @@ export default function Home(): ReactElement {
     }
   };
 
+  const handleCheck = ({ target: { checked }}: ChangeEvent<HTMLInputElement>) => {
+    setToggleCheck(checked);
+    if (checked) {
+      const { email, password } = TEST_ACCOUNTS[Math.floor(Math.random() * 2)];
+      emailRef.current.value = email;
+      passwordRef.current.value = password;
+      emailRef.current.disabled = true;
+      return passwordRef.current.disabled= true;
+    }
+    emailRef.current.value = "";
+    passwordRef.current.value = "";
+    emailRef.current.disabled = false;
+    passwordRef.current.disabled= false;
+  };
+
   return (
     <Wrapper>
       <div className="fixed-airplane">
@@ -199,6 +217,9 @@ export default function Home(): ReactElement {
             <div className="errorMessage">
               {error && <Text text={errorMessage} color="red" />}
             </div>
+            <Checkbox func={handleCheck} checked={toggleCheck} >
+              <Text text="랜덤 계정 선택" fontSetting="n12m" />
+            </Checkbox>
             <div className="form-btn">
               <Button title="로그인" type="submit" width={'90%'} />
             </div>

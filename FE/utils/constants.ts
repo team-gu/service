@@ -201,3 +201,14 @@ export const skillColor = new Map([
   ['WebRTC', ['#000', '#AC2523']],
   ['JPA', ['#fff', '#010101']],
 ]);
+
+export const TEST_ACCOUNTS = [
+  {
+    email: '강승현@ssafy.com',
+    password: 'test',
+  },
+  {
+    email: '안석현@ssafy.com',
+    password: 'test',
+  }
+];
