@@ -45,4 +45,4 @@ jobs:
           # The appname to use for deploying/updating
           heroku_app_name: ${{ secrets.heroku_app_name }}
           buildpack: heroku/gradle
-          delay: 5
+          appdir: BE/teamgu
